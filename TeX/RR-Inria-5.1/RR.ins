@@ -1,0 +1,60 @@
+%& --translate-file=il1-t1.tcx
+\def\filedate{1997/04/25}
+\def\fileversion{1,0}
+\def\batchfile{RR.ins}
+\input docstrip.tex
+
+\keepsilent
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
+%%%  <RR.ins> Rapport de recherche INRIA
+%%%
+%%%  Copyright INRIA/MIAOU/APICS 1998-99 2004 2006 2007
+%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\preamble
+********************************************************************
+Copyright (C) 1997-1999 2004 2006-2011 INRIA/APICS/MARELLE by Jose' Grimm
+This file may be distributed and/or modified under the
+conditions of the LaTeX Project Public License, either version 1.3
+of this license or (at your option) any later version.
+The latest version of this license is in
+   http://www.latex-project.org/lppl.txt
+and version 1.3 or later is part of all distributions of LaTeX
+version 2003/12/01 or later.
+An archive of the software can be found at
+   ftp://ftp-sop.inria.fr/marelle/RR-INRIA
+\endpreamble
+
+% The packages
+\askforoverwritefalse
+\generate{%
+   \file{RR.sty}{\from{RR.dtx}{RR}}
+  % \file{RRthemes.sty}{\from{RR.dtx}{themes}}        
+   \file{squelette-rr.tex}{\from{RR.dtx}{sample}}}
+%   \file{RRA4.sty}{\from{RR.dtx}{RRA4}}}
+
+
+\def\iispc{\space\space}
+\def\vspc{\iispc\iispc\space}
+\Msg{**********************************************************************}
+\Msg{*}
+\Msg{* To finish the installation, do the following:}
+\Msg{*}
+\Msg{*\iispc 1) Copy or move the RR.sty files,}
+\Msg{*\vspc     to the some directory in your TEXINPUTS path. }
+\Msg{*\iispc 2) Run LaTeX on the RR.dtx file to produce the documentation:}
+\Msg{ \vspc pdflatex  RR.dtx}
+\Msg{ \vspc makeindex -s gind.ist RR.idx}
+\Msg{ \vspc makeindex -s gglo.ist -o RR.gls RR.glo}
+\Msg{ \vspc pdflatex  RR.dtx}
+\Msg{ \vspc pdflatex  RR.dtx}
+\Msg{*\iispc 3) Copy the files RR.dtx, RR.pdf, squelette-rr.tex}
+\Msg{*\vspc     somewhere in your documentation subdirectory.}
+\Msg{*}
+\Msg{**********************************************************************}
+\endinput
+
+
+
+

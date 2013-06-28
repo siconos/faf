@@ -1,0 +1,135 @@
+%%
+%% This is file `squelette-rr.tex',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% RR.dtx  (with options: `sample')
+%% ********************************************************************
+%% Copyright (C) 1997-1999 2004 2006-2011 INRIA/APICS/MARELLE by Jose' Grimm
+%% This file may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License, either version 1.3
+%% of this license or (at your option) any later version.
+%% The latest version of this license is in
+%%    http://www.latex-project.org/lppl.txt
+%% and version 1.3 or later is part of all distributions of LaTeX
+%% version 2003/12/01 or later.
+%% An archive of the software can be found at
+%%    ftp://ftp-sop.inria.fr/marelle/RR-INRIA
+
+\documentclass[twoside]{article}
+\usepackage[a4paper]{geometry}
+\usepackage[latin1]{inputenc} % ou \usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc} % ou \usepackage[OT1]{fontenc}
+\usepackage{RR}
+\usepackage{hyperref}
+%%\usepackage[frenchb]{babel} % optionnel
+\RRNo{7003}
+%% \RTNo{0703}
+%%
+%% date de publication du rapport
+\RRdate{September 1997}
+%%
+%% Cas d'une version deux
+%% \RRversion{2}
+%% date de publication de la version 2
+%% \RRdater{November 2008}
+%%
+\RRauthor{% les auteurs
+ % Premier auteur, avec une note
+Jos\'e Grimm\thanks{Footnote for first author}%
+  % note partag\'ee (optionnelle)
+  \thanks[sfn]{Shared foot note}%
+ % \and entre chaque auteur s'il y en a plusieurs
+  \and
+Philippe Louarn\thanks{Footnote for second author}%
+ % r\'ef\'erence \`a la note partag\'ee
+\thanksref{sfn}
+ % liste longue pour tests de mise en page
+\and Nicolas Bourbaki\thanks{etc} \and Andr\'e Lichnerowicz
+\and Marcel-Paul Sch\"utzenberger \and Jacques-Louis Lions}
+%% Ceci apparait sur chaque page paire.
+\authorhead{Grimm \& Louarn \& others}
+%% titre francais long
+\RRtitle{Exemple de document\\
+ utilisant le style\\rapport de recherche\\Inria}
+%% English title
+\RRetitle{Very Long Title for Checking Whether it Fits on the Cover
+  Page of Inria's Research Report Document Type (Extended Version)}
+%%
+\titlehead{Example of RR.sty}
+%%
+\RRnote{This is a note}
+\RRnote{This is a second note}
+%%
+\RRresume{Ce document montre comment utiliser le style RR.sty.
+Pour en savoir plus, consulter le fichier RR.dvi ou RR.pdf.
+D\'efinissez toujours les commandes avant utilisation.
+}
+\RRabstract{
+Our society relies increasingly on digital technologies to communicate,
+seek medical information, travel, or have fun. These often-invisible
+technologies simplify our tasks and enrich our daily lives, while also
+developing the economy. At the interface of computer science and
+mathematics, from pure research to technological development and to
+industrial transfer, researchers at Inria, a public research institute,
+are inventing tomorrow's digital technologies. Inria's research is
+collaborative, which is evidenced by the diversity of the talent
+comprising its research teams, as well as in the many joint projects
+conducted with public and private research entities in France and
+abroad. While competing with the leading international specialists in
+their field, Inria researchers and staff are also committed to sharing
+their knowledge with the widest possible audience.
+
+Computational technologies are currently used to increase the
+efficiency and safety of our transport services, introduce smart
+applications into homes, and develop agricultural practices that are
+better for the environment... They are also behind a range of new
+services, and are bringing about fundamental changes in the ways we
+live our lives, improving them on a day-to-day basis. }
+%%
+\RRmotcle{calcul formel, base de formules,  %mots-cl\'es sans rapport
+protocole, diff\'erentiation automatique, % les uns avec les autres
+g\'en\'eration de code,  mod\'elisation, lien symbolique/num\'erique,
+matrice structur\'ee, r\'esolution de syst\`emes polynomiaux}
+\RRkeyword{task placement, environment, % keywords (taken from some
+ message passing,  network management,   % random research report)
+ performances}
+%%
+%% \RRprojet{Apics}  % cas d'un seul projet
+\RRprojets{Apics and Op\'era and Marelle}
+%%
+%% \URLorraine % pour ceux qui sont \`a l'est
+%% \URRennes  % pour ceux qui sont \`a l'ouest
+%% \URRhoneAlpes % pour ceux qui sont dans les montagnes
+%% \URRocq % pour ceux qui sont au centre de la France
+%% \URFuturs % pour ceux qui sont dans le virtuel
+%% \URSophia % pour ceux qui sont au Sud.
+%%
+%% \RCBordeaux % centre de recherche Bordeaux - Sud Ouest
+%% \RCLille % centre de recherche Lille Nord Europe
+%% \RCParis % Paris Rocquencourt
+%% \RCSaclay % Saclay \^Ile de France
+%% \RCGrenoble % Grenoble - Rh\^one-Alpes
+%% \RCNancy % Nancy - Grand Est
+%% \RCRennes % Rennes - Bretagne Atlantique
+\RCSophia % Sophia Antipolis M\'editerran\'ee
+
+%%
+\begin{document}
+%%
+\makeRR   % cas d'un rapport de recherche
+%% \makeRT % cas d'un rapport technique.
+%% a partir d'ici, chacun fait comme il le souhaite
+\section{First section}
+Here is some text for the first section, and a label\label{sec1}.
+Uses version \RRfileversion\ of the package.\newpage
+\section{Second section}
+Text for the second section. This is closely related to the text in
+section \ref{sec1} on page \pageref{sec1}. \newpage
+\tableofcontents
+
+\end{document}
+\endinput
+%%
+%% End of file `squelette-rr.tex'.
