@@ -1,0 +1,6 @@
+- To compile the latex file rr.tex you need the RR package. you can find it at ftp://ftp-sop.inria.fr/apics/rr-inria
+
+
+
+- The biblio files are not logged on the svn server. If you want to add something please use biblio.bib. The other file are in the tar file biblio.tgz
+

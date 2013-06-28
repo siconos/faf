@@ -1,0 +1,140 @@
+%%
+%% This is file `squelette-rr.tex',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+
+%%
+%% RR.dtx  (with options: `sample')
+%% ********************************************************************
+%% Copyright (C) 1997-1999 2004 2006 2007 INRIA/APICS by Jose' Grimm
+%% This file may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License, either version 1.3
+%% of this license or (at your option) any later version.
+%% The latest version of this license is in
+%%    http://www.latex-project.org/lppl.txt
+%% and version 1.3 or later is part of all distributions of LaTeX
+%% version 2003/12/01 or later.
+%% An archive of the software can be found at
+%%    ftp://ftp-sop.inria.fr/apics/rr-inria
+
+\documentclass[a4paper]{article}
+
+\usepackage{RR}
+\usepackage{hyperref}
+\usepackage{a4wide}
+%%\usepackage[frenchb]{babel} % optionnel
+%%
+%% date de publication du rapport
+\RRdate{\today}
+%%
+%% Cas d'une version deux
+%% \RRversion{2}
+%% date de publication de la version 2
+%% \RRdater{Novembre  2006}
+
+%%
+\RRauthor{% les auteurs
+ % Premier auteur, avec une note
+Vincent Acary\thanks{\tt vincent.acary@inrialpes.fr}%
+  % note partag\'ee (optionnelle)
+%  \thanks[sfn]{Shared foot note}%
+ \and Maurice Br\'emond\thanks{\tt maurice.bremond@inrialpes.fr}
+%entre chaque auteur s'il y en a plusieurs
+  \and
+Florent Cadoux\thanks{florent.cadoux@gmail.com}%
+ % r\'ef\'erence \`a la note partag\'ee
+%\thanksref{sfn}
+}
+%%
+%% Ceci apparait sur chaque page paire.
+\authorhead{Acary, V. \& Br\'emond \& Cadoux, F.}
+%%
+\RRtitle{Sur la r\'esolution du probl\`eme de frottement tridimensionnel. Formulations and comparaisons des m\'ethodes num\'eriques. }
+%% English title
+\RRetitle{Solving 3D frictional contact problems: Formulations and comparisons of numerical methods.}
+%%
+\titlehead{Solving 3D frictional contact problems}
+%%
+%\RRnote{}
+%\RRnote{This is a second note}
+%%
+\RRresume{TBW
+}
+\RRabstract{TBW}
+%%
+\RRmotcle{Syst\`emes multi--corps, M\'ecanique non r\'eguli\`ere, contraintes unilat\'erales,  frottement de Coulomb, impact, Sch\'emas num\'eriques de r\'esolution}
+\RRkeyword{ Multibody systems, nonsmooth Mechanics,  unilateral constraints, Coulomb friction, impact, numerical methods}
+%%
+%% \Rrprojet{Apics}  % cas d'un seul projet
+\RRprojet{Bipop}
+%%
+\RRtheme{\THNum} % cas d'un seul theme
+%%\RRtheme{\THCom \THCog \THSym \THNum \THBio} % cas de 5 themes
+%%
+%% \URLorraine % pour ceux qui sont \`a l'est
+%% \URRennes  % pour ceux qui sont \`a l'ouest
+ \URRhoneAlpes % pour ceux qui sont dans les montagnes
+%% \URRocq % pour ceux qui sont au centre de la France
+%% \URFuturs % pour ceux qui sont dans le virtuel
+%% \URSophia % pour ceux qui sont au Sud.
+%%
+%% \RCBordeaux % centre de recherche Bordeaux - Sud Ouest
+%% \RCLille % centre de recherche Lille Nord Europe
+%% \RCParis % Paris Rocquencourt
+%% \RCSaclay % Saclay \^Ile de France
+\RCGrenoble % Grenoble - Rh\^one-Alpes
+%% \RCNancy % Nancy - Grand Est
+%% \RCRennes % Rennes - Bretagne Atlantique
+%\RCSophia % Sophia Antipolis M\'editerran\'ee
+\input{packages.tex}
+\input{macro.tex}
+
+\usepackage{showlabels}
+\usepackage{array}
+
+\usepackage{fancyhdr}\usepackage{lastpage}
+\fancyfoot[L]{}
+\fancyfoot[C]{}
+\fancyfoot[R]{\texttt{file rr.tex -- \isodayandtime}}
+
+
+\begingroup
+\count0=\time \divide\count0by60 % Hour
+\count2=\count0 \multiply\count2by-60 \advance\count2by\time
+% Min
+\def\2#1{\ifnum#1<10 0\fi\the#1}
+\xdef\isodayandtime{\the\year-\2\month-\2\day\space\2{\count0}:%
+\2{\count2}}
+\endgroup
+%%%% fin macro %%%%
+
+
+
+
+
+
+%%
+\begin{document}
+%%
+\RRNo{123456789}
+\makeRR   % cas d'un rapport de recherche
+%% \makeRT % cas d'un rapport technique.
+%% a partir d'ici, chacun fait comme il le souhaite
+
+\newpage
+\tableofcontents
+\newpage
+\input{body.tex}
+\clearpage
+\bibliographystyle{plainnat}
+\bibliography{./biblio/String,biblio,./biblio/NonSmooth,./biblio/Math,./biblio/Multibody,./biblio/Fem.bib,./biblio/Dae.bib,./biblio/Meca,./biblio/AnaNum.bib,./biblio/Math-Impact,./biblio/Contact,./biblio/Optim}
+
+\clearpage
+
+\tableofcontents
+
+\end{document}
+\endinput
+%%
+%% End of file `squelette-rr.tex'.

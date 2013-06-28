@@ -1,0 +1,116 @@
+\clearpage
+\appendix
+
+\section{Basics in Convex Analysis}
+\label{Sec:Ann:ConvexAnalysis}
+\begin{eqnarray}
+y = P_K(x) & \Longleftrightarrow &
+\begin{array}{ll}
+  \min &\frac 1 2 (y-x)^\top (y-x ) \\
+  \text {s.t. } & y \in K
+\end{array}
+\\
+& \Longleftrightarrow & - (y-x) \in N_K(y) \\
+& \Longleftrightarrow & (x-y)^\top(y-z) \geq 0, \forall z \in K 
+\label{eq:tutu}
+\end{eqnarray}
+
+\begin{eqnarray}
+-F(x) \in N_K(x) & \Longleftrightarrow & -\rho F(x)^\top(y-x) \geq 0, \forall y \in K\\
+& \Longleftrightarrow &  (x-(x - \rho F(x))^\top(y-x) \geq 0, \forall y \in K \\
+& \Longleftrightarrow &  x = P_K(x- \rho F(x)) \text{ thanks to (\ref{eq:tutu})} 
+\end{eqnarray}
+
+\begin{equation}
+  \label{eq:sub-norm}
+  \partial \|z\|_2 =
+  \begin{cases}
+      \Frac z {\|z\|}\\
+      \{x, \|x\|=1 \}
+    \end{cases}
+\end{equation}
+\subsection{Euclidean projection on the disk  in $\RR^2$.}
+Let $D=\{x \in \RR^3, \|x\| \leq 1\}$. We have 
+\begin{equation}
+  \label{eq:projD}
+  P_{D}(z) =\left\{
+  \begin{array}{lcl}
+    z &\text{if}& z \in D \\
+    \Frac {z} {\|z\|}& \text{if}&z \notin D
+    \end{array}\right. 
+  \end{equation}
+ and
+\begin{equation}
+  \label{eq:sub-projD}
+  \partial P_{D}(z) =\left\{
+  \begin{array}{lcl}
+   I &\text{if }& z \in D \setminus \partial D \\
+   I + (s-1)z z^\top , s\in [0,1]   &\text{if }& z \in  \partial D \\
+   \Frac I {\|z\|} - \Frac{z z^\top}{\|z\|^3} &\text{if }& z \notin D  
+   \end{array}\right. 
+\end{equation}
+\subsection{Euclidean projection on the second order cone of $\RR^3$.}
+
+Let $K=\{x = [x_\n x_\t]^T \in \RR^3, x_\n \in \RR, \|x_{\t}\| \leq \mu x_{\n}\}$. We have 
+\begin{equation}
+  \label{eq:proj}
+  P_{K}(z) =\left\{
+  \begin{array}{lcl}
+    z &\text{if}& z \in K \\
+    0 &\text{if}& -z \in K^* \\
+    \Frac 1 {1+\mu^2}(z_\n + \mu \|z_\t\| )
+    \left[\begin{array}{c}
+      1 \\
+      \mu \Frac {z_\t} {\|z_\t\|}
+      \end{array}\right]&\text{if}& z \notin K \text{ and } -z \notin K^*
+    \end{array}\right. 
+  \end{equation}
+The computation of the subdifferential are given as follows
+\begin{itemize}
+\item if $z\in K\setminus \partial K$, $\partial_z P_K(z) =I$,
+\item if $-z \in K^*\setminus \partial K^*$, $\partial_z P_K(z) =0$,
+\item if $z \notin K$ and $-z \notin K^*$ and, $\partial_z P_K(z) =0$, we get
+\begin{equation}
+  \label{eq:sub-proj_n}
+  \partial_{z_\n} P_{K}(z) =
+  % \left\{\begin{array}{lcl}
+  \Frac 1 {1+\mu^2}
+  \left[
+    \begin{array}{c}
+      1 \\
+      \mu z_\t
+    \end{array}\right] 
+  % \end{array}\right. 
+\end{equation}
+and
+\begin{equation}
+  \label{eq:sub-proj_t1}
+  \partial_{z_\t} [P_{K}(z)]_\n =
+  % \left\{\begin{array}{lcl}
+  \Frac \mu {1+\mu^2} \Frac {z_\t} {\|z_\t\|}
+  % \end{array}\right. 
+\end{equation}
+\begin{equation}
+  \label{eq:sub-proj_2}
+  \partial_{z_\t} [P_{K}(z)]_\t =
+  % \left\{\begin{array}{lcl}
+  \Frac {\mu} {(1+\mu^2)} \left[\mu \Frac {z_\t} {\|z_\t\|} \Frac {z^\top_\t} {\|z_\t\|}+ (z_\n + \mu \|z_\t\|) (\Frac{I_2}{\|z_\t\|} - \Frac{z_\t z_\t^\top}{\|z_\t\|^3} )\right]
+  % \end{array}\right. 
+\end{equation}
+that is
+\begin{equation}
+  \label{eq:sub-proj_2}
+  \partial_{z_\t} [P_{K}(z)]_\t =
+  % \left\{\begin{array}{lcl}
+  \Frac {\mu} {(1+\mu^2)\|z_\t\|} \left[ (z_\n + \mu \|z_\t\|) \,I_2   +  z_\n  \Frac{z_\t z_\t^\top}{\|z_\t\|^2} )\right]
+  % \end{array}\right. 
+\end{equation}
+\begin{ndrva}
+  to be checked carefully
+\end{ndrva}
+
+\end{itemize}
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "rr"
+%%% End: 
