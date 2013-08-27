@@ -92,8 +92,6 @@ osnspb.setMStorageType(1)
 osnspb.setKeepLambdaAndYState(True)
 
 # (5) broadphase contact detection
-aabbmax = btVector3(100, 100, 100)
-aabbmin = btVector3(-100, -100, -100)
 broadphase = BulletSpaceFilter(model, nslaw)
 
 # (6) Simulation setup with (1) (2) (3) (4) (5)

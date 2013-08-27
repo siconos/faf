@@ -74,8 +74,13 @@ dpos_filename = 'dpos.dat'
 spos_filename = 'spos.dat'
 cf_filename = 'cf.dat'
 
+refs = []
+refs_attrs = []
 with open(ref_filename, 'r') as ref_file:
-    refs = shlex.split(ref_file.read())
+    for line in ref_file:
+        line_tokens = shlex.split(line)
+        refs.append(line_tokens[0])
+        refs_attrs.append([float(x) for x in line_tokens[1:]])
 
 shape = dict()
 with open(bind_filename, 'r') as bind_file:
@@ -115,12 +120,12 @@ contact_pos_norm = vtk.vtkFieldDataToAttributeDataFilter()
 #cf_provider = vtk.vtkProgrammableSource()
 keeper = []
 
-
 class CFprov():
 
     def __init__(self, data):
         if len(data) > 0:
             self._data = data
+            self._mu_coefs = set(self._data[:, 1])
         else:
             self._data = None
 
@@ -130,23 +135,26 @@ class CFprov():
             self._time = 0
         self._output = None
 
+
+
     def method(self):
         global keeper
         self._output = vtk.vtkPolyData()
         contact_field = vtk.vtkPointData()
-        ind0 = bisect.bisect(self._data[:,0], self._time)
-        if self._data is not None and ind0 > 0:
+        #        ind0 = bisect.bisect_left(self._data[:, 0], self._time)
+        if self._data is not None:
 
-            id_f = numpy.where(self._data[:, 0] == self._data[ind0,0])[0]
+            id_f = numpy.where(abs(self._data[:, 0] - self._time) < 1e-15)[0]
 
-            cp_at_time = self._data[id_f, 1:4].copy()
+            cp_at_time = self._data[id_f, 2:5].copy()
             cp = numpy_support.numpy_to_vtk(cp_at_time)
             cp.SetName('contactPositions')
 
-            cn_at_time = - self._data[id_f, 4:7]
+            cn_at_time = - self._data[id_f, 5:8]
             cn = numpy_support.numpy_to_vtk(cn_at_time)
+
             cn.SetName('contactNormals')
-            cf_at_time = self._data[id_f, 7:10].copy()
+            cf_at_time = self._data[id_f, 8:11].copy()
 
             cf = numpy_support.numpy_to_vtk(cf_at_time)
 
@@ -160,7 +168,6 @@ class CFprov():
             self._output.SetFieldData(contact_field)
         else:
             pass
-        
 
 cf_prov = CFprov(cf_data)
 
@@ -183,14 +190,14 @@ contact_pos_norm.SetVectorComponent(0, "contactNormals", 0)
 contact_pos_norm.SetVectorComponent(1, "contactNormals", 1)
 contact_pos_norm.SetVectorComponent(2, "contactNormals", 2)
 
-times = list(set(dpos_data[:,0]))
+times = list(set(dpos_data[:, 0]))
 times.sort()
 
 ndyna = len(numpy.where(dpos_data[:, 0] == times[0]))
 
 nstatic = len(numpy.where(spos_data[:, 0] == times[0]))
 
-instances =  set(dpos_data[:,1]).union(set(spos_data[:,1]))
+instances = set(dpos_data[:, 1]).union(set(spos_data[:, 1]))
 
 cf_prov._time = min(times[:])
 cf_prov.method()
@@ -202,9 +209,10 @@ contact_pos_norm.Update()
 arrow = vtk.vtkArrowSource()
 arrow.SetTipResolution(40)
 arrow.SetShaftResolution(40)
+
 cone = vtk.vtkConeSource()
 cone.SetResolution(40)
-cone.SetRadius(0.3)
+cone.SetRadius(min(cf_prov._mu_coefs)) # one coef!!
 
 sphere = vtk.vtkSphereSource()
 
@@ -234,7 +242,7 @@ gactor = vtk.vtkActor()
 gactor.SetMapper(gmapper)
 
 transform = vtk.vtkTransform()
-transform.Translate(-0.5,0.,0.)
+transform.Translate(-0.5, 0., 0.)
 
 cone_glyph = vtk.vtkGlyph3D()
 cone_glyph.SetSourceTransform(transform)
@@ -250,8 +258,6 @@ cone_glyph.SetVectorModeToUseVector()
 
 cone_glyph.SetInputArrayToProcess(1, 0, 0, 0, 'contactNormals')
 cone_glyph.OrientOn()
-
-
 
 cmapper = vtk.vtkPolyDataMapper()
 cmapper.SetInputConnection(cone_glyph.GetOutputPort())
@@ -280,12 +286,12 @@ smapper.SetInputConnection(sphere_glyph.GetOutputPort())
 
 cactor = vtk.vtkActor()
 cactor.GetProperty().SetOpacity(0.4)
-cactor.GetProperty().SetColor(0,0,1)
+cactor.GetProperty().SetColor(0, 0, 1)
 cactor.SetMapper(cmapper)
 
 sactor = vtk.vtkActor()
 #sactor.GetProperty().SetOpacity(0.4)
-sactor.GetProperty().SetColor(1,0,0)
+sactor.GetProperty().SetColor(1, 0, 0)
 sactor.SetMapper(smapper)
 
 #with open(pos_filename, 'r') as pos_file:
@@ -295,7 +301,7 @@ sactor.SetMapper(smapper)
 #        instance = int(data[1])
 #        q0 = float(data[2])
 #        q1 = float(data[3])
-#        q2 = float(data[4])        
+#        q2 = float(data[4])
 #        q3 = float(data[5])
 #        q4 = float(data[6])
 #        q5 = float(data[7])
@@ -326,10 +332,35 @@ readers = []
 mappers = []
 actors = []
 
-for ref in refs:
-    reader = vtk.vtkXMLPolyDataReader()
-    reader.SetFileName(ref)
-    readers.append(reader)
+for ref, attrs in zip(refs, refs_attrs):
+    if '.vtp' in ref:
+        reader = vtk.vtkXMLPolyDataReader()
+        reader.SetFileName(ref)
+        readers.append(reader)
+    else:
+        if ref == 'Sphere':
+            source = vtk.vtkSphereSource()
+            source.SetRadius(attrs[0])
+        elif ref == 'Cone':
+            source = vtk.vtkConeSource()
+            source.SetRadius(attrs[0])
+            source.SetHeight(attrs[1])
+            source.SetResolution(50)
+            source.SetDirection(0,1,0) # needed
+
+        elif ref == 'Cylinder':
+            source = vtk.vtkCylinderSource()
+            source.SetRadius(attrs[0])
+            source.SetHeight(attrs[1])
+            #           source.SetDirection(0,1,0)
+
+        elif ref == 'Box':
+            source = vtk.vtkCubeSource()
+            source.SetXLength(attrs[0])
+            source.SetYLength(attrs[1])
+            source.SetZLength(attrs[2])
+
+        readers.append(source)
 
 for instance in instances:
     mapper = vtk.vtkDataSetMapper()
@@ -348,8 +379,6 @@ for instance in instances:
 renderer.AddActor(gactor)
 renderer.AddActor(cactor)
 renderer.AddActor(sactor)
-
-
 
 
 id_t0 = numpy.where(dpos_data[:, 0] == min(dpos_data[:, 0]))
@@ -394,7 +423,7 @@ class InputObserver():
         self._slider_repres = slider_repres
 
     def update(self):
-        index = bisect.bisect(times, self._time)
+        index = bisect.bisect_left(times, self._time)
         cf_prov._time = times[index]
         cf_prov.method()
         contact_pos.SetInput(cf_prov._output)
