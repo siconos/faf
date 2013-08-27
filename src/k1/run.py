@@ -94,7 +94,7 @@ osnspb.setKeepLambdaAndYState(True)
 # (5) broadphase contact detection
 aabbmax = btVector3(100, 100, 100)
 aabbmin = btVector3(-100, -100, -100)
-broadphase = BulletSpaceFilter(model, nslaw, aabbmin, aabbmax)
+broadphase = BulletSpaceFilter(model, nslaw)
 
 # (6) Simulation setup with (1) (2) (3) (4) (5)
 simulation = BulletTimeStepping(timedisc, broadphase)
@@ -102,14 +102,6 @@ simulation.insertIntegrator(osi)
 simulation.insertNonSmoothProblem(osnspb)
 simulation.setNewtonMaxIteration(2)
 
-
-# simulation initialization
-
-
-# Get the values to be plotted
-# ->saved in a matrix dataPlot
-
-N = (T - t0) / h
 
 k = 1
 
@@ -138,22 +130,3 @@ with IO.Dat(broadphase, osi) as io:
         k += 1
 
 
-#
-# plots
-#
-
-#from matplotlib.pyplot import subplot, title, plot, grid, show
-
-#subplot(511)
-#title('position')
-#plot(dataPlot[0:k, 0], dataPlot[0:k, 1])
-#grid()
-#subplot(513)
-#title('velocity')
-#plot(dataPlot[0:k, 0], dataPlot[0:k, 2])
-#grid()
-#subplot(515)
-#plot(dataPlot[0:k, 0], dataPlot[0:k, 3])
-#title('lambda')
-#grid()
-#show()

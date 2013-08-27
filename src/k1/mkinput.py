@@ -42,4 +42,4 @@ with open('input.dat', 'w') as f:
 
     v = (10, 0, 0, 5, 0, 0)
 
-    f.write('2 0 1 {0} {1} {2}\n'.format(s_v(q), s_v(o), s_v(v)))
+    f.write('0 0 1 {0} {1} {2}\n'.format(s_v(q), s_v(o), s_v(v)))

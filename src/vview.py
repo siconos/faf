@@ -1,25 +1,26 @@
 #!/usr/bin/env python
 from getopt import getopt, GetoptError
 import sys
-import os
 import shlex
 
 import vtk
 from vtk.util import numpy_support
 
+from math import atan2, pi
 import bisect
-from math import pi, atan2, sqrt
 from numpy.linalg import norm
 
 import numpy
 
 import random
 
+
 def random_color():
-    r = random.uniform(0.0,1.0)
-    g = random.uniform(0.0,1.0)
-    b = random.uniform(0.0,1.0) 
+    r = random.uniform(0.0, 1.0)
+    g = random.uniform(0.0, 1.0)
+    b = random.uniform(0.0, 1.0)
     return r, g, b
+
 
 def axis_angle(q):
     w, v = q[0], q[1:]
@@ -27,10 +28,10 @@ def axis_angle(q):
     theta = 2 * atan2(nv, w)
 
     if nv != 0.:
-        v = [iv/nv for iv in v]
+        v = [iv / nv for iv in v]
     else:
         v = [0., 0., 0.]
-    return v, theta    
+    return v, theta
 
 axis_anglev = numpy.vectorize(axis_angle)
 transforms = dict()
@@ -38,17 +39,20 @@ transforms = dict()
 
 def set_position(instance, q0, q1, q2, q3, q4, q5, q6):
 
-    axis, angle = axis_angle((q3,q4,q5,q6))
+    axis, angle = axis_angle((q3, q4, q5, q6))
 
     transforms[instance].Identity()
-    transforms[instance].Translate(q0,q1,q2)
-    transforms[instance].RotateWXYZ(angle*180/pi,axis[0],axis[1],axis[2])    
+    transforms[instance].Translate(q0, q1, q2)
+    transforms[instance].RotateWXYZ(angle * 180 / pi,
+                                    axis[0],
+                                    axis[1],
+                                    axis[2])    
 
 set_positionv = numpy.vectorize(set_position)
 
 
 def usage():
-    print """{0} [ref.txt] [bind.dat] [pos.dat]
+    print """{0}
     """.format(sys.argv[0])
 
 try:
@@ -66,9 +70,10 @@ except GetoptError, err:
 
 ref_filename = 'ref.txt'
 bind_filename = 'bindings.dat'
-pos_filename = 'pos.dat'
-cf_filename = 'contact_forces.dat'
-    
+dpos_filename = 'dpos.dat'
+spos_filename = 'spos.dat'
+cf_filename = 'cf.dat'
+
 with open(ref_filename, 'r') as ref_file:
     refs = shlex.split(ref_file.read())
 
@@ -82,7 +87,11 @@ pos = dict()
 instances = set()
 
 import numpy
-pos_data = numpy.loadtxt(pos_filename)
+spos_data = numpy.loadtxt(spos_filename, ndmin=2)
+dpos_data = numpy.loadtxt(dpos_filename, ndmin=2)
+print spos_data.shape
+print dpos_data.shape
+
 cf_data = numpy.loadtxt(cf_filename)
 
 #def contact_point_reader():
@@ -110,32 +119,48 @@ keeper = []
 class CFprov():
 
     def __init__(self, data):
-        self._data = data
-        self._time = min(self._data[:, 0])
+        if len(data) > 0:
+            self._data = data
+        else:
+            self._data = None
+
+        if self._data is not None:
+            self._time = min(self._data[:, 0])
+        else:
+            self._time = 0
         self._output = None
 
     def method(self):
         global keeper
-        print '->',self._time
         self._output = vtk.vtkPolyData()
         contact_field = vtk.vtkPointData()
-        id_f = numpy.where(self._data[:, 0] == self._time)[0]
-        cp_at_time = self._data[id_f, 1:4].copy()
-        cp = numpy_support.numpy_to_vtk(cp_at_time)
-        cp.SetName('contactPositions')
-        cn_at_time = - self._data[id_f, 4:7]
-        cn = numpy_support.numpy_to_vtk(cn_at_time)
-        cn.SetName('contactNormals')
-        cf_at_time = self._data[id_f, 7:10].copy()
-        cf = numpy_support.numpy_to_vtk(cf_at_time)
-        cf.SetName('contactForces')
+        ind0 = bisect.bisect(self._data[:,0], self._time)
+        if self._data is not None and ind0 > 0:
 
-        contact_field.AddArray(cp)
-        contact_field.AddArray(cn)
-        contact_field.AddArray(cf)
+            id_f = numpy.where(self._data[:, 0] == self._data[ind0,0])[0]
 
-        keeper = [cp_at_time, cf_at_time, cn_at_time]
-        self._output.SetFieldData(contact_field)
+            cp_at_time = self._data[id_f, 1:4].copy()
+            cp = numpy_support.numpy_to_vtk(cp_at_time)
+            cp.SetName('contactPositions')
+
+            cn_at_time = - self._data[id_f, 4:7]
+            cn = numpy_support.numpy_to_vtk(cn_at_time)
+            cn.SetName('contactNormals')
+            cf_at_time = self._data[id_f, 7:10].copy()
+
+            cf = numpy_support.numpy_to_vtk(cf_at_time)
+
+            cf.SetName('contactForces')
+
+            contact_field.AddArray(cp)
+            contact_field.AddArray(cn)
+            contact_field.AddArray(cf)
+
+            keeper = [cp_at_time, cf_at_time, cn_at_time]
+            self._output.SetFieldData(contact_field)
+        else:
+            pass
+        
 
 cf_prov = CFprov(cf_data)
 
@@ -158,10 +183,14 @@ contact_pos_norm.SetVectorComponent(0, "contactNormals", 0)
 contact_pos_norm.SetVectorComponent(1, "contactNormals", 1)
 contact_pos_norm.SetVectorComponent(2, "contactNormals", 2)
 
+times = list(set(dpos_data[:,0]))
+times.sort()
 
-times = list(set(pos_data[:,0]))
-instances = set(pos_data[:,1])
+ndyna = len(numpy.where(dpos_data[:, 0] == times[0]))
 
+nstatic = len(numpy.where(spos_data[:, 0] == times[0]))
+
+instances =  set(dpos_data[:,1]).union(set(spos_data[:,1]))
 
 cf_prov._time = min(times[:])
 cf_prov.method()
@@ -184,7 +213,7 @@ arrow_glyph.SetInputConnection(contact_pos_force.GetOutputPort())
 arrow_glyph.SetSourceConnection(arrow.GetOutputPort())
 arrow_glyph.ScalingOn()
 arrow_glyph.SetScaleModeToScaleByVector()
-arrow_glyph.SetRange(-0.5, 2)
+arrow_glyph.SetRange(-.5, 2)
 arrow_glyph.ClampingOn()
 arrow_glyph.SetScaleFactor(4)
 arrow_glyph.SetVectorModeToUseVector()
@@ -277,8 +306,6 @@ sactor.SetMapper(smapper)
 #        else:
 #            pos[time] = [[instance, q0, q1, q2, q3, q4, q5, q6]]
 
-times.sort()
-
 renderer = vtk.vtkRenderer()
 renderer_window = vtk.vtkRenderWindow()
 interactor_renderer = vtk.vtkRenderWindowInteractor()
@@ -306,7 +333,7 @@ for ref in refs:
 
 for instance in instances:
     mapper = vtk.vtkDataSetMapper()
-    mapper.SetInput(readers[shape[instance]].GetOutput())
+    mapper.SetInput(readers[shape[int(instance)]].GetOutput())
     mappers.append(mapper)
     actor = vtk.vtkActor()
     #    actor.GetProperty().SetOpacity(0.7)
@@ -322,7 +349,12 @@ renderer.AddActor(gactor)
 renderer.AddActor(cactor)
 renderer.AddActor(sactor)
 
-id_t0 = numpy.where(pos_data[:, 0] == min(pos_data[:, 0]))
+
+
+
+id_t0 = numpy.where(dpos_data[:, 0] == min(dpos_data[:, 0]))
+
+pos_data = numpy.concatenate((spos_data, dpos_data))
 
 set_positionv(pos_data[id_t0, 1], pos_data[id_t0, 2], pos_data[id_t0, 3],
               pos_data[id_t0, 4], pos_data[id_t0, 5], pos_data[id_t0, 6],
@@ -356,14 +388,13 @@ class InputObserver():
     def __init__(self, times, slider_repres):
         self._stimes = set(times)
         self._opacity = 1.0
-        self._time_step = (min(self._stimes)-max(self._stimes))/len(self._stimes)
+        self._time_step = (max(self._stimes) - min(self._stimes)) \
+                           / len(self._stimes)
         self._time = min(times)
         self._slider_repres = slider_repres
 
     def update(self):
-        print 'update'
         index = bisect.bisect(times, self._time)
-
         cf_prov._time = times[index]
         cf_prov.method()
         contact_pos.SetInput(cf_prov._output)
@@ -373,7 +404,6 @@ class InputObserver():
         #gmapper.Update()
 
         id_t = numpy.where(pos_data[:, 0] == times[index])
-
         set_positionv(pos_data[id_t, 1], pos_data[id_t, 2], pos_data[id_t, 3],
                       pos_data[id_t, 4],
                       pos_data[id_t, 5], pos_data[id_t, 6], pos_data[id_t, 7],
@@ -440,7 +470,7 @@ slider_repres.SetLabelFormat("%3.4lf")
 slider_repres.SetTitleHeight(0.02)
 slider_repres.SetLabelHeight(0.02)
 
-slider_widget = vtk.vtkSliderWidget() 
+slider_widget = vtk.vtkSliderWidget()
 slider_widget.SetInteractor(interactor_renderer)
 slider_widget.SetRepresentation(slider_repres)
 slider_widget.KeyPressActivationOff()
@@ -458,7 +488,7 @@ interactor_renderer.AddObserver('KeyPressEvent', input_observer.key)
 # Create a vtkLight, and set the light parameters.
 light = vtk.vtkLight()
 light.SetFocalPoint(0, 0, 0)
-light.SetPosition(0, 0, 10)
+light.SetPosition(0, 50, 50)
 
 renderer.AddLight(light)
 
