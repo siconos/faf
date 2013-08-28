@@ -27,27 +27,30 @@ with open('input.dat', 'w') as f:
     # ground
     f.write('1 -1 0 0  0 -.5 1 0 0 0 0    0 0 0 0 0\n')
 
-    for k in range(0,1):
-        
+    for k in range(0,100):
+
         theta = 0
         a = 0
         b = 0
         c = 1
         n = sin(theta / 2) / norm((a, b, c))
-        q1 = (0, 0, 5*k + 20)
-        q2 = (0, 20, 5*k + 20)
-        q3 = (20, 0, 5*k + 20)
-        q4 = (20, 20, 5*k + 20)
+        q1 = (0, 0, 20*k + 20)
+        q2 = (0, 20, 20*k + 20)
+        q3 = (20, 0, 20*k + 20)
+        q4 = (20, 20, 20*k + 20)
 
         r = btQuaternion(a * n, b * n, c * n, cos(theta / 2))
         r = mul(r, r1)
         r.normalize()
-        
+
         o = (r.w(), r.x(), r.y(), r.z())
-        
-        v = (0, 0, 0, random(), random(), random())
-        
-        f.write('4 0 1 {0} {1} {2}\n'.format(s_v(q1), s_v(o), s_v(v)))
-        f.write('5 0 1 {0} {1} {2}\n'.format(s_v(q2), s_v(o), s_v(v)))
-        f.write('6 0 1 {0} {1} {2}\n'.format(s_v(q3), s_v(o), s_v(v)))
-        f.write('7 0 1 {0} {1} {2}\n'.format(s_v(q4), s_v(o), s_v(v)))        
+
+        v1 = (0, 0, 0, random(), random(), random())
+        v2 = (0, 0, 0, random(), random(), random())
+        v3 = (0, 0, 0, random(), random(), random())
+        v4 = (0, 0, 0, random(), random(), random())
+
+        f.write('9 0 1 {0} {1} {2}\n'.format(s_v(q1), s_v(o), s_v(v1)))
+        #        f.write('9 0 1 {0} {1} {2}\n'.format(s_v(q2), s_v(o), s_v(v2)))
+        #f.write('9 0 1 {0} {1} {2}\n'.format(s_v(q3), s_v(o), s_v(v3)))
+        #f.write('9 0 1 {0} {1} {2}\n'.format(s_v(q4), s_v(o), s_v(v4)))        

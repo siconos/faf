@@ -2,6 +2,7 @@
 from getopt import getopt, GetoptError
 import sys
 import shlex
+import ConfigParser
 
 import vtk
 from vtk.util import numpy_support
@@ -13,7 +14,6 @@ from numpy.linalg import norm
 import numpy
 
 import random
-
 
 def random_color():
     r = random.uniform(0.0, 1.0)
@@ -69,6 +69,7 @@ except GetoptError, err:
     #cf_filename = args[3]
 
 ref_filename = 'ref.txt'
+cfg_filename = 'shapes.cfg'
 bind_filename = 'bindings.dat'
 dpos_filename = 'dpos.dat'
 spos_filename = 'spos.dat'
@@ -360,11 +361,40 @@ for ref, attrs in zip(refs, refs_attrs):
             source.SetYLength(attrs[1])
             source.SetZLength(attrs[2])
 
+        elif ref == 'Capsule':
+            sphere1 = vtk.vtkSphereSource()
+            sphere1.SetRadius(attrs[0])
+            sphere1.SetCenter(0, attrs[1] / 2, 0)
+            sphere1.SetThetaResolution(40)
+            sphere1.SetPhiResolution(40)
+            sphere1.Update()
+
+            sphere2 = vtk.vtkSphereSource()
+            sphere2.SetRadius(attrs[0])
+            sphere2.SetCenter(0, -attrs[1] / 2, 0)
+            sphere2.SetThetaResolution(40)
+            sphere2.SetPhiResolution(40)
+            sphere2.Update()
+
+            cylinder = vtk.vtkCylinderSource()
+            cylinder.SetRadius(attrs[0])
+            cylinder.SetHeight(attrs[1])
+            cylinder.SetResolution(40)
+            cylinder.Update()
+
+            data = vtk.vtkMultiBlockDataSet()
+            data.SetNumberOfBlocks(3)
+            data.SetBlock(0, sphere1.GetOutput())
+            data.SetBlock(1, sphere2.GetOutput())
+            data.SetBlock(2, cylinder.GetOutput())
+            source = vtk.vtkMultiBlockDataGroupFilter()
+            source.AddInput(data)
+
         readers.append(source)
 
 for instance in instances:
-    mapper = vtk.vtkDataSetMapper()
-    mapper.SetInput(readers[shape[int(instance)]].GetOutput())
+    mapper = vtk.vtkCompositePolyDataMapper()
+    mapper.SetInputConnection(readers[shape[int(instance)]].GetOutputPort())
     mappers.append(mapper)
     actor = vtk.vtkActor()
     #    actor.GetProperty().SetOpacity(0.7)
@@ -397,19 +427,19 @@ renderer_window.Render()
 # http://www.itk.org/Wiki/VTK/Depth_Peeling ?
 
 # #Use a render window with alpha bits (as initial value is 0 (false) ): 
-# renderer_window.SetAlphaBitPlanes(1)
+renderer_window.SetAlphaBitPlanes(1)
 
 # # Force to not pick a framebuffer with a multisample buffer ( as initial value is 8): 
-# renderer_window.SetMultiSamples(0)
+renderer_window.SetMultiSamples(0)
 
 # # Choose to use depth peeling (if supported) (initial value is 0 (false) ) 
-# renderer.SetUseDepthPeeling(1)
+renderer.SetUseDepthPeeling(1)
 
 # # Set depth peeling parameters. 
-# renderer.SetMaximumNumberOfPeels(100)
+renderer.SetMaximumNumberOfPeels(100)
 
 # # Set the occlusion ratio (initial value is 0.0, exact image)
-# renderer.SetOcclusionRatio(0.1)
+renderer.SetOcclusionRatio(0.1)
 
 
 class InputObserver():
@@ -462,11 +492,11 @@ class InputObserver():
                 self._time += self._time_step
 
         if key == 't':
-                self._opacity -= 1
+                self._opacity -= .1
                 self.set_opacity()
 
         if key == 'T':
-                self._opacity += 1
+                self._opacity += .1
                 self.set_opacity()
 
 
@@ -478,9 +508,9 @@ class InputObserver():
         self._time = slider_repres.GetValue()
         self.update()
 
-slider_repres = vtk.vtkSliderRepresentation2D() 
-min_time = times[0] 
-max_time = times[len(times)-1]
+slider_repres = vtk.vtkSliderRepresentation2D()
+min_time = times[0]
+max_time = times[len(times) - 1]
 slider_repres.SetMinimumValue(min_time)
 slider_repres.SetMaximumValue(max_time)
 slider_repres.SetValue(min_time)
