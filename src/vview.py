@@ -109,7 +109,8 @@ cf_data = numpy.loadtxt(cf_filename)
 #c1 = vtk.vtkPolyData()
 
 #contact_data = vtk.vtkDataObject()
-contact_pos = vtk.vtkDataObjectToDataSetFilter()
+contact_posa = vtk.vtkDataObjectToDataSetFilter()
+contact_posb = vtk.vtkDataObjectToDataSetFilter()
 
 contact_pos_force = vtk.vtkFieldDataToAttributeDataFilter()
 contact_pos_norm = vtk.vtkFieldDataToAttributeDataFilter()
@@ -147,44 +148,52 @@ class CFprov():
 
             id_f = numpy.where(abs(self._data[:, 0] - self._time) < 1e-15)[0]
 
-            cp_at_time = self._data[id_f, 2:5].copy()
-            cp = numpy_support.numpy_to_vtk(cp_at_time)
-            cp.SetName('contactPositions')
+            cpa_at_time = self._data[id_f, 2:5].copy()
+            cpa = numpy_support.numpy_to_vtk(cpa_at_time)
+            cpa.SetName('contactPositionsA')
 
-            cn_at_time = - self._data[id_f, 5:8]
+            cpb_at_time = self._data[id_f, 5:8].copy()
+            cpb = numpy_support.numpy_to_vtk(cpb_at_time)
+            cpb.SetName('contactPositionsB')
+
+            cn_at_time = - self._data[id_f, 8:11]
             cn = numpy_support.numpy_to_vtk(cn_at_time)
-
             cn.SetName('contactNormals')
-            cf_at_time = self._data[id_f, 8:11].copy()
 
+            cf_at_time = self._data[id_f, 11:14].copy()
             cf = numpy_support.numpy_to_vtk(cf_at_time)
-
             cf.SetName('contactForces')
 
-            contact_field.AddArray(cp)
+            contact_field.AddArray(cpa)
+            contact_field.AddArray(cpb)
             contact_field.AddArray(cn)
             contact_field.AddArray(cf)
 
-            keeper = [cp_at_time, cf_at_time, cn_at_time]
+            keeper = [cpa_at_time, cpb_at_time, cf_at_time, cn_at_time]
             self._output.SetFieldData(contact_field)
         else:
             pass
 
 cf_prov = CFprov(cf_data)
 
-contact_pos.SetDataSetTypeToPolyData()
-contact_pos.SetPointComponent(0, "contactPositions", 0)
-contact_pos.SetPointComponent(1, "contactPositions", 1)
-contact_pos.SetPointComponent(2, "contactPositions", 2)
+contact_posa.SetDataSetTypeToPolyData()
+contact_posa.SetPointComponent(0, "contactPositionsA", 0)
+contact_posa.SetPointComponent(1, "contactPositionsA", 1)
+contact_posa.SetPointComponent(2, "contactPositionsA", 2)
 
-contact_pos_force.SetInputConnection(contact_pos.GetOutputPort())
+contact_posb.SetDataSetTypeToPolyData()
+contact_posb.SetPointComponent(0, "contactPositionsB", 0)
+contact_posb.SetPointComponent(1, "contactPositionsB", 1)
+contact_posb.SetPointComponent(2, "contactPositionsB", 2)
+
+contact_pos_force.SetInputConnection(contact_posa.GetOutputPort())
 contact_pos_force.SetInputFieldToDataObjectField()
 contact_pos_force.SetOutputAttributeDataToPointData()
 contact_pos_force.SetVectorComponent(0, "contactForces", 0)
 contact_pos_force.SetVectorComponent(1, "contactForces", 1)
 contact_pos_force.SetVectorComponent(2, "contactForces", 2)
 
-contact_pos_norm.SetInputConnection(contact_pos.GetOutputPort())
+contact_pos_norm.SetInputConnection(contact_posa.GetOutputPort())
 contact_pos_norm.SetInputFieldToDataObjectField()
 contact_pos_norm.SetOutputAttributeDataToPointData()
 contact_pos_norm.SetVectorComponent(0, "contactNormals", 0)
@@ -202,8 +211,11 @@ instances = set(dpos_data[:, 1]).union(set(spos_data[:, 1]))
 
 cf_prov._time = min(times[:])
 cf_prov.method()
-contact_pos.SetInput(cf_prov._output)
-contact_pos.Update()
+contact_posa.SetInput(cf_prov._output)
+contact_posa.Update()
+contact_posb.SetInput(cf_prov._output)
+contact_posb.Update()
+
 contact_pos_force.Update()
 contact_pos_norm.Update()
 
@@ -213,7 +225,11 @@ arrow.SetShaftResolution(40)
 
 cone = vtk.vtkConeSource()
 cone.SetResolution(40)
-cone.SetRadius(min(cf_prov._mu_coefs)) # one coef!!
+cone.SetRadius(min(cf_prov._mu_coefs))  # one coef!!
+
+cylinder = vtk.vtkCylinderSource()
+cylinder.SetRadius(.01)
+cylinder.SetHeight(2)
 
 sphere = vtk.vtkSphereSource()
 
@@ -260,24 +276,57 @@ cone_glyph.SetVectorModeToUseVector()
 cone_glyph.SetInputArrayToProcess(1, 0, 0, 0, 'contactNormals')
 cone_glyph.OrientOn()
 
+ctransform = vtk.vtkTransform()
+ctransform.RotateWXYZ(90,0,0,1)
+cylinder_glyph = vtk.vtkGlyph3D()
+cylinder_glyph.SetSourceTransform(ctransform)
+
+cylinder_glyph.SetInputConnection(contact_pos_norm.GetOutputPort())
+cylinder_glyph.SetSourceConnection(cylinder.GetOutputPort())
+cylinder_glyph.ScalingOff()
+#cylinder_glyph.SetScaleModeToScaleByVector()
+#cylinder_glyph.SetRange(-0.5, 2)
+cylinder_glyph.ClampingOn()
+#cylinder_glyph.SetScaleFactor(4)
+cylinder_glyph.SetVectorModeToUseVector()
+
+cylinder_glyph.SetInputArrayToProcess(1, 0, 0, 0, 'contactNormals')
+cylinder_glyph.OrientOn()
+
 cmapper = vtk.vtkPolyDataMapper()
 cmapper.SetInputConnection(cone_glyph.GetOutputPort())
 
-sphere_glyph = vtk.vtkGlyph3D()
-sphere_glyph.SetInputConnection(contact_pos_norm.GetOutputPort())
-sphere_glyph.SetSourceConnection(sphere.GetOutputPort())
-sphere_glyph.ScalingOn()
-#sphere_glyph.SetScaleModeToScaleByVector()
-#sphere_glyph.SetRange(-0.5, 2)
-#sphere_glyph.ClampingOn()
-sphere_glyph.SetScaleFactor(.1)
-#sphere_glyph.SetVectorModeToUseVector()
+clmapper = vtk.vtkPolyDataMapper()
+clmapper.SetInputConnection(cylinder_glyph.GetOutputPort())
 
-#sphere_glyph.SetInputArrayToProcess(1, 0, 0, 0, 'contactNormals')
+
+sphere_glypha = vtk.vtkGlyph3D()
+sphere_glypha.SetInputConnection(contact_posa.GetOutputPort())
+sphere_glypha.SetSourceConnection(sphere.GetOutputPort())
+sphere_glypha.ScalingOn()
+#sphere_glypha.SetScaleModeToScaleByVector()
+#sphere_glypha.SetRange(-0.5, 2)
+#sphere_glypha.ClampingOn()
+sphere_glypha.SetScaleFactor(.1)
+#sphere_glypha.SetVectorModeToUseVector()
+
+sphere_glyphb = vtk.vtkGlyph3D()
+sphere_glyphb.SetInputConnection(contact_posb.GetOutputPort())
+sphere_glyphb.SetSourceConnection(sphere.GetOutputPort())
+sphere_glyphb.ScalingOn()
+#sphere_glyphb.SetScaleModeToScaleByVector()
+#sphere_glyphb.SetRange(-0.5, 2)
+#sphere_glyphb.ClampingOn()
+sphere_glyphb.SetScaleFactor(.1)
+#sphere_glyphb.SetVectorModeToUseVector()
+
+#sphere_glyphb.SetInputArrayToProcess(1, 0, 0, 0, 'contactNormals')
 #sphere_glyph.OrientOn()
 
-smapper = vtk.vtkPolyDataMapper()
-smapper.SetInputConnection(sphere_glyph.GetOutputPort())
+smappera = vtk.vtkPolyDataMapper()
+smappera.SetInputConnection(sphere_glypha.GetOutputPort())
+smapperb = vtk.vtkPolyDataMapper()
+smapperb.SetInputConnection(sphere_glyphb.GetOutputPort())
 
 #cmapper.SetScalarModeToUsePointFieldData()
 #cmapper.SetColorModeToMapScalars()
@@ -290,10 +339,18 @@ cactor.GetProperty().SetOpacity(0.4)
 cactor.GetProperty().SetColor(0, 0, 1)
 cactor.SetMapper(cmapper)
 
-sactor = vtk.vtkActor()
-#sactor.GetProperty().SetOpacity(0.4)
-sactor.GetProperty().SetColor(1, 0, 0)
-sactor.SetMapper(smapper)
+clactor = vtk.vtkActor()
+#cactor.GetProperty().SetOpacity(0.4)
+clactor.GetProperty().SetColor(1, 0, 0)
+clactor.SetMapper(clmapper)
+
+sactora = vtk.vtkActor()
+sactora.GetProperty().SetColor(1, 0, 0)
+sactora.SetMapper(smappera)
+
+sactorb = vtk.vtkActor()
+sactorb.GetProperty().SetColor(0, 1, 0)
+sactorb.SetMapper(smapperb)
 
 #with open(pos_filename, 'r') as pos_file:
 #    for line in pos_file:
@@ -342,12 +399,13 @@ for ref, attrs in zip(refs, refs_attrs):
         if ref == 'Sphere':
             source = vtk.vtkSphereSource()
             source.SetRadius(attrs[0])
+
         elif ref == 'Cone':
             source = vtk.vtkConeSource()
             source.SetRadius(attrs[0])
             source.SetHeight(attrs[1])
             source.SetResolution(50)
-            source.SetDirection(0,1,0) # needed
+            source.SetDirection(0, 1, 0) # needed
 
         elif ref == 'Cylinder':
             source = vtk.vtkCylinderSource()
@@ -397,7 +455,8 @@ for instance in instances:
     mapper.SetInputConnection(readers[shape[int(instance)]].GetOutputPort())
     mappers.append(mapper)
     actor = vtk.vtkActor()
-    #    actor.GetProperty().SetOpacity(0.7)
+    if int(instance) >= 0:
+        actor.GetProperty().SetOpacity(0.7)
     actor.GetProperty().SetColor(random_color())
     actor.SetMapper(mapper)
     actors.append(actor)
@@ -408,7 +467,9 @@ for instance in instances:
 
 renderer.AddActor(gactor)
 renderer.AddActor(cactor)
-renderer.AddActor(sactor)
+renderer.AddActor(clactor)
+renderer.AddActor(sactora)
+renderer.AddActor(sactorb)
 
 
 id_t0 = numpy.where(dpos_data[:, 0] == min(dpos_data[:, 0]))
@@ -421,9 +482,7 @@ set_positionv(pos_data[id_t0, 1], pos_data[id_t0, 2], pos_data[id_t0, 3],
 
 renderer_window.AddRenderer(renderer)
 interactor_renderer.SetRenderWindow(renderer_window)
-interactor_renderer.GetInteractorStyle().SetCurrentStyleToTrackballCamera()
-renderer_window.Render()
-
+#interactor_renderer.GetInteractorStyle().SetCurrentStyleToTrackballCamera()
 # http://www.itk.org/Wiki/VTK/Depth_Peeling ?
 
 # #Use a render window with alpha bits (as initial value is 0 (false) ): 
@@ -456,8 +515,11 @@ class InputObserver():
         index = bisect.bisect_left(times, self._time)
         cf_prov._time = times[index]
         cf_prov.method()
-        contact_pos.SetInput(cf_prov._output)
-        contact_pos.Update()
+        contact_posa.SetInput(cf_prov._output)
+        contact_posa.Update()
+        contact_posb.SetInput(cf_prov._output)
+        contact_posb.Update()
+
         #        contact_pos_force.Update()
         # arrow_glyph.Update()
         #gmapper.Update()
@@ -472,8 +534,9 @@ class InputObserver():
         renderer_window.Render()
 
     def set_opacity(self):
-        for actor in actors:
-            actor.GetProperty().SetOpacity(self._opacity)
+        for instance, actor in zip(instances, actors):
+            if instance >= 0:
+                actor.GetProperty().SetOpacity(self._opacity)
 
     def key(self, obj, event):
         key = obj.GetKeySym()
@@ -546,10 +609,11 @@ interactor_renderer.AddObserver('KeyPressEvent', input_observer.key)
 
 # Create a vtkLight, and set the light parameters.
 light = vtk.vtkLight()
-light.SetFocalPoint(0, 0, 0)
-light.SetPosition(0, 50, 50)
-
+light.SetFocalPoint(25, 25, 25)
+light.SetPosition(50, 50, 50)
+light.SetLightTypeToHeadlight()
 renderer.AddLight(light)
 
+renderer_window.Render()
 interactor_renderer.Initialize()
 interactor_renderer.Start()

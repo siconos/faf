@@ -25,19 +25,19 @@ alpha = pi / 6
 
 with open('input.dat', 'w') as f:
     # ground
-    f.write('1 -1 0 0  0 -.5 1 0 0 0 0    0 0 0 0 0\n')
-
-    for k in range(0,100):
+    f.write('1 -1 0 0  0 -.5 1 0 0 0 0 0 0 0 0 0\n')
+    
+    for k in range(0,1):
 
         theta = 0
         a = 0
         b = 0
         c = 1
         n = sin(theta / 2) / norm((a, b, c))
-        q1 = (0, 0, 20*k + 20)
-        q2 = (0, 20, 20*k + 20)
-        q3 = (20, 0, 20*k + 20)
-        q4 = (20, 20, 20*k + 20)
+        q1 = (0, 0, 6*k + 6)
+        q2 = (0, 20, 6*k + 6)
+        q3 = (20, 0, 6*k + 6)
+        q4 = (20, 20, 6*k + 6)
 
         r = btQuaternion(a * n, b * n, c * n, cos(theta / 2))
         r = mul(r, r1)
@@ -45,7 +45,7 @@ with open('input.dat', 'w') as f:
 
         o = (r.w(), r.x(), r.y(), r.z())
 
-        v1 = (0, 0, 0, random(), random(), random())
+        v1 = (10, 0, 0, random(), random(), random())
         v2 = (0, 0, 0, random(), random(), random())
         v3 = (0, 0, 0, random(), random(), random())
         v4 = (0, 0, 0, random(), random(), random())
