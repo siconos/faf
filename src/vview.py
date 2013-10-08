@@ -16,9 +16,9 @@ import numpy
 import random
 
 def random_color():
-    r = random.uniform(0.0, 1.0)
-    g = random.uniform(0.0, 1.0)
-    b = random.uniform(0.0, 1.0)
+    r = random.uniform(0.1, 0.9)
+    g = random.uniform(0.1, 0.9)
+    b = random.uniform(0.1, 0.9)
     return r, g, b
 
 
@@ -130,6 +130,7 @@ class CFprov():
             self._mu_coefs = set(self._data[:, 1])
         else:
             self._data = None
+            self._mu_coefs = None
 
         if self._data is not None:
             self._time = min(self._data[:, 0])
@@ -225,7 +226,8 @@ arrow.SetShaftResolution(40)
 
 cone = vtk.vtkConeSource()
 cone.SetResolution(40)
-cone.SetRadius(min(cf_prov._mu_coefs))  # one coef!!
+if cf_prov._mu_coefs is not None:
+    cone.SetRadius(min(cf_prov._mu_coefs))  # one coef!!
 
 cylinder = vtk.vtkCylinderSource()
 cylinder.SetRadius(.01)
@@ -238,9 +240,9 @@ arrow_glyph.SetInputConnection(contact_pos_force.GetOutputPort())
 arrow_glyph.SetSourceConnection(arrow.GetOutputPort())
 arrow_glyph.ScalingOn()
 arrow_glyph.SetScaleModeToScaleByVector()
-arrow_glyph.SetRange(-.5, 2)
+#arrow_glyph.SetRange(-.1, 1)
 arrow_glyph.ClampingOn()
-arrow_glyph.SetScaleFactor(4)
+arrow_glyph.SetScaleFactor(100)
 arrow_glyph.SetVectorModeToUseVector()
 
 arrow_glyph.SetInputArrayToProcess(1, 0, 0, 0, 'contactForces')
@@ -404,11 +406,12 @@ for ref, attrs in zip(refs, refs_attrs):
             source = vtk.vtkConeSource()
             source.SetRadius(attrs[0])
             source.SetHeight(attrs[1])
-            source.SetResolution(50)
+            source.SetResolution(15)
             source.SetDirection(0, 1, 0) # needed
 
         elif ref == 'Cylinder':
             source = vtk.vtkCylinderSource()
+            source.SetResolution(15)
             source.SetRadius(attrs[0])
             source.SetHeight(attrs[1])
             #           source.SetDirection(0,1,0)
@@ -423,21 +426,21 @@ for ref, attrs in zip(refs, refs_attrs):
             sphere1 = vtk.vtkSphereSource()
             sphere1.SetRadius(attrs[0])
             sphere1.SetCenter(0, attrs[1] / 2, 0)
-            sphere1.SetThetaResolution(40)
-            sphere1.SetPhiResolution(40)
+            sphere1.SetThetaResolution(15)
+            sphere1.SetPhiResolution(15)
             sphere1.Update()
 
             sphere2 = vtk.vtkSphereSource()
             sphere2.SetRadius(attrs[0])
             sphere2.SetCenter(0, -attrs[1] / 2, 0)
-            sphere2.SetThetaResolution(40)
-            sphere2.SetPhiResolution(40)
+            sphere2.SetThetaResolution(15)
+            sphere2.SetPhiResolution(15)
             sphere2.Update()
 
             cylinder = vtk.vtkCylinderSource()
             cylinder.SetRadius(attrs[0])
             cylinder.SetHeight(attrs[1])
-            cylinder.SetResolution(40)
+            cylinder.SetResolution(15)
             cylinder.Update()
 
             data = vtk.vtkMultiBlockDataSet()
@@ -482,7 +485,8 @@ set_positionv(pos_data[id_t0, 1], pos_data[id_t0, 2], pos_data[id_t0, 3],
 
 renderer_window.AddRenderer(renderer)
 interactor_renderer.SetRenderWindow(renderer_window)
-#interactor_renderer.GetInteractorStyle().SetCurrentStyleToTrackballCamera()
+interactor_renderer.GetInteractorStyle().SetCurrentStyleToTrackballCamera()
+
 # http://www.itk.org/Wiki/VTK/Depth_Peeling ?
 
 # #Use a render window with alpha bits (as initial value is 0 (false) ): 
@@ -510,6 +514,9 @@ class InputObserver():
                            / len(self._stimes)
         self._time = min(times)
         self._slider_repres = slider_repres
+        self._current_id = vtk.vtkIdTypeArray()
+        
+
 
     def update(self):
         index = bisect.bisect_left(times, self._time)
@@ -533,6 +540,18 @@ class InputObserver():
         self._slider_repres.SetValue(self._time)
         renderer_window.Render()
 
+        self._current_id.SetNumberOfValues(1)
+        self._current_id.SetValue(0,index)
+        
+        self._iter_plot.SetSelection(self._current_id)
+        self._prec_plot.SetSelection(self._current_id)
+        self._iter_plot_view.Update()
+        self._prec_plot_view.Update()
+        self._iter_plot_view.GetRenderer().GetRenderWindow().Render()
+        self._prec_plot_view.GetRenderer().GetRenderWindow().Render()
+        
+
+        
     def set_opacity(self):
         for instance, actor in zip(instances, actors):
             if instance >= 0:
@@ -570,6 +589,25 @@ class InputObserver():
         slider_repres = obj.GetRepresentation()
         self._time = slider_repres.GetValue()
         self.update()
+
+
+        # observer on 2D chart
+    def iter_plot_observer(self, obj, event):
+
+        if self._iter_plot.GetSelection() is not None:
+            # just one selection at the moment!
+            if self._iter_plot.GetSelection().GetMaxId() >= 0:
+                self._time = times[self._iter_plot.GetSelection().GetValue(0)]
+                # -> recompute index ...
+                self.update()
+
+    def prec_plot_observer(self, obj, event):
+        if self._prec_plot.GetSelection() is not None:
+            # just one selection at the moment!
+            if self._prec_plot.GetSelection().GetMaxId() >= 0:
+                self._time = times[self._prec_plot.GetSelection().GetValue(0)]
+                # -> recompute index ...
+                self.update()
 
 slider_repres = vtk.vtkSliderRepresentation2D()
 min_time = times[0]
@@ -613,6 +651,85 @@ light.SetFocalPoint(25, 25, 25)
 light.SetPosition(50, 50, 50)
 light.SetLightTypeToHeadlight()
 renderer.AddLight(light)
+
+
+solv_data = numpy.loadtxt('solv.dat', ndmin=2)
+
+#import numpy as np
+#import matplotlib.pyplot as plt
+
+#plt.plot(solv_data[:,0], solv_data[:,1])
+#plt.show()
+
+
+# Warning! numpy support offer a view on numpy array
+# the numpy array must not be garbage collected!
+nxtime = solv_data[:, 0].copy()
+nxiters = solv_data[:, 1].copy()
+nprecs = solv_data[:, 2].copy()
+xtime = numpy_support.numpy_to_vtk(nxtime)
+xiters = numpy_support.numpy_to_vtk(nxiters)
+xprecs = numpy_support.numpy_to_vtk(nprecs)
+
+xtime.SetName('time')
+xiters.SetName('iterations')
+xprecs.SetName('precisions')
+
+table = vtk.vtkTable()
+table.AddColumn(xtime)
+table.AddColumn(xiters)
+table.AddColumn(xprecs)
+#table.Dump()
+
+tview_iter = vtk.vtkContextView()
+tview_prec = vtk.vtkContextView()
+
+chart_iter = vtk.vtkChartXY()
+chart_prec = vtk.vtkChartXY()
+tview_iter.GetScene().AddItem(chart_iter)
+tview_prec.GetScene().AddItem(chart_prec)
+iter_plot = chart_iter.AddPlot(vtk.vtkChart.LINE)
+iter_plot.SetLabel('Solver iterations')
+iter_plot.GetXAxis().SetTitle('time')
+iter_plot.GetYAxis().SetTitle('iterations')
+
+prec_plot = chart_prec.AddPlot(vtk.vtkChart.LINE)
+prec_plot.SetLabel('Solver precisions')
+prec_plot.GetXAxis().SetTitle('time')
+prec_plot.GetYAxis().SetTitle('precisions')
+
+iter_plot.SetInput(table, 'time', 'iterations')
+prec_plot.SetInput(table, 'time', 'precisions')
+iter_plot.SetWidth(5.0)
+prec_plot.SetWidth(5.0)
+iter_plot.SetColor(0, 255, 0, 255)
+prec_plot.SetColor(0, 255, 0, 255)
+
+input_observer._iter_plot = iter_plot
+input_observer._prec_plot = prec_plot
+input_observer._iter_plot_view = tview_iter
+input_observer._prec_plot_view = tview_prec
+
+tview_iter.GetInteractor().AddObserver('RightButtonReleaseEvent',
+                                       input_observer.iter_plot_observer)
+
+tview_prec.GetInteractor().AddObserver('RightButtonReleaseEvent',
+                                       input_observer.prec_plot_observer)
+
+
+#screen_size = renderer_window.GetScreenSize()
+renderer_window.SetSize(600, 600)
+tview_iter.GetRenderer().GetRenderWindow().SetSize(600, 200)
+tview_prec.GetRenderer().GetRenderWindow().SetSize(600, 200)
+
+
+tview_iter.GetInteractor().Initialize()
+tview_iter.GetInteractor().Start()
+tview_iter.GetRenderer().SetBackground(.9, .9, .9)
+
+tview_prec.GetInteractor().Initialize()
+tview_prec.GetInteractor().Start()
+tview_prec.GetRenderer().SetBackground(.9, .9, .9)
 
 renderer_window.Render()
 interactor_renderer.Initialize()
