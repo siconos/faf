@@ -19,26 +19,19 @@
 # Contact: Vincent ACARY, siconos-team@lists.gforge.fr
 #
 
+import Siconos.Numerics as N
+import Siconos.Kernel as K
+import Siconos.FCLib as F
+
 from Siconos.Kernel import \
      Model, Moreau, TimeDiscretisation,\
      FrictionContact, NewtonImpactFrictionNSL
 
 from Siconos.Mechanics.ContactDetection.Bullet import IO, \
-    btConvexHullShape, btVector3, btCollisionObject, \
+    btConvexHullShape, btCollisionObject, \
     btBoxShape, btQuaternion, btTransform, btConeShape, \
     BulletSpaceFilter, cast_BulletR, \
     BulletWeightedShape, BulletDS, BulletTimeStepping
-
-    #import output
-
-import shlex
-import random
-
-from numpy import zeros
-from numpy.linalg import norm
-
-import getopt
-
 
 
 t0 = 0       # start time
@@ -58,7 +51,7 @@ model = Model(t0, T)
 # Simulation
 #
 # (4) non smooth law
-nslaw = NewtonImpactFrictionNSL(0., 0., 0.3, 3)
+nslaw = NewtonImpactFrictionNSL(0., 0., 0.7, 3)
 
 # (1) OneStepIntegrators
 osi = Moreau(theta)
@@ -70,17 +63,61 @@ static_cobjs = []
 timedisc = TimeDiscretisation(t0, h)
 
 # (3) one step non smooth problem
-osnspb = FrictionContact(3)
+solver = N.SICONOS_FRICTION_3D_NSGS
 
-nopts = osnspb.numericsOptions()
-nopts.verboseMode = 0
-nopts.outputMode = 0
-nopts.fileName = "model"
-nopts.title = "model"
-nopts.description = "Bullet Bouncing Box"
-nopts.math_info = "Moreau TimeStepping, h=0.005, theta =0.5"
 
-print osnspb.numericsOptions().outputMode
+class FrictionContactTrace(FrictionContact):
+
+    def __init__(self, dim, solver, maxiter):
+        self._maxiter = maxiter
+        super(FrictionContactTrace, self).__init__(dim, solver)
+
+    def compute(self,time):
+        info = 0
+        cont = self.preCompute(time)
+
+        if (not cont):
+            return 0
+
+        if (self.indexSetLevel() == 999):
+            return 0
+
+        self.updateMu()
+
+        if self.getSizeOutput() != 0:
+
+            w_backup = self.w().copy()
+            z_backup = self.z().copy()
+
+            info = self.solve()
+            SO = self.numericsSolverOptions()
+            if SO.iparam[7] > 100:
+                lnopts = self.numericsOptions()
+                problem = self.frictionContactProblem()
+                filename = "{0}-i{1}-{2}.hdf5".format(lnopts.fileName,
+                                                      SO.iparam[7],
+                                                      nopts.counter)
+                lnopts.counter += 1
+                K.frictionContact_fclib_write(problem,
+                                              lnopts.title,
+                                              lnopts.description,
+                                              lnopts.mathInfo,
+                                              filename)
+                guess = F.fclib_solution()
+                guess.u = w_backup
+                guess.r = z_backup
+                F.fclib_write_guesses([guess], filename)
+
+                solution = F.fclib_solution()
+                solution.u = self.w()
+                solution.z = self.z()
+                F.fclib_write_solution(solution, filename)
+
+            self.postCompute()
+
+        return info
+
+osnspb = FrictionContactTrace(3, solver, 100)
 
 osnspb.numericsSolverOptions().iparam[0] = 100000
 osnspb.numericsSolverOptions().dparam[0] = 1e-8
@@ -91,6 +128,22 @@ osnspb.setMStorageType(1)
 # keep previous solution
 osnspb.setKeepLambdaAndYState(True)
 
+nopts = osnspb.numericsOptions()
+nopts.verboseMode = 0
+nopts.outputMode = 0  # 3 | N.OUTPUT_ON_ERROR
+nopts.fileName = "BoxesStack1"
+nopts.title = "Boxes Stack"
+nopts.description = """
+Boxes (Cubes) stacking with Bullet collision detection
+Moreau TimeStepping: h={0}, theta = {1}
+One Step non smooth problem: {2}, maxiter={3}, tol={4}
+""".format(h, theta, N.idToName(solver),
+           osnspb.numericsSolverOptions().iparam[0],
+           osnspb.numericsSolverOptions().dparam[0])
+#nopts.mathInfo = ""
+
+print osnspb.numericsOptions().outputMode
+
 # (5) broadphase contact detection
 broadphase = BulletSpaceFilter(model, nslaw)
 
@@ -98,8 +151,7 @@ broadphase = BulletSpaceFilter(model, nslaw)
 simulation = BulletTimeStepping(timedisc, broadphase)
 simulation.insertIntegrator(osi)
 simulation.insertNonSmoothProblem(osnspb)
-simulation.setNewtonMaxIteration(2)
-
+simulation.setNewtonMaxIteration(20)
 
 k = 1
 
@@ -122,9 +174,8 @@ with IO.Dat(broadphase, osi) as io:
 
         io.outputDynamicObjects()
         io.outputContactForces()
+        io.outputSolverInfos()
 
         print 'nextStep'
         simulation.nextStep()
         k += 1
-
-
