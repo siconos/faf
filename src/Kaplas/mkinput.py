@@ -26,7 +26,7 @@ alpha = pi/6
 with open('input.dat','w') as f:
     #    f.write('0 0 10 50 0 20 1 0 0 0 -100. 0 0 10 10 10\n')
     f.write('1 -1 0 0  0 -.5 1 0 0 0 0    0 0 0 0 0\n')
-    for k in range(0,2):
+    for k in range(0,11):
 
         for i in range(0,12):
 

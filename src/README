@@ -1,0 +1,4 @@
+cd <directory>
+./mkinput.py
+../run.py
+../view.py

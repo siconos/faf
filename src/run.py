@@ -22,6 +22,7 @@
 import Siconos.Numerics as N
 import Siconos.Kernel as K
 import Siconos.FCLib as F
+import imp
 
 from Siconos.Kernel import \
      Model, Moreau, TimeDiscretisation,\
@@ -33,14 +34,21 @@ from Siconos.Mechanics.ContactDetection.Bullet import IO, \
     BulletSpaceFilter, cast_BulletR, \
     BulletWeightedShape, BulletDS, BulletTimeStepping
 
+imp.load_source('params', 'params.py')
 
-t0 = 0       # start time
-T = 120.      # end time
-h = 0.0005    # time step
+import params
 
-g = 9.81     # gravity
 
-theta = 0.51  # theta scheme
+t0 = params.t0       # start time
+T = params.T      # end time
+h = params.h    # time step
+g = params.g     # gravity
+
+theta = params.theta  # theta scheme
+mu = params.mu
+dump_itermax = params.dump_itermax
+itermax = params.itermax
+tolerance = params.tolerance
 
 #
 # Model
@@ -51,7 +59,7 @@ model = Model(t0, T)
 # Simulation
 #
 # (4) non smooth law
-nslaw = NewtonImpactFrictionNSL(0., 0., 0.7, 3)
+nslaw = NewtonImpactFrictionNSL(0., 0., mu, 3)
 
 # (1) OneStepIntegrators
 osi = Moreau(theta)
@@ -63,7 +71,7 @@ static_cobjs = []
 timedisc = TimeDiscretisation(t0, h)
 
 # (3) one step non smooth problem
-solver = N.SICONOS_FRICTION_3D_NSGS
+solver = params.solver
 
 
 class FrictionContactTrace(FrictionContact):
@@ -117,10 +125,10 @@ class FrictionContactTrace(FrictionContact):
 
         return info
 
-osnspb = FrictionContactTrace(3, solver, 1000)
+osnspb = FrictionContactTrace(3, solver, dump_itermax)
 
-osnspb.numericsSolverOptions().iparam[0] = 100000
-osnspb.numericsSolverOptions().dparam[0] = 1e-8
+osnspb.numericsSolverOptions().iparam[0] = itermax
+osnspb.numericsSolverOptions().dparam[0] = tolerance
 osnspb.setMaxSize(16384)
 osnspb.setMStorageType(1)
 #osnspb.setNumericsVerboseMode(False)
@@ -131,18 +139,10 @@ osnspb.setKeepLambdaAndYState(True)
 nopts = osnspb.numericsOptions()
 nopts.verboseMode = 0
 nopts.outputMode = 0  # 3 | N.OUTPUT_ON_ERROR
-nopts.fileName = "Capsules"
-nopts.title = "Capsules"
-nopts.description = """
-Capsules falling on the ground with Bullet collision detection
-Moreau TimeStepping: h={0}, theta = {1}
-One Step non smooth problem: {2}, maxiter={3}, tol={4}
-""".format(h, theta, N.idToName(solver),
-           osnspb.numericsSolverOptions().iparam[0],
-           osnspb.numericsSolverOptions().dparam[0])
-#nopts.mathInfo = ""
-
-print osnspb.numericsOptions().outputMode
+nopts.fileName = params.fileName
+nopts.title = params.title
+nopts.description = params.description
+nopts.mathInfo = params.mathInfo
 
 # (5) broadphase contact detection
 broadphase = BulletSpaceFilter(model, nslaw)
