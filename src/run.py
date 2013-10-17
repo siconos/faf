@@ -23,6 +23,7 @@ import Siconos.Numerics as N
 import Siconos.Kernel as K
 import Siconos.FCLib as F
 import imp
+import sys
 
 from Siconos.Kernel import \
      Model, Moreau, TimeDiscretisation,\
@@ -34,8 +35,21 @@ from Siconos.Mechanics.ContactDetection.Bullet import IO, \
     BulletSpaceFilter, cast_BulletR, \
     BulletWeightedShape, BulletDS, BulletTimeStepping
 
-imp.load_source('params', 'params.py')
 
+def warn(msg):
+    sys.stderr.write('{0}: {1}'.format(sys.argv[0], msg))
+
+
+def usage():
+    pass
+
+
+try:
+    imp.load_source('params', 'params.py')
+except IOError as e:
+    warn('I need a params.py file')
+    usage()
+    exit(1)
 import params
 
 
@@ -158,7 +172,7 @@ k = 1
 # time loop
 
 
-with IO.Dat(broadphase, osi) as io:
+with IO.Hdf5(broadphase, osi) as io:
 
     model.initialize(simulation)
 

@@ -1,19 +1,42 @@
 #!/usr/bin/env python
-from getopt import getopt, GetoptError
 import sys
 import shlex
-import ConfigParser
-
 import vtk
 from vtk.util import numpy_support
-
-from math import atan2, pi
+from math import atan2, pi, cos, sin
 import bisect
 from numpy.linalg import norm
-
 import numpy
-
 import random
+import h5py
+import getopt
+
+
+def usage():
+    print '{0}: Usage'.format(sys.argv[0])
+    print """
+    {0} filename
+    """
+
+try:
+    opts, args = getopt.gnu_getopt(sys.argv[1:], 'h',
+                                   ['help'])
+except getopt.GetoptError, err:
+        sys.stderr.write('{0}\n'.format(str(err)))
+        usage()
+        exit(2)
+
+for o, a in opts:
+    if o == '--help':
+        usage()
+        exit(0)
+
+if len(args) == 1:
+    filename = args[0]
+elif len(args) > 1:
+    usage()
+    exit(1)
+
 
 def random_color():
     r = random.uniform(0.1, 0.9)
@@ -55,14 +78,6 @@ def usage():
     print """{0}
     """.format(sys.argv[0])
 
-try:
-    opts, args = getopt(sys.argv[1:], "", [])
-except GetoptError, err:
-    # print help information and exit:
-    print str(err) # will print something like "option -a not recognized"
-    usage()
-    sys.exit(2)
-
     #ref_filename = args[0]
     #bind_filename = args[1]
     #pos_filename = args[2]
@@ -93,12 +108,19 @@ pos = dict()
 instances = set()
 
 import numpy
-spos_data = numpy.loadtxt(spos_filename, ndmin=2)
-dpos_data = numpy.loadtxt(dpos_filename, ndmin=2)
+
+inFile = h5py.File('out.hdf5', 'r')
+
+#spos_data = numpy.loadtxt(spos_filename, ndmin=2)
+#dpos_data = numpy.loadtxt(dpos_filename, ndmin=2)
+spos_data = inFile['data']['static']
+dpos_data = inFile['data']['dynamic']
+
 print spos_data.shape
 print dpos_data.shape
 
-cf_data = numpy.loadtxt(cf_filename)
+#cf_data = numpy.loadtxt(cf_filename)
+cf_data = inFile['data']['cf'][:].copy()
 
 #def contact_point_reader():
 #    global dos
@@ -136,44 +158,48 @@ class CFprov():
             self._time = min(self._data[:, 0])
         else:
             self._time = 0
-        self._output = None
 
+        self._output = vtk.vtkPolyData()
+        self._contact_field = vtk.vtkPointData()
 
 
     def method(self):
         global keeper
-        self._output = vtk.vtkPolyData()
-        contact_field = vtk.vtkPointData()
-        #        ind0 = bisect.bisect_left(self._data[:, 0], self._time)
-        if self._data is not None:
 
+        #        ind0 = bisect.bisect_left(self._data[:, 0], self._time)
+        self._contact_field = vtk.vtkPointData()
+        self._output.SetFieldData(self._contact_field)
+
+        if self._data is not None:
             id_f = numpy.where(abs(self._data[:, 0] - self._time) < 1e-15)[0]
 
-            cpa_at_time = self._data[id_f, 2:5].copy()
-            cpa = numpy_support.numpy_to_vtk(cpa_at_time)
-            cpa.SetName('contactPositionsA')
+            if len(id_f) == 0:
+                return
 
-            cpb_at_time = self._data[id_f, 5:8].copy()
-            cpb = numpy_support.numpy_to_vtk(cpb_at_time)
-            cpb.SetName('contactPositionsB')
+            self.cpa_at_time = self._data[id_f, 2:5].copy()
+            self.cpa = numpy_support.numpy_to_vtk(self.cpa_at_time)
+            self.cpa.SetName('contactPositionsA')
 
-            cn_at_time = - self._data[id_f, 8:11]
-            cn = numpy_support.numpy_to_vtk(cn_at_time)
-            cn.SetName('contactNormals')
+            self.cpb_at_time = self._data[id_f, 5:8].copy()
+            self.cpb = numpy_support.numpy_to_vtk(self.cpb_at_time)
+            self.cpb.SetName('contactPositionsB')
 
-            cf_at_time = self._data[id_f, 11:14].copy()
-            cf = numpy_support.numpy_to_vtk(cf_at_time)
-            cf.SetName('contactForces')
+            self.cn_at_time = - self._data[id_f, 8:11].copy()
+            self.cn = numpy_support.numpy_to_vtk(self.cn_at_time)
+            self.cn.SetName('contactNormals')
 
-            contact_field.AddArray(cpa)
-            contact_field.AddArray(cpb)
-            contact_field.AddArray(cn)
-            contact_field.AddArray(cf)
+            self.cf_at_time = self._data[id_f, 11:14].copy()
+            self.cf = numpy_support.numpy_to_vtk(self.cf_at_time)
+            self.cf.SetName('contactForces')
 
-            keeper = [cpa_at_time, cpb_at_time, cf_at_time, cn_at_time]
-            self._output.SetFieldData(contact_field)
+            self._contact_field.AddArray(self.cpa)
+            self._contact_field.AddArray(self.cpb)
+            self._contact_field.AddArray(self.cn)
+            self._contact_field.AddArray(self.cf)
+
         else:
             pass
+        self._output.Update()
 
 cf_prov = CFprov(cf_data)
 
@@ -211,6 +237,7 @@ nstatic = len(numpy.where(spos_data[:, 0] == times[0]))
 instances = set(dpos_data[:, 1]).union(set(spos_data[:, 1]))
 
 cf_prov._time = min(times[:])
+
 cf_prov.method()
 contact_posa.SetInput(cf_prov._output)
 contact_posa.Update()
@@ -226,23 +253,31 @@ arrow.SetShaftResolution(40)
 
 cone = vtk.vtkConeSource()
 cone.SetResolution(40)
+
 if cf_prov._mu_coefs is not None:
     cone.SetRadius(min(cf_prov._mu_coefs))  # one coef!!
 
 cylinder = vtk.vtkCylinderSource()
 cylinder.SetRadius(.01)
-cylinder.SetHeight(2)
+cylinder.SetHeight(1)
 
 sphere = vtk.vtkSphereSource()
+
+
+# 1. scale = (scalar value of that particular data index);
+# 2. denominator = Range[1] - Range[0];
+# 3. scale = (scale < Range[0] ? Range[0] : (scale > Range[1] ? Range[1] : scale));
+# 4. scale = (scale - Range[0]) / denominator;
+# 5. scale *= scaleFactor;
 
 arrow_glyph = vtk.vtkGlyph3D()
 arrow_glyph.SetInputConnection(contact_pos_force.GetOutputPort())
 arrow_glyph.SetSourceConnection(arrow.GetOutputPort())
 arrow_glyph.ScalingOn()
 arrow_glyph.SetScaleModeToScaleByVector()
-#arrow_glyph.SetRange(-.1, 1)
+arrow_glyph.SetRange(0, .01)
 arrow_glyph.ClampingOn()
-arrow_glyph.SetScaleFactor(100)
+arrow_glyph.SetScaleFactor(5)
 arrow_glyph.SetVectorModeToUseVector()
 
 arrow_glyph.SetInputArrayToProcess(1, 0, 0, 0, 'contactForces')
@@ -268,28 +303,25 @@ cone_glyph.SetSourceTransform(transform)
 
 cone_glyph.SetInputConnection(contact_pos_norm.GetOutputPort())
 cone_glyph.SetSourceConnection(cone.GetOutputPort())
-cone_glyph.ScalingOff()
+#cone_glyph.ScalingOn()
 #cone_glyph.SetScaleModeToScaleByVector()
-#cone_glyph.SetRange(-0.5, 2)
-cone_glyph.ClampingOn()
-#cone_glyph.SetScaleFactor(4)
+#cone_glyph.SetRange(0, 100)
+#cone_glyph.ClampingOn()
+#cone_glyph.SetScaleFactor(1000000)
 cone_glyph.SetVectorModeToUseVector()
 
 cone_glyph.SetInputArrayToProcess(1, 0, 0, 0, 'contactNormals')
 cone_glyph.OrientOn()
 
 ctransform = vtk.vtkTransform()
-ctransform.RotateWXYZ(90,0,0,1)
+ctransform.Translate(-0.5, 0, 0)
+ctransform.RotateWXYZ(90, 0, 0, 1)
 cylinder_glyph = vtk.vtkGlyph3D()
 cylinder_glyph.SetSourceTransform(ctransform)
 
 cylinder_glyph.SetInputConnection(contact_pos_norm.GetOutputPort())
 cylinder_glyph.SetSourceConnection(cylinder.GetOutputPort())
 cylinder_glyph.ScalingOff()
-#cylinder_glyph.SetScaleModeToScaleByVector()
-#cylinder_glyph.SetRange(-0.5, 2)
-cylinder_glyph.ClampingOn()
-#cylinder_glyph.SetScaleFactor(4)
 cylinder_glyph.SetVectorModeToUseVector()
 
 cylinder_glyph.SetInputArrayToProcess(1, 0, 0, 0, 'contactNormals')
@@ -378,13 +410,13 @@ interactor_renderer = vtk.vtkRenderWindowInteractor()
 
 #camera = vtk.vtkCamera()
 #camera.SetViewUp(0, 0, -1)
-#camera.SetPosition(0, 1, 0)
+#camera.SetPosition(-221, 40, 204)
 #camera.SetFocalPoint(0, 0, 0)
 #camera.ComputeViewPlaneNormal()
 #camera.SetRoll(180.0)
 #camera.Azimuth(80.0)
 
-renderer.SetBackground(0.85, 0.85, 0.85)
+#renderer.SetBackground(0.85, 0.85, 0.85)
 #renderer.SetActiveCamera(camera)
 #renderer.ResetCamera()
 
@@ -453,6 +485,7 @@ for ref, attrs in zip(refs, refs_attrs):
 
         readers.append(source)
 
+
 for instance in instances:
     mapper = vtk.vtkCompositePolyDataMapper()
     mapper.SetInputConnection(readers[shape[int(instance)]].GetOutputPort())
@@ -474,6 +507,13 @@ renderer.AddActor(clactor)
 renderer.AddActor(sactora)
 renderer.AddActor(sactorb)
 
+import imp
+try:
+    imp.load_source('myview', 'myview.py')
+    import myview
+    this_view = myview.MyView(renderer)
+except IOError as e:
+    pass
 
 id_t0 = numpy.where(dpos_data[:, 0] == min(dpos_data[:, 0]))
 
@@ -515,23 +555,28 @@ class InputObserver():
         self._time = min(times)
         self._slider_repres = slider_repres
         self._current_id = vtk.vtkIdTypeArray()
-        
-
+        self._renderer = renderer
+        self._renderer_window = renderer_window
+        self._times = times
 
     def update(self):
-        index = bisect.bisect_left(times, self._time)
-        cf_prov._time = times[index]
+        index = bisect.bisect_left(self._times, self._time)
+        index = max(0, index)
+        index = min(index, len(self._times)-1)        
+        cf_prov._time = self._times[index]
         cf_prov.method()
-        contact_posa.SetInput(cf_prov._output)
+
+        # contact_posa.SetInput(cf_prov._output)
         contact_posa.Update()
-        contact_posb.SetInput(cf_prov._output)
+
+        # contact_posb.SetInput(cf_prov._output)
         contact_posb.Update()
 
-        #        contact_pos_force.Update()
+        #contact_pos_force.Update()
         # arrow_glyph.Update()
         #gmapper.Update()
 
-        id_t = numpy.where(pos_data[:, 0] == times[index])
+        id_t = numpy.where(pos_data[:, 0] == self._times[index])
         set_positionv(pos_data[id_t, 1], pos_data[id_t, 2], pos_data[id_t, 3],
                       pos_data[id_t, 4],
                       pos_data[id_t, 5], pos_data[id_t, 6], pos_data[id_t, 7],
@@ -542,16 +587,14 @@ class InputObserver():
 
         self._current_id.SetNumberOfValues(1)
         self._current_id.SetValue(0,index)
-        
+
         self._iter_plot.SetSelection(self._current_id)
         self._prec_plot.SetSelection(self._current_id)
         self._iter_plot_view.Update()
         self._prec_plot_view.Update()
         self._iter_plot_view.GetRenderer().GetRenderWindow().Render()
         self._prec_plot_view.GetRenderer().GetRenderWindow().Render()
-        
 
-        
     def set_opacity(self):
         for instance, actor in zip(instances, actors):
             if instance >= 0:
@@ -563,9 +606,11 @@ class InputObserver():
 
         if key == 'Up':
                 self._time_step = self._time_step * 2.
+                self._time += self._time_step
 
         if key == 'Down':
                 self._time_step = self._time_step / 2.
+                self._time -= self._time_step
 
         if key == 'Left':
                 self._time -= self._time_step
@@ -581,15 +626,20 @@ class InputObserver():
                 self._opacity += .1
                 self.set_opacity()
 
+        if key == 'c':
+                print 'camera position:',self._renderer.GetActiveCamera().GetPosition()
+                print 'camera focal point', self._renderer.GetActiveCamera().GetFocalPoint()
+                print 'camera clipping plane', self._renderer.GetActiveCamera().GetClippingRange()
 
+                
+        if key == 'C':
+                this_view.action(self)
         self.update()
-
 
     def time(self, obj, event):
         slider_repres = obj.GetRepresentation()
         self._time = slider_repres.GetValue()
         self.update()
-
 
         # observer on 2D chart
     def iter_plot_observer(self, obj, event):
@@ -597,7 +647,7 @@ class InputObserver():
         if self._iter_plot.GetSelection() is not None:
             # just one selection at the moment!
             if self._iter_plot.GetSelection().GetMaxId() >= 0:
-                self._time = times[self._iter_plot.GetSelection().GetValue(0)]
+                self._time = self._times[self._iter_plot.GetSelection().GetValue(0)]
                 # -> recompute index ...
                 self.update()
 
@@ -605,7 +655,7 @@ class InputObserver():
         if self._prec_plot.GetSelection() is not None:
             # just one selection at the moment!
             if self._prec_plot.GetSelection().GetMaxId() >= 0:
-                self._time = times[self._prec_plot.GetSelection().GetValue(0)]
+                self._time = self._times[self._prec_plot.GetSelection().GetValue(0)]
                 # -> recompute index ...
                 self.update()
 
@@ -643,17 +693,24 @@ input_observer = InputObserver(times, slider_repres)
 slider_widget.AddObserver("InteractionEvent", input_observer.time)
 
 interactor_renderer.AddObserver('KeyPressEvent', input_observer.key)
-
+interactor_renderer.AddObserver('KeyPressEvent', input_observer.key)
 
 # Create a vtkLight, and set the light parameters.
 light = vtk.vtkLight()
-light.SetFocalPoint(25, 25, 25)
-light.SetPosition(50, 50, 50)
-light.SetLightTypeToHeadlight()
+light.SetFocalPoint(0, 0, 0)
+light.SetPosition(0, 0, 500)
+#light.SetLightTypeToHeadlight()
 renderer.AddLight(light)
 
+hlight = vtk.vtkLight()
+hlight.SetFocalPoint(0, 0, 0)
+#hlight.SetPosition(0, 0, 500)
+hlight.SetLightTypeToHeadlight()
+renderer.AddLight(hlight)
 
-solv_data = numpy.loadtxt('solv.dat', ndmin=2)
+
+#solv_data = numpy.loadtxt('solv.dat', ndmin=2)
+solv_data = inFile['data']['solv']
 
 #import numpy as np
 #import matplotlib.pyplot as plt
@@ -724,12 +781,14 @@ tview_prec.GetRenderer().GetRenderWindow().SetSize(600, 200)
 
 
 tview_iter.GetInteractor().Initialize()
-tview_iter.GetInteractor().Start()
+#tview_iter.GetInteractor().Start()
 tview_iter.GetRenderer().SetBackground(.9, .9, .9)
+tview_iter.GetRenderer().Render()
 
 tview_prec.GetInteractor().Initialize()
-tview_prec.GetInteractor().Start()
+#tview_prec.GetInteractor().Start()
 tview_prec.GetRenderer().SetBackground(.9, .9, .9)
+tview_prec.GetRenderer().Render()
 
 renderer_window.Render()
 interactor_renderer.Initialize()
