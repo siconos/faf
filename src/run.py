@@ -18,12 +18,16 @@
 #
 # Contact: Vincent ACARY, siconos-team@lists.gforge.fr
 #
+from __future__ import print_function
 
 import Siconos.Numerics as N
 import Siconos.Kernel as K
 import Siconos.FCLib as F
 import imp
 import sys
+import time
+import getopt
+
 
 from Siconos.Kernel import \
      Model, Moreau, TimeDiscretisation,\
@@ -34,6 +38,52 @@ from Siconos.Mechanics.ContactDetection.Bullet import IO, \
     btBoxShape, btQuaternion, btTransform, btConeShape, \
     BulletSpaceFilter, cast_BulletR, \
     BulletWeightedShape, BulletDS, BulletTimeStepping
+
+class Timer():
+    def __init__(self):
+        self._t0 = time.clock()
+
+    def elapsed(self):
+        return time.clock() - self._t0
+
+    def update(self):
+        self._t0 = time.clock()
+
+with_timer = False
+
+
+def usage():
+    print('{0}: Usage'.format(sys.argv[0]))
+
+
+def log(fun):
+    if with_timer:
+        t = Timer()
+
+        def logged(*args):
+            t.update()
+            print('{0} ...'.format(fun.__name__), end='')
+            fun(*args)
+            print('..... {0} s'.format(t.elapsed()))
+        return logged
+    else:
+        def silent(*args):
+            fun(*args)
+        return silent
+
+try:
+    opts, args = getopt.gnu_getopt(sys.argv[1:], '',
+                                   ['help', 'timer'])
+except getopt.GetoptError, err:
+        sys.stderr.write('{0}\n'.format(str(err)))
+        usage()
+        exit(2)
+for o, a in opts:
+    if o == '--help':
+        usage()
+        sys.exit(0)
+    elif o == '--timer':
+        with_timer = True
 
 
 def warn(msg):
@@ -180,16 +230,21 @@ with IO.Hdf5(broadphase, osi) as io:
     io.outputDynamicObjects()
     while(simulation.hasNextEvent()):
 
-        print 'contact detection', k
-        broadphase.buildInteractions(model.currentTime())
+        print ('step', k)
 
-        print 'computeOneStep'
-        simulation.computeOneStep()
+        log(broadphase.buildInteractions)(model.currentTime())
 
-        io.outputDynamicObjects()
-        io.outputContactForces()
-        io.outputSolverInfos()
+        log(simulation.computeOneStep)()
 
-        print 'nextStep'
-        simulation.nextStep()
+        log(io.outputDynamicObjects)()
+
+        log(io.outputContactForces)()
+
+        log(io.outputSolverInfos)()
+
+        log(simulation.nextStep)()
+
+        log(io._out.flush)()
+
+        print ('')
         k += 1

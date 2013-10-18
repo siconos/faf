@@ -19,18 +19,31 @@ def usage():
     """
 
 try:
-    opts, args = getopt.gnu_getopt(sys.argv[1:], 'h',
-                                   ['help'])
+    opts, args = getopt.gnu_getopt(sys.argv[1:], '',
+                                   ['help', 'tmin=', 'tmax='])
 except getopt.GetoptError, err:
         sys.stderr.write('{0}\n'.format(str(err)))
         usage()
         exit(2)
 
+min_time = None
+max_time = None
+
 for o, a in opts:
+    
     if o == '--help':
         usage()
         exit(0)
 
+    elif o == '--tmin':
+        min_time = float(a)
+
+    elif o == '--tmax':
+        
+        max_time = float(a)
+
+
+print min_time, max_time
 if len(args) == 1:
     filename = args[0]
 elif len(args) > 1:
@@ -120,7 +133,10 @@ print spos_data.shape
 print dpos_data.shape
 
 #cf_data = numpy.loadtxt(cf_filename)
-cf_data = inFile['data']['cf'][:].copy()
+try:
+    cf_data = inFile['data']['cf'][:].copy()
+except:
+    cf_data = None
 
 #def contact_point_reader():
 #    global dos
@@ -147,9 +163,10 @@ keeper = []
 class CFprov():
 
     def __init__(self, data):
-        if len(data) > 0:
-            self._data = data
-            self._mu_coefs = set(self._data[:, 1])
+        if data is not None:
+            if len(data) > 0:
+                self._data = data
+                self._mu_coefs = set(self._data[:, 1])
         else:
             self._data = None
             self._mu_coefs = None
@@ -660,8 +677,13 @@ class InputObserver():
                 self.update()
 
 slider_repres = vtk.vtkSliderRepresentation2D()
-min_time = times[0]
-max_time = times[len(times) - 1]
+
+if min_time is None:
+    min_time = times[0]
+
+if max_time is None:
+    max_time = times[len(times) - 1]
+
 slider_repres.SetMinimumValue(min_time)
 slider_repres.SetMaximumValue(max_time)
 slider_repres.SetValue(min_time)
