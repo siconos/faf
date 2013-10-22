@@ -23,6 +23,11 @@ def s_v(v):
 
 alpha = pi/6
 
+mass = 1
+# true mass ?
+#mass = 620 * (11.74*2.348*0.78267) / (100*100*100)
+
+
 with open('input.dat','w') as f:
     #    f.write('0 0 10 50 0 20 1 0 0 0 -100. 0 0 10 10 10\n')
     f.write('1 -1 0 0  0 -.5 1 0 0 0 0    0 0 0 0 0\n')
@@ -44,6 +49,5 @@ with open('input.dat','w') as f:
             q = (23.48*cos(alpha*(i + (k%2)* 0.5)), 23.48*sin(alpha*(i + (k%2)* 0.5)), (2.348 + 1.) * k + 2.360 /2. + 2)
             o = (r.w(), r.x(), r.y(), r.z())
 
-            f.write('2 0 1 {0} {1} 0 0 0 0 0 0\n'.format(s_v(q),s_v(o)))
-
+            f.write('2 0 {0} {1} {2} 0 0 0 0 0 0\n'.format(mass, s_v(q),s_v(o)))
 
