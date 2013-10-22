@@ -16,6 +16,23 @@ import h5py
 #logger = multiprocessing.log_to_stderr()
 #logger.setLevel(logging.INFO)
 
+from ctypes import cdll
+papi=cdll.LoadLibrary('/usr/local/lib/libpapi.so')
+from ctypes import *
+
+
+def init_flop():
+    ireal_time = c_float()
+    iproc_time = c_float()
+    iflpops = c_longlong()
+    imflops = c_float()
+    papi.PAPI_flops(byref(ireal_time), byref(iproc_time), byref(iflpops), 
+                    byref(imflops))
+
+def get_flop(real_time, proc_time, flpops, mflops):
+    r = papi.PAPI_flops(byref(real_time), byref(proc_time), byref(flpops), 
+                        byref(mflops))
+
 
 class TimeoutException(Exception):
     pass
@@ -94,9 +111,15 @@ class SiconosSolver():
         return self._SO
 
     def __call__(self,problem,reactions,velocities):
-        info = self._API(problem,reactions,velocities,self._SO)
+        real_time = c_float()
+        proc_time = c_float()
+        flpops = c_longlong()
+        mflops = c_float()
+        init_flop()
+        info = self._API(problem, reactions, velocities, self._SO)
+        get_flop(real_time, proc_time, flpops, mflops)
 
-        return (info, self._get(self._SO.iparam, self._iparam_iter), self._get(self._SO.dparam, self._dparam_err))
+        return (info, self._get(self._SO.iparam, self._iparam_iter), self._get(self._SO.dparam, self._dparam_err), real_time.value, proc_time.value, flpops.value, mflops.value)
 
     def name(self):
         return self._name
@@ -222,14 +245,19 @@ for fileproblem,solver in product(fileproblems,solvers):
             velocities = np.zeros(problem.dimension * problem.numberOfContacts)
 
         try:
-            info, iter, err = solver(problem, reactions, velocities)
+            info, iter, err, real_time, proc_time, flpops, mflops = \
+                solver(problem, reactions, velocities)
         except Exception as exception:
             print exception
             info = 1
             iter = np.inf
             err = np.inf
-
+            real_time = np.inf
+            proc_time = np.inf
+            flpops = np.inf
+            mflops = np.inf
+            
             # need output in a csv database
 
         # filename, solver name, revision svn, parameters, nb iter, err
-        print(filename, solver.name(), info, iter, err)
+        print(filename, solver.name(), info, iter, err, real_time, proc_time, flpops, mflops)
