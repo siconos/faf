@@ -226,7 +226,7 @@ Prox = SiconosSolver(name="Proximal fixed point",
 ExtraGrad = SiconosSolver(name="Extra gradient",
                           API=frictionContact3D_ExtraGradient,
                           TAG=SICONOS_FRICTION_3D_EG,
-                          iparam_iter=1,
+                          iparam_iter=7,
                           dparam_err=1)
 
 # 1 contact
