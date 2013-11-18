@@ -31,13 +31,15 @@ import getopt
 
 from Siconos.Kernel import \
      Model, Moreau, TimeDiscretisation,\
-     FrictionContact, NewtonImpactFrictionNSL
+     FrictionContact, NewtonImpactFrictionNSL, BlockCSRMatrix
 
 from Siconos.Mechanics.ContactDetection.Bullet import IO, \
     btConvexHullShape, btCollisionObject, \
     btBoxShape, btQuaternion, btTransform, btConeShape, \
     BulletSpaceFilter, cast_BulletR, \
     BulletWeightedShape, BulletDS, BulletTimeStepping
+
+from Siconos.Kernel import GlobalFrictionContactProblem
 
 class Timer():
     def __init__(self):
@@ -158,6 +160,18 @@ class FrictionContactTrace(FrictionContact):
 
         if self.getSizeOutput() != 0:
 
+            #            M = BlockCSRMatrix()
+            #M.fillM(model.nonSmoothDynamicalSystem().topology().indexSet(1))
+            #M.convert()
+
+            #H = BlockCSRMatrix()
+            #H.fillH(model.nonSmoothDynamicalSystem().topology().indexSet(1))
+            #H.convert()
+
+            #t = GlobalFrictionContactProblem() 
+
+            #t.M = M.getNumericsMatSparse()
+
             w_backup = self.w().copy()
             z_backup = self.z().copy()
 
@@ -215,7 +229,7 @@ broadphase = BulletSpaceFilter(model, nslaw)
 simulation = BulletTimeStepping(timedisc, broadphase)
 simulation.insertIntegrator(osi)
 simulation.insertNonSmoothProblem(osnspb)
-simulation.setNewtonMaxIteration(20)
+simulation.setNewtonMaxIteration(params.NewtonMaxIter)
 
 k = 1
 
@@ -225,6 +239,9 @@ k = 1
 with IO.Hdf5(broadphase, osi) as io:
 
     model.initialize(simulation)
+
+    if 'initialize' in dir(params):
+        params.initialize(model)
 
     io.outputStaticObjects()
     io.outputDynamicObjects()

@@ -34,18 +34,18 @@ with open('input.dat', 'w') as f:
         b = 0
         c = 1
         n = sin(theta / 2) / norm((a, b, c))
-        q1 = (0, 0, 6*k + 60)
+        q1 = (0, 0, 6*k + 2)
 
         r = btQuaternion(a * n, b * n, c * n, cos(theta / 2))
         r = mul(r, r1)
         r.normalize()
 
         o = (r.w(), r.x(), r.y(), r.z())
-        v1 = (30, 10, 0, 0, 0, 0)
-        
+        v1 = (30, 10, 0, 1, 1, 1)
+
         #v1 = (0, 0, 0, random(), random(), random())
         #v2 = (0, 0, 0, random(), random(), random())
         #v3 = (0, 0, 0, random(), random(), random())
         #v4 = (0, 0, 0, random(), random(), random())
 
-        f.write('7 0 1 {0} {1} {2}\n'.format(s_v(q1), s_v(o), s_v(v1)))
+        f.write('0 0 1 {0} {1} {2}\n'.format(s_v(q1), s_v(o), s_v(v1)))
