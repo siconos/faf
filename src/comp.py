@@ -15,6 +15,7 @@ import logging
 import h5py
 import getopt
 import sys
+import hashlib
 #logger = multiprocessing.log_to_stderr()
 #logger.setLevel(logging.INFO)
 
@@ -22,7 +23,7 @@ measure = 'flop'
 
 try:
     opts, args = getopt.gnu_getopt(sys.argv[1:], '',
-                                   ['help', 'flop', 'iter'])
+                                   ['help', 'flop', 'iter', 'time'])
 except getopt.GetoptError, err:
         sys.stderr.write('{0}\n'.format(str(err)))
         usage()
@@ -32,6 +33,8 @@ for o, a in opts:
         measure = 'flop'
     elif o == '--iter':
         measure = 'iter'
+    elif o == '--time':
+        measure = 'time'
 
 
 from ctypes import cdll, c_float, c_longlong, byref
@@ -58,13 +61,13 @@ def get_flop(real_time, proc_time, flpops, mflops):
     else:
         real_time.value = np.nan
         proc_time.value = np.nan
-        flpops.value = np.nan
+        flpops.value = -1
         mflops.value = np.nan
 
-real_time = c_float()
-proc_time = c_float()
-flpops = c_longlong()
-mflops = c_float()
+        #real_time = c_float()
+        #proc_time = c_float()
+        #flpops = c_longlong()
+        #mflops = c_float()
 #init_flop()
 #a=2.
 #b=3.
@@ -124,9 +127,9 @@ def timeout(seconds, force_kill=True):
             assert proc.done()
             success, result = proc.result()
             if success:
-                return result
+                return time.time() - now, result
             else:
-                raise result
+                raise time.time() - now, result
         return inner
     return wrapper
 
@@ -160,7 +163,7 @@ class SiconosSolver():
     def SolverOptions(self):
         return self._SO
 
-    @timeout(100)
+    @timeout(100)    
     def __call__(self,problem,reactions,velocities):
         real_time = c_float()
         proc_time = c_float()
@@ -169,23 +172,22 @@ class SiconosSolver():
         init_flop()
         info = self._API(problem, reactions, velocities, self._SO)
         get_flop(real_time, proc_time, flpops, mflops)
-
-        return (info, self._get(self._SO.iparam, self._iparam_iter), self._get(self._SO.dparam, self._dparam_err), real_time.value, proc_time.value, flpops.value, mflops.value)
+        return (info, self._get(self._SO.iparam, self._iparam_iter),
+                self._get(self._SO.dparam, self._dparam_err),
+                real_time.value, proc_time.value,
+                flpops.value, mflops.value)
 
     def name(self):
         return self._name
 
-
-
 #
 # Some solvers
 #
-
 localac = SiconosSolver(name="Local Alart Curnier",
-                         API=frictionContact3D_localAlartCurnier,
-                         TAG=SICONOS_FRICTION_3D_LOCALAC,
-                         iparam_iter=1,
-                         dparam_err=1)
+                        API=frictionContact3D_localAlartCurnier,
+                        TAG=SICONOS_FRICTION_3D_LOCALAC,
+                        iparam_iter=1,
+                        dparam_err=1)
 
 localac.SolverOptions().iparam[3] = 10000000
 
@@ -244,7 +246,7 @@ ExtraGrad = SiconosSolver(name="Extra gradient",
 # rho estimation needed
 Prox._SO.dparam[3] = 1000
 
-hyperplaneProjection = SiconosSolver(name="hyperplane projection",
+HyperplaneProjection = SiconosSolver(name="hyperplane projection",
                                      API=frictionContact3D_HyperplaneProjection,
                                      TAG=SICONOS_FRICTION_3D_HP,
                                      iparam_iter=7,
@@ -272,17 +274,21 @@ hyperplaneProjection = SiconosSolver(name="hyperplane projection",
 setNumericsVerbose(0)
 
 solvers = [nsgs, TrescaFixedPoint, localac, Prox, DeSaxceFixedPoint, ExtraGrad]
+#solvers = [ExtraGrad]
 
 
 def is_fclib_file(filename):
     with h5py.File(filename, 'r') as f:
         return 'fclib_local' in f or 'fclib_global' in f
 
+
 def read_numerics_format(f):
     return frictionContactProblemFromFile(f)
 
+
 def read_fclib_format(f):
     return frictionContact_fclib_read(f)
+
 
 def read_problem(f):
     try:
@@ -300,9 +306,9 @@ def read_problem(f):
         return None, None
 
 
-fileproblems = imap(read_problem,glob("*.hdf5"))
+fileproblems = imap(read_problem, glob("*.hdf5"))
 
-rfileproblems = [ f for f in fileproblems ]
+rfileproblems = [f for f in fileproblems]
 
 solver_flpops = dict()
 solver_r = dict()
@@ -315,62 +321,133 @@ for solver in solvers:
 min_flpops = dict()
 
 for fileproblem in rfileproblems:
-    min_flpops[fileproblem] = np.inf         
+    min_flpops[fileproblem] = np.inf
+
+
+with h5py.File('socomp.hdf5', 'a') as socomp_file:
+    if 'data' not in socomp_file:
+        data = socomp_file.create_group('data')
+    else:
+        data = socomp_file['data']
+
+    if 'socomp' not in data:
+        socomp_data = data.create_group('socomp')
+    else:
+        socomp_data = data['socomp']
+
+    for solver in solvers:
+        ip = 0
+        for fileproblem in rfileproblems:
+
+            if fileproblem[0] is not None:
+
+                problem = fileproblem[1]
+                filename = fileproblem[0]
+
+                # get the file signature
+                digest = hashlib.sha256(open(filename, 'rb').read()).digest()
+
+                if solver.name() not in socomp_data:
+                    solver_data = socomp_data.create_group(solver.name())
+                else:
+                    solver_data = socomp_data[solver.name()]
+
+                if filename not in solver_data:
+                    solver_problem_data = solver_data.create_group(filename)
+                else:
+                    solver_problem_data = solver_data[filename]
+
+                attrs = solver_problem_data.attrs
+
+
+                info = None
+                iter = None
+                err = None
+                time_s = None
+                real_time = None
+                proc_time = None
+                flpops = None
+                mflops = None
+
+
+                if 'digest' not in attrs or attrs['digest'] != digest:
+
+                    # get first guess or set guess to zero
+                    f = h5py.File(filename, 'r')
+                    if 'guesses' in f:
+                        number_of_guesses = f['guesses']['number_of_guesses'][0]
+                        velocities = f['guesses']['1']['u']
+                        reactions = f['guesses']['1']['r']
+                    else:
+                        # guess is missing
+                        reactions = np.zeros(problem.dimension * problem.numberOfContacts)
+                        velocities = np.zeros(problem.dimension * problem.numberOfContacts)
+
+                    try:
+                        time_s, l = \
+                            solver(problem, reactions, velocities)
+                        info, iter, err, real_time, proc_time, flpops, mflops = l
+                    except Exception as exception:
+                        print exception
+                        info = 1
+                        iter = np.nan
+                        err = np.nan
+                        real_time = np.nan
+                        proc_time = np.nan
+                        flpops = np.nan
+                        mflops = np.nan
+
+                        # need output in a csv database
+
+                    attrs.create('filename', filename)
+                    attrs.create('digest', digest)
+                    attrs.create('info', info)
+                    attrs.create('iter', iter)
+                    attrs.create('err', err)
+                    attrs.create('time', time_s)
+                    attrs.create('real_time', real_time)
+                    attrs.create('proc_time', proc_time)
+                    attrs.create('flpops', flpops)
+                    attrs.create('mflops', mflops)
+
+                else:
+                    filename = attrs['filename']
+                    info = attrs['info']
+                    iter = attrs['iter']
+                    err = attrs['err']
+                    time_s = attrs['time']
+                    real_time = attrs['real_time']
+                    proc_time = attrs['proc_time']
+                    flpops = attrs['flpops']
+                    mflops = attrs['mflops']
+
+                # filename, solver name, revision svn, parameters, nb iter, err
+                #                print(filename, solver.name(), info, iter, err,
+                #      time_s, real_time, proc_time,
+                #      flpops, mflops)
+
+                if measure == 'flop':
+                    measure_v = flpops
+                elif measure == 'iter':
+                    measure_v = iter
+                elif measure == 'time':
+                    measure_v = time_s
+
+                solver_flpops[solver][ip] = measure_v
+
+                min_flpops[fileproblem] = min(measure_v,
+                                              min_flpops[fileproblem])
+                ip += 1
+
 
 for solver in solvers:
     ip = 0
     for fileproblem in rfileproblems:
-
-        if fileproblem[0] is not None:
-
-            problem = fileproblem[1]
-            filename = fileproblem[0]
-
-            f = h5py.File(filename, 'r')
-            if 'guesses' in f:
-                number_of_guesses = f['guesses']['number_of_guesses'][0]
-                velocities = f['guesses']['1']['u']
-                reactions = f['guesses']['1']['r']
-            else:
-                # guess is missing
-                reactions = np.zeros(problem.dimension * problem.numberOfContacts)
-                velocities = np.zeros(problem.dimension * problem.numberOfContacts)
-
-            try:
-                info, iter, err, real_time, proc_time, flpops, mflops = \
-                    solver(problem, reactions, velocities)
-            except Exception as exception:
-                print exception
-                info = 1
-                iter = np.nan
-                err = np.nan
-                real_time = np.nan
-                proc_time = np.nan
-                flpops = np.nan
-                mflops = np.nan
-
-                # need output in a csv database
-
-            # filename, solver name, revision svn, parameters, nb iter, err
-            print(filename, solver.name(), info, iter, err, real_time, proc_time, 
-                  flpops, mflops)
-
-            if measure == 'flop':
-                solver_flpops[solver][ip] = flpops
-            elif measure == 'iter':
-                solver_flpops[solver][ip] = iter
-                
-            min_flpops[fileproblem] = min(flpops, min_flpops[fileproblem])
-            ip += 1
-            
-
-for solver in solvers:
-    ip = 0
-    for fileproblem in rfileproblems:
-        solver_r[solver][ip] = solver_flpops[solver][ip] / min_flpops[fileproblem]
+        solver_r[solver][ip] = solver_flpops[solver][ip] / \
+            min_flpops[fileproblem]
         ip += 1
 
-domain = np.arange(1,10,.1)
+domain = np.arange(1, 10, .1)
 
 rhos = dict()
 for solver in solvers:
@@ -382,7 +459,6 @@ for solver in solvers:
 from matplotlib.pyplot import subplot, title, plot, grid, show, legend
 
 for solver in solvers:
-    print solver.name(), rhos[solver]
     plot(domain, rhos[solver], label=solver.name())
     legend()
 grid()
