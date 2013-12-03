@@ -422,9 +422,9 @@ with h5py.File('socomp.hdf5', 'a') as socomp_file:
                     mflops = attrs['mflops']
 
                 # filename, solver name, revision svn, parameters, nb iter, err
-                #                print(filename, solver.name(), info, iter, err,
-                #      time_s, real_time, proc_time,
-                #      flpops, mflops)
+                print(filename, solver.name(), info, iter, err,
+                      time_s, real_time, proc_time,
+                      flpops, mflops)
 
                 if measure == 'flop':
                     measure_v = flpops
