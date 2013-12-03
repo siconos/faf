@@ -20,7 +20,7 @@ def usage():
 
 try:
     opts, args = getopt.gnu_getopt(sys.argv[1:], '',
-                                   ['help', 'tmin=', 'tmax='])
+                                   ['help', 'dat', 'tmin=', 'tmax='])
 except getopt.GetoptError, err:
         sys.stderr.write('{0}\n'.format(str(err)))
         usage()
@@ -28,9 +28,10 @@ except getopt.GetoptError, err:
 
 min_time = None
 max_time = None
+dat_file = False
 
 for o, a in opts:
-    
+
     if o == '--help':
         usage()
         exit(0)
@@ -39,9 +40,10 @@ for o, a in opts:
         min_time = float(a)
 
     elif o == '--tmax':
-        
         max_time = float(a)
 
+    elif o == '--dat':
+        dat_file = True
 
 print min_time, max_time
 if len(args) == 1:
@@ -122,21 +124,29 @@ instances = set()
 
 import numpy
 
-inFile = h5py.File('out.hdf5', 'r')
+if not dat_file:
+    try:
+        inFile = h5py.File('out.hdf5', 'r')
+        spos_data = inFile['data']['static']
+        dpos_data = inFile['data']['dynamic']
+    except:
+        dat_file = True
 
-#spos_data = numpy.loadtxt(spos_filename, ndmin=2)
-#dpos_data = numpy.loadtxt(dpos_filename, ndmin=2)
-spos_data = inFile['data']['static']
-dpos_data = inFile['data']['dynamic']
+if dat_file:
+    spos_data = numpy.loadtxt(spos_filename, ndmin=2)
+    dpos_data = numpy.loadtxt(dpos_filename, ndmin=2)
+
 
 print spos_data.shape
 print dpos_data.shape
 
-#cf_data = numpy.loadtxt(cf_filename)
-try:
-    cf_data = inFile['data']['cf'][:].copy()
-except:
-    cf_data = None
+if dat_file:
+    cf_data = numpy.loadtxt(cf_filename)
+else:
+    try:
+        cf_data = inFile['data']['cf'][:].copy()
+    except:
+        cf_data = None
 
 #def contact_point_reader():
 #    global dos
@@ -249,9 +259,14 @@ times.sort()
 
 ndyna = len(numpy.where(dpos_data[:, 0] == times[0]))
 
-nstatic = len(numpy.where(spos_data[:, 0] == times[0]))
+if len(spos_data) > 0:
+    nstatic = len(numpy.where(spos_data[:, 0] == times[0]))
+    instances = set(dpos_data[:, 1]).union(set(spos_data[:, 1]))
+else:
+    nstatic = 0
+    instances = set(dpos_data[:, 1])
 
-instances = set(dpos_data[:, 1]).union(set(spos_data[:, 1]))
+
 
 cf_prov._time = min(times[:])
 
@@ -534,8 +549,11 @@ except IOError as e:
 
 id_t0 = numpy.where(dpos_data[:, 0] == min(dpos_data[:, 0]))
 
-pos_data = numpy.concatenate((spos_data, dpos_data))
-
+if nstatic > 0:
+    pos_data = numpy.concatenate((spos_data, dpos_data))
+else:
+    pos_data = dpos_data[:].copy()
+    
 set_positionv(pos_data[id_t0, 1], pos_data[id_t0, 2], pos_data[id_t0, 3],
               pos_data[id_t0, 4], pos_data[id_t0, 5], pos_data[id_t0, 6],
               pos_data[id_t0, 7], pos_data[id_t0, 8])
@@ -730,9 +748,10 @@ hlight.SetFocalPoint(0, 0, 0)
 hlight.SetLightTypeToHeadlight()
 renderer.AddLight(hlight)
 
-
-#solv_data = numpy.loadtxt('solv.dat', ndmin=2)
-solv_data = inFile['data']['solv']
+if dat_file:
+    solv_data = numpy.loadtxt('solv.dat', ndmin=2)
+else:
+    solv_data = inFile['data']['solv']
 
 #import numpy as np
 #import matplotlib.pyplot as plt

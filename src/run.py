@@ -234,9 +234,13 @@ simulation.setNewtonMaxIteration(params.NewtonMaxIter)
 k = 1
 
 # time loop
+if 'external_forces' in dir(params):
+    external_forces = params.external_forces
+else:
+    external_forces = IO.apply_gravity
 
 
-with IO.Hdf5(broadphase, osi) as io:
+with IO.Hdf5(broadphase, osi, set_external_forces=external_forces) as io:
 
     model.initialize(simulation)
 
