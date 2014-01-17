@@ -30,7 +30,7 @@ import getopt
 
 
 from Siconos.Kernel import \
-     Model, Moreau, TimeDiscretisation,\
+     Model, MoreauJeanOSI, TimeDiscretisation,\
      FrictionContact, NewtonImpactFrictionNSL, BlockCSRMatrix
 
 from Siconos.Mechanics.ContactDetection.Bullet import IO, \
@@ -128,7 +128,7 @@ model = Model(t0, T)
 nslaw = NewtonImpactFrictionNSL(0., 0., mu, 3)
 
 # (1) OneStepIntegrators
-osi = Moreau(theta)
+osi = MoreauJeanOSI(theta)
 
 static_cobjs = []
 

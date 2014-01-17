@@ -3,12 +3,15 @@
 from glob import glob
 from itertools import product, chain, imap
 import numpy as np
-from Siconos.Numerics import *
+import Siconos.Numerics as N
 import Siconos.FCLib as FCL
+
+from subprocess import check_call
 
 import os
 
 import multiprocessing
+import multiprocessing.pool
 import time
 import logging
 
@@ -16,14 +19,53 @@ import h5py
 import getopt
 import sys
 import hashlib
+import shlex
+#from comp  import *
 #logger = multiprocessing.log_to_stderr()
 #logger.setLevel(logging.INFO)
 
-measure = 'flop'
+class Memoize():
+    def __init__(self, fun):
+        self._fun = fun
+        self._done = dict()
 
+    def __call__(self, *args):
+        if args in self._done:
+            return self._done[args]
+        else:
+            try:
+                r = self._fun(*args)
+                self._done[args] = r
+                return r
+            except Exception as e:
+                self._done[args] = e
+                return e
+
+def split(s, sep, maxsplit=-1):
+
+    try:
+        return [shlex.split(kw)[0]
+                 for kw in s.split(sep, maxsplit)]
+    except Exception:
+        sys.stderr.write('don\'t know how to split {0} with {1}\n'
+                         .format(s, sep))
+        return None
+
+
+measure = 'flop'
+clean = False
+display = False
+user_filenames = []
+user_solvers = []
+utimeout = 10
+keep_files = False
+output_errors = False
+output_velocities = False
+output_reactions = False
 try:
     opts, args = getopt.gnu_getopt(sys.argv[1:], '',
-                                   ['help', 'flop', 'iter', 'time'])
+                                   ['help', 'flop', 'iter', 'time', 'clean','display','files=','solvers=',
+                                'timeout=', 'keep-files', 'new', 'errors', 'velocities', 'reactions'])
 except getopt.GetoptError, err:
         sys.stderr.write('{0}\n'.format(str(err)))
         usage()
@@ -35,6 +77,41 @@ for o, a in opts:
         measure = 'iter'
     elif o == '--time':
         measure = 'time'
+    elif o == '--timeout':
+        utimeout = float(a)
+    elif o == '--clean':
+        clean = True
+    elif o == '--display':
+        display = True
+    elif o == '--keep-files':
+        keep_files = True
+    elif o == '--errors':
+        output_errors = True
+    elif o == '--velocities':
+        output_velocities = True
+    elif o == '--reactions':
+        output_reactions = True
+    elif o == '--solvers':
+        user_solvers = split(a,',')
+
+    elif o == '--new':
+        try:
+            os.remove('comp.hdf5')
+        except:
+            pass
+        
+    elif o == '--files':
+
+        files = split(a,',')
+
+        for f in files:
+
+            if os.path.exists(f):
+                user_filenames += [f]
+            else:
+                if os.path.exists('{0}.hdf5'.format(f)):
+                    user_filenames += ['{0}.hdf5'.format(f)]
+
 
 
 from ctypes import cdll, c_float, c_longlong, byref
@@ -51,12 +128,12 @@ def init_flop():
         iproc_time = c_float()
         iflpops = c_longlong()
         imflops = c_float()
-        papi.PAPI_flops(byref(ireal_time), byref(iproc_time), byref(iflpops), 
+        papi.PAPI_flops(byref(ireal_time), byref(iproc_time), byref(iflpops),
                         byref(imflops))
 
 def get_flop(real_time, proc_time, flpops, mflops):
     if with_papi:
-        r = papi.PAPI_flops(byref(real_time), byref(proc_time), byref(flpops), 
+        r = papi.PAPI_flops(byref(real_time), byref(proc_time), byref(flpops),
                             byref(mflops))
     else:
         real_time.value = np.nan
@@ -83,7 +160,18 @@ def get_flop(real_time, proc_time, flpops, mflops):
 #get_flop(real_time, proc_time, flpops, mflops)
 #print real_time.value, proc_time.value, flpops.value, mflops.value
 
+class NoDaemonProcess(multiprocessing.Process):
+    # make 'daemon' attribute always return False
+    def _get_daemon(self):
+      return False
+    def _set_daemon(self, value):
+      pass
+    daemon = property(_get_daemon, _set_daemon)
 
+# We sub-class multiprocessing.pool.Pool instead of multiprocessing.Pool
+# because the latter is only a wrapper function, not a proper class.
+class MyPool(multiprocessing.pool.Pool):
+    Process = NoDaemonProcess
 
 class TimeoutException(Exception):
     pass
@@ -108,8 +196,6 @@ class RunableProcessing(multiprocessing.Process):
         return self.queue.get()
 
 
-flops = dict()
-
 def timeout(seconds, force_kill=True):
     def wrapper(function):
         def inner(*args, **kwargs):
@@ -127,14 +213,229 @@ def timeout(seconds, force_kill=True):
             assert proc.done()
             success, result = proc.result()
             if success:
-                return time.time() - now, result
+                #return time.time() - now, result
+                return result
             else:
-                raise time.time() - now, result
+                #raise time.time() - now, result
+                raise result
         return inner
     return wrapper
 
 
-#pool = multiprocessing.Pool(processes=1)
+def read_fclib_format(f):
+    #    fc_problem = FCL.fclib_read_local(f)
+    #solution = FCL.fclib_read_solution(f)
+    #print FCL.fclib_merit_local(fc_problem, FCL.MERIT_1, solution)
+    #print fc_problem.W.m
+    #print solution.u
+    #solution.u = np.zeros(fc_problem.W.m * fc_problem.spacedim)
+    #solution.r = np.zeros(fc_problem.W.m * fc_problem.spacedim)
+    #print FCL.fclib_merit_local(fc_problem, FCL.MERIT_1, solution)
+
+    return N.frictionContact_fclib_read(f)
+
+
+pread_fclib_format = Memoize(read_fclib_format)
+
+class SolverCallback:
+    def __init__(self, h5file, data):
+        self._offset = 0
+        self._data = data
+        self._file = h5file
+
+    def get_step(self, reaction, velocity, error):
+
+        self._reactions = self._data['reactions']
+        self._velocities = self._data['velocities']
+        self._errors = self._data['errors']
+        self._offset += 1
+        if output_reactions:
+                self._reactions.resize(self._offset, 0)
+                self._reactions[self._offset - 1, :] = reaction
+
+        if output_velocities:
+                self._velocities.resize(self._offset, 0)
+                self._velocities[self._offset - 1, :] = velocity
+
+        if output_errors:
+                self._errors.resize(self._offset, 0)
+                self._errors[self._offset - 1, :] = error
+
+
+class Caller():
+
+    def __init__(self):
+        pass
+
+    def _solver_call(self, solver, *args):
+        return solver(*args)
+
+    def __call__(self, tpl):
+
+        solver, filename = tpl
+        problem = pread_fclib_format(filename)
+
+        pfilename = os.path.splitext(filename)[0]
+
+        output_filename = '{0}-{1}.hdf5'.format(solver.name(),
+                                                pfilename)
+        # considered as tmp file
+        try:
+                os.remove(output_filename)
+        except:
+                pass
+
+        try:
+            self._internal_call(solver, problem, filename, pfilename, output_filename)
+
+        except Exception as e:
+
+            print e
+            
+            try:
+               os.remove(output_filename)
+            except:
+                pass
+
+            with h5py.File(output_filename, 'w') as output:
+
+                digest = hashlib.sha256(open(filename, 'rb').read()).digest()
+                data = output.create_group('data')
+                comp_data = data.create_group('comp')
+                solver_data = comp_data.create_group(solver.name())
+                solver_problem_data = solver_data.create_group(pfilename)
+                attrs = solver_problem_data.attrs
+                info = 1
+                time_s = np.nan
+                iter = np.nan
+                err = np.nan
+                real_time = np.nan
+                proc_time = np.nan
+                flpops = np.nan
+                mflops = np.nan
+
+                attrs.create('filename', filename)
+                attrs.create('digest', digest)
+                attrs.create('info', info)
+                attrs.create('iter', iter)
+                attrs.create('err', err)
+                #            attrs.create('time', time_s)
+                attrs.create('real_time', real_time)
+                attrs.create('proc_time', proc_time)
+                attrs.create('flpops', flpops)
+                attrs.create('mflops', mflops)
+
+                print(filename, solver.name(), info, iter, err,
+                      time_s, real_time, proc_time,
+                      flpops, mflops)
+
+    @timeout(utimeout)
+    def _internal_call(self, solver, problem, filename, pfilename, output_filename):
+
+        with h5py.File(output_filename, 'w') as output:
+
+            data = output.create_group('data')
+            comp_data = data.create_group('comp')
+            solver_data = comp_data.create_group(solver.name())
+            solver_problem_data = solver_data.create_group(pfilename)
+            attrs = solver_problem_data.attrs
+
+            psize = problem.dimension * problem.numberOfContacts
+
+            info = None
+            iter = None
+            err = None
+            time_s = None
+            real_time = None
+            proc_time = None
+            flpops = None
+            mflops = None
+
+            digest = hashlib.sha256(open(filename, 'rb').read()).digest()
+
+            solver_problem_data.create_dataset('reactions',
+                                               (0, psize),
+                                               maxshape=(None, psize))
+
+            solver_problem_data.create_dataset('velocities',
+                                               (0, psize),
+                                               maxshape=(None, psize))
+
+            solver_problem_data.create_dataset('errors',
+                                               (0, 1),
+                                               maxshape=(None, 1))
+
+            solver_problem_callback = \
+              SolverCallback(output, solver_problem_data)
+
+            # need a function, not an instance method for PyObjectCall...
+            def pffff(r,v,e):
+                solver_problem_callback.get_step(r,v,e)
+
+            if output_errors or output_velocities or output_reactions:
+                solver.SolverOptions().callback = pffff
+            # get first guess or set guess to zero
+            f = h5py.File(filename, 'r')
+            if 'guesses' in f:
+                number_of_guesses = f['guesses']['number_of_guesses'][0]
+                velocities = f['guesses']['1']['u'][:]
+                reactions = f['guesses']['1']['r'][:]
+            else:
+                # guess is missing
+                reactions = np.zeros(psize)
+                velocities = np.zeros(psize)
+
+            try:
+                result = self._solver_call(solver,
+                                           *(problem, reactions, velocities))
+
+                info, iter, err, real_time, proc_time, flpops, mflops = result
+
+            except Exception as exception:
+                print exception
+                info = 1
+                time_s = np.nan
+                iter = np.nan
+                err = np.nan
+                real_time = np.nan
+                proc_time = np.nan
+                flpops = np.nan
+                mflops = np.nan
+
+            attrs.create('filename', filename)
+            attrs.create('digest', digest)
+            attrs.create('info', info)
+            attrs.create('iter', iter)
+            attrs.create('err', err)
+            #            attrs.create('time', time_s)
+            attrs.create('real_time', real_time)
+            attrs.create('proc_time', proc_time)
+            attrs.create('flpops', flpops)
+            attrs.create('mflops', mflops)
+
+            # filename, solver name, revision svn, parameters, nb iter, err
+            print(filename, solver.name(), info, iter, err,
+                  time_s, real_time, proc_time,
+                  flpops, mflops)
+
+                    # if info == 1:
+                    #     measure_v = np.inf
+                    # else:
+                    #     if measure == 'flop':
+                    #         measure_v = flpops
+                    #     elif measure == 'iter':
+                    #         measure_v = iter
+                    #     elif measure == 'time':
+                    #         measure_v = time_s
+
+                    # solver_flpops[solver][ip] = measure_v
+
+                    # min_flpops[fileproblem] = min(measure_v,
+                    #                               min_flpops[fileproblem])
+                    # ip += 1
+
+                    # comp_file.flush()
+
 
 class SiconosSolver():
     _name = None
@@ -144,27 +445,27 @@ class SiconosSolver():
     _dparam_err = None
     _SO = None
 
-    def _get(self,tab,index):
+    def _get(self, tab, index):
         if index is not None:
             return tab[index]
         else:
             return None
 
-    def __init__(self, name = None, API = None, TAG = None, iparam_iter = None, dparam_err = None):
+    def __init__(self, name=None, API=None, TAG=None, iparam_iter=None,
+                 dparam_err=None):
         self._name = name
         self._API = API
         self._TAG = TAG
         self._iparam_iter = iparam_iter
         self._dparam_err = dparam_err
-        self._SO = SolverOptions(TAG) # set default solver options
+        self._SO = N.SolverOptions(TAG)  # set default solver options
         self._SO.iparam[0] = 100000
         self._SO.dparam[0] = 1e-8
 
     def SolverOptions(self):
         return self._SO
 
-    @timeout(100)    
-    def __call__(self,problem,reactions,velocities):
+    def __call__(self, problem, reactions, velocities):
         real_time = c_float()
         proc_time = c_float()
         flpops = c_longlong()
@@ -180,54 +481,56 @@ class SiconosSolver():
     def name(self):
         return self._name
 
+
+
 #
 # Some solvers
 #
-localac = SiconosSolver(name="Local Alart Curnier",
-                        API=frictionContact3D_localAlartCurnier,
-                        TAG=SICONOS_FRICTION_3D_LOCALAC,
+localac = SiconosSolver(name="LocalAlartCurnier",
+                        API=N.frictionContact3D_localAlartCurnier,
+                        TAG=N.SICONOS_FRICTION_3D_LOCALAC,
                         iparam_iter=1,
                         dparam_err=1)
 
 localac.SolverOptions().iparam[3] = 10000000
 
 
-nsgs = SiconosSolver(name="Nonsmooth Gauss Seidel",
-                     API=frictionContact3D_nsgs,
-                     TAG=SICONOS_FRICTION_3D_NSGS,
+nsgs = SiconosSolver(name="NonsmoothGaussSeidel",
+                     API=N.frictionContact3D_nsgs,
+                     TAG=N.SICONOS_FRICTION_3D_NSGS,
                      iparam_iter=7,
                      dparam_err=1)
 
 
 # only dense
-nsgsv = SiconosSolver(name="Nonsmooth Gauss Seidel velocity",
-                      API=frictionContact3D_nsgs_velocity,
-                      TAG=SICONOS_FRICTION_3D_NSGSV,
+nsgsv = SiconosSolver(name="NonsmoothGaussSeidelVelocity",
+                      API=N.frictionContact3D_nsgs_velocity,
+                      TAG=N.SICONOS_FRICTION_3D_NSGSV,
                       iparam_iter=7,
                       dparam_err=1)
 
-TrescaFixedPoint = SiconosSolver(name="Tresca Fixed Point",
-                                 API=frictionContact3D_TrescaFixedPoint,
-                                 TAG=SICONOS_FRICTION_3D_TFP,
+TrescaFixedPoint = SiconosSolver(name="TrescaFixedPoint",
+                                 API=N.frictionContact3D_TrescaFixedPoint,
+                                 TAG=N.SICONOS_FRICTION_3D_TFP,
                                  iparam_iter=7,
                                  dparam_err=1)
 
-DeSaxceFixedPoint = SiconosSolver(name="DeSaxce Fixed Point",
-                                  API=frictionContact3D_DeSaxceFixedPoint,
-                                  TAG=SICONOS_FRICTION_3D_DSFP,
+DeSaxceFixedPoint = SiconosSolver(name="DeSaxceFixedPoint",
+                                  API=N.frictionContact3D_DeSaxceFixedPoint,
+                                  TAG=N.SICONOS_FRICTION_3D_DSFP,
                                   iparam_iter=7,
                                   dparam_err=1)
 
-Prox = SiconosSolver(name="Proximal fixed point",
-                     API=frictionContact3D_proximal,
-                     TAG=SICONOS_FRICTION_3D_PROX,
+Prox = SiconosSolver(name="ProximalFixedPoint",
+                     API=N.frictionContact3D_proximal,
+                     TAG=N.SICONOS_FRICTION_3D_PROX,
                      iparam_iter=7,
                      dparam_err=1)
 
 
-ExtraGrad = SiconosSolver(name="Extra gradient",
-                          API=frictionContact3D_ExtraGradient,
-                          TAG=SICONOS_FRICTION_3D_EG,
+ExtraGrad = SiconosSolver(name="ExtraGradient",
+                          API=N.frictionContact3D_ExtraGradient,
+                          TAG=N.SICONOS_FRICTION_3D_EG,
                           iparam_iter=7,
                           dparam_err=1)
 
@@ -246,11 +549,15 @@ ExtraGrad = SiconosSolver(name="Extra gradient",
 # rho estimation needed
 Prox._SO.dparam[3] = 1000
 
-HyperplaneProjection = SiconosSolver(name="hyperplane projection",
-                                     API=frictionContact3D_HyperplaneProjection,
-                                     TAG=SICONOS_FRICTION_3D_HP,
+HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
+                                     API=N.frictionContact3D_HyperplaneProjection,
+                                     TAG=N.SICONOS_FRICTION_3D_HP,
                                      iparam_iter=7,
                                      dparam_err=1)
+
+
+
+
 
 
 # check for correct flop
@@ -260,7 +567,7 @@ HyperplaneProjection = SiconosSolver(name="hyperplane projection",
 #    c = a+b
 #    return 0
 #
-#Pipo = SiconosSolver(name="pipo", 
+#Pipo = SiconosSolver(name="pipo",
 #                     API=pipo,
 #                     TAG=SICONOS_FRICTION_3D_HP,
 #                     iparam_iter=1,
@@ -269,50 +576,64 @@ HyperplaneProjection = SiconosSolver(name="hyperplane projection",
 
 # http://code.google.com/p/mpi4py/
 #from mpi4py import MPI
+#rank = MPI.COMM_WORLD.rank
 #frictionContact3D_sparseGlobalAlartCurnierInit(localac.SolverOptions())
 
-setNumericsVerbose(0)
 
-solvers = [nsgs, TrescaFixedPoint, localac, Prox, DeSaxceFixedPoint, ExtraGrad]
-#solvers = [ExtraGrad]
+all_solvers = [nsgs, TrescaFixedPoint, localac, Prox, DeSaxceFixedPoint, ExtraGrad]
+if user_solvers == []:
+    solvers = all_solvers
+else:
+    solvers = filter(lambda s : s._name in user_solvers, all_solvers)
 
 
 def is_fclib_file(filename):
-    with h5py.File(filename, 'r') as f:
-        return 'fclib_local' in f or 'fclib_global' in f
+    r = False
+    try:
+        with h5py.File(filename, 'r') as f:
+            r = 'fclib_local' in f or 'fclib_global' in f
+    except:
+        pass
 
+    return r
 
 def read_numerics_format(f):
-    return frictionContactProblemFromFile(f)
+    return N.frictionContactProblemFromFile(f)
 
 
-def read_fclib_format(f):
-    return frictionContact_fclib_read(f)
 
 
-def read_problem(f):
-    try:
-        ext = os.path.splitext(f)[1]
-        if ext == ".dat":
-            return f, read_numerics_format(f)
-        else:
-            if ext == ".hdf5":
-                if is_fclib_file(f):
-                    return f, read_fclib_format(f)
-                else:
-                    raise Exception
-    except Exception as e:
-        print e
-        return None, None
+from numpy import eye, array
+keeper = []
 
+NC = 1
 
-fileproblems = imap(read_problem, glob("*.hdf5"))
+M = eye(3*NC)
 
-rfileproblems = [f for f in fileproblems]
+q = array([-1., 1., 3.])
+
+mu = array([0.1]);
+
+z = array([0.,0.,0.])
+
+reactions = array([0.,0.,0.])
+
+velocities = array([0.,0.,0.])
 
 solver_flpops = dict()
 solver_r = dict()
-n_problems = len(rfileproblems)
+
+
+if user_filenames == []:
+    all_filenames = glob('*.hdf5')
+else:
+    all_filenames = user_filenames
+
+problem_filenames = filter(is_fclib_file, all_filenames)
+
+n_problems = len(problem_filenames)
+
+problems = [read_fclib_format(f) for f in problem_filenames]
 
 for solver in solvers:
     solver_flpops[solver] = np.empty(n_problems)
@@ -320,146 +641,110 @@ for solver in solvers:
 
 min_flpops = dict()
 
-for fileproblem in rfileproblems:
+for fileproblem in problem_filenames:
     min_flpops[fileproblem] = np.inf
 
+if clean:
+    h5mode = 'w'
+else:
+    h5mode = 'a'
 
-with h5py.File('socomp.hdf5', 'a') as socomp_file:
-    if 'data' not in socomp_file:
-        data = socomp_file.create_group('data')
-    else:
-        data = socomp_file['data']
-
-    if 'socomp' not in data:
-        socomp_data = data.create_group('socomp')
-    else:
-        socomp_data = data['socomp']
-
-    for solver in solvers:
-        ip = 0
-        for fileproblem in rfileproblems:
-
-            if fileproblem[0] is not None:
-
-                problem = fileproblem[1]
-                filename = fileproblem[0]
-
-                # get the file signature
-                digest = hashlib.sha256(open(filename, 'rb').read()).digest()
-
-                if solver.name() not in socomp_data:
-                    solver_data = socomp_data.create_group(solver.name())
-                else:
-                    solver_data = socomp_data[solver.name()]
-
-                if filename not in solver_data:
-                    solver_problem_data = solver_data.create_group(filename)
-                else:
-                    solver_problem_data = solver_data[filename]
-
-                attrs = solver_problem_data.attrs
+caller = Caller()
 
 
-                info = None
-                iter = None
-                err = None
-                time_s = None
-                real_time = None
-                proc_time = None
-                flpops = None
-                mflops = None
+pool = MyPool(processes=8)
+
+def collect(tpl):
+
+    solver, filename = tpl
+    pfilename = os.path.splitext(filename)[0]
+    try:
+        check_call(['h5copy','-p','-i{0}-{1}.hdf5'.format(solver.name(),pfilename),
+                    '-ocomp.hdf5','-s/data/comp/{0}/{1}'.format(solver.name(),pfilename),
+                    '-d/data/comp/{0}/{1}'.format(solver.name(),pfilename)])
+        if not keep_files:
+            os.remove('{0}-{1}.hdf5'.format(solver.name(),pfilename))
+    except Exception as e:
+        print e
 
 
-                if 'digest' not in attrs or attrs['digest'] != digest:
+class Results():
+    def __init__(self, result_file):
+        self._result_file = result_file
 
-                    # get first guess or set guess to zero
-                    f = h5py.File(filename, 'r')
-                    if 'guesses' in f:
-                        number_of_guesses = f['guesses']['number_of_guesses'][0]
-                        velocities = f['guesses']['1']['u']
-                        reactions = f['guesses']['1']['r']
-                    else:
-                        # guess is missing
-                        reactions = np.zeros(problem.dimension * problem.numberOfContacts)
-                        velocities = np.zeros(problem.dimension * problem.numberOfContacts)
+    def __call__(self, tpl):
+        solver = tpl[0]
+        problem_filename = os.path.splitext(tpl[1])[0]
+        try:
+            self._result_file['data']['comp'][solver.name()][problem_filename]
+            return False
+        except:
+            return True
 
-                    try:
-                        time_s, l = \
-                            solver(problem, reactions, velocities)
-                        info, iter, err, real_time, proc_time, flpops, mflops = l
-                    except Exception as exception:
-                        print exception
-                        info = 1
-                        iter = np.nan
-                        err = np.nan
-                        real_time = np.nan
-                        proc_time = np.nan
-                        flpops = np.nan
-                        mflops = np.nan
+if __name__ == '__main__':
 
-                        # need output in a csv database
+    if not display:
+        all_tasks = [t for t in product(solvers, problem_filenames)]
 
-                    attrs.create('filename', filename)
-                    attrs.create('digest', digest)
-                    attrs.create('info', info)
-                    attrs.create('iter', iter)
-                    attrs.create('err', err)
-                    attrs.create('time', time_s)
-                    attrs.create('real_time', real_time)
-                    attrs.create('proc_time', proc_time)
-                    attrs.create('flpops', flpops)
-                    attrs.create('mflops', mflops)
+        if os.path.exists('comp.hdf5'):
+            with h5py.File('comp.hdf5', 'r') as result_file:
+                tasks = filter(Results(result_file), all_tasks)
 
-                else:
-                    filename = attrs['filename']
-                    info = attrs['info']
-                    iter = attrs['iter']
-                    err = attrs['err']
-                    time_s = attrs['time']
-                    real_time = attrs['real_time']
-                    proc_time = attrs['proc_time']
-                    flpops = attrs['flpops']
-                    mflops = attrs['mflops']
+        else:
+            tasks = all_tasks
 
-                # filename, solver name, revision svn, parameters, nb iter, err
-                print(filename, solver.name(), info, iter, err,
-                      time_s, real_time, proc_time,
-                      flpops, mflops)
+        r = map(caller, tasks)
 
-                if measure == 'flop':
-                    measure_v = flpops
-                elif measure == 'iter':
-                    measure_v = iter
-                elif measure == 'time':
-                    measure_v = time_s
+        map(collect, tasks)
 
-                solver_flpops[solver][ip] = measure_v
 
-                min_flpops[fileproblem] = min(measure_v,
-                                              min_flpops[fileproblem])
+
+    if display:
+        for solver in solvers:
+            ip = 0
+            for problem_filename in problem_filenames:
+                solver_r[solver][ip] = solver_flpops[solver][ip] / \
+                    min_flpops[problem_filename]
                 ip += 1
 
+        domain = np.arange(1, 10, .1)
 
-for solver in solvers:
-    ip = 0
-    for fileproblem in rfileproblems:
-        solver_r[solver][ip] = solver_flpops[solver][ip] / \
-            min_flpops[fileproblem]
-        ip += 1
+        rhos = dict()
+        for solver in solvers:
+            rhos[solver] = np.empty(len(domain))
+            for itau in range(0, len(domain)):
+                rhos[solver][itau] = float(len(np.where( solver_r[solver] < domain[itau] )[0])) / float(n_problems)
 
-domain = np.arange(1, 10, .1)
+        from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure
 
-rhos = dict()
-for solver in solvers:
-    rhos[solver] = np.empty(len(domain))
-    for itau in range(0, len(domain)):
-        rhos[solver][itau] = float(len(np.where( solver_r[solver] < domain[itau] )[0])) / float(n_problems)
+        for solver in solvers:
+            plot(domain, rhos[solver], label=solver.name())
+            legend()
+        grid()
 
 
-from matplotlib.pyplot import subplot, title, plot, grid, show, legend
+        from matplotlib.pyplot import subplot, title, plot, grid, show, legend
+        with h5py.File('comp.hdf5', 'r') as comp_file:
 
-for solver in solvers:
-    plot(domain, rhos[solver], label=solver.name())
-    legend()
-grid()
-show()
+            data = comp_file['data']
+            comp_data = data['comp']
+            for solver_name in comp_data:
+
+                if user_filenames == []:
+                    filenames = comp_data[solver_name]
+                else:
+                    filenames = user_filenames
+
+                for filename in filenames:
+
+                    try:
+                        pfilename = os.path.splitext(filename)[0]
+                        solver_problem_data = comp_data[solver_name][pfilename]
+                        figure()
+                        plot(np.arange(len(solver_problem_data['errors'][:])),
+                             solver_problem_data['errors'], label='{0} - {1}'.format(solver_name, filename))
+                        legend()
+                        grid()
+                    except:
+                        pass
+        show()
