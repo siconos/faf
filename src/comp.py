@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 
+# parallel usage : 
+# ls *.hdf5 | parallel comp.py --timeout=100 --no-collect '--file={}'
+
 from glob import glob
-from itertools import product, chain, imap
+from itertools import product
 import numpy as np
 import Siconos.Numerics as N
-import Siconos.FCLib as FCL
+#import Siconos.FCLib as FCL
 
 from subprocess import check_call
 
@@ -13,16 +16,16 @@ import os
 import multiprocessing
 import multiprocessing.pool
 import time
-import logging
 
 import h5py
 import getopt
 import sys
 import hashlib
 import shlex
-#from comp  import *
+
 #logger = multiprocessing.log_to_stderr()
 #logger.setLevel(logging.INFO)
+
 
 class Memoize():
     def __init__(self, fun):
@@ -40,6 +43,7 @@ class Memoize():
             except Exception as e:
                 self._done[args] = e
                 return e
+
 
 def split(s, sep, maxsplit=-1):
 
@@ -64,10 +68,14 @@ output_errors = False
 output_velocities = False
 output_reactions = False
 measure_name = 'flpops'
+ask_compute = True
+ask_collect = True
+maxiter = 100000
+precision = 1e-8
 try:
     opts, args = getopt.gnu_getopt(sys.argv[1:], '',
                                    ['help', 'flop', 'iter', 'time', 'clean','display','display-convergence','files=','solvers=',
-                                'timeout=', 'keep-files', 'new', 'errors', 'velocities', 'reactions', 'measure='])
+                                'timeout=', 'maxiter=', 'precision=', 'keep-files', 'new', 'errors', 'velocities', 'reactions', 'measure=', 'just-collect', 'no-collect'])
 except getopt.GetoptError, err:
         sys.stderr.write('{0}\n'.format(str(err)))
         usage()
@@ -81,6 +89,10 @@ for o, a in opts:
         measure = 'time'
     elif o == '--timeout':
         utimeout = float(a)
+    elif o == '--maxiter':
+        maxiter = int(a)
+    elif o == '--precision':
+        precision = float(a)
     elif o == '--clean':
         clean = True
     elif o == '--display':
@@ -98,8 +110,11 @@ for o, a in opts:
     elif o == '--reactions':
         output_reactions = True
     elif o == '--solvers':
-        user_solvers = split(a,',')
-
+        user_solvers = split(a, ',')
+    elif o == '--just-collect':
+        ask_compute = False
+    elif o == '--no-collect':
+        ask_collect = False
     elif o == '--new':
         try:
             os.remove('comp.hdf5')
@@ -137,6 +152,7 @@ def init_flop():
         papi.PAPI_flops(byref(ireal_time), byref(iproc_time), byref(iflpops),
                         byref(imflops))
 
+
 def get_flop(real_time, proc_time, flpops, mflops):
     if with_papi:
         r = papi.PAPI_flops(byref(real_time), byref(proc_time), byref(flpops),
@@ -147,40 +163,10 @@ def get_flop(real_time, proc_time, flpops, mflops):
         flpops.value = -1
         mflops.value = np.nan
 
-        #real_time = c_float()
-        #proc_time = c_float()
-        #flpops = c_longlong()
-        #mflops = c_float()
-#init_flop()
-#a=2.
-#b=3.
-#c=a+b
-#get_flop(real_time, proc_time, flpops, mflops)
-#papi.PAPI_stop_counters()
-#print real_time.value, proc_time.value, flpops.value, mflops.value
-#papi.PAPI_start_counters()
-#init_flop()
-#a=1.
-#b=2.
-#c=a+b
-#get_flop(real_time, proc_time, flpops, mflops)
-#print real_time.value, proc_time.value, flpops.value, mflops.value
-
-class NoDaemonProcess(multiprocessing.Process):
-    # make 'daemon' attribute always return False
-    def _get_daemon(self):
-      return False
-    def _set_daemon(self, value):
-      pass
-    daemon = property(_get_daemon, _set_daemon)
-
-# We sub-class multiprocessing.pool.Pool instead of multiprocessing.Pool
-# because the latter is only a wrapper function, not a proper class.
-class MyPool(multiprocessing.pool.Pool):
-    Process = NoDaemonProcess
 
 class TimeoutException(Exception):
     pass
+
 
 class RunableProcessing(multiprocessing.Process):
     def __init__(self, func, *args, **kwargs):
@@ -325,7 +311,7 @@ class Caller():
                 attrs.create('info', info)
                 attrs.create('iter', iter)
                 attrs.create('err', err)
-                #            attrs.create('time', time_s)
+                attrs.create('time', time_s)
                 attrs.create('real_time', real_time)
                 attrs.create('proc_time', proc_time)
                 attrs.create('flpops', flpops)
@@ -392,9 +378,11 @@ class Caller():
                 velocities = np.zeros(psize)
 
             try:
+                t0 = time.clock()
                 result = self._solver_call(solver,
                                            *(problem, reactions, velocities))
-
+                time_s = time.clock() - t0 # on unix, t is CPU seconds elapsed (floating point)
+                
                 info, iter, err, real_time, proc_time, flpops, mflops = result
 
             except Exception as exception:
@@ -413,7 +401,7 @@ class Caller():
             attrs.create('info', info)
             attrs.create('iter', iter)
             attrs.create('err', err)
-            #            attrs.create('time', time_s)
+            attrs.create('time', time_s)
             attrs.create('real_time', real_time)
             attrs.create('proc_time', proc_time)
             attrs.create('flpops', flpops)
@@ -458,15 +446,15 @@ class SiconosSolver():
             return None
 
     def __init__(self, name=None, API=None, TAG=None, iparam_iter=None,
-                 dparam_err=None):
+                 dparam_err=None, maxiter=maxiter, precision=precision):
         self._name = name
         self._API = API
         self._TAG = TAG
         self._iparam_iter = iparam_iter
         self._dparam_err = dparam_err
         self._SO = N.SolverOptions(TAG)  # set default solver options
-        self._SO.iparam[0] = 100000
-        self._SO.dparam[0] = 1e-8
+        self._SO.iparam[0] = maxiter
+        self._SO.dparam[0] = precision
 
     def SolverOptions(self):
         return self._SO
@@ -496,7 +484,8 @@ localac = SiconosSolver(name="LocalAlartCurnier",
                         API=N.frictionContact3D_localAlartCurnier,
                         TAG=N.SICONOS_FRICTION_3D_LOCALAC,
                         iparam_iter=1,
-                        dparam_err=1)
+                        dparam_err=1,
+                        maxiter=maxiter, precision=precision)
 
 localac.SolverOptions().iparam[3] = 10000000
 
@@ -505,7 +494,8 @@ nsgs = SiconosSolver(name="NonsmoothGaussSeidel",
                      API=N.frictionContact3D_nsgs,
                      TAG=N.SICONOS_FRICTION_3D_NSGS,
                      iparam_iter=7,
-                     dparam_err=1)
+                     dparam_err=1,
+                     maxiter=maxiter, precision=precision)
 
 
 # only dense
@@ -513,32 +503,37 @@ nsgsv = SiconosSolver(name="NonsmoothGaussSeidelVelocity",
                       API=N.frictionContact3D_nsgs_velocity,
                       TAG=N.SICONOS_FRICTION_3D_NSGSV,
                       iparam_iter=7,
-                      dparam_err=1)
+                      dparam_err=1,
+                      maxiter=maxiter, precision=precision)
 
 TrescaFixedPoint = SiconosSolver(name="TrescaFixedPoint",
                                  API=N.frictionContact3D_TrescaFixedPoint,
                                  TAG=N.SICONOS_FRICTION_3D_TFP,
                                  iparam_iter=7,
-                                 dparam_err=1)
+                                 dparam_err=1,
+                                 maxiter=maxiter, precision=precision)
 
 DeSaxceFixedPoint = SiconosSolver(name="DeSaxceFixedPoint",
                                   API=N.frictionContact3D_DeSaxceFixedPoint,
                                   TAG=N.SICONOS_FRICTION_3D_DSFP,
                                   iparam_iter=7,
-                                  dparam_err=1)
+                                  dparam_err=1,
+                                  maxiter=maxiter, precision=precision)
 
 Prox = SiconosSolver(name="ProximalFixedPoint",
                      API=N.frictionContact3D_proximal,
                      TAG=N.SICONOS_FRICTION_3D_PROX,
                      iparam_iter=7,
-                     dparam_err=1)
+                     dparam_err=1,
+                     maxiter=maxiter, precision=precision)
 
 
 ExtraGrad = SiconosSolver(name="ExtraGradient",
                           API=N.frictionContact3D_ExtraGradient,
                           TAG=N.SICONOS_FRICTION_3D_EG,
                           iparam_iter=7,
-                          dparam_err=1)
+                          dparam_err=1,
+                          maxiter=maxiter, precision=precision)
 
 # 1 contact
 #Quartic = SiconosSolver(name="Quartic",
@@ -559,7 +554,8 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
                                      API=N.frictionContact3D_HyperplaneProjection,
                                      TAG=N.SICONOS_FRICTION_3D_HP,
                                      iparam_iter=7,
-                                     dparam_err=1)
+                                     dparam_err=1,
+                                     maxiter=maxiter, precision=precision)
 
 
 
@@ -697,9 +693,11 @@ if __name__ == '__main__':
         else:
             tasks = all_tasks
 
-        r = map(caller, tasks)
+        if ask_compute:
+            r = map(caller, tasks)
 
-        map(collect, tasks)
+        if ask_collect:
+            map(collect, tasks)
 
 
     if display:
@@ -738,10 +736,10 @@ if __name__ == '__main__':
                 plot(domain, rhos[solver_name], label=solver_name)
                 legend()
             grid()
-
+        show()
 
     if display_convergence:
-        from matplotlib.pyplot import subplot, title, plot, grid, show, legend
+        from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure
         with h5py.File('comp.hdf5', 'r') as comp_file:
 
             data = comp_file['data']
@@ -765,4 +763,4 @@ if __name__ == '__main__':
                         grid()
                     except:
                         pass
-    show()
+        show()
