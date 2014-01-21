@@ -612,6 +612,7 @@ NC = 1
 
 M = eye(3*NC)
 
+
 q = array([-1., 1., 3.])
 
 mu = array([0.1]);
@@ -715,12 +716,17 @@ if __name__ == '__main__':
                 for filename in filenames:
                     if filename not in min_measure:
                         min_measure[filename] = np.inf
+                    try:
+                        if comp_data[solver_name][filename].attrs['info'] == 0:
+                            measure[solver_name][ip] =  comp_data[solver_name][filename].attrs[measure_name]
+                            min_measure[filename] = min(min_measure[filename], measure[solver_name][ip])
 
-                    measure[solver_name][ip] =  comp_data[solver_name][filename].attrs[measure_name]
-                    min_measure[filename] = min(min_measure[filename], measure[solver_name][ip])
-
-                    solver_r[solver_name][ip] = measure[solver_name][ip] / \
-                        min_measure[filename]
+                            solver_r[solver_name][ip] = measure[solver_name][ip] / \
+                              min_measure[filename]
+                        else:
+                            solver_r[solver_name][ip] = np.inf
+                    except:
+                        solver_r[solver_name][ip] = np.nan
                     ip += 1
 
             domain = np.arange(1, 10, .1)
