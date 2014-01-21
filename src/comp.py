@@ -55,6 +55,7 @@ def split(s, sep, maxsplit=-1):
 measure = 'flop'
 clean = False
 display = False
+display_convergence = False
 user_filenames = []
 user_solvers = []
 utimeout = 10
@@ -62,10 +63,11 @@ keep_files = False
 output_errors = False
 output_velocities = False
 output_reactions = False
+measure_name = 'flpops'
 try:
     opts, args = getopt.gnu_getopt(sys.argv[1:], '',
-                                   ['help', 'flop', 'iter', 'time', 'clean','display','files=','solvers=',
-                                'timeout=', 'keep-files', 'new', 'errors', 'velocities', 'reactions'])
+                                   ['help', 'flop', 'iter', 'time', 'clean','display','display-convergence','files=','solvers=',
+                                'timeout=', 'keep-files', 'new', 'errors', 'velocities', 'reactions', 'measure='])
 except getopt.GetoptError, err:
         sys.stderr.write('{0}\n'.format(str(err)))
         usage()
@@ -83,6 +85,10 @@ for o, a in opts:
         clean = True
     elif o == '--display':
         display = True
+    elif o == '--display-convergence':
+        display_convergence = True
+    elif o == '--measure':
+        measure_name = a
     elif o == '--keep-files':
         keep_files = True
     elif o == '--errors':
@@ -99,7 +105,7 @@ for o, a in opts:
             os.remove('comp.hdf5')
         except:
             pass
-        
+
     elif o == '--files':
 
         files = split(a,',')
@@ -291,7 +297,7 @@ class Caller():
         except Exception as e:
 
             print e
-            
+
             try:
                os.remove(output_filename)
             except:
@@ -428,10 +434,10 @@ class Caller():
                     #     elif measure == 'time':
                     #         measure_v = time_s
 
-                    # solver_flpops[solver][ip] = measure_v
+                    # measure[solver][ip] = measure_v
 
-                    # min_flpops[fileproblem] = min(measure_v,
-                    #                               min_flpops[fileproblem])
+                    # min_measure[fileproblem] = min(measure_v,
+                    #                               min_measure[fileproblem])
                     # ip += 1
 
                     # comp_file.flush()
@@ -620,7 +626,7 @@ reactions = array([0.,0.,0.])
 
 velocities = array([0.,0.,0.])
 
-solver_flpops = dict()
+measure = dict()
 solver_r = dict()
 
 
@@ -635,14 +641,12 @@ n_problems = len(problem_filenames)
 
 problems = [read_fclib_format(f) for f in problem_filenames]
 
-for solver in solvers:
-    solver_flpops[solver] = np.empty(n_problems)
-    solver_r[solver] = np.empty(n_problems)
 
-min_flpops = dict()
+
+min_measure = dict()
 
 for fileproblem in problem_filenames:
-    min_flpops[fileproblem] = np.inf
+    min_measure[fileproblem] = np.inf
 
 if clean:
     h5mode = 'w'
@@ -652,7 +656,7 @@ else:
 caller = Caller()
 
 
-pool = MyPool(processes=8)
+#pool = MyPool(processes=8)
 
 def collect(tpl):
 
@@ -698,31 +702,45 @@ if __name__ == '__main__':
         map(collect, tasks)
 
 
-
     if display:
-        for solver in solvers:
-            ip = 0
-            for problem_filename in problem_filenames:
-                solver_r[solver][ip] = solver_flpops[solver][ip] / \
-                    min_flpops[problem_filename]
-                ip += 1
+        with h5py.File('comp.hdf5', 'r') as comp_file:
 
-        domain = np.arange(1, 10, .1)
+            data = comp_file['data']
+            comp_data = data['comp']
+            for solver_name in comp_data:
+                filenames = comp_data[solver_name]
 
-        rhos = dict()
-        for solver in solvers:
-            rhos[solver] = np.empty(len(domain))
-            for itau in range(0, len(domain)):
-                rhos[solver][itau] = float(len(np.where( solver_r[solver] < domain[itau] )[0])) / float(n_problems)
+                measure[solver_name] = np.empty(n_problems)
+                solver_r[solver_name] = np.empty(n_problems)
 
-        from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure
+                ip = 0
+                for filename in filenames:
+                    if filename not in min_measure:
+                        min_measure[filename] = np.inf
 
-        for solver in solvers:
-            plot(domain, rhos[solver], label=solver.name())
-            legend()
-        grid()
+                    measure[solver_name][ip] =  comp_data[solver_name][filename].attrs[measure_name]
+                    min_measure[filename] = min(min_measure[filename], measure[solver_name][ip])
+
+                    solver_r[solver_name][ip] = measure[solver_name][ip] / \
+                        min_measure[filename]
+                    ip += 1
+
+            domain = np.arange(1, 10, .1)
+            rhos = dict()
+            for solver_name in comp_data:
+                rhos[solver_name] = np.empty(len(domain))
+                for itau in range(0, len(domain)):
+                    rhos[solver_name][itau] = float(len(np.where( solver_r[solver_name] < domain[itau] )[0])) / float(n_problems)
+
+            from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure
+
+            for solver_name in comp_data:
+                plot(domain, rhos[solver_name], label=solver_name)
+                legend()
+            grid()
 
 
+    if display_convergence:
         from matplotlib.pyplot import subplot, title, plot, grid, show, legend
         with h5py.File('comp.hdf5', 'r') as comp_file:
 
@@ -747,4 +765,4 @@ if __name__ == '__main__':
                         grid()
                     except:
                         pass
-        show()
+    show()
