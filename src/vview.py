@@ -15,12 +15,14 @@ import getopt
 def usage():
     print '{0}: Usage'.format(sys.argv[0])
     print """
-    {0} filename
+    {0} [--help] [--dat] [tmin=<float value>] [tmax=<float value>]
+        [--cf-scale=<float value>]
     """
 
 try:
     opts, args = getopt.gnu_getopt(sys.argv[1:], '',
-                                   ['help', 'dat', 'tmin=', 'tmax='])
+                                   ['help', 'dat', 'tmin=', 'tmax=', 
+                                    'cf-scale='])
 except getopt.GetoptError, err:
         sys.stderr.write('{0}\n'.format(str(err)))
         usage()
@@ -29,7 +31,7 @@ except getopt.GetoptError, err:
 min_time = None
 max_time = None
 dat_file = False
-
+scale_factor = 1
 for o, a in opts:
 
     if o == '--help':
@@ -45,6 +47,9 @@ for o, a in opts:
     elif o == '--dat':
         dat_file = True
 
+    elif o == '--cf-scale':
+        scale_factor = float(a)
+        
 print min_time, max_time
 if len(args) == 1:
     filename = args[0]
@@ -309,7 +314,8 @@ arrow_glyph.ScalingOn()
 arrow_glyph.SetScaleModeToScaleByVector()
 arrow_glyph.SetRange(0, .01)
 arrow_glyph.ClampingOn()
-arrow_glyph.SetScaleFactor(5)
+arrow_glyph._scale_fact = 5
+arrow_glyph.SetScaleFactor(arrow_glyph._scale_fact * scale_factor)
 arrow_glyph.SetVectorModeToUseVector()
 
 arrow_glyph.SetInputArrayToProcess(1, 0, 0, 0, 'contactForces')
@@ -339,7 +345,8 @@ cone_glyph.SetSourceConnection(cone.GetOutputPort())
 #cone_glyph.SetScaleModeToScaleByVector()
 #cone_glyph.SetRange(0, 100)
 #cone_glyph.ClampingOn()
-#cone_glyph.SetScaleFactor(1000000)
+cone_glyph._scale_fact = 1
+cone_glyph.SetScaleFactor(cone_glyph._scale_fact * scale_factor)
 cone_glyph.SetVectorModeToUseVector()
 
 cone_glyph.SetInputArrayToProcess(1, 0, 0, 0, 'contactNormals')
@@ -353,11 +360,12 @@ cylinder_glyph.SetSourceTransform(ctransform)
 
 cylinder_glyph.SetInputConnection(contact_pos_norm.GetOutputPort())
 cylinder_glyph.SetSourceConnection(cylinder.GetOutputPort())
-cylinder_glyph.ScalingOff()
 cylinder_glyph.SetVectorModeToUseVector()
 
 cylinder_glyph.SetInputArrayToProcess(1, 0, 0, 0, 'contactNormals')
 cylinder_glyph.OrientOn()
+cylinder_glyph._scale_fact = 1
+cylinder_glyph.SetScaleFactor(cylinder_glyph._scale_fact * scale_factor)
 
 cmapper = vtk.vtkPolyDataMapper()
 cmapper.SetInputConnection(cone_glyph.GetOutputPort())
@@ -373,7 +381,8 @@ sphere_glypha.ScalingOn()
 #sphere_glypha.SetScaleModeToScaleByVector()
 #sphere_glypha.SetRange(-0.5, 2)
 #sphere_glypha.ClampingOn()
-sphere_glypha.SetScaleFactor(.1)
+sphere_glypha._scale_fact = .1
+sphere_glypha.SetScaleFactor(sphere_glypha._scale_fact * scale_factor)
 #sphere_glypha.SetVectorModeToUseVector()
 
 sphere_glyphb = vtk.vtkGlyph3D()
@@ -383,7 +392,8 @@ sphere_glyphb.ScalingOn()
 #sphere_glyphb.SetScaleModeToScaleByVector()
 #sphere_glyphb.SetRange(-0.5, 2)
 #sphere_glyphb.ClampingOn()
-sphere_glyphb.SetScaleFactor(.1)
+sphere_glyphb._scale_fact = .1
+sphere_glyphb.SetScaleFactor(sphere_glyphb._scale_fact * scale_factor)
 #sphere_glyphb.SetVectorModeToUseVector()
 
 #sphere_glyphb.SetInputArrayToProcess(1, 0, 0, 0, 'contactNormals')
@@ -578,6 +588,52 @@ renderer.SetMaximumNumberOfPeels(100)
 
 # # Set the occlusion ratio (initial value is 0.0, exact image)
 renderer.SetOcclusionRatio(0.1)
+
+# callback maker for scale manipulation
+def make_scale_observer(glyphs):
+
+    def scale_observer(obj, event):
+        slider_repres = obj.GetRepresentation()
+        scale_at_pos = slider_repres.GetValue()
+        for glyph in glyphs:
+            glyph.SetScaleFactor(scale_at_pos * glyph._scale_fact)
+
+    return scale_observer
+
+
+# make a slider widget and its representation
+def make_slider(title, observer, interactor,
+                startvalue, minvalue, maxvalue, cx1, cy1, cx2, cy2):
+    slider_repres = vtk.vtkSliderRepresentation2D()
+    slider_repres.SetMinimumValue(minvalue - (maxvalue - minvalue) / 100)
+    slider_repres.SetMaximumValue(maxvalue + (maxvalue - minvalue) / 100)
+    slider_repres.SetValue(startvalue)
+    slider_repres.SetTitleText(title)
+    slider_repres.GetPoint1Coordinate().\
+        SetCoordinateSystemToNormalizedDisplay()
+    slider_repres.GetPoint1Coordinate().SetValue(cx1, cy1)
+    slider_repres.GetPoint2Coordinate().\
+        SetCoordinateSystemToNormalizedDisplay()
+    slider_repres.GetPoint2Coordinate().SetValue(cx2, cy2)
+
+    slider_repres.SetSliderLength(0.02)
+    slider_repres.SetSliderWidth(0.03)
+    slider_repres.SetEndCapLength(0.01)
+    slider_repres.SetEndCapWidth(0.03)
+    slider_repres.SetTubeWidth(0.005)
+    slider_repres.SetLabelFormat('%f')
+    slider_repres.SetTitleHeight(0.02)
+    slider_repres.SetLabelHeight(0.02)
+
+    slider_widget = vtk.vtkSliderWidget()
+    slider_widget.SetInteractor(interactor)
+    slider_widget.SetRepresentation(slider_repres)
+    slider_widget.KeyPressActivationOff()
+    slider_widget.SetAnimationModeToAnimate()
+    slider_widget.SetEnabled(True)
+    slider_widget.AddObserver('InteractionEvent', observer)
+
+    return slider_widget, slider_repres
 
 
 class InputObserver():
@@ -830,6 +886,14 @@ tview_prec.GetInteractor().Initialize()
 #tview_prec.GetInteractor().Start()
 tview_prec.GetRenderer().SetBackground(.9, .9, .9)
 tview_prec.GetRenderer().Render()
+
+slwsc, slrepsc = make_slider('Scale',
+                             make_scale_observer([cone_glyph, cylinder_glyph, sphere_glypha, sphere_glyphb, arrow_glyph]
+                                                 ),
+                                                 interactor_renderer,
+                                                 scale_factor, scale_factor - scale_factor / 2,
+                                                 scale_factor + scale_factor / 2,
+                                                 0.01, 0.01, 0.01, 0.7)
 
 renderer_window.Render()
 interactor_renderer.Initialize()
