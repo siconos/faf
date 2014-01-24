@@ -9,6 +9,7 @@ import numpy as np
 import Siconos.Numerics as N
 #import Siconos.FCLib as FCL
 
+from scipy.sparse.linalg import lsmr
 from subprocess import check_call
 
 import os
@@ -44,6 +45,15 @@ class Memoize():
                 self._done[args] = e
                 return e
 
+# estimate of condition number and norm from lsmr
+# http://www.stanford.edu/group/SOL/software/lsmr/LSMR-SISC-2011.pdf
+def _norm_cond(problem_filename):
+    problem = read_fclib_format(problem_filename)
+    A = N.SBMtoSparse(problem.M)[1]
+    r = lsmr(A, np.ones([A.shape[0], 1]))  # solve Ax = 1
+    return r[5], r[6]
+
+norm_cond = Memoize(_norm_cond)
 
 def split(s, sep, maxsplit=-1):
 
@@ -70,12 +80,13 @@ output_reactions = False
 measure_name = 'flpops'
 ask_compute = True
 ask_collect = True
-maxiter = 100000
+maxiter = 1000000
 precision = 1e-8
+domain = np.arange(1, 100, .1)
 try:
     opts, args = getopt.gnu_getopt(sys.argv[1:], '',
                                    ['help', 'flop', 'iter', 'time', 'clean','display','display-convergence','files=','solvers=',
-                                'timeout=', 'maxiter=', 'precision=', 'keep-files', 'new', 'errors', 'velocities', 'reactions', 'measure=', 'just-collect', 'no-collect'])
+                                'timeout=', 'maxiter=', 'precision=', 'keep-files', 'new', 'errors', 'velocities', 'reactions', 'measure=', 'just-collect', 'no-collect', 'domain='])
 except getopt.GetoptError, err:
         sys.stderr.write('{0}\n'.format(str(err)))
         usage()
@@ -115,6 +126,9 @@ for o, a in opts:
         ask_compute = False
     elif o == '--no-collect':
         ask_collect = False
+    elif o == '--domain':
+        urange = [float (x) for x in split(a,':')]
+        domain = np.arange(urange[0], urange[2], urange[1])
     elif o == '--new':
         try:
             os.remove('comp.hdf5')
@@ -379,10 +393,9 @@ class Caller():
 
             try:
                 t0 = time.clock()
-                result = self._solver_call(solver,
-                                           *(problem, reactions, velocities))
+                result = solver(problem, reactions, velocities)
                 time_s = time.clock() - t0 # on unix, t is CPU seconds elapsed (floating point)
-                
+
                 info, iter, err, real_time, proc_time, flpops, mflops = result
 
             except Exception as exception:
@@ -677,7 +690,8 @@ class Results():
         solver = tpl[0]
         problem_filename = os.path.splitext(tpl[1])[0]
         try:
-            self._result_file['data']['comp'][solver.name()][problem_filename]
+            r = self._result_file['data']['comp'][solver.name()][problem_filename]
+            print (r.attrs['filename'], norm_cond(r.attrs['filename']), solver.name(), r.attrs['info'], r.attrs['iter'], r.attrs['err'], r.attrs['time'], r.attrs['real_time'], r.attrs['proc_time'], r.attrs['flpops'], r.attrs['mflops'])
             return False
         except:
             return True
@@ -700,7 +714,6 @@ if __name__ == '__main__':
         if ask_collect:
             map(collect, tasks)
 
-
     if display:
         with h5py.File('comp.hdf5', 'r') as comp_file:
 
@@ -720,16 +733,29 @@ if __name__ == '__main__':
                         if comp_data[solver_name][filename].attrs['info'] == 0:
                             measure[solver_name][ip] =  comp_data[solver_name][filename].attrs[measure_name]
                             min_measure[filename] = min(min_measure[filename], measure[solver_name][ip])
+                        else:
+                            measure[solver_name][ip] = np.inf
+                    except:
+                        measure[solver_name][ip] = np.inf
+                    ip += 1
 
+            for solver_name in comp_data:
+                filenames = comp_data[solver_name]
+
+                ip = 0
+                for filename in filenames:
+                    try:
+
+                        if comp_data[solver_name][filename].attrs['info'] == 0:
                             solver_r[solver_name][ip] = measure[solver_name][ip] / \
                               min_measure[filename]
+
                         else:
                             solver_r[solver_name][ip] = np.inf
                     except:
-                        solver_r[solver_name][ip] = np.nan
+                        solver_r[solver_name][ip] = np.inf
                     ip += 1
 
-            domain = np.arange(1, 10, .1)
             rhos = dict()
             for solver_name in comp_data:
                 rhos[solver_name] = np.empty(len(domain))

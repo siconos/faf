@@ -144,6 +144,7 @@ class FrictionContactTrace(FrictionContact):
 
     def __init__(self, dim, solver, maxiter):
         self._maxiter = maxiter
+        self._counter = 0
         super(FrictionContactTrace, self).__init__(dim, solver)
 
     def compute(self,time):
@@ -180,14 +181,14 @@ class FrictionContactTrace(FrictionContact):
             if SO.iparam[7] > self._maxiter:
                 lnopts = self.numericsOptions()
                 problem = self.frictionContactProblem()
-                filename = "{0}-i{1}-{2}.hdf5".format(lnopts.fileName,
+                filename = "{0}-i{1}-{2}.hdf5".format(params.fileName,
                                                       SO.iparam[7],
-                                                      nopts.counter)
-                lnopts.counter += 1
+                                                      self._counter)
+                self._counter += 1
                 K.frictionContact_fclib_write(problem,
-                                              lnopts.title,
-                                              lnopts.description,
-                                              lnopts.mathInfo,
+                                              params.title,
+                                              params.description,
+                                              params.mathInfo,
                                               filename)
                 guess = F.fclib_solution()
                 guess.u = w_backup
