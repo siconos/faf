@@ -51,7 +51,7 @@ def _norm_cond(problem_filename):
     problem = read_fclib_format(problem_filename)
     A = N.SBMtoSparse(problem.M)[1]
     r = lsmr(A, np.ones([A.shape[0], 1]))  # solve Ax = 1
-    return r[5], r[6]
+    return r[5], r[6], np.linalg.matrix_rank(A), A.shape[0]
 
 norm_cond = Memoize(_norm_cond)
 
@@ -698,7 +698,7 @@ class Results():
 
 if __name__ == '__main__':
 
-    if not display:
+    if not display and not display_convergence:
         all_tasks = [t for t in product(solvers, problem_filenames)]
 
         if os.path.exists('comp.hdf5'):
@@ -719,13 +719,25 @@ if __name__ == '__main__':
 
             data = comp_file['data']
             comp_data = data['comp']
+
+            # 1 n_problems
+            n_problems = 0
+            for solver_name in comp_data:
+                filenames = comp_data[solver_name]
+                n_problems = max(n_problems, len(filenames))
+
+            # 2 measures & min_measure
             for solver_name in comp_data:
                 filenames = comp_data[solver_name]
 
-                measure[solver_name] = np.empty(n_problems)
-                solver_r[solver_name] = np.empty(n_problems)
+                assert len(filenames) <= n_problems
+
+                measure[solver_name] = np.inf * np.ones(n_problems)
+                solver_r[solver_name] = np.inf * np.ones(n_problems)
 
                 ip = 0
+
+                
                 for filename in filenames:
                     if filename not in min_measure:
                         min_measure[filename] = np.inf
@@ -736,14 +748,17 @@ if __name__ == '__main__':
                         else:
                             measure[solver_name][ip] = np.inf
                     except:
-                        measure[solver_name][ip] = np.inf
+                        measure[solver_name][ip] = np.nan
                     ip += 1
 
+            # 3 solver_r
             for solver_name in comp_data:
+
                 filenames = comp_data[solver_name]
 
                 ip = 0
                 for filename in filenames:
+
                     try:
 
                         if comp_data[solver_name][filename].attrs['info'] == 0:
@@ -756,16 +771,24 @@ if __name__ == '__main__':
                         solver_r[solver_name][ip] = np.inf
                     ip += 1
 
+            # 4 rhos
             rhos = dict()
             for solver_name in comp_data:
+                filenames = comp_data[solver_name]
+
+                assert min(solver_r[solver_name]) >= 1
                 rhos[solver_name] = np.empty(len(domain))
                 for itau in range(0, len(domain)):
-                    rhos[solver_name][itau] = float(len(np.where( solver_r[solver_name] < domain[itau] )[0])) / float(n_problems)
+                    rhos[solver_name][itau] = float(len(np.where( solver_r[solver_name] <= domain[itau] )[0])) / float(n_problems)
 
-            from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure
+
+
+            # 5 plot
+            from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure, xlim
 
             for solver_name in comp_data:
                 plot(domain, rhos[solver_name], label=solver_name)
+                xlim(domain[0], domain[-1])
                 legend()
             grid()
         show()

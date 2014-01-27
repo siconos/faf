@@ -19,9 +19,18 @@ def usage():
         [--cf-scale=<float value>]
     """
 
+
+def add_compatiblity_methods(obj):
+
+    if hasattr(obj, 'SetInput'):
+        obj.SetInputData = obj.SetInput
+
+    if hasattr(obj, 'AddInput'):
+        obj.AddInputData = obj.AddInput
+
 try:
     opts, args = getopt.gnu_getopt(sys.argv[1:], '',
-                                   ['help', 'dat', 'tmin=', 'tmax=', 
+                                   ['help', 'dat', 'tmin=', 'tmax=',
                                     'cf-scale='])
 except getopt.GetoptError, err:
         sys.stderr.write('{0}\n'.format(str(err)))
@@ -165,6 +174,9 @@ else:
 contact_posa = vtk.vtkDataObjectToDataSetFilter()
 contact_posb = vtk.vtkDataObjectToDataSetFilter()
 
+add_compatiblity_methods(contact_posa)
+add_compatiblity_methods(contact_posb)
+
 contact_pos_force = vtk.vtkFieldDataToAttributeDataFilter()
 contact_pos_norm = vtk.vtkFieldDataToAttributeDataFilter()
 
@@ -231,7 +243,8 @@ class CFprov():
 
         else:
             pass
-        self._output.Update()
+
+        #self._output.Update()
 
 cf_prov = CFprov(cf_data)
 
@@ -276,9 +289,9 @@ else:
 cf_prov._time = min(times[:])
 
 cf_prov.method()
-contact_posa.SetInput(cf_prov._output)
+contact_posa.SetInputData(cf_prov._output)
 contact_posa.Update()
-contact_posb.SetInput(cf_prov._output)
+contact_posb.SetInputData(cf_prov._output)
 contact_posb.Update()
 
 contact_pos_force.Update()
@@ -523,7 +536,8 @@ for ref, attrs in zip(refs, refs_attrs):
             data.SetBlock(1, sphere2.GetOutput())
             data.SetBlock(2, cylinder.GetOutput())
             source = vtk.vtkMultiBlockDataGroupFilter()
-            source.AddInput(data)
+            add_compatiblity_methods(source)
+            source.AddInputData(data)
 
         readers.append(source)
 
@@ -852,8 +866,11 @@ prec_plot.SetLabel('Solver precisions')
 prec_plot.GetXAxis().SetTitle('time')
 prec_plot.GetYAxis().SetTitle('precisions')
 
-iter_plot.SetInput(table, 'time', 'iterations')
-prec_plot.SetInput(table, 'time', 'precisions')
+add_compatiblity_methods(iter_plot)
+add_compatiblity_methods(prec_plot)
+
+iter_plot.SetInputData(table, 'time', 'iterations')
+prec_plot.SetInputData(table, 'time', 'precisions')
 iter_plot.SetWidth(5.0)
 prec_plot.SetWidth(5.0)
 iter_plot.SetColor(0, 255, 0, 255)
