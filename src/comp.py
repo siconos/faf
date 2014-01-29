@@ -598,6 +598,13 @@ ExtraGrad = SiconosSolver(name="ExtraGradient",
                           dparam_err=1,
                           maxiter=maxiter, precision=precision)
 
+VI_ExtraGrad = SiconosSolver(name="VI_ExtraGradient",
+                          API=N.frictionContact3D_VI_ExtraGradient,
+                          TAG=N.SICONOS_FRICTION_3D_VI_EG,
+                          iparam_iter=7,
+                          dparam_err=1,
+                          maxiter=maxiter, precision=precision)
+
 # 1 contact
 #Quartic = SiconosSolver(name="Quartic",
 #                        API=frictionContact3D_unitary_enumerative,
@@ -645,7 +652,7 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 #frictionContact3D_sparseGlobalAlartCurnierInit(localac.SolverOptions())
 
 
-all_solvers = [nsgs, TrescaFixedPoint, localac, Prox, DeSaxceFixedPoint, ExtraGrad]
+all_solvers = [nsgs, TrescaFixedPoint, localac, Prox, DeSaxceFixedPoint, ExtraGrad, VI_ExtraGrad]
 if user_solvers == []:
     solvers = all_solvers
 else:
