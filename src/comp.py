@@ -9,7 +9,9 @@ import numpy as np
 import Siconos.Numerics as N
 #import Siconos.FCLib as FCL
 
-from scipy.sparse.linalg import lsmr
+from scipy.sparse import csr_matrix
+from scipy.sparse.linalg import lsmr, svds
+
 from subprocess import check_call
 
 import os
@@ -45,13 +47,23 @@ class Memoize():
                 self._done[args] = e
                 return e
 
+
+def extern_guess(problem_filename, solver_name, iteration, h5file):
+    data = h5file['data']
+    comp_data = data['comp']
+
+    reaction = comp_data[solver_name][problem_filename]['reactions'][iteration]
+    velocity = comp_data[solver_name][problem_filename]['velocities'][iteration]
+    return reaction, velocity
+
 # estimate of condition number and norm from lsmr
 # http://www.stanford.edu/group/SOL/software/lsmr/LSMR-SISC-2011.pdf
 def _norm_cond(problem_filename):
     problem = read_fclib_format(problem_filename)
-    A = N.SBMtoSparse(problem.M)[1]
+    A = csr_matrix(N.SBMtoSparse(problem.M)[1])
     r = lsmr(A, np.ones([A.shape[0], 1]))  # solve Ax = 1
-    return r[5], r[6], np.linalg.matrix_rank(A), A.shape[0]
+    svd = svds(A)[1]
+    return r[5], r[6], max(svd), min(svd), max(svd)/min(svd)
 
 norm_cond = Memoize(_norm_cond)
 
@@ -83,10 +95,11 @@ ask_collect = True
 maxiter = 1000000
 precision = 1e-8
 domain = np.arange(1, 100, .1)
+ref_solver_name = 'NonsmoothGaussSeidel'
 try:
     opts, args = getopt.gnu_getopt(sys.argv[1:], '',
                                    ['help', 'flop', 'iter', 'time', 'clean','display','display-convergence','files=','solvers=',
-                                'timeout=', 'maxiter=', 'precision=', 'keep-files', 'new', 'errors', 'velocities', 'reactions', 'measure=', 'just-collect', 'no-collect', 'domain='])
+                                'timeout=', 'maxiter=', 'precision=', 'keep-files', 'new', 'errors', 'velocities', 'reactions', 'measure=', 'just-collect', 'no-collect', 'domain=', 'replace-solver='])
 except getopt.GetoptError, err:
         sys.stderr.write('{0}\n'.format(str(err)))
         usage()
@@ -129,6 +142,13 @@ for o, a in opts:
     elif o == '--domain':
         urange = [float (x) for x in split(a,':')]
         domain = np.arange(urange[0], urange[2], urange[1])
+    elif o == '--replace-solver':
+        try:
+            with h5py.File('comp.hdf5','r+') as comp_file:
+                print list(comp_file['data'])
+                del comp_file['data']['comp'][a]
+        except Exception as e:
+            print e
     elif o == '--new':
         try:
             os.remove('comp.hdf5')
@@ -380,16 +400,9 @@ class Caller():
 
             if output_errors or output_velocities or output_reactions:
                 solver.SolverOptions().callback = pffff
+
             # get first guess or set guess to zero
-            f = h5py.File(filename, 'r')
-            if 'guesses' in f:
-                number_of_guesses = f['guesses']['number_of_guesses'][0]
-                velocities = f['guesses']['1']['u'][:]
-                reactions = f['guesses']['1']['r'][:]
-            else:
-                # guess is missing
-                reactions = np.zeros(psize)
-                velocities = np.zeros(psize)
+            reactions, velocities = solver.guess(filename)
 
             try:
                 t0 = time.clock()
@@ -485,10 +498,32 @@ class SiconosSolver():
                 real_time.value, proc_time.value,
                 flpops.value, mflops.value)
 
+    def guess(self, filename):
+        problem = pread_fclib_format(filename)
+
+        with h5py.File(filename, 'r') as f:
+            psize = problem.dimension * problem.numberOfContacts
+            if 'guesses' in f:
+                number_of_guesses = f['guesses']['number_of_guesses'][0]
+                velocities = f['guesses']['1']['u'][:]
+                reactions = f['guesses']['1']['r'][:]
+            else:
+                # guess is missing
+                reactions = np.zeros(psize)
+                velocities = np.zeros(psize)
+
+        return reactions, velocities
+
     def name(self):
         return self._name
 
 
+class SiconosHybridSolver(SiconosSolver):
+
+    def guess(self, filename):
+        pfilename = os.path.splitext(filename)[0]
+        with h5py.File('comp.hdf5', 'r') as comp_file:
+            return extern_guess(pfilename, 'NonsmoothGaussSeidel', 1, comp_file)
 
 #
 # Some solvers
@@ -502,6 +537,15 @@ localac = SiconosSolver(name="LocalAlartCurnier",
 
 localac.SolverOptions().iparam[3] = 10000000
 
+
+hlocalac = SiconosHybridSolver(name = "HLocalAlartCurnier",
+                               API=N.frictionContact3D_localAlartCurnier,
+                               TAG=N.SICONOS_FRICTION_3D_LOCALAC,
+                               iparam_iter=1,
+                               dparam_err=1,
+                               maxiter=maxiter, precision=precision)
+
+hlocalac.SolverOptions().iparam[3] = 10000000
 
 nsgs = SiconosSolver(name="NonsmoothGaussSeidel",
                      API=N.frictionContact3D_nsgs,
@@ -737,7 +781,6 @@ if __name__ == '__main__':
 
                 ip = 0
 
-                
                 for filename in filenames:
                     if filename not in min_measure:
                         min_measure[filename] = np.inf
@@ -781,13 +824,23 @@ if __name__ == '__main__':
                 for itau in range(0, len(domain)):
                     rhos[solver_name][itau] = float(len(np.where( solver_r[solver_name] <= domain[itau] )[0])) / float(n_problems)
 
+            all_rhos = [ domain ] + [ rhos[solver_name] for solver_name in comp_data ]
+            np.savetxt('profile.dat', np.matrix(all_rhos).transpose())
 
+            with open('profile.gp','w') as gp:
+                gp.write('resultfile = "profile.dat"\n')
+                gp.write('set xrange [{0}:{1}]\n'.format(domain[0], domain[1]))
+                gp.write('plot ')
+                gp.write(','.join(['resultfile using 1:{0} t "{1}" w l'.format(index + 2, solver_name) for index, solver_name in enumerate(comp_data) ]))
+            # all_rhos = [ rhos[solver_name] for solver_name in comp_data ]
+            # g.plot(*all_rhos)
 
             # 5 plot
-            from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure, xlim
+            from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure, xlim, ylim
 
             for solver_name in comp_data:
                 plot(domain, rhos[solver_name], label=solver_name)
+                ylim(0, 1.0001)
                 xlim(domain[0], domain[-1])
                 legend()
             grid()
