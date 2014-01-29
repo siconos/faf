@@ -8,7 +8,8 @@ theta = 0.50001
 mu = 0.3
 dump_itermax = 1000
 itermax = 100000
-tolerance = 1e-8
+NewtonMaxIter = 20
+tolerance = 1e-5
 solver = Numerics.SICONOS_FRICTION_3D_NSGS
 
 
