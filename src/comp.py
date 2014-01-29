@@ -20,6 +20,7 @@ import multiprocessing
 import multiprocessing.pool
 import time
 
+
 import h5py
 import getopt
 import sys
@@ -82,6 +83,7 @@ measure = 'flop'
 clean = False
 display = False
 display_convergence = False
+output_profile_data = False
 user_filenames = []
 user_solvers = []
 utimeout = 10
@@ -98,8 +100,9 @@ domain = np.arange(1, 100, .1)
 ref_solver_name = 'NonsmoothGaussSeidel'
 try:
     opts, args = getopt.gnu_getopt(sys.argv[1:], '',
-                                   ['help', 'flop', 'iter', 'time', 'clean','display','display-convergence','files=','solvers=',
+                                   ['help', 'flop', 'iter', 'time', 'clean','display','display-convergence','output-profile-data','files=','solvers=',
                                 'timeout=', 'maxiter=', 'precision=', 'keep-files', 'new', 'errors', 'velocities', 'reactions', 'measure=', 'just-collect', 'no-collect', 'domain=', 'replace-solver='])
+
 except getopt.GetoptError, err:
         sys.stderr.write('{0}\n'.format(str(err)))
         usage()
@@ -121,6 +124,8 @@ for o, a in opts:
         clean = True
     elif o == '--display':
         display = True
+    elif o == '--output-profile-data':
+        output_profile_data=True
     elif o == '--display-convergence':
         display_convergence = True
     elif o == '--measure':
@@ -259,6 +264,7 @@ def read_fclib_format(f):
     #print FCL.fclib_merit_local(fc_problem, FCL.MERIT_1, solution)
 
     return N.frictionContact_fclib_read(f)
+
 
 
 pread_fclib_format = Memoize(read_fclib_format)
@@ -794,6 +800,7 @@ if __name__ == '__main__':
                         measure[solver_name][ip] = np.nan
                     ip += 1
 
+
             # 3 solver_r
             for solver_name in comp_data:
 
@@ -844,7 +851,33 @@ if __name__ == '__main__':
                 xlim(domain[0], domain[-1])
                 legend()
             grid()
+            if output_profile_data :
+                def write_report(r, filename):
+                    with open(filename, "w") as input_file:
+                        for k, v in r.items():
+                            line = '{}, {}'.format(k, v)
+                            print >> input_file, line
+
+                out_data=np.empty([len(domain),len(comp_data)+1])
+                write_report(rhos,'rhos.txt')
+                write_report(solver_r,'solver_r.txt')
+                with open('profile.dat', "w") as input_file:
+                    a = ['domain']
+                    for solver_name in comp_data:
+                        a.append(solver_name)
+                    for item in a:
+                        input_file.write("%s\t" % item)
+                    input_file.write("\n")
+                    for itau in range(0, len(domain)):
+                        out_data[itau][0] = domain[itau]
+                        i=0
+                        for solver_name in comp_data:
+                            out_data[itau][i+1] = rhos[solver_name][itau]
+                            i=i+1
+                    np.savetxt(input_file,out_data)
         show()
+
+
 
     if display_convergence:
         from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure
