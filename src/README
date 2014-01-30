@@ -2,3 +2,9 @@ cd <directory>
 ./mkinput.py
 ../run.py
 ../view.py
+
+
+########
+Retrieve date from scm 
+
+rsync -avu scm.gforge.inria.fr:/home/groups/faf/htdocs/data .

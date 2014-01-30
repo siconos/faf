@@ -598,7 +598,7 @@ ExtraGrad = SiconosSolver(name="ExtraGradient",
                           dparam_err=1,
                           maxiter=maxiter, precision=precision)
 
-VI_ExtraGrad = SiconosSolver(name="VI_ExtraGradient",
+VIExtraGrad = SiconosSolver(name="VIExtraGradient",
                           API=N.frictionContact3D_VI_ExtraGradient,
                           TAG=N.SICONOS_FRICTION_3D_VI_EG,
                           iparam_iter=7,
@@ -652,7 +652,7 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 #frictionContact3D_sparseGlobalAlartCurnierInit(localac.SolverOptions())
 
 
-all_solvers = [nsgs, TrescaFixedPoint, localac, Prox, DeSaxceFixedPoint, ExtraGrad, VI_ExtraGrad]
+all_solvers = [nsgs, TrescaFixedPoint, localac, Prox, DeSaxceFixedPoint, ExtraGrad, VIExtraGrad]
 if user_solvers == []:
     solvers = all_solvers
 else:
@@ -838,26 +838,7 @@ if __name__ == '__main__':
                 for itau in range(0, len(domain)):
                     rhos[solver_name][itau] = float(len(np.where( solver_r[solver_name] <= domain[itau] )[0])) / float(n_problems)
 
-            all_rhos = [ domain ] + [ rhos[solver_name] for solver_name in comp_data ]
-            np.savetxt('profile.dat', np.matrix(all_rhos).transpose())
-
-            with open('profile.gp','w') as gp:
-                gp.write('resultfile = "profile.dat"\n')
-                gp.write('set xrange [{0}:{1}]\n'.format(domain[0], domain[1]))
-                gp.write('plot ')
-                gp.write(','.join(['resultfile using 1:{0} t "{1}" w l'.format(index + 2, solver_name) for index, solver_name in enumerate(comp_data) ]))
-            # all_rhos = [ rhos[solver_name] for solver_name in comp_data ]
-            # g.plot(*all_rhos)
-
-            # 5 plot
-            from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure, xlim, ylim
-
-            for solver_name in comp_data:
-                plot(domain, rhos[solver_name], label=solver_name)
-                ylim(0, 1.0001)
-                xlim(domain[0], domain[-1])
-                legend()
-            grid()
+             
             if output_profile_data :
                 def write_report(r, filename):
                     with open(filename, "w") as input_file:
@@ -868,20 +849,45 @@ if __name__ == '__main__':
                 out_data=np.empty([len(domain),len(comp_data)+1])
                 write_report(rhos,'rhos.txt')
                 write_report(solver_r,'solver_r.txt')
-                with open('profile.dat', "w") as input_file:
-                    a = ['domain']
-                    for solver_name in comp_data:
-                        a.append(solver_name)
-                    for item in a:
-                        input_file.write("%s\t" % item)
-                    input_file.write("\n")
-                    for itau in range(0, len(domain)):
-                        out_data[itau][0] = domain[itau]
-                        i=0
-                        for solver_name in comp_data:
-                            out_data[itau][i+1] = rhos[solver_name][itau]
-                            i=i+1
-                    np.savetxt(input_file,out_data)
+
+                with open('profile.gp','w') as gp:
+                    all_rhos = [ domain ] + [ rhos[solver_name] for solver_name in comp_data ]
+                    np.savetxt('profile.dat', np.matrix(all_rhos).transpose())
+                    gp.write('resultfile = "profile.dat"\n')
+                    gp.write('basename="profile-{0}"\n'.format(filename.partition('-')[0]))
+                    gp.write('\n')
+                    gp.write('term_choice_tikz=1\n')
+                    gp.write('if (term_choice_tikz == 1) \\\n')
+                    gp.write('print "term_choice_tikz"; \\\n')
+                    gp.write('set term tikz standalone monochrome  size 5in,3in font \'\\small\\sf\';  \\\n')
+                    gp.write('extension = \'.tex\'; \\\n')
+                    gp.write('set output basename.extension; \\\n')
+                    gp.write('else \\\n')
+                    gp.write('set term aqua;\\\n')
+                    gp.write('\n')
+                    gp.write('set xrange [{0}:{1}]\n'.format(domain[0], domain[len(domain)-1]))
+                    gp.write('set yrange [-0.01:1.0]\n')
+                    gp.write('set xlabel \'$\\tau$ ({0})\' \n'.format(measure_name))
+                    gp.write('set ylabel \'$\\rho(\\tau)$ \' \n')
+                    gp.write('set key right bottom\n')
+                    print filename.partition('-')[0]
+                
+                    gp.write('set title \'{0}\'\n'.format(filename.partition('-')[0]));
+                    gp.write('plot ')
+                    gp.write(','.join(['resultfile using 1:{0} t "{1}" w l'.format(index + 2, solver_name) for index, solver_name in enumerate(comp_data) ]))
+                # all_rhos = [ rhos[solver_name] for solver_name in comp_data ]
+                # g.plot(*all_rhos)
+                
+
+            # 5 plot
+            from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure, xlim, ylim
+
+            for solver_name in comp_data:
+                plot(domain, rhos[solver_name], label=solver_name)
+                ylim(0, 1.0001)
+                xlim(domain[0], domain[-1])
+                legend()
+            grid()
         show()
 
 
