@@ -10,7 +10,18 @@ import Siconos.Numerics as N
 #import Siconos.FCLib as FCL
 
 from scipy.sparse import csr_matrix
-from scipy.sparse.linalg import lsmr, svds
+
+try:
+    from scipy.sparse.linalg import lsmr
+except:
+    def lsmr(*args):
+        print "lsmr undefined"
+
+try:
+    from scipy.sparse.linalg import svds
+except:
+    def svds(*args):
+        print "svds undefined"
 
 from subprocess import check_call
 

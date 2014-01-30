@@ -27,7 +27,7 @@ import imp
 import sys
 import time
 import getopt
-
+import random
 
 from Siconos.Kernel import \
      Model, MoreauJeanOSI, TimeDiscretisation,\
@@ -112,7 +112,14 @@ g = params.g     # gravity
 
 theta = params.theta  # theta scheme
 mu = params.mu
-dump_itermax = params.dump_itermax
+if hasattr(params, 'dump_itermax'):
+    dump_itermax = params.dump_itermax
+else:
+    dump_itermax = None
+if hasattr(params, 'dump_probability'):
+    dump_probability = params.dump_probability
+else:
+    dump_probability = None
 itermax = params.itermax
 tolerance = params.tolerance
 
@@ -142,10 +149,21 @@ solver = params.solver
 
 class FrictionContactTrace(FrictionContact):
 
-    def __init__(self, dim, solver, maxiter):
-        self._maxiter = maxiter
+    def __init__(self, dim, solver, maxiter_or_proba):
+        if maxiter_or_proba <= 1:
+            self._proba = 1. - maxiter_or_proba
+            self.condition = self.random_condition
+        else:
+            self._maxiter = maxiter_or_proba
+            self.condition = self.maxiter_condition
         self._counter = 0
         super(FrictionContactTrace, self).__init__(dim, solver)
+
+    def maxiter_condition(self, SO):
+        return SO.iparam[7] > self._maxiter
+
+    def random_condition(self, SO):
+        return random.random() > self._proba
 
     def compute(self,time):
         info = 0
@@ -178,8 +196,9 @@ class FrictionContactTrace(FrictionContact):
 
             info = self.solve()
             SO = self.numericsSolverOptions()
-            if SO.iparam[7] > self._maxiter:
-                lnopts = self.numericsOptions()
+
+            if self.condition(SO):
+
                 problem = self.frictionContactProblem()
                 filename = "{0}-i{1}-{2}.hdf5".format(params.fileName,
                                                       SO.iparam[7],
@@ -204,8 +223,11 @@ class FrictionContactTrace(FrictionContact):
 
         return info
 
-osnspb = FrictionContactTrace(3, solver, dump_itermax)
-
+if dump_itermax is not None:
+    osnspb = FrictionContactTrace(3, solver, dump_itermax)
+else:
+    if dump_probability is not None:
+        osnspb = FrictionContactTrace(3, solver, dump_probability)
 osnspb.numericsSolverOptions().iparam[0] = itermax
 osnspb.numericsSolverOptions().dparam[0] = tolerance
 osnspb.setMaxSize(16384)

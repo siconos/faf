@@ -7,6 +7,7 @@ g = 9.81
 theta = 0.50001
 mu = 0.7
 dump_itermax = 10
+#dump_probability = .02
 NewtonMaxIter = 20
 itermax = 100000
 tolerance = 1e-8
