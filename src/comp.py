@@ -591,6 +591,7 @@ Prox = SiconosSolver(name="ProximalFixedPoint",
                      maxiter=maxiter, precision=precision)
 
 
+
 ExtraGrad = SiconosSolver(name="ExtraGradient",
                           API=N.frictionContact3D_ExtraGradient,
                           TAG=N.SICONOS_FRICTION_3D_EG,
@@ -604,6 +605,14 @@ VIExtraGrad = SiconosSolver(name="VIExtraGradient",
                           iparam_iter=7,
                           dparam_err=1,
                           maxiter=maxiter, precision=precision)
+
+VIFixedPointProjection = SiconosSolver(name="VIFixedPointProjection",
+                          API=N.frictionContact3D_VI_FixedPointProjection,
+                          TAG=N.SICONOS_FRICTION_3D_VI_FPP,
+                          iparam_iter=7,
+                          dparam_err=1,
+                          maxiter=maxiter, precision=precision)
+
 
 # 1 contact
 #Quartic = SiconosSolver(name="Quartic",
@@ -652,7 +661,7 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 #frictionContact3D_sparseGlobalAlartCurnierInit(localac.SolverOptions())
 
 
-all_solvers = [nsgs, TrescaFixedPoint, localac, Prox, DeSaxceFixedPoint, ExtraGrad, VIExtraGrad]
+all_solvers = [nsgs, TrescaFixedPoint, localac, Prox, DeSaxceFixedPoint, ExtraGrad, VIExtraGrad, VIFixedPointProjection]
 if user_solvers == []:
     solvers = all_solvers
 else:
@@ -865,8 +874,8 @@ if __name__ == '__main__':
                     gp.write('else \\\n')
                     gp.write('set term aqua;\\\n')
                     gp.write('\n')
-                    gp.write('set xrange [{0}:{1}]\n'.format(domain[0], domain[len(domain)-1]))
-                    gp.write('set yrange [-0.01:1.0]\n')
+                    gp.write('set xrange [{0}:{1}]\n'.format(domain[0]-0.01, domain[len(domain)-1]))
+                    gp.write('set yrange [-0.01:1.01]\n')
                     gp.write('set xlabel \'$\\tau$ ({0})\' \n'.format(measure_name))
                     gp.write('set ylabel \'$\\rho(\\tau)$ \' \n')
                     gp.write('set key right bottom\n')
