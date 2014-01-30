@@ -149,13 +149,16 @@ solver = params.solver
 
 class FrictionContactTrace(FrictionContact):
 
-    def __init__(self, dim, solver, maxiter_or_proba):
-        if maxiter_or_proba <= 1:
-            self._proba = 1. - maxiter_or_proba
+    def __init__(self, dim, solver, maxiter, proba):
+        if proba is not None:
+            self._proba = 1. - proba
             self.condition = self.random_condition
-        else:
-            self._maxiter = maxiter_or_proba
-            self.condition = self.maxiter_condition
+        if maxiter is not None:
+            self._maxiter = maxiter
+            if proba is None:
+                self.condition = self.maxiter_condition
+            else:
+                self.condition = self.random_and_maxiter_condition
         self._counter = 0
         super(FrictionContactTrace, self).__init__(dim, solver)
 
@@ -164,6 +167,9 @@ class FrictionContactTrace(FrictionContact):
 
     def random_condition(self, SO):
         return random.random() > self._proba
+
+    def random_and_maxiter_condition(self, SO):
+        return self.maxiter_condition(SO) and self.random_condition(SO)
 
     def compute(self,time):
         info = 0
@@ -223,11 +229,8 @@ class FrictionContactTrace(FrictionContact):
 
         return info
 
-if dump_itermax is not None:
-    osnspb = FrictionContactTrace(3, solver, dump_itermax)
-else:
-    if dump_probability is not None:
-        osnspb = FrictionContactTrace(3, solver, dump_probability)
+osnspb = FrictionContactTrace(3, solver, dump_itermax, dump_probability)
+
 osnspb.numericsSolverOptions().iparam[0] = itermax
 osnspb.numericsSolverOptions().dparam[0] = tolerance
 osnspb.setMaxSize(16384)
