@@ -1,0 +1,207 @@
+\documentclass[8pt,red]{beamer}
+
+
+\usepackage{amsmath,amsthm,amsfonts,amssymb,amsbsy}
+\usepackage{stmaryrd} 
+\usepackage{subeqnarray}
+
+\usepackage{cases}
+
+\usepackage{pifont}
+
+\usepackage{fancyhdr}
+
+\usepackage{lastpage}
+
+
+\usepackage{graphicx}
+\usepackage{subfloat}
+\usepackage{rotating}
+\usepackage{tikz}
+
+\usetikzlibrary{arrows}
+\usetikzlibrary{calc}
+
+
+% \usepackage{algorithm}
+% \usepackage{algorithmic}
+
+
+
+\input{macro.tex}
+
+\usepackage{wasysym}
+
+\newtheorem{proposition}{Proposition}
+
+
+\setbeamertemplate{theorem}[ams style]
+\setbeamertemplate{theorems}[numbered]
+
+
+\input{theme.tex}
+
+\title{An open question : \\How to solve efficiently 3D frictional contact problem ?}
+\author{Vincent Acary \\ INRIA Rh\^one--Alpes, Grenoble.}
+\date{Computational Contact Mechanics: Advances and Frontiers in Modeling Contact, \\ 
+  Banff International Research station,\\ Canada,  February 15--21th, 2013,\\[2mm]
+Joint work with Maurice Br\'emond,
+Florent Cadoux, Claude Lemar\'echal,\\ J\'er\^ome Malick, Florence Bertails--Descoubes, Gilles Daviet }
+
+\setbeamertemplate 
+{footline} 
+{\quad\hfill\strut\insertsection\quad--\quad\insertframenumber/\inserttotalframenumber\strut\quad\quad} 
+
+\graphicspath{{../figure/}}
+
+\includeonly{%
+  introduction,
+  fc3d,
+  existence,
+  numerics,
+  comparison
+}
+\newtheorem{defn}{Definition}
+%\renewcommand{\thedefn}{\arabic{defn}}
+\newtheorem{thm}[defn]{Theorem}
+\newtheorem{corr}[defn]{Corollary}
+\newtheorem{ass}[defn]{Assumption}
+\newtheorem{lem}[defn]{Lemma}
+\newtheorem{rem}[defn]{Remark}
+\newtheorem{hypo}[defn]{Hypotheses}
+\newtheorem{exmp}[defn]{Example}
+\newtheorem{prop}[defn]{Proposition}
+\newcommand{\diag}{\mbox{\rm diag}}
+\newcommand{\co}{\overline{\mathit{co}}}
+\newcommand{\rect}{\overline{\mathit{rect}}}
+\newcommand{\newb}{g}
+
+\renewcommand{\tr}[1]{\textcolor{red}{#1}}
+
+\begin{document}
+
+\frame{\titlepage
+  \begin{center}
+    \includegraphics[width=0.3\textwidth]{../RR-Inria-5.1/logo-inria.png}
+  \end{center}
+}
+
+
+
+
+
+%% \section{Introduction}
+%% \frame
+%% {
+%%   \frametitle{Introduction}
+%% }
+
+% \begin{frame}
+%   \frametitle{Bio.}
+%   \begin{block}
+%     {Team-Project BIPOP. INRIA. Centre de Grenoble Rh\^one--Alpes}
+%     ``Jean Jacques Moreau's fan club''. Convex Analysis and Nonsmooth Mechanics.
+%     \begin{itemize}
+%     \item Scientific leader :  Bernard Brogliato
+%     %\item $8$ permanents, $5$ PhD, $4$ Post-docs, $3$ Engineer,  
+%     \item Nonsmooth dynamical systems :
+%       Modeling, analysis, simulation and Control.
+%     \item  Nonsmooth Optimization :    
+%       Analysis \& algorithms. (Claude Lemar\'echal \& J\'er\^ome Malick)
+%     \end{itemize}
+%   \end{block}
+%     \begin{block}
+%       {Personal research themes}
+%     \begin{itemize}
+%     \item Nonsmooth Dynamical systems. Higher order Moreau's sweeping process. Complementarity systems and Filippov systems
+%     \item Modeling and simulation of switched electrical circuits
+%     \item Discretization method for sliding mode control and Optimal control.
+%     \item Formulation and numerical solvers for Coulomb's friction and Signorini's problem. Second order cone programming.
+%     \item Time--integration techniques for nonsmooth mechanical systems%: Mixed higher order schemes, Time--discontinuous Galerkin methods, Projected time--stepping schemes and generalized $\alpha$--schemes.   
+%     \end{itemize}
+%   \end{block}
+% \end{frame}
+
+
+
+%\section{Outline}
+% \begin{frame}
+%   \frametitle{Outline}
+%   \begin{block}{Outline}
+%     \begin{itemize}
+%     \item Basic facts on piecewise linear modeling of gene regulatory network
+%     \item Notion of Filippov solutions
+%       \begin{itemize}
+%       \item Filippov extension
+%       \item Aizerman \& Pyatnitskii extension
+%       \end{itemize}
+%     \item Mixed Complementarity Systems formulation
+%     \item Numerical time--integration
+%     \item Illustrations 
+%     \item Conclusions \& perspectives.
+%     \end{itemize}
+%   \end{block}
+% \end{frame}
+
+\frame{\tableofcontents}
+
+
+\include{introduction}
+\frame{\tableofcontents}
+
+\include{fc3d}
+\frame{\tableofcontents}
+
+\include{existence}
+\frame{\tableofcontents}
+
+\include{numerics}
+\frame{\tableofcontents}
+
+\include{comparison}
+\frame{\tableofcontents}
+
+
+
+
+
+
+
+\section{Conclusions \& Perspectives}
+\frame{
+\frametitle{Conclusions \& Perspectives}
+\begin{block}{Conclusions}
+  \begin{enumerate}
+  \item 
+  \end{enumerate}
+\end{block}
+\vskip-3mm
+\begin{block}{Perspectives}
+  \begin{enumerate}
+  \item 
+  \end{enumerate}
+\end{block}
+
+}
+
+
+\frame
+{
+\centerline{\textcolor{red}{ Thank you for your attention.}}
+}
+\frame{\tableofcontents}
+ 
+\def\newblock{}
+\bibliographystyle{plainnat}
+\bibliography{../biblio}
+
+
+%\include{PWL}
+
+
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

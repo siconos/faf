@@ -1,0 +1,261 @@
+
+\section{The 3D frictional contact problem}
+\label{Sec:fc3d}
+
+\subsection{Signorini condition and Coulomb's friction}
+
+\frame{
+  \frametitle{Signorini's condition and Coulomb's friction} 
+  \begin{minipage}[c]{0.49\linewidth}
+    \begin{tikzpicture}[ scale=2,
+      axis/.style={ ->, >=stealth'},
+      normal/.style={ thick, ->, >=stealth'},
+      important line/.style={very thick}, 
+      dashed line/.style={dashed, thin},
+      every node/.style={color=black},
+      soldot/.style={only marks,mark=*},
+      holdot/.style={fill=white,only marks,mark=*}
+      ]
+      % body
+      \node (BodyA) at (1,-1) {Body A};
+      \fill[gray!20] (1,0) arc (0:-90:1);
+      \fill[gray!20] (1,0) arc (90:180:1);
+      \draw (1,0) arc (90:180:1);
+
+      \node (BodyB) at (-1,1) {Body B};
+      \draw (0,1) arc (0:-90:1);
+      \fill[gray!20] (0,1) arc (90:180:1);
+      \fill[gray!20] (0,1) arc (0:-90:1);
+
+      % local frame
+      \def\nlength{0.35};
+      \coordinate (CA)  at  ({1.0-sqrt(2)/2.0},{-1.0+sqrt(2)/2.0});
+      \node[] at  (CA) [right] {$\sf C_A$};
+      \draw[holdot]  (CA) circle(0.05em);
+      \draw[normal] (CA) -- ($(CA)+({-\nlength*sqrt(2)/2.0},{+\nlength*sqrt(2)/2.0 })$) node [right] {$\,\sf N$};
+      \draw[normal] (CA) -- ($(CA)+({-\nlength*sqrt(2)/2.0},{-\nlength*sqrt(2)/2.0 })$) node [above] {$\sf T_1\quad$};
+      \draw[dashed line] (BodyA) -- (BodyB);
+      \draw[holdot] ($(CA)+({\nlength*sqrt(3)/2.0},{0.0})$) circle(0.2em);
+      \node at ($(CA)+({\nlength*sqrt(3)/2.0},{0.0})$) [right]{$\sf T_2$};
+      \draw[soldot] ($(CA)+({\nlength*sqrt(3)/2.0},{0.0})$) circle(0.02em);
+      
+      \coordinate (CB)  at  ({-1.0+sqrt(2)/2.0},{1.0-sqrt(2)/2.0});
+      \node at  (CB) [above] {$\sf C_B$};
+      \draw[holdot]  (CB) circle(0.05em);
+
+      \draw[axis] (CA) -- (CB) node[midway, below left ] {$\sf g_\n$} ;
+
+      % \draw[axis] (0,-0.4) -- (0,0.4) node(yline)[right] {$\sgn(x)$};
+      % % lines
+      % \draw[important line] (-0.4,-0.3) -- (0.   ,-.3);
+      % \draw[important line] (0.0,0.3) --(.4,.3)  ;
+      % \coordinate (O) at (0.0, 0.05);
+      % \draw[fill] (O) circle (0.03em);
+      % \draw (0.0,0.05) node[right]{$a$};
+      % \draw (0.0,0.3) node[left]{$1$};
+      % \draw (0.0,-0.3) node[right]{$-1$};
+      % \draw[holdot] (0.0,0.3) circle (0.03em);
+      % \draw[holdot] (0.0,-.3) circle (0.03em);
+    \end{tikzpicture}
+  \end{minipage}
+\begin{minipage}[c]{0.49\linewidth}
+    \begin{itemize}
+    \item gap function $ g_{\n} = (C_B-C_A) \sf N.$
+    \item reaction forces $$ r =  r_\n {\sf N} + r_\t, \quad \text{ with  } r_\n \in \RR \text{ and } r_\t \in \RR^2.$$
+    \item Signorini condition at position level
+      $$  0 \leq g_{\n} \perp r_\n \geq 0. $$
+    \item relative velocity
+      $$u =  u_\n {\sf N} + u_\t, \quad \text{ with } u_\n \in \RR \text{ and } u_\t \in \RR^2.$$
+    \item Signorini condition at velocity level
+        $$\left\{\begin{array}{ll}
+            0 \leq u_{\n} \perp r_\n \geq 0  &\text{ if } g_{\n} \leq 0 \\
+            r_{\n} =0 &\text{ otherwise}.
+          \end{array}\right.$$
+    \end{itemize}
+
+  \end{minipage}
+}
+\frame{
+  \frametitle{Signorini's condition and Coulomb's friction} 
+  Let us define the Coulomb friction  cone $K$ which is chosen as the isotropic second order cone 
+  \begin{equation}
+    \label{eq:CoulombCone}
+    K = \{r \in \RR^3 \mid \|r_\t\| \leq \mu r_n\},
+  \end{equation}
+  where $\mu$ is the coefficient of friction. 
+
+  The Coulomb friction  states for the \tr{sticking case} that 
+  \begin{equation}
+    \label{eq:Coulom-stick}
+    u_{\t} =0,\quad r \in K
+  \end{equation}
+  and for the \tr{sliding case} that
+  \begin{equation}
+    \label{eq:Coulom-slide}
+    u_{\t}  \neq 0,\quad r \in \partial K, \exists\, \alpha > 0, r_\t = -\alpha u_\t.
+  \end{equation}
+  
+
+}
+\frame{
+  \frametitle{Signorini's condition and Coulomb's friction} 
+  \begin{block}
+    {Disjunctive formulation of the frictional contact behavior}
+    \begin{equation}
+      \label{eq:contact-disjunctive}
+      \left\{\begin{array}{llr}
+          r = 0  &\text{ if } g_{\n} > 0  & \text{(no contact)}\\
+          r = 0,  u_\n \geq 0   &\text{ if } g_{\n} \leq 0 & \text{(take--off)} \\
+          r \in K, u =0 &\text{ if } g_{\n} \leq 0 & \text{(sticking)}  \\
+          r \in \partial K,u _\n=0,  \exists\,\alpha > 0, u_\t = -\alpha r_\t &\text{ if } g_{\n} \leq 0 & \text{(sliding)}  \\
+        \end{array}\right.
+    \end{equation}
+  \end{block}
+
+  }
+\frame{
+  \frametitle{Signorini's condition and Coulomb's friction} 
+  
+  \begin{block}{SOCCP formulation}
+  
+    \begin{itemize}
+    \item Modified relative velocity $\hat u \in \RR^3$ defined by
+      \begin{equation}
+        \label{eq:modified-velocity}
+        \hat u = u +\mu \|u_\t\| \sf N.
+      \end{equation}
+    
+    \item  Second-Order Cone Complementarity Problem (SOCCP) 
+      \begin{equation}
+        \label{eq:contact-SOCCP}
+        K^\star \ni \hat u \perp r \in K
+      \end{equation}
+      if $ g_\n \leq 0 $ and $r=0$ otherwise.  The set $ K^\star $ is
+      the dual convex cone to $K$ defined by
+      \begin{equation}
+        \label{eq:dual-cone}
+        K^\star = \{u \in \RR^3 \mid  r^\top u \geq 0, \quad \text{for all } r \in K   \}.
+      \end{equation}
+      \item 
+      References : \cite{Acary.Brogliato2008, Acary.ea2010},
+      \cite{DeSaxce92}.
+
+    \end{itemize}
+  \end{block}
+
+}
+\frame{
+  \frametitle{Signorini's condition and Coulomb's friction} 
+   \begin{figure}[htbp]
+  \centering
+  \resizebox{!}{0.8\textheight}{\input{../figure/cone1-b.pdf_t}}
+  \caption{Coulomb's friction and the modified velocity $\widehat U$. The sliding case.}
+  \label{fig:CoulombFrictionSlidingDeSaxce}
+\end{figure} 
+}
+
+\subsection{3D frictional contact problems}
+
+
+\frame{
+  \frametitle{3D frictional contact problem} 
+  \begin{block}{Multiple contact notation}
+    For each contact $\alpha \in \{1,\ldots n_c\}$, we have
+    \begin{itemize}
+    \item the local velocity : $u^\alpha \in \RR^3$, and
+      $$  u = [[u^\alpha]^\top, \alpha = 1\ldots n_c]^\top$$
+    \item the local  reaction vector $r^\alpha\in \RR^3$    
+      $$  r = [[r^\alpha]^\top, \alpha = 1\ldots n_c]^\top$$
+    \item the local  Coulomb cone    $$K^{\alpha}  = \{r^\alpha, \|r^\alpha_\t \| \leq \mu^\alpha |r^\alpha_\n| \} \subset \RR^3$$
+       and the set $K$ is the cartesian product of Coulomb's friction cone at each contact, that 
+      \begin{equation}
+        \label{eq:CC}
+        K = \prod_{\alpha=1\ldots n_c} K^{\alpha} 
+      \end{equation}
+      and $K^\star$ is dual.
+    \end{itemize} \end{block}
+  
+}
+
+
+
+
+
+\frame{
+  \frametitle{3D frictional contact problems} 
+  \begin{problem}[General discrete frictional contact problem]\label{prob:I}
+  Given
+  \begin{itemize}
+    \item a symmetric positive definite matrix ${M} \in \nbR^{n \times n}$,
+    \item a vector $ {f} \in \nbR^n$,
+    \item a matrix  ${H} \in \nbR^{n \times m}$,
+    \item a vector $w \in \RR^{m}$,
+    \item a vector of coefficients of friction $\mu \in \RR^{n_c}$,
+  \end{itemize}
+find three vectors $ {v} \in \nbR^n$, $u\in\RR^m$ and $r\in \RR^m$, denoted by $\mathrm{FC/I}(M,H,f,w,\mu)$  such that
+\begin{equation}\label{eq:soccp1}
+  \begin{cases}
+    M v = {H} {r} + {f} \\[2mm]
+    u = H^\top v + w \\[2mm]
+    \hat u = u + g(u) \\[2mm]
+    K^\star \ni {\hat u} \perp r \in K
+  \end{cases}
+\end{equation}
+with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldots n_c]^\top$. 
+\qed
+\end{problem}
+
+}
+\frame{
+  \frametitle{3D frictional contact problems} 
+  \begin{problem}[Reduced discrete frictional contact problem]\label{prob:II}
+    Given
+    \begin{itemize}
+    \item a symmetric positive semi--definite  matrix ${W} \in \nbR^{m \times m}$,
+    \item a vector $ {q} \in \nbR^m$,
+    \item a vector $\mu \in \RR^{n_c}$ of coefficients of friction, 
+    \end{itemize}
+    find two vectors $u\in\RR^m$ and $r\in \RR^m$, denoted by $\mathrm{FC/II}(W,q,\mu)$  such that
+    \begin{equation}\label{eq:soccp2}
+      \begin{cases}
+        u =Wr +q \\[2mm]
+        \hat u =u + g(u) \\[2mm]
+        K^\star \ni {\hat u} \perp r \in K
+      \end{cases}
+    \end{equation}
+    with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldots n_c]^\top$.
+    \qed
+  \end{problem}
+}
+\frame{
+  \frametitle{3D frictional contact problems} 
+  This problem is really representative of a lot of applications.
+
+  Origin of the linear relations
+  $$  M v = {H} {r} + {f},\quad u = H^\top v + w$$
+  \begin{itemize}
+  \item Time--discretization  of the discrete dynamical mechanical system
+    \begin{itemize}
+    \item Event--capturing time--stepping schemes
+    \item Event--detecting time--stepping schemes (event-driven)
+    \end{itemize}
+  \item   Time--discretization  and space discretization of the elastodynamic problem of solids
+  \item   Space discretization of the quasi--static problem of solids.
+  \end{itemize}
+  with a possible linearization (Newton procedure.)
+
+}
+
+\subsection{From the mathematical programming point of view}
+
+\frame{
+  \frametitle{From the mathematical programming point of view} 
+  
+  
+}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "s"
+%%% End: 

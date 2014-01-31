@@ -3,18 +3,19 @@
 \usepackage{a4wide}
 \usepackage{url}
 \newcommand{\RR}{\ensuremath{\rm I\!R}}
+\newcommand{\NN}{\ensuremath{\rm I\!N}}
 \def\n{{\hbox{\tiny{N}}}}
 \def\t{{\hbox{\tiny{T}}}}
 
 \topmargin-3cm
 \textheight27cm
-\title{An open question : How to solve efficiently discrete 3D frictional contact problem ?}
+\title{An open question : \\How to solve efficiently 3D frictional contact problem ?}
 \author{V. Acary\thanks{INRIA Grenoble Rh\^one--Alpes.}, M. Br\'emond\textsuperscript{*}}
 \date{}
 
 \begin{document}
 \maketitle
-In this talk, we want to discuss possible numerical solution procedures for the following discrete frictional contact problem\cite{Acary.Brogliato2008}.  Given a symmetric positive (semi-)definite matrix ${M} \in \RR^{n \times n}$, a vector $ {f} \in \RR^n$, a matrix  ${H} \in \RR^{n \times m}, m= 3n_c$, a vector $w \in \RR^{m}$ and a vector of coefficients of friction $\mu \in \RR^{n_c}$, find three vectors $ {v} \in \RR^n$, $u\in\RR^m$ and $r\in \RR^m$ such that
+In this talk, we want to discuss possible numerical solution procedures for the following discrete frictional contact problem~\cite{Acary.Brogliato2008}.   Let $n_c\in \NN$ be the number of contact points and $n\in\NN$ the number of degree of freedom. Given a symmetric positive (semi-)definite matrix ${M} \in \RR^{n \times n}$, a vector $ {f} \in \RR^n$, a matrix  ${H} \in \RR^{n \times m}$ with $m= 3n_c$, a vector $w \in \RR^{m}$ and a vector of coefficients of friction $\mu \in \RR^{n_c}$, find three vectors $ {v} \in \RR^n$, $u\in\RR^m$ and $r\in \RR^m$ such that
 \begin{equation}\label{eq:soccp1}
   \begin{array}{rcl}
     M v = {H} {r} + {f}, &
@@ -23,7 +24,7 @@ In this talk, we want to discuss possible numerical solution procedures for the 
     &    K^\star \ni {\hat u} \perp r \in K,&
   \end{array}
 \end{equation}
-where $g(u)$ is a nonsmooth function and $K$ is a Cartesian product of second order cone in $\RR^3$.  Let $n_c$ be the number of contact points.  For each contact $\alpha$, the unknown variables  $u^\alpha\in\RR^3$ (velocity or gap at the contact point) and $r^\alpha\in\RR^3$ (reaction or impulse) are decomposed  in a contact local frame $(O^\alpha,{\sf N}^\alpha,{\sf T}^\alpha)$ such that $u^\alpha = u^\alpha_{\n} {\sf N}^\alpha +   u^{\alpha}_{\t}, u^\alpha_{\n} \in \RR, u^\alpha_{\t} \in \RR^2$ and  $r^\alpha = r^\alpha_{\n} {\sf N}^\alpha +   r^{\alpha}_{\t}, r^\alpha_{\n} \in \RR, r^\alpha_{\t} \in \RR^2$.
+where $g(u)$ is a nonsmooth function and $K\subset \RR^{3 n_c}$ is a Cartesian product of second order cone in $\RR^3$.   For each contact $\alpha$, the unknown variables  $u^\alpha\in\RR^3$ (velocity or gap at the contact point) and $r^\alpha\in\RR^3$ (reaction or impulse) are decomposed  in a contact local frame $(O^\alpha,{\sf N}^\alpha,{\sf T}^\alpha)$ such that $u^\alpha = u^\alpha_{\n} {\sf N}^\alpha +   u^{\alpha}_{\t}, u^\alpha_{\n} \in \RR, u^\alpha_{\t} \in \RR^2$ and  $r^\alpha = r^\alpha_{\n} {\sf N}^\alpha +   r^{\alpha}_{\t}, r^\alpha_{\n} \in \RR, r^\alpha_{\t} \in \RR^2$.
 % The Coulomb friction cone for a  contact $\alpha$ is defined by $K^{\alpha}  = \{r^\alpha, \|r^\alpha_\t \| \leq \mu^\alpha |r^\alpha_\n| \}$ and the set $K^{\alpha,\star}$ is its dual.  
 The set $K$ is the cartesian product of Coulomb's friction cone at each contact, that is
 \begin{equation}
@@ -31,13 +32,12 @@ The set $K$ is the cartesian product of Coulomb's friction cone at each contact,
   K = \prod_{\alpha=1\ldots n_c} K^{\alpha}  = \prod_{\alpha=1\ldots n_c} \{r^\alpha, \|r^\alpha_\t \| \leq \mu^\alpha |r^\alpha_\n| \}
 \end{equation}
 and $K^\star$ is dual.
-The function $g$ is defined as $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldots n_c]^\top$.  This problem is at the heart of the simulation of mechanical systems with 3D Coulomb's friction and unilateral constraints. It might be the result of the time--discretization by event--capturing time--stepping methods or event--detecting (event--driven) techniques of dynamical systems with friction or the result of a space--discretization (by FEM for instance) of the quasi-static problems of frictional contact mechanics~\cite{Acary.Cadoux2013}.
+The function $g$ is defined as $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldots n_c]^\top$.
 
- On the mathematical programming point of view, the problem appears as Second Order Cone Complementarity Problem (SOCCP). If the nonlinear part of the problem is neglected ($g(u)=0$), the problem is an associated friction problem with dilatation, and by the way a gentle Second Order Cone Linear Complementarity Problem (SOCLCP) with a positive matrix $H^\top M^{-1} H$ (possibly semi--definite). When the non-associated character of the friction is taken into account through $g(u)$, the problem is non monotone and nonsmooth, and then very hard to solve efficiently.
+  This problem is at the heart of the simulation of mechanical systems with 3D Coulomb's friction and unilateral constraints. It might be the result of the time--discretization by event--capturing time--stepping methods or event--detecting (event--driven) techniques of dynamical systems with friction or the result of a space--discretization (by FEM for instance) of the quasi-static problems of frictional contact mechanics~\cite{Acary.Cadoux2013}. On the mathematical programming point of view, the problem appears as Second Order Cone Complementarity Problem (SOCCP). If the nonlinear part of the problem is neglected ($g(u)=0$), the problem is an associated friction problem with dilatation, and by the way, is a gentle Second Order Cone Linear Complementarity Problem (SOCLCP) with a positive matrix $H^\top M^{-1} H$ (possibly semi--definite). When the non-associated character of the friction is taken into account through $g(u)$, the problem is non monotone and nonsmooth, and then very hard to solve efficiently.
 
-In this talk we will recall a result for the problem in~(\ref{eq:soccp1}) which ensures that a solution exists~\cite{ZAMM:ZAMM201000073}. In this framework, we will list several algorithms that have been previously developed for solving the SOCCP~(\ref{eq:soccp1}) mainly based variational inequality and nonsmooth equations reformulations. On one hand, we will show that algorithms based on Newton methods for nonsmooth equations solve quickly the problem when they succeed, but suffer from robustness issues mainly if the matrix $H$ has not full rank. On the other hand, iterative methods dedicated to solving variational inequality are quite robust but with an extremely slow rate of convergence. To sum up, as far as we know there is no option that combines time efficiency and robustness. 
-
-To try to answer to this question, we develop an open collection of discrete frictional contact problems called FCLIB~\url{http://fclib.gforge.inria.fr} in order to offer a large library of problems to compare algorithms on a fair basis.  In this work, this collection is solved with the software {\sc Siconos}~\url{http://siconos.gforge.inria.fr}.
+In this talk we will recall a result for the problem in~(\ref{eq:soccp1}) which ensures that a solution exists~\cite{ZAMM:ZAMM201000073}. In this framework, we will list several algorithms that have been previously developed for solving the SOCCP~(\ref{eq:soccp1}) mainly based variational inequality and nonsmooth equations reformulations. On one hand, we will show that algorithms based on Newton methods for nonsmooth equations solve quickly the problem when they succeed, but suffer from robustness issues mainly if the matrix $H$ has not full rank. On the other hand, the 
+iterative methods dedicated to solving variational inequalities are quite robust but with an extremely slow rate of convergence. To sum up, as far as we know there is no option that combines time efficiency and robustness. To try to answer to this question, we develop an open collection of discrete frictional contact problems called FCLIB~\url{http://fclib.gforge.inria.fr} in order to offer a large library of problems to compare algorithms on a fair basis.  In this work, this collection is solved with the software {\sc Siconos} and its component {\sc Siconos/Numerics}~\url{http://siconos.gforge.inria.fr} .
 \small
 \bibliographystyle{plain}
 \bibliography{biblio}
