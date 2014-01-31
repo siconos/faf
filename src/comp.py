@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
-# parallel usage : 
+# parallel usage :
 # ls *.hdf5 | parallel comp.py --timeout=100 --no-collect '--file={}'
 
 from glob import glob
 from itertools import product
 import numpy as np
+import random
 import Siconos.Numerics as N
 #import Siconos.FCLib as FCL
 
@@ -59,6 +60,32 @@ class Memoize():
                 self._done[args] = e
                 return e
 
+class WithCriterium():
+
+    def __init__(self, condmin, condmax):
+        self._condmin = condmin
+        self._condmax = condmax
+
+    def __call__(self, filename):
+        r = cond_problem(filename)
+        return r > self._condmin and r < self._condmax
+
+def subsample_problems(filenames, proba, maxp, cond):
+    if proba is not None:
+        __r = random.sample(filenames, int(len(filenames) * proba))
+    else:
+        __r = filenames
+
+    if maxp is not None:
+        _r = random.sample(__r, maxp)
+    else:
+        _r = __r
+
+    if cond is not None:
+        r = filter(WithCriterium(cond[0], cond[1]), _r)
+    else:
+        r = _r
+    return r
 
 def extern_guess(problem_filename, solver_name, iteration, h5file):
     data = h5file['data']
@@ -109,10 +136,20 @@ maxiter = 1000000
 precision = 1e-8
 domain = np.arange(1, 100, .1)
 ref_solver_name = 'NonsmoothGaussSeidel'
+random_sample_proba = None
+max_problems = None
+cond_nc = None
 try:
     opts, args = getopt.gnu_getopt(sys.argv[1:], '',
-                                   ['help', 'flop', 'iter', 'time', 'clean','display','display-convergence','output-profile-data','files=','solvers=',
-                                'timeout=', 'maxiter=', 'precision=', 'keep-files', 'new', 'errors', 'velocities', 'reactions', 'measure=', 'just-collect', 'no-collect', 'domain=', 'replace-solver='])
+                                   ['help', 'flop', 'iter', 'time',
+                                    'clean', 'display', 'display-convergence',
+                                    'output-profile-data', 'files=',
+                                    'solvers=', 'random-sample=', 'max-problems=',
+                                    'timeout=', 'maxiter=', 'precision=',
+                                    'keep-files', 'new', 'errors',
+                                    'velocities', 'reactions', 'measure=',
+                                    'just-collect', 'cond-nc=',
+                                    'no-collect', 'domain=', 'replace-solver='])
 
 except getopt.GetoptError, err:
         sys.stderr.write('{0}\n'.format(str(err)))
@@ -141,6 +178,10 @@ for o, a in opts:
         display_convergence = True
     elif o == '--measure':
         measure_name = a
+    elif o == '--random-sample':
+        random_sample_proba = float(a)
+    elif o == '--max-problems':
+        max_problems = int(a)
     elif o == '--keep-files':
         keep_files = True
     elif o == '--errors':
@@ -155,6 +196,8 @@ for o, a in opts:
         ask_compute = False
     elif o == '--no-collect':
         ask_collect = False
+    elif o == '--cond-nc':
+        cond_nc = [float (x) for x in split(a,':')]
     elif o == '--domain':
         urange = [float (x) for x in split(a,':')]
         domain = np.arange(urange[0], urange[2], urange[1])
@@ -264,8 +307,8 @@ def timeout(seconds, force_kill=True):
     return wrapper
 
 
-def read_fclib_format(f):
-    #    fc_problem = FCL.fclib_read_local(f)
+def _read_fclib_format(f):
+    #fc_problem = FCL.fclib_read_local(f)
     #solution = FCL.fclib_read_solution(f)
     #print FCL.fclib_merit_local(fc_problem, FCL.MERIT_1, solution)
     #print fc_problem.W.m
@@ -273,12 +316,30 @@ def read_fclib_format(f):
     #solution.u = np.zeros(fc_problem.W.m * fc_problem.spacedim)
     #solution.r = np.zeros(fc_problem.W.m * fc_problem.spacedim)
     #print FCL.fclib_merit_local(fc_problem, FCL.MERIT_1, solution)
+    #problem = N.frictionContact_fclib_read(f)
+    #    print '{0}: M.m={1}, numberOfContacts*3/dim = {2}'.format(f, problem.W.m, problem.numberOfContacts*3/problem.W.m)
+    problem =  N.frictionContact_fclib_read(f)
+    return problem
 
-    return N.frictionContact_fclib_read(f)
 
+def _numberOfInvolvedDS(f):
+    with h5py.File(f, 'r') as fclib_file:
+        try:
+            r = fclib_file['fclib_local']['info'].attrs['numberOfInvolvedDS']
+        except:
+            r = np.nan
+    return r
 
+def _cond_problem(filename):
+    problem = read_fclib_format(filename)
+    return float(problem.numberOfContacts * 3) / float(numberOfInvolvedDS(filename) * 6)
 
-pread_fclib_format = Memoize(read_fclib_format)
+    
+read_fclib_format = Memoize(_read_fclib_format)
+
+numberOfInvolvedDS = Memoize(_numberOfInvolvedDS)
+
+cond_problem = Memoize(_cond_problem)
 
 class SolverCallback:
     def __init__(self, h5file, data):
@@ -316,7 +377,7 @@ class Caller():
     def __call__(self, tpl):
 
         solver, filename = tpl
-        problem = pread_fclib_format(filename)
+        problem = read_fclib_format(filename)
 
         pfilename = os.path.splitext(filename)[0]
 
@@ -368,7 +429,7 @@ class Caller():
                 attrs.create('flpops', flpops)
                 attrs.create('mflops', mflops)
 
-                print(filename, solver.name(), info, iter, err,
+                print(filename, cond_problem(filename), solver.name(), info, iter, err,
                       time_s, real_time, proc_time,
                       flpops, mflops)
 
@@ -451,7 +512,7 @@ class Caller():
             attrs.create('mflops', mflops)
 
             # filename, solver name, revision svn, parameters, nb iter, err
-            print(filename, solver.name(), info, iter, err,
+            print(filename, cond_problem(filename), solver.name(), info, iter, err,
                   time_s, real_time, proc_time,
                   flpops, mflops)
 
@@ -516,7 +577,7 @@ class SiconosSolver():
                 flpops.value, mflops.value)
 
     def guess(self, filename):
-        problem = pread_fclib_format(filename)
+        problem = read_fclib_format(filename)
 
         with h5py.File(filename, 'r') as f:
             psize = problem.dimension * problem.numberOfContacts
@@ -722,7 +783,18 @@ if user_filenames == []:
 else:
     all_filenames = user_filenames
 
-problem_filenames = filter(is_fclib_file, all_filenames)
+__problem_filenames = subsample_problems(all_filenames,
+                                         random_sample_proba,
+                                         max_problems, None)
+
+_problem_filenames = filter(is_fclib_file, 
+                           __problem_filenames)
+
+problem_filenames = subsample_problems(_problem_filenames,
+                                       None,
+                                       None, cond_nc)
+
+
 
 n_problems = len(problem_filenames)
 
@@ -749,14 +821,15 @@ def collect(tpl):
 
     solver, filename = tpl
     pfilename = os.path.splitext(filename)[0]
-    try:
-        check_call(['h5copy','-p','-i{0}-{1}.hdf5'.format(solver.name(),pfilename),
-                    '-ocomp.hdf5','-s/data/comp/{0}/{1}'.format(solver.name(),pfilename),
-                    '-d/data/comp/{0}/{1}'.format(solver.name(),pfilename)])
-        if not keep_files:
-            os.remove('{0}-{1}.hdf5'.format(solver.name(),pfilename))
-    except Exception as e:
-        print e
+    if os.path.exists(filename):
+        try:
+            check_call(['h5copy','-p','-i{0}-{1}.hdf5'.format(solver.name(),pfilename),
+                        '-ocomp.hdf5','-s/data/comp/{0}/{1}'.format(solver.name(),pfilename),
+                        '-d/data/comp/{0}/{1}'.format(solver.name(),pfilename)])
+            if not keep_files:
+                os.remove('{0}-{1}.hdf5'.format(solver.name(),pfilename))
+        except Exception as e:
+            print e
 
 
 class Results():
@@ -768,7 +841,7 @@ class Results():
         problem_filename = os.path.splitext(tpl[1])[0]
         try:
             r = self._result_file['data']['comp'][solver.name()][problem_filename]
-            print (r.attrs['filename'], norm_cond(r.attrs['filename']), solver.name(), r.attrs['info'], r.attrs['iter'], r.attrs['err'], r.attrs['time'], r.attrs['real_time'], r.attrs['proc_time'], r.attrs['flpops'], r.attrs['mflops'])
+            print (r.attrs['filename'], cond_problem(r.attrs['filename']), solver.name(), r.attrs['info'], r.attrs['iter'], r.attrs['err'], r.attrs['time'], r.attrs['real_time'], r.attrs['proc_time'], r.attrs['flpops'], r.attrs['mflops'])
             return False
         except:
             return True
@@ -800,12 +873,16 @@ if __name__ == '__main__':
             # 1 n_problems
             n_problems = 0
             for solver_name in comp_data:
-                filenames = comp_data[solver_name]
+                filenames = subsample_problems(comp_data[solver_name],
+                                               random_sample_proba,
+                                               max_problems, cond_nc)
                 n_problems = max(n_problems, len(filenames))
 
             # 2 measures & min_measure
             for solver_name in comp_data:
-                filenames = comp_data[solver_name]
+                filenames = subsample_problems(comp_data[solver_name],
+                                               random_sample_proba,
+                                               max_problems, cond_nc)
 
                 assert len(filenames) <= n_problems
 
@@ -831,7 +908,9 @@ if __name__ == '__main__':
             # 3 solver_r
             for solver_name in comp_data:
 
-                filenames = comp_data[solver_name]
+                filenames = subsample_problems(comp_data[solver_name],
+                                               random_sample_proba,
+                                               max_problems, cond_nc)
 
                 ip = 0
                 for filename in filenames:
@@ -851,14 +930,16 @@ if __name__ == '__main__':
             # 4 rhos
             rhos = dict()
             for solver_name in comp_data:
-                filenames = comp_data[solver_name]
+                filenames = subsample_problems(comp_data[solver_name],
+                                               random_sample_proba,
+                                               max_problems, cond_nc)
 
                 assert min(solver_r[solver_name]) >= 1
                 rhos[solver_name] = np.empty(len(domain))
                 for itau in range(0, len(domain)):
                     rhos[solver_name][itau] = float(len(np.where( solver_r[solver_name] <= domain[itau] )[0])) / float(n_problems)
 
-             
+
             if output_profile_data :
                 def write_report(r, filename):
                     with open(filename, "w") as input_file:
@@ -891,13 +972,13 @@ if __name__ == '__main__':
                     gp.write('set ylabel \'$\\rho(\\tau)$ \' \n')
                     gp.write('set key right bottom\n')
                     print filename.partition('-')[0]
-                
+
                     gp.write('set title \'{0}\'\n'.format(filename.partition('-')[0]));
                     gp.write('plot ')
                     gp.write(','.join(['resultfile using 1:{0} t "{1}" w l'.format(index + 2, solver_name) for index, solver_name in enumerate(comp_data) ]))
                 # all_rhos = [ rhos[solver_name] for solver_name in comp_data ]
                 # g.plot(*all_rhos)
-                
+
 
             # 5 plot
             from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure, xlim, ylim
@@ -921,7 +1002,9 @@ if __name__ == '__main__':
             for solver_name in comp_data:
 
                 if user_filenames == []:
-                    filenames = comp_data[solver_name]
+                    filenames = subsample_problems(comp_data[solver_name],
+                                                   random_sample_proba,
+                                                   max_problems, cond_nc)
                 else:
                     filenames = user_filenames
 

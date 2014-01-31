@@ -6,8 +6,9 @@ h = 0.0005
 g = 9.81
 theta = 0.50001
 mu = 0.7
-dump_itermax = 80000
+dump_itermax = 800
 itermax = 100000
+NewtonMaxIter = 20
 tolerance = 1e-8
 solver = Numerics.SICONOS_FRICTION_3D_NSGS
 

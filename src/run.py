@@ -28,6 +28,7 @@ import sys
 import time
 import getopt
 import random
+import h5py
 
 from Siconos.Kernel import \
      Model, MoreauJeanOSI, TimeDiscretisation,\
@@ -189,11 +190,10 @@ class FrictionContactTrace(FrictionContact):
             #M.fillM(model.nonSmoothDynamicalSystem().topology().indexSet(1))
             #M.convert()
 
-            #H = BlockCSRMatrix()
-            #H.fillH(model.nonSmoothDynamicalSystem().topology().indexSet(1))
-            #H.convert()
+            #            H = BlockCSRMatrix()
 
-            #t = GlobalFrictionContactProblem() 
+
+            #t = GlobalFrictionContactProblem()
 
             #t.M = M.getNumericsMatSparse()
 
@@ -224,6 +224,12 @@ class FrictionContactTrace(FrictionContact):
                 solution.u = self.w()
                 solution.z = self.z()
                 F.fclib_write_solution(solution, filename)
+
+                with h5py.File(filename, 'r+') as fclib_file:
+                    attrs = fclib_file['fclib_local']['info'].attrs
+                    attrs.create('numberOfInvolvedDS',
+                                 model.nonSmoothDynamicalSystem().topology().
+                                 numberOfInvolvedDS(1))
 
             self.postCompute()
 
