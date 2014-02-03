@@ -160,7 +160,7 @@ try:
                                     'timeout=', 'maxiter=', 'precision=',
                                     'keep-files', 'new', 'errors',
                                     'velocities', 'reactions', 'measure=',
-                                    'just-collect', 'cond-nc=', 'display-distrib',
+                                    'just-collect', 'cond-nc=', 'display-distrib=',
                                     'no-collect', 'domain=', 'replace-solver=',
                                     'output-profile-data','output-dat' ])
 
