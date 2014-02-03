@@ -8,6 +8,7 @@ from itertools import product
 import numpy as np
 import random
 import Siconos.Numerics as N
+N.setNumericsVerbose(0)
 #import Siconos.FCLib as FCL
 
 from scipy.sparse import csr_matrix
@@ -122,6 +123,7 @@ clean = False
 display = False
 display_convergence = False
 output_profile_data = False
+output_dat=False
 user_filenames = []
 user_solvers = []
 utimeout = 10
@@ -143,13 +145,15 @@ try:
     opts, args = getopt.gnu_getopt(sys.argv[1:], '',
                                    ['help', 'flop', 'iter', 'time',
                                     'clean', 'display', 'display-convergence',
-                                    'output-profile-data', 'files=',
-                                    'solvers=', 'random-sample=', 'max-problems=',
+                                    'files=', 'solvers=',
+                                    'random-sample=', 'max-problems=',
                                     'timeout=', 'maxiter=', 'precision=',
                                     'keep-files', 'new', 'errors',
                                     'velocities', 'reactions', 'measure=',
                                     'just-collect', 'cond-nc=',
-                                    'no-collect', 'domain=', 'replace-solver='])
+                                    'no-collect', 'domain=', 'replace-solver=',
+                                    'output-profile-data','output-dat' ])
+
 
 except getopt.GetoptError, err:
         sys.stderr.write('{0}\n'.format(str(err)))
@@ -172,8 +176,6 @@ for o, a in opts:
         clean = True
     elif o == '--display':
         display = True
-    elif o == '--output-profile-data':
-        output_profile_data=True
     elif o == '--display-convergence':
         display_convergence = True
     elif o == '--measure':
@@ -208,6 +210,10 @@ for o, a in opts:
                 del comp_file['data']['comp'][a]
         except Exception as e:
             print e
+    elif o == '--output-profile-data':
+        output_profile_data=True
+    elif o == '--output-dat':
+        output_dat=True
     elif o == '--new':
         try:
             os.remove('comp.hdf5')
@@ -379,6 +385,14 @@ class Caller():
         solver, filename = tpl
         problem = read_fclib_format(filename)
 
+        if (output_dat) :
+            # write a dat file to create a test for Siconos/Numerics
+            #N.frictionContact_display(problem)
+            datfilename = filename + '.dat'
+            N.frictionContact_printInFilename(problem,datfilename )
+
+
+
         pfilename = os.path.splitext(filename)[0]
 
         output_filename = '{0}-{1}.hdf5'.format(solver.name(),
@@ -432,6 +446,14 @@ class Caller():
                 print(filename, cond_problem(filename), solver.name(), info, iter, err,
                       time_s, real_time, proc_time,
                       flpops, mflops)
+
+                with open('report.txt', "a") as report_file:
+                    print   >> report_file , (filename, solver.name(), info, iter, err,
+                                              time_s, real_time, proc_time,
+                                              flpops, mflops)
+
+
+
 
     @timeout(utimeout)
     def _internal_call(self, solver, problem, filename, pfilename, output_filename):
@@ -733,7 +755,8 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 #frictionContact3D_sparseGlobalAlartCurnierInit(localac.SolverOptions())
 
 
-all_solvers = [nsgs, TrescaFixedPoint, localac, Prox, DeSaxceFixedPoint, ExtraGrad, VIExtraGrad, VIFixedPointProjection]
+all_solvers = [nsgs, TrescaFixedPoint, localac, Prox, DeSaxceFixedPoint, VIFixedPointProjection, ExtraGrad, VIExtraGrad]
+#all_solvers = [ DeSaxceFixedPoint, VIFixedPointProjection]
 if user_solvers == []:
     solvers = all_solvers
 else:

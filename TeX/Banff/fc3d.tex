@@ -239,7 +239,7 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
     \item Event--capturing time--stepping schemes
     \item Event--detecting time--stepping schemes (event-driven)
     \end{itemize}
-  \item   Time--discretization  and space discretization of the elastodynamic problem of solids
+  \item   Time--discretization  and space discretization of the elasto dynamic problem of solids
   \item   Space discretization of the quasi--static problem of solids.
   \end{itemize}
   with a possible linearization (Newton procedure.)
@@ -250,9 +250,38 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
 
 \frame{
   \frametitle{From the mathematical programming point of view} 
-  
-  
-}
+  \begin{block}{Nonmonotone and nonsmooth problem}
+    \begin{equation}
+      \label{eq:soccp3}
+      K^\star \ni Wr +q + g(Wr +q) \perp r \in K
+    \end{equation}
+    \begin{itemize}
+    \item if we neglect $g(\cdot)$, (\ref{eq:soccp3}) is a gentle
+      monotone SOCLCP that can be associated to a convex SOCQP.
+    \item otherwise, the problem is nonmontone and nonsmooth since
+      $g()$ is nonsmooth
+    \end{itemize}
+    \ding{220} The problem is very hard to solve efficiently.
+  \end{block}
+   \begin{block}{Possible reformulation}
+     \begin{itemize}
+     \item Variational inequality or normal cone inclusion
+       \begin{equation}
+         \label{eq:inclusion-1}
+         -(W r +q + g(Wr+q)) = - F(r)  \in N_K(r).
+       \end{equation}
+     \item Nonsmooth equations $G(r) = 0$\\
+        The natural map $F^\nat$ associated with the VI (\ref{eq:vi}) is defined by
+        \begin{equation}
+          \label{eq:naturalmap}
+          F^\nat(z) = z - P_{X}(z-F(z)),
+        \end{equation}
+        and its variants (Alart-Curnier formulation)\\
+        SOCCP-functions. (Fisher-Bursmeister function)
+     \end{itemize}
+   \end{block}
+ }
+
 
 
 %%% Local Variables: 

@@ -125,6 +125,11 @@ to0pt{\kern0.55\wd0\vrule height0.5\ht0\hss}\box0}}
 \newcommand{\refann}[1]{({\it cf} Annexe : \ref{#1})}
 
 
+%\definecolor{darkgray}{gray}{.25}
+\definecolor{gray}{gray}{.5}
+\definecolor{lightgray}{gray}{.75}
+%\definecolor{gradbegin}{rgb}{0,1,1}
+%\definecolor{gradend}{rgb}{0,.1,.95}
 %\newcommand{\newtexte}[1]{\textcolor{darkgray} {#1}}
 \newcommand{\newtexte}[1]{{#1}}% macro pour les varibales favorites
 % normal tangent
@@ -134,7 +139,6 @@ to0pt{\kern0.55\wd0\vrule height0.5\ht0\hss}\box0}}
 \def\nt{\hbox{\tiny{NT}}}
 \def\nsf{\hbox{\tiny{\textsf N}}}
 \def\tsf{\hbox{\tiny{\textsf T}}}
-\def\free{\hbox{\tiny{\textsf free}}}
 \def\sigman{\sigma_{\n}}
 \def\sigmat{\sigma_{\t}}
 \def\sigmant{\sigma_{\nt}}
@@ -175,6 +179,7 @@ to0pt{\kern0.55\wd0\vrule height0.5\ht0\hss}\box0}}
 \def\adja{\hbox{\tiny{\textsf{adjA}}}}
 \def\cc{\hbox{\tiny{\textsf C}}}
 \def\ca{\hbox{\tiny{\textsf A}}}
+
 %%    Unitée
 \def\mm{\,\mathsf{mm}}
 \def\cm{\,\mathsf{cm}}
@@ -339,19 +344,16 @@ to0pt{\kern0.55\wd0\vrule height0.5\ht0\hss}\box0}}
 %----------------------------------------------------------------------
 % Faut etre fou pour s'amuser a pondre des notes pareilles
 
-{\newtheorem{ndr1va}{\textbf{\textsc{Redaction note V.A.}}}[section]}
+{\newtheorem{ndr1va}{\textbf{\textsc{\footnotesize Redaction note V.A.}}}[section]}
 
 \newenvironment{ndrva}%
 {%
 \noindent\begin{ndr1va}\hrule\vspace{1em}%
 \ttfamily\small \  \\
-\indent}%
+\noindent}%
 {%
-\begin{flushright}%
-\  \\
-%\vspace{-1.5em}\ding{111}
-\end{flushright}%
-\vspace{-1.5em}\hrule
+$ $ \\
+\hrule
 \end{ndr1va}%
 }
 \makeatother
@@ -400,7 +402,19 @@ to0pt{\kern0.55\wd0\vrule height0.5\ht0\hss}\box0}}
 
 \newcommand{\DP}[2]{\displaystyle \frac{\partial {#1}}{\partial {#2}}}
 
+% %\newtheorem{definition}{Definition}
+% \newtheorem{proposition}{Proposition}
+% \newtheorem{lemma}{Lemma}
 
+% \newtheorem{claim}{Claim}
+% \newtheorem{remark}{Remark}
+% \newtheorem{assumption}{Assumption}
+% \newtheorem{example}{Example}
+% \newtheorem{conjecture}{Conjecture}
+% \newtheorem{corollary}{Corollary}
+% \newtheorem{OP}{OP}
+% \newtheorem{problem}{Problem}
+% \newtheorem{theorem}{Theorem}
 
 
 \def\dt{{\rm d}t}
@@ -410,5 +424,11 @@ to0pt{\kern0.55\wd0\vrule height0.5\ht0\hss}\box0}}
 \def\dU{{\rm d}U}
 
 
-
-\def\iter{{n}}
+\def\nat{{\hbox{\tiny{nat}}}}
+\def\nor{{\hbox{\tiny{nor}}}}
+\def\fb{\hbox{\tiny{\textsf FB}}}
+\def\vione{{\hbox{\tiny{vi-1}}}}
+\def\vitwo{{\hbox{\tiny{vi-2}}}}
+\def\qvitwo{{\hbox{\tiny{qvi-2}}}}
+\def\acone{{\hbox{\tiny{ac-1}}}}
+\def\actwo{{\hbox{\tiny{ac-2}}}}
