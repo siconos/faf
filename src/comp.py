@@ -72,10 +72,17 @@ class WithCriterium():
         return r > self._condmin and r < self._condmax
 
 def subsample_problems(filenames, proba, maxp, cond):
+    def addext(f):
+        if f.endswith('.hdf5'):
+            return f
+        else:
+            return '{0}.hdf5'.format(f)
+    _filenames = [addext(f) for f in filenames]
+
     if proba is not None:
-        __r = random.sample(filenames, int(len(filenames) * proba))
+        __r = random.sample(_filenames, int(len(_filenames) * proba))
     else:
-        __r = filenames
+        __r = _filenames
 
     if maxp is not None:
         _r = random.sample(__r, maxp)
@@ -120,8 +127,11 @@ def split(s, sep, maxsplit=-1):
 
 measure = 'flop'
 clean = False
+compute = True
 display = False
 display_convergence = False
+display_distrib = False
+display_distrib_var = False
 output_profile_data = False
 output_dat=False
 user_filenames = []
@@ -150,7 +160,7 @@ try:
                                     'timeout=', 'maxiter=', 'precision=',
                                     'keep-files', 'new', 'errors',
                                     'velocities', 'reactions', 'measure=',
-                                    'just-collect', 'cond-nc=',
+                                    'just-collect', 'cond-nc=', 'display-distrib',
                                     'no-collect', 'domain=', 'replace-solver=',
                                     'output-profile-data','output-dat' ])
 
@@ -176,8 +186,10 @@ for o, a in opts:
         clean = True
     elif o == '--display':
         display = True
+        compute = False
     elif o == '--display-convergence':
         display_convergence = True
+        compute = False
     elif o == '--measure':
         measure_name = a
     elif o == '--random-sample':
@@ -200,6 +212,10 @@ for o, a in opts:
         ask_collect = False
     elif o == '--cond-nc':
         cond_nc = [float (x) for x in split(a,':')]
+    elif o == '--display-distrib':
+        display_distrib = True
+        compute = False
+        display_distrib_var = a
     elif o == '--domain':
         urange = [float (x) for x in split(a,':')]
         domain = np.arange(urange[0], urange[2], urange[1])
@@ -336,11 +352,12 @@ def _numberOfInvolvedDS(f):
             r = np.nan
     return r
 
+    
 def _cond_problem(filename):
     problem = read_fclib_format(filename)
     return float(problem.numberOfContacts * 3) / float(numberOfInvolvedDS(filename) * 6)
 
-    
+
 read_fclib_format = Memoize(_read_fclib_format)
 
 numberOfInvolvedDS = Memoize(_numberOfInvolvedDS)
@@ -433,6 +450,9 @@ class Caller():
                 mflops = np.nan
 
                 attrs.create('filename', filename)
+                attrs.create('nc', problem.numberOfContacts)
+                attrs.create('nds', numberOfInvolvedDS(filename))
+                attrs.create('cond_nc', cond_problem(filename))
                 attrs.create('digest', digest)
                 attrs.create('info', info)
                 attrs.create('iter', iter)
@@ -443,7 +463,7 @@ class Caller():
                 attrs.create('flpops', flpops)
                 attrs.create('mflops', mflops)
 
-                print(filename, cond_problem(filename), solver.name(), info, iter, err,
+                print(filename, problem.numberOfContacts, numberOfInvolvedDS(filename), cond_problem(filename), solver.name(), info, iter, err,
                       time_s, real_time, proc_time,
                       flpops, mflops)
 
@@ -523,6 +543,9 @@ class Caller():
                 mflops = np.nan
 
             attrs.create('filename', filename)
+            attrs.create('nc', problem.numberOfContacts)
+            attrs.create('nds', numberOfInvolvedDS(filename))
+            attrs.create('cond_nc', cond_problem(filename))
             attrs.create('digest', digest)
             attrs.create('info', info)
             attrs.create('iter', iter)
@@ -534,7 +557,7 @@ class Caller():
             attrs.create('mflops', mflops)
 
             # filename, solver name, revision svn, parameters, nb iter, err
-            print(filename, cond_problem(filename), solver.name(), info, iter, err,
+            print(filename, problem.numberOfContacts, numberOfInvolvedDS(filename), cond_problem(filename), solver.name(), info, iter, err,
                   time_s, real_time, proc_time,
                   flpops, mflops)
 
@@ -810,7 +833,7 @@ __problem_filenames = subsample_problems(all_filenames,
                                          random_sample_proba,
                                          max_problems, None)
 
-_problem_filenames = filter(is_fclib_file, 
+_problem_filenames = filter(is_fclib_file,
                            __problem_filenames)
 
 problem_filenames = subsample_problems(_problem_filenames,
@@ -871,7 +894,7 @@ class Results():
 
 if __name__ == '__main__':
 
-    if not display and not display_convergence:
+    if compute:
         all_tasks = [t for t in product(solvers, problem_filenames)]
 
         if os.path.exists('comp.hdf5'):
@@ -918,8 +941,9 @@ if __name__ == '__main__':
                     if filename not in min_measure:
                         min_measure[filename] = np.inf
                     try:
-                        if comp_data[solver_name][filename].attrs['info'] == 0:
-                            measure[solver_name][ip] =  comp_data[solver_name][filename].attrs[measure_name]
+                        pfilename = os.path.splitext(filename)[0]
+                        if comp_data[solver_name][pfilename].attrs['info'] == 0:
+                            measure[solver_name][ip] =  comp_data[solver_name][pfilename].attrs[measure_name]
                             min_measure[filename] = min(min_measure[filename], measure[solver_name][ip])
                         else:
                             measure[solver_name][ip] = np.inf
@@ -937,10 +961,9 @@ if __name__ == '__main__':
 
                 ip = 0
                 for filename in filenames:
-
+                    pfilename = os.path.splitext(filename)[0]
                     try:
-
-                        if comp_data[solver_name][filename].attrs['info'] == 0:
+                        if comp_data[solver_name][pfilename].attrs['info'] == 0:
                             solver_r[solver_name][ip] = measure[solver_name][ip] / \
                               min_measure[filename]
 
@@ -953,9 +976,6 @@ if __name__ == '__main__':
             # 4 rhos
             rhos = dict()
             for solver_name in comp_data:
-                filenames = subsample_problems(comp_data[solver_name],
-                                               random_sample_proba,
-                                               max_problems, cond_nc)
 
                 assert min(solver_r[solver_name]) >= 1
                 rhos[solver_name] = np.empty(len(domain))
@@ -1012,8 +1032,6 @@ if __name__ == '__main__':
                 xlim(domain[0], domain[-1])
                 legend()
             grid()
-        show()
-
 
 
     if display_convergence:
@@ -1043,4 +1061,41 @@ if __name__ == '__main__':
                         grid()
                     except:
                         pass
+
+    if display_distrib:
+        from matplotlib.pyplot import title, plot, grid, show, legend, figure, hist
+
+        with h5py.File('comp.hdf5', 'r') as comp_file:
+
+            data = comp_file['data']
+            comp_data = data['comp']
+            for solver_name in comp_data:
+
+                if user_filenames == []:
+                    filenames = subsample_problems(comp_data[solver_name],
+                                                   random_sample_proba,
+                                                   max_problems, cond_nc)
+                else:
+                    filenames = user_filenames
+
+                x = dict()
+                for filename in filenames:
+                    pfilename = os.path.splitext(filename)[0]
+                    if filename not in x:
+                        try:
+                            x[filename + solver_name] = comp_data[solver_name][pfilename].attrs[display_distrib_var]
+                        except:
+                            if display_distrib_var == 'cond-nc':
+                                print filename
+                                x[filename + solver_name] = cond_problem(filename)
+                            else:
+                                x[filename + solver_name] = np.nan
+            figure()
+            l = [x[k] for k in x]
+            l.sort()
+            values = array(l)
+            hist(values, 100, range=(min(values), max(values)), histtype='stepfilled')
+            grid()
+
+    if display or display_convergence or display_distrib:
         show()
