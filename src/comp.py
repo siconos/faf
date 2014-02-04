@@ -836,15 +836,14 @@ __problem_filenames = subsample_problems(all_filenames,
 _problem_filenames = filter(is_fclib_file,
                            __problem_filenames)
 
+
 problem_filenames = subsample_problems(_problem_filenames,
                                        None,
                                        None, cond_nc)
 
-
-
 n_problems = len(problem_filenames)
 
-problems = [read_fclib_format(f) for f in problem_filenames]
+#problems = [read_fclib_format(f) for f in problem_filenames]
 
 
 
@@ -1063,39 +1062,74 @@ if __name__ == '__main__':
                         pass
 
     if display_distrib:
-        from matplotlib.pyplot import title, plot, grid, show, legend, figure, hist
+        from matplotlib.pyplot import title, subplot, grid, show, legend, figure, hist
+        if display_distrib_var == 'from-files':
 
-        with h5py.File('comp.hdf5', 'r') as comp_file:
+            nc = []
+            nds = []
+            cond_nc = []
 
-            data = comp_file['data']
-            comp_data = data['comp']
-            for solver_name in comp_data:
+            for problem_filename in problem_filenames:
 
-                if user_filenames == []:
-                    filenames = subsample_problems(comp_data[solver_name],
-                                                   random_sample_proba,
-                                                   max_problems, cond_nc)
-                else:
-                    filenames = user_filenames
+                try:
+                    nc.append(read_fclib_format(problem_filename).numberOfContacts)
+                except:
+                    pass
+                try:
+                    nds.append(numberOfInvolvedDS(problem_filename))
+                except:
+                    pass
+                try:
+                    cond_nc.append(cond_problem(problem_filename))
+                except:
+                    pass
 
-                x = dict()
-                for filename in filenames:
-                    pfilename = os.path.splitext(filename)[0]
-                    if filename not in x:
-                        try:
-                            x[filename + solver_name] = comp_data[solver_name][pfilename].attrs[display_distrib_var]
-                        except:
-                            if display_distrib_var == 'cond-nc':
-                                print filename
-                                x[filename + solver_name] = cond_problem(filename)
-                            else:
-                                x[filename + solver_name] = np.nan
             figure()
-            l = [x[k] for k in x]
-            l.sort()
-            values = array(l)
-            hist(values, 100, range=(min(values), max(values)), histtype='stepfilled')
+            subplot(311)
+            hist(nc, 100, label='nc', histtype='stepfilled')
             grid()
+            legend()
+            subplot(312)
+            hist(nds, 100, label='nds', histtype='stepfilled')
+            grid()
+            legend()
+            subplot(313)
+            hist(cond_nc, 100, label='cond_nc', histtype='stepfilled')
+            grid()
+            legend()
+            
+        else:
+            with h5py.File('comp.hdf5', 'r') as comp_file:
+
+                data = comp_file['data']
+                comp_data = data['comp']
+                for solver_name in comp_data:
+
+                    if user_filenames == []:
+                        filenames = subsample_problems(comp_data[solver_name],
+                                                       random_sample_proba,
+                                                       max_problems, cond_nc)
+                    else:
+                        filenames = user_filenames
+
+                    x = dict()
+                    for filename in filenames:
+                        pfilename = os.path.splitext(filename)[0]
+                        if filename not in x:
+                            try:
+                                x[filename + solver_name] = comp_data[solver_name][pfilename].attrs[display_distrib_var]
+                            except:
+                                if display_distrib_var == 'cond-nc':
+                                    print filename
+                                    x[filename + solver_name] = cond_problem(filename)
+                                else:
+                                    x[filename + solver_name] = np.nan
+                figure()
+                l = [x[k] for k in x]
+                l.sort()
+                values = array(l)
+                hist(values, 100, range=(min(values), max(values)), histtype='stepfilled')
+                grid()
 
     if display or display_convergence or display_distrib:
         show()
