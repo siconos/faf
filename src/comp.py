@@ -677,6 +677,14 @@ nsgs = SiconosSolver(name="NonsmoothGaussSeidel",
                      dparam_err=1,
                      maxiter=maxiter, precision=precision)
 
+snsgs = SiconosSolver(name="ShuffledNonsmoothGaussSeidel",
+                     API=N.frictionContact3D_nsgs,
+                     TAG=N.SICONOS_FRICTION_3D_NSGS,
+                     iparam_iter=7,
+                     dparam_err=1,
+                     maxiter=maxiter, precision=precision)
+
+snsgs.SolverOptions().iparam[9] = 1
 
 # only dense
 nsgsv = SiconosSolver(name="NonsmoothGaussSeidelVelocity",
@@ -754,10 +762,6 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
                                      maxiter=maxiter, precision=precision)
 
 
-
-
-
-
 # check for correct flop
 #def pipo(*args,**kwargs):
 #    a=1.
@@ -770,20 +774,19 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 #                     TAG=SICONOS_FRICTION_3D_HP,
 #                     iparam_iter=1,
 #                     dparam_err=1)
-
-
 # http://code.google.com/p/mpi4py/
 #from mpi4py import MPI
 #rank = MPI.COMM_WORLD.rank
 #frictionContact3D_sparseGlobalAlartCurnierInit(localac.SolverOptions())
 
+all_solvers = [nsgs, snsgs, TrescaFixedPoint, localac, Prox, DeSaxceFixedPoint,
+               VIFixedPointProjection, ExtraGrad, VIExtraGrad]
 
-all_solvers = [nsgs, TrescaFixedPoint, localac, Prox, DeSaxceFixedPoint, VIFixedPointProjection, ExtraGrad, VIExtraGrad]
 #all_solvers = [ DeSaxceFixedPoint, VIFixedPointProjection]
 if user_solvers == []:
     solvers = all_solvers
 else:
-    solvers = filter(lambda s : s._name in user_solvers, all_solvers)
+    solvers = filter(lambda s: s._name in user_solvers, all_solvers)
 
 
 def is_fclib_file(filename):
@@ -1097,7 +1100,7 @@ if __name__ == '__main__':
             hist(cond_nc, 100, label='cond_nc', histtype='stepfilled')
             grid()
             legend()
-            
+
         else:
             with h5py.File('comp.hdf5', 'r') as comp_file:
 
