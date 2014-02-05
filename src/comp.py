@@ -8,7 +8,7 @@ from itertools import product
 import numpy as np
 import random
 import Siconos.Numerics as N
-N.setNumericsVerbose(0)
+N.setNumericsVerbose(1)
 #import Siconos.FCLib as FCL
 
 from scipy.sparse import csr_matrix

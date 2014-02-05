@@ -1,11 +1,77 @@
 
-\section{Introduction}
-\label{Sec:Introduction}
-\subsection{Discrete frictional contact problem. }
+\section{Numerics}
+\label{Sec:Numerics}
+\subsection{VI based methods}
 
 \frame{
-  \frametitle{Contact and Friction in Mechanics}
+  \frametitle{Numerical solution procedure. VI based methods}
+  \begin{itemize}
+  \item Basic fixed point iterations with projection
+    $$\sf z_{k+1} \leftarrow P_{X}(z_k - \rho_k\,F(z_k))$$
+  \item Extragradient method
+    $$\sf z_{k+1} \leftarrow P_X(z_{k}-\rho_k\,F(P_X(z_k-\rho_k F(z_k))))$$
+  \item Hyperplane projection method
+  \end{itemize}
+  plus self-adaptive procedure for $\rho_k$.
 }
+
+
+\subsection{Nonsmooth Equations based methods}
+\frame{
+  \frametitle{Numerical solution procedure. Nonsmooth Equations based methods}
+  Nonsmooth Newton on   $G(z)=0$
+   $$z_{k+1}  =  z_k -  \Phi^{-1}(z_k) (G(z_k)), \Phi(z_k) \in \partial G(z_k)$$
+   \begin{itemize}
+   \item Alart--Curnier Formulation
+     \begin{equation}
+       \label{eq:CKPS-1}
+       \begin{cases}
+         r_\n - P_{\RR^{n_c}_+}(r_\n - \rho_\n  u_\n) = 0, \\
+         r_\t - P_{D(\mu, r_{\n,+})}(r_\t - \rho_\t u_\t   )=0,
+       \end{cases}
+     \end{equation}
+   \item Direct normal map reformulation
+     $$     r - P_{K}\left(r  - \rho (u   + g(u))\right) = 0$$
+   \item  Extension of  Fischer-Burmeister function to SOCCP
+     $$\phi_{\fb}(x,y) = x+y - (x^2 + y^2 )^{1/2}$$
+     with Jordan product and square root
+   \end{itemize}
+}
+
+\subsection{Optimization based approach}
+\frame{
+  \frametitle{Numerical solution procedure. Optimisation based methods}
+  \begin{itemize}
+  \item Successive approximation with Tresca friction (Haslinger et al.)
+    \begin{equation}
+      \label{eq:Haslinger-2}
+      \begin{cases}
+        \theta = h(r_\n) \\[2mm]
+        \min\, \Frac 1 2 r^\top W r + r^\top q \\
+        \begin{array}{ll}
+          \text{s.t. }& r \in C(\mu,\theta)
+        \end{array}
+      \end{cases}
+    \end{equation}
+  \item Fixed on the norm of the tangential velocity (Cadoux et al.)
+    \begin{equation}\label{eq:ACLM-3}
+      \begin{cases}
+        s =  \| u_\t \| \\[2mm]
+        \min\,\Frac 1 2 r^\top W r + r^\top (q + \alpha s)  \\
+        \begin{array}{ll}
+          \text{s.t. } & r \in K
+        \end{array}
+      \end{cases}
+    \end{equation}
+  \item  Alternating optimization problems (Panagiotopoulos et al.)\\
+    problem with fixed tangential reaction to solve normal reaction\\
+    problem with fixed normal reaction to solve tangential reaction
+\end{itemize}
+
+}
+
+
+
 
 
 

@@ -1,12 +1,96 @@
 
-\section{Introduction}
-\label{Sec:Introduction}
-\subsection{Discrete frictional contact problem. }
+\section{An existence result}
+\label{Sec:existence}
 
 \frame{
-  \frametitle{Contact and Friction in Mechanics}
+  \frametitle{An existence result. (F. Cadoux PhD)}
+  Let us introduce a slack variable
+  \begin{equation} \label{eq:chgVarDS}
+    s^\alpha := \| u^\alpha_\t \|
+  \end{equation}
+  together with a new modified velocity
+  $$ \widetilde u := u + \alpha s $$ $g(u) = \alpha s$
+  The problem $\mathrm{FC/I}(M,H,f,w,\mu)$ can be reformulated as
+  \begin{equation}\label{eq:soccp1-convex}
+  \begin{cases}
+    M v = {H} {r} + {f} \\[2mm]
+    \widetilde  u = H^\top v + w  + \alpha s  \\[2mm]
+    K^\star \ni {\hat u} \perp r \in K
+  \end{cases}
+\end{equation}
 }
+\frame{
+  \frametitle{An existence result.}
+  The problem~(\ref{eq:soccp1-convex}) appears to be the KKT condition of
+  \begin{block}{primal problem}
+    \begin{equation} \tag{$D_s$}
+      \left\{
+        \begin{array}{l}
+          \min \quad J(v) := \frac{1}{2} v^\top M v + f^\top v \\
+          H^\top v + w + \alpha s \in K^\star
+        \end{array}
+      \right.
+    \end{equation}
+  \end{block}
+  \begin{block}{dual problem}
+    \begin{equation} \tag{$P_s$}
+      \left\{
+        \begin{array}{l}
+          \min \quad J_s(r) := \frac{1}{2} r^\top W r - q_s^\top r \\
+          r \in K
+        \end{array}
+      \right.
+    \end{equation}
+    with $q_s = q + \alpha s $
+  \end{block}
+  \begin{block}{Interest}
+    Two convex program \ding{220} existence of solutions under feasibility conditions.
+  \end{block}
+}
+\frame{
+  \frametitle{An existence result.}
+  \begin{block}{Fixed point problem}
+    Introducing
+  $$ u(s) := \argmin_u (P_s) = \argmin_u (D_s) $$
+  practically \alert{computable} by optimization software, and
+  $$ F^i(s) := \| u^i_T(s) \|, $$
+  the incremental problem becomes a fixed point problem
+  $$ F(s) = s $$
+\end{block}
 
+}
+\frame{
+  \frametitle{An existence result.}
+
+  \begin{block}{Assumption}
+    $$ \exists v \in \R^m \ : \ H v + w \in K^* $$
+  \end{block}
+  Using the assumption,
+  \begin{itemize}
+  \item the application $F: \R_+^n \rightarrow \R_+^n$ is \alert{well-defined}, \alert{continuous} and \alert{bounded}
+  \item apply Brouwer's theorem
+  \end{itemize}
+  \begin{theorem}
+    A fixed point exists
+  \end{theorem}
+  This result is a variant of a previous result obtained by \cite{Pang.Klarsbring}.
+}
+\frame{
+  \frametitle{An existence result.}
+  \begin{block}{Numerical validation of the assumption}
+    The assumption by solving a linear program over of a SOC.
+  \end{block}
+  \begin{block}{Numerical interest}
+    The fixed point equation $F(s) = s$ can be tackled by
+    \begin{itemize}
+    \item \alert{fixed-point} iterations
+      $$ s \leftarrow F(s) $$
+    \item \alert{Newton} iterations
+      $$s \leftarrow \mathrm{Jac}[F](s) \backslash F(s) $$
+    \item Variants possible (truncated resolution of inner problem\dots)
+    \end{itemize}
+  \end{block}
+}
 
 
 %%% Local Variables: 
