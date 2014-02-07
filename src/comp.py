@@ -8,7 +8,7 @@ from itertools import product
 import numpy as np
 import random
 import Siconos.Numerics as N
-N.setNumericsVerbose(1)
+N.setNumericsVerbose(0)
 #import Siconos.FCLib as FCL
 
 from scipy.sparse import csr_matrix
@@ -715,7 +715,7 @@ Prox = SiconosSolver(name="ProximalFixedPoint",
                      dparam_err=1,
                      maxiter=maxiter, precision=precision)
 
-
+Prox.SolverOptions().internalSolvers.iparam[3] = 1000000
 
 ExtraGrad = SiconosSolver(name="ExtraGradient",
                           API=N.frictionContact3D_ExtraGradient,
@@ -779,10 +779,11 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 #rank = MPI.COMM_WORLD.rank
 #frictionContact3D_sparseGlobalAlartCurnierInit(localac.SolverOptions())
 
-all_solvers = [nsgs, snsgs, TrescaFixedPoint, localac, Prox, DeSaxceFixedPoint,
-               VIFixedPointProjection, ExtraGrad, VIExtraGrad]
+#all_solvers = [nsgs, snsgs, TrescaFixedPoint, localac, Prox, DeSaxceFixedPoint,
+#               VIFixedPointProjection, ExtraGrad, VIExtraGrad]
 
-#all_solvers = [ DeSaxceFixedPoint, VIFixedPointProjection]
+all_solvers = [nsgs, snsgs, TrescaFixedPoint, Prox, localac, DeSaxceFixedPoint
+               VIFixedPointProjection, VIExtraGrad]
 if user_solvers == []:
     solvers = all_solvers
 else:
@@ -920,69 +921,80 @@ if __name__ == '__main__':
 
             # 1 n_problems
             n_problems = 0
-            for solver_name in comp_data:
-                filenames = subsample_problems(comp_data[solver_name],
-                                               random_sample_proba,
-                                               max_problems, cond_nc)
-                n_problems = max(n_problems, len(filenames))
-
+            
+            for solver in solvers:
+                solver_name=solver.name()
+                if solver_name in comp_data :
+                    filenames = subsample_problems(comp_data[solver_name],
+                                                   random_sample_proba,
+                                                   max_problems, cond_nc)
+                    n_problems = max(n_problems, len(filenames))
+                    
             # 2 measures & min_measure
-            for solver_name in comp_data:
-                filenames = subsample_problems(comp_data[solver_name],
-                                               random_sample_proba,
-                                               max_problems, cond_nc)
 
-                assert len(filenames) <= n_problems
+            for solver in solvers:
+                solver_name=solver.name()
+                if solver_name in comp_data :
 
-                measure[solver_name] = np.inf * np.ones(n_problems)
-                solver_r[solver_name] = np.inf * np.ones(n_problems)
+                    filenames = subsample_problems(comp_data[solver_name],
+                                                   random_sample_proba,
+                                                   max_problems, cond_nc)
 
-                ip = 0
+                    assert len(filenames) <= n_problems
 
-                for filename in filenames:
-                    if filename not in min_measure:
-                        min_measure[filename] = np.inf
-                    try:
-                        pfilename = os.path.splitext(filename)[0]
-                        if comp_data[solver_name][pfilename].attrs['info'] == 0:
-                            measure[solver_name][ip] =  comp_data[solver_name][pfilename].attrs[measure_name]
-                            min_measure[filename] = min(min_measure[filename], measure[solver_name][ip])
-                        else:
-                            measure[solver_name][ip] = np.inf
-                    except:
-                        measure[solver_name][ip] = np.nan
-                    ip += 1
+                    measure[solver_name] = np.inf * np.ones(n_problems)
+                    solver_r[solver_name] = np.inf * np.ones(n_problems)
+
+                    ip = 0
+
+                    for filename in filenames:
+                        if filename not in min_measure:
+                            min_measure[filename] = np.inf
+                        try:
+                            pfilename = os.path.splitext(filename)[0]
+                            if comp_data[solver_name][pfilename].attrs['info'] == 0:
+                                measure[solver_name][ip] =  comp_data[solver_name][pfilename].attrs[measure_name]
+                                min_measure[filename] = min(min_measure[filename], measure[solver_name][ip])
+                            else:
+                                measure[solver_name][ip] = np.inf
+                        except:
+                            measure[solver_name][ip] = np.nan
+                        ip += 1
 
 
             # 3 solver_r
-            for solver_name in comp_data:
+            #            for solver_name in comp_data:
+            for solver in solvers:
+                solver_name=solver.name()
+                if solver_name in comp_data :
+                    filenames = subsample_problems(comp_data[solver_name],
+                                                   random_sample_proba,
+                                                   max_problems, cond_nc)
 
-                filenames = subsample_problems(comp_data[solver_name],
-                                               random_sample_proba,
-                                               max_problems, cond_nc)
+                    ip = 0
+                    for filename in filenames:
+                        pfilename = os.path.splitext(filename)[0]
+                        try:
+                            if comp_data[solver_name][pfilename].attrs['info'] == 0:
+                                solver_r[solver_name][ip] = measure[solver_name][ip] / \
+                                  min_measure[filename]
 
-                ip = 0
-                for filename in filenames:
-                    pfilename = os.path.splitext(filename)[0]
-                    try:
-                        if comp_data[solver_name][pfilename].attrs['info'] == 0:
-                            solver_r[solver_name][ip] = measure[solver_name][ip] / \
-                              min_measure[filename]
-
-                        else:
+                            else:
+                                solver_r[solver_name][ip] = np.inf
+                        except:
                             solver_r[solver_name][ip] = np.inf
-                    except:
-                        solver_r[solver_name][ip] = np.inf
-                    ip += 1
+                        ip += 1
 
             # 4 rhos
             rhos = dict()
-            for solver_name in comp_data:
-
-                assert min(solver_r[solver_name]) >= 1
-                rhos[solver_name] = np.empty(len(domain))
-                for itau in range(0, len(domain)):
-                    rhos[solver_name][itau] = float(len(np.where( solver_r[solver_name] <= domain[itau] )[0])) / float(n_problems)
+            #for solver_name in comp_data:
+            for solver in solvers:
+                solver_name=solver.name()
+                if solver_name in comp_data :
+                    assert min(solver_r[solver_name]) >= 1
+                    rhos[solver_name] = np.empty(len(domain))
+                    for itau in range(0, len(domain)):
+                        rhos[solver_name][itau] = float(len(np.where( solver_r[solver_name] <= domain[itau] )[0])) / float(n_problems)
 
 
             if output_profile_data :
@@ -1028,12 +1040,15 @@ if __name__ == '__main__':
             # 5 plot
             from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure, xlim, ylim
 
-            for solver_name in comp_data:
-                plot(domain, rhos[solver_name], label=solver_name)
-                ylim(0, 1.0001)
-                xlim(domain[0], domain[-1])
-                legend()
-            grid()
+            #for solver_name in comp_data:
+            for solver in solvers:
+                solver_name=solver.name()
+                if solver_name in comp_data :
+                    plot(domain, rhos[solver_name], label=solver_name)
+                    ylim(0, 1.0001)
+                    xlim(domain[0], domain[-1])
+                    legend()
+                grid()
 
 
     if display_convergence:
