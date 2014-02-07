@@ -132,7 +132,8 @@ display = False
 display_convergence = False
 display_distrib = False
 display_distrib_var = False
-output_profile_data = False
+gnuplot_profile = False
+gnuplot_distrib = False
 output_dat=False
 user_filenames = []
 user_solvers = []
@@ -162,7 +163,7 @@ try:
                                     'velocities', 'reactions', 'measure=',
                                     'just-collect', 'cond-nc=', 'display-distrib=',
                                     'no-collect', 'domain=', 'replace-solver=',
-                                    'output-profile-data','output-dat' ])
+                                    'gnuplot-profile','gnuplot-distrib', 'output-dat' ])
 
 
 except getopt.GetoptError, err:
@@ -226,8 +227,10 @@ for o, a in opts:
                 del comp_file['data']['comp'][a]
         except Exception as e:
             print e
-    elif o == '--output-profile-data':
-        output_profile_data=True
+    elif o == '--gnuplot-profile':
+        gnuplot_profile=True
+    elif o == '--gnuplot-distrib':
+        gnuplot_distrib=True
     elif o == '--output-dat':
         output_dat=True
     elif o == '--new':
@@ -714,12 +717,40 @@ Prox = SiconosSolver(name="ProximalFixedPoint",
                      iparam_iter=7,
                      dparam_err=1,
                      maxiter=maxiter, precision=precision)
-
 Prox.SolverOptions().internalSolvers.iparam[3] = 1000000
+
+Prox2 = SiconosSolver(name="ProximalFixedPoint2",
+                     API=N.frictionContact3D_proximal,
+                     TAG=N.SICONOS_FRICTION_3D_PROX,
+                     iparam_iter=7,
+                     dparam_err=1,
+                     maxiter=maxiter, precision=precision)
+
+Prox2.SolverOptions().dparam[5]=2.0 # nu
+Prox2.SolverOptions().internalSolvers.iparam[3] = 1000000
+
+Prox3 = SiconosSolver(name="ProximalFixedPoint3",
+                     API=N.frictionContact3D_proximal,
+                     TAG=N.SICONOS_FRICTION_3D_PROX,
+                     iparam_iter=7,
+                     dparam_err=1,
+                     maxiter=maxiter, precision=precision)
+
+Prox3.SolverOptions().dparam[4]=1.1 # sigma 
+Prox3.SolverOptions().dparam[5]=2.0 # nu
+
+Prox3.SolverOptions().internalSolvers.iparam[3] = 1000000
 
 ExtraGrad = SiconosSolver(name="ExtraGradient",
                           API=N.frictionContact3D_ExtraGradient,
                           TAG=N.SICONOS_FRICTION_3D_EG,
+                          iparam_iter=7,
+                          dparam_err=1,
+                          maxiter=maxiter, precision=precision)
+
+FixedPointProjection = SiconosSolver(name="FixedPointProjection",
+                          API=N.frictionContact3D_fixedPointProjection,
+                          TAG=N.SICONOS_FRICTION_3D_FPP,
                           iparam_iter=7,
                           dparam_err=1,
                           maxiter=maxiter, precision=precision)
@@ -780,14 +811,18 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 #frictionContact3D_sparseGlobalAlartCurnierInit(localac.SolverOptions())
 
 #all_solvers = [nsgs, snsgs, TrescaFixedPoint, localac, Prox, DeSaxceFixedPoint,
-#               VIFixedPointProjection, ExtraGrad, VIExtraGrad]
+#               FixedPointProjection, VIFixedPointProjection, ExtraGrad, VIExtraGrad]
 
-all_solvers = [nsgs, snsgs, TrescaFixedPoint, Prox, localac, DeSaxceFixedPoint
+all_solvers = [nsgs, snsgs, TrescaFixedPoint, Prox, Prox2, Prox3, localac, DeSaxceFixedPoint,
                VIFixedPointProjection, VIExtraGrad]
+
 if user_solvers == []:
     solvers = all_solvers
 else:
     solvers = filter(lambda s: s._name in user_solvers, all_solvers)
+    for solver in solvers : print solver.name()
+
+
 
 
 def is_fclib_file(filename):
@@ -997,7 +1032,7 @@ if __name__ == '__main__':
                         rhos[solver_name][itau] = float(len(np.where( solver_r[solver_name] <= domain[itau] )[0])) / float(n_problems)
 
 
-            if output_profile_data :
+            if gnuplot_profile :
                 def write_report(r, filename):
                     with open(filename, "w") as input_file:
                         for k, v in r.items():
@@ -1008,8 +1043,10 @@ if __name__ == '__main__':
                 write_report(rhos,'rhos.txt')
                 write_report(solver_r,'solver_r.txt')
 
+                
                 with open('profile.gp','w') as gp:
-                    all_rhos = [ domain ] + [ rhos[solver_name] for solver_name in comp_data ]
+                    #  all_rhos = [ domain ] + [ rhos[solver_name] for solver_name in comp_data ]
+                    all_rhos = [ domain ] + [ rhos[solver.name()] for solver in filter(lambda s: s._name in comp_data, solvers) ]
                     np.savetxt('profile.dat', np.matrix(all_rhos).transpose())
                     gp.write('resultfile = "profile.dat"\n')
                     gp.write('basename="profile-{0}"\n'.format(filename.partition('-')[0]))
@@ -1032,7 +1069,8 @@ if __name__ == '__main__':
 
                     gp.write('set title \'{0}\'\n'.format(filename.partition('-')[0]));
                     gp.write('plot ')
-                    gp.write(','.join(['resultfile using 1:{0} t "{1}" w l'.format(index + 2, solver_name) for index, solver_name in enumerate(comp_data) ]))
+                    gp.write(','.join(['resultfile using 1:{0} t "{1}" w l'.format(index + 2, solver.name()) 
+                                       for index, solver in enumerate(filter(lambda s: s._name in comp_data, solvers)) ]))
                 # all_rhos = [ rhos[solver_name] for solver_name in comp_data ]
                 # g.plot(*all_rhos)
 
@@ -1094,7 +1132,7 @@ if __name__ == '__main__':
                 except:
                     pass
                 try:
-                    nds.append(numberOfInvolvedDS(problem_filename))
+                    nds.append(6*numberOfInvolvedDS(problem_filename))
                 except:
                     pass
                 try:
@@ -1115,6 +1153,62 @@ if __name__ == '__main__':
             hist(cond_nc, 100, label='cond_nc', histtype='stepfilled')
             grid()
             legend()
+            if gnuplot_distrib :
+
+                with open('distrib.gp','w') as gp:
+                    #  all_rhos = [ domain ] + [ rhos[solver_name] for solver_name in comp_data ]
+                    all_distrib = [ nc] + [nds] + [cond_nc]
+                    np.savetxt('distrib.dat', np.matrix(all_distrib).transpose())
+                    gp.write('resultfile = "distrib.dat"\n')
+                    gp.write('basename="distrib-{0}"\n'.format(problem_filename.partition('-')[0]))
+                    gp.write('\n')
+                    gp.write('term_choice_tikz=1\n')
+                    gp.write('if (term_choice_tikz == 1) \\\n')
+                    gp.write('print "term_choice_tikz"; \\\n')
+                    gp.write('set term tikz standalone monochrome  size 5in,3in font \'\\small\\sf\';  \\\n')
+                    gp.write('extension = \'.tex\'; \\\n')
+                    gp.write('set output basename.extension; \\\n')
+                    gp.write('else \\\n')
+                    gp.write('set term aqua;\\\n')
+                    gp.write(' \n')
+                    gp.write('set xtics offset 0,0.5 \n')
+                    gp.write('set key left top\n')
+
+                    gp.write('basheight = 0.36; heightoff = 0.0; winratio = 1.0; winheight = basheight*winratio ; trans = 0.9\n')
+                    gp.write('set multiplot \n')
+                    gp.write('set size winratio,winheight \n')
+                    gp.write('\n')
+                    # gp.write('set xrange [{0}:{1}]\n'.format(domain[0]-0.01, domain[len(domain)-1]))
+                    # gp.write('set yrange [-0.01:1.01]\n')
+                    gp.write('set ylabel \'\\shortstack{Number of \\\ problems} \' \n')
+                    gp.write('binwidth = 5.0\n')
+                    gp.write('set boxwidth binwidth\n')                    
+                    gp.write('bin(x, width) = width*floor(x/width) + binwidth/2.0\n')
+                    #gp.write('set title \'{0}\'\n'.format(problem_filename.partition('-')[0]));
+                    gp.write('\n')
+                    gp.write('set origin 0.0,winheight*2.0*trans+heightoff\n')
+                    gp.write('set xlabel \'number of contact\' offset 0,1.2 \n')
+                    #gp.write('plot resultfile u (bin($1, binwidth)):(1.0) smooth freq w boxes title \'number of contact\'  \n')
+                    gp.write('plot resultfile u (bin($1, binwidth)):(1.0) smooth freq w boxes notitle  \n')
+                    gp.write('\n')
+                    gp.write('set origin 0.0,winheight*1.0*trans+heightoff\n')
+                    gp.write('set xlabel \'number of degree of freedom \' offset 0,1.2 \n')
+                    #gp.write('plot resultfile u (bin($2, binwidth)):(1.0) smooth freq w boxes title  \'number of degree of freedom \' \n')
+                    gp.write('plot resultfile u (bin($2, binwidth)):(1.0) smooth freq w boxes notitle \n')
+                    gp.write('\n')
+                    gp.write('set origin 0.0,winheight*0.0+heightoff\n')
+                    gp.write('binwidth = 0.01\n')
+                    gp.write('set boxwidth binwidth\n')
+                    gp.write('set xlabel \'ratio number of contact/number of degree of freedom\' offset 0,1.2 \n')
+                    #gp.write('plot resultfile u (bin($3, binwidth)):(1.0) smooth freq w boxes title \'ratio number of contact/number of degree of freedom\' \n')
+                    gp.write('plot resultfile u (bin($3, binwidth)):(1.0) smooth freq w boxes notitle \n')
+
+                    
+
+                    #gp.write(','.join(['resultfile using 1:{0} t "{1}" w l'.format(index + 2, solver.name()) 
+                    #                    for index, solver in enumerate(filter(lambda s: s._name in comp_data, solvers)) ]))
+                # all_rhos = [ rhos[solver_name] for solver_name in comp_data ]
+                # g.plot(*all_rhos)
 
         else:
             with h5py.File('comp.hdf5', 'r') as comp_file:
