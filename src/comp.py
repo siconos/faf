@@ -133,6 +133,7 @@ display_convergence = False
 display_distrib = False
 display_distrib_var = False
 gnuplot_profile = False
+logscale=False
 gnuplot_distrib = False
 output_dat=False
 user_filenames = []
@@ -163,7 +164,8 @@ try:
                                     'velocities', 'reactions', 'measure=',
                                     'just-collect', 'cond-nc=', 'display-distrib=',
                                     'no-collect', 'domain=', 'replace-solver=',
-                                    'gnuplot-profile','gnuplot-distrib', 'output-dat' ])
+                                    'gnuplot-profile','gnuplot-distrib', 'logscale',
+                                    'output-dat' ])
 
 
 except getopt.GetoptError, err:
@@ -229,6 +231,8 @@ for o, a in opts:
             print e
     elif o == '--gnuplot-profile':
         gnuplot_profile=True
+    elif o == '--logscale':
+        logscale=True
     elif o == '--gnuplot-distrib':
         gnuplot_distrib=True
     elif o == '--output-dat':
@@ -813,7 +817,7 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 #all_solvers = [nsgs, snsgs, TrescaFixedPoint, localac, Prox, DeSaxceFixedPoint,
 #               FixedPointProjection, VIFixedPointProjection, ExtraGrad, VIExtraGrad]
 
-all_solvers = [nsgs, snsgs, TrescaFixedPoint, Prox, Prox2, Prox3, localac, DeSaxceFixedPoint,
+all_solvers = [nsgs, snsgs, TrescaFixedPoint, Prox, Prox2, Prox3, localac,
                VIFixedPointProjection, VIExtraGrad]
 
 if user_solvers == []:
@@ -1053,20 +1057,25 @@ if __name__ == '__main__':
                     gp.write('\n')
                     gp.write('term_choice_tikz=1\n')
                     gp.write('if (term_choice_tikz == 1) \\\n')
-                    gp.write('print "term_choice_tikz"; \\\n')
                     gp.write('set term tikz standalone monochrome  size 5in,3in font \'\\small\\sf\';  \\\n')
                     gp.write('extension = \'.tex\'; \\\n')
                     gp.write('set output basename.extension; \\\n')
+                    gp.write('print "output =", basename.extension; \\\n')
+
                     gp.write('else \\\n')
                     gp.write('set term aqua;\\\n')
                     gp.write('\n')
                     gp.write('set xrange [{0}:{1}]\n'.format(domain[0]-0.01, domain[len(domain)-1]))
                     gp.write('set yrange [-0.01:1.01]\n')
-                    gp.write('set xlabel \'$\\tau$ ({0})\' \n'.format(measure_name))
                     gp.write('set ylabel \'$\\rho(\\tau)$ \' \n')
                     gp.write('set key right bottom\n')
                     print filename.partition('-')[0]
-
+                    if logscale:
+                        gp.write('set logscale x\n')
+                        gp.write('set xlabel \'$\\tau$ ({0}) (logscale)\' \n'.format(measure_name))
+                    else:
+                        gp.write('set xlabel \'$\\tau$ ({0})\' \n'.format(measure_name))
+                                           
                     gp.write('set title \'{0}\'\n'.format(filename.partition('-')[0]));
                     gp.write('plot ')
                     gp.write(','.join(['resultfile using 1:{0} t "{1}" w l'.format(index + 2, solver.name()) 
@@ -1076,11 +1085,12 @@ if __name__ == '__main__':
 
 
             # 5 plot
-            from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure, xlim, ylim
+            from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure, xlim, ylim, xscale
 
             #for solver_name in comp_data:
             for solver in solvers:
                 solver_name=solver.name()
+                xscale('log')
                 if solver_name in comp_data :
                     plot(domain, rhos[solver_name], label=solver_name)
                     ylim(0, 1.0001)
@@ -1110,6 +1120,7 @@ if __name__ == '__main__':
                         pfilename = os.path.splitext(filename)[0]
                         solver_problem_data = comp_data[solver_name][pfilename]
                         figure()
+
                         plot(np.arange(len(solver_problem_data['errors'][:])),
                              solver_problem_data['errors'], label='{0} - {1}'.format(solver_name, filename))
                         legend()
@@ -1179,10 +1190,10 @@ if __name__ == '__main__':
                     
                     gp.write('term_choice_tikz=1\n')
                     gp.write('if (term_choice_tikz == 1) \\\n')
-                    gp.write('print "term_choice_tikz"; \\\n')
                     gp.write('set term tikz standalone monochrome  size 5in,3in font \'\\small\\sf\';  \\\n')
                     gp.write('extension = \'.tex\'; \\\n')
                     gp.write('set output basename.extension; \\\n')
+                    gp.write('print "output =", basename.extension; \\\n')
                     gp.write('else \\\n')
                     gp.write('set term aqua;\\\n')
                     gp.write(' \n')
@@ -1201,7 +1212,11 @@ if __name__ == '__main__':
                     gp.write('\n')
                     gp.write('set origin 0.0,winheight*2.0*trans+heightoff\n')
                     gp.write('numberofbox=50\n')
+                    gp.write('print \'max_nc =\', max_nc,\'min_nc =\', min_nc \n')
                     gp.write('binwidth = (max_nc-min_nc)/numberofbox\n')
+                    gp.write('set boxwidth binwidth\n')                     
+                   
+                    gp.write('print \'binwidth =\', binwidth \n')
                     
                     gp.write('set xlabel \'number of contact\' offset 0,1.2 \n')
                     #gp.write('plot resultfile u (bin($1, binwidth)):(1.0) smooth freq w boxes title \'number of contact\'  \n')
@@ -1209,18 +1224,24 @@ if __name__ == '__main__':
                     gp.write('\n')
                     
                     gp.write('binwidth = (max_ndof-min_ndof)/numberofbox\n')
+                    gp.write('print \'binwidth =\', binwidth \n')
+ 
                     gp.write('set boxwidth binwidth\n')                     
                     gp.write('set origin 0.0,winheight*1.0*trans+heightoff\n')
+ 
                     gp.write('set xlabel \'number of degree of freedom \' offset 0,1.2 \n')
+                    
                     #gp.write('plot resultfile u (bin($2, binwidth)):(1.0) smooth freq w boxes title  \'number of degree of freedom \' \n')
                     gp.write('plot resultfile u (bin($2, binwidth)):(1.0) smooth freq w boxes notitle \n')
                     gp.write('\n')
                     
                     gp.write('set origin 0.0,winheight*0.0+heightoff\n')
                     gp.write('binwidth = (max_ncond-min_ncond)/numberofbox\n')
+                    gp.write('print \'binwidth =\', binwidth \n')
+                    
                     gp.write('set boxwidth binwidth\n')                    
-                    gp.write('set xlabel \'ratio number of contact/number of degree of freedom\' offset 0,1.2 \n')
-                    #gp.write('plot resultfile u (bin($3, binwidth)):(1.0) smooth freq w boxes title \'ratio number of contact/number of degree of freedom\' \n')
+                    gp.write('set xlabel \'ratio number of contact unknowns/number of degree of freedom\' offset 0,1.2 \n')
+                    #gp.write('plot resultfile u (bin($3, binwidth)):(1.0) smooth freq w boxes title \'ratio number of contact unknowns/number of degree of freedom\' \n')
                     gp.write('plot resultfile u (bin($3, binwidth)):(1.0) smooth freq w boxes notitle \n')
 
                     

@@ -39,11 +39,11 @@
 \input{theme.tex}
 
 \title{An open question : \\How to solve efficiently 3D frictional contact problem ?}
-\author{Vincent Acary \\ INRIA Rh\^one--Alpes, Grenoble.}
+\author{Vincent Acary, Maurice Br\'emond \\ INRIA Rh\^one--Alpes, Grenoble.}
 \date{Computational Contact Mechanics: Advances and Frontiers in Modeling Contact, \\ 
   Banff International Research station,\\ Canada,  February 15--21th, 2013,\\[2mm]
-Joint work with Maurice Br\'emond,
-Florent Cadoux, Claude Lemar\'echal,\\ J\'er\^ome Malick, Florence Bertails--Descoubes, Gilles Daviet }
+Joint work with
+Florent Cadoux, Claude Lemar\'echal, J\'er\^ome Malick,\\ Florence Bertails--Descoubes, Gilles Daviet }
 
 \setbeamertemplate 
 {footline} 
@@ -159,7 +159,7 @@ Florent Cadoux, Claude Lemar\'echal,\\ J\'er\^ome Malick, Florence Bertails--Des
 \frame{\tableofcontents}
 
 \include{comparison}
-\frame{\tableofcontents}
+
 
 
 
@@ -172,29 +172,59 @@ Florent Cadoux, Claude Lemar\'echal,\\ J\'er\^ome Malick, Florence Bertails--Des
 \frametitle{Conclusions \& Perspectives}
 \begin{block}{Conclusions}
   \begin{enumerate}
-  \item 
+  \item A bunch of articles in the literature
+  \item any ``Swiss--knife'' solution : efficiency OR robustness  
+  \item the rank of the $H$ matrix (ratio number of contact unknows/number of d.o.f) plays an important role. 
   \end{enumerate}
 \end{block}
 \vskip-3mm
 \begin{block}{Perspectives}
   \begin{enumerate}
-  \item 
+  \item Develop new algorithm
+  \item Study the influence of the friction coefficient, the size of problem, the conditionning of the problem , \ldots
+  \item Set up a collection of benchmarks  
   \end{enumerate}
 \end{block}
 
 }
 
+\subsection{FCLIB : a collection of discrete 3D Frictional Contact (FC) problems}
+
+\frame{
+  \frametitle{FCLIB : a collection of discrete 3D Frictional Contact (FC) problems}
+  Our inspiration MCPLIB or CUTEst
+  \begin{block}
+    {What is FCLIB ?}
+    \begin{itemize}
+    \item A open source collection of Frictional Contact (FC) problems
+      stored in a specific HDF5 format
+    \item A open source light implementation of Input/Output functions
+      in C Language to read and write problems
+    \end{itemize}
+  \end{block}
+
+
+  \begin{block}
+    {Goals of the project}
+    Provide a standard framework for testing available and new algorithms for solving discrete frictional contact problems share common formulations of problems in order to exchange data
+\end{block}
+\begin{block}
+    {Call for contribution}
+    \alert{\url{http://fclib.gforge.inria.fr}}
+  \end{block}
+}
 
 \frame
 {
 \centerline{\textcolor{red}{ Thank you for your attention.}}
 }
-\frame{\tableofcontents}
+
  
 \def\newblock{}
+{\scriptsize
 \bibliographystyle{plainnat}
-\bibliography{../biblio}
-
+\bibliography{../Report/biblio}
+}
 
 %\include{PWL}
 

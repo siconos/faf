@@ -1,56 +1,120 @@
 
-\section{First Comparisons}
+\section{Preliminary  Comparisons}
 \label{Sec:Comparison}
 \subsection{Performance profiles}
 \frame{
-  \frametitle{Performance profiles}
+  \frametitle{Performance profiles~\cite{Dolan.More2002}}
+
+  \begin{itemize}
+  \item Given a set of problems $\mathcal P$
+  \item Given a set of solvers $\mathcal S$  
+  \item A performance measure for each problem  with a solver $t_{p,s}$ (cpu time, flops, ...)
+  \item Compute the performance ratio
+    \begin{equation}
+      \label{eq:perf-ratio}
+      \tau_{p,s} =    \Frac{t_{p,s}}{\min_{s\in\mathcal S} t_{p,s}} \geq 1
+    \end{equation}
+  \item Compute the performance profile $\rho_s(\tau) : [1,+\infty]\rightarrow [0,1]$ for each solver $s\in \mathcal S$
+    
+    \begin{equation}
+      \rho_s(\tau) = \Frac{1}{|\mathcal P|}\big|\{p\in \mathcal P\mid \tau_{p,s} \leq \tau    \}\big|\label{eq:perf}
+  \end{equation}
+  The value of $\rho_s(1)$ is the probability that the solver $s$ will win over the rest of the solvers.
+  \end{itemize}
+  
+  
 }
-\subsection{Performance profiles. Capsules}
 \def\ssep{1.5mm}
+
+\subsection{Chain}
+\frame{
+  \frametitle{First comparisons. Chain}
+  \begin{block}
+    {Hanging chain with initial velocity at the tip}
+    $$ $$
+    \begin{minipage}{0.49\linewidth}
+      \includegraphics[width=1.0\textwidth]{Capsules}
+    \end{minipage}
+    \begin{minipage}{0.49\linewidth}
+      \begin{tabular}{|p{0.7\textwidth}|c|}
+        coefficient of friction & $0.3$ \\[\ssep]
+
+        number of problems & 1017 \\[\ssep]
+        number of degree of freedom & [48 : 60] \\[\ssep]
+        number of contact & [8 :28] \\[\ssep]
+        required accuracy   & $10^{-8}$    
+      \end{tabular}
+    \end{minipage}
+  \end{block}
+
+}
+\frame{
+  \frametitle{First comparisons. Chain}
+  \includegraphics[width=1.05\textwidth]{distrib-Chain.pdf}
+}
+\frame{
+  \frametitle{First comparisons. Chain}
+  \includegraphics[width=1.05\textwidth]{profile-Chain-1_100.pdf}
+}
+\frame{
+  \frametitle{First comparisons. Chain}
+  \includegraphics[width=1.05\textwidth]{profile-Chain-1_1000log.pdf}
+}
+
+
+
+\subsection{Capsules}
+
 \frame{
   \frametitle{First comparisons. Capsules}
+ \begin{block}
+    {100 capsules dropped into a box.}
+    $$ $$
   \begin{minipage}{0.49\linewidth}
     \includegraphics[width=1.0\textwidth]{Capsules}
   \end{minipage}  
   \begin{minipage}{0.49\linewidth}
     \begin{tabular}{|p{0.7\textwidth}|c|}
-      coefficient of friction & $0.3$ \\[\ssep]
+      coefficient of friction & $0.7$ \\[\ssep]
       number of problems & 1705 \\[\ssep]
       number of degree of freedom & [6 : 600] \\[\ssep]
-      number of contact &  \\[\ssep]
+      number of contact &  [0:300]\\[\ssep]
       required accuracy   & $10^{-8}$    
     \end{tabular}
   \end{minipage}
-}
-
-\frame{
-  \frametitle{First comparisons. Capsules}
-  \includegraphics[width=0.95\textwidth]{profile-Capsules-1_10.pdf}
+\end{block}
 }
 \frame{
   \frametitle{First comparisons. Capsules}
-  \includegraphics[width=0.95\textwidth]{profile-Capsules-1_100.pdf}
+  \includegraphics[width=1.05\textwidth]{distrib-Capsules.pdf}
+}
+% \frame{
+%   \frametitle{First comparisons. Capsules}
+%     \includegraphics[width=1.05\textwidth]{profile-Capsules-1_10.pdf}
+% }
+\frame{
+  \frametitle{First comparisons. Capsules}
+  \includegraphics[width=1.05\textwidth]{profile-Capsules-1_100.pdf}
 }
 \frame{
   \frametitle{First comparisons. Capsules}
-  \includegraphics[width=0.95\textwidth]{profile-Capsules-1_1000.pdf}
-}
-
-\subsection{Performance profiles. Kaplas}
-\frame{
-  \frametitle{First comparisons. Kaplas}
-
-}
-
-\subsection{Performance profiles. BoxesStack}
-\frame{
-  \frametitle{First comparisons. BoxesStack}
-
+  \includegraphics[width=1.05\textwidth]{profile-Capsules-1_1000log.pdf}
 }
 
 
 
- %%% Local Variables:
+
+% \subsection{Performance profiles. BoxesStack}
+
+% \frame{
+%   \frametitle{First comparisons. BoxesStack}
+
+% }
+
+
+
+%%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "s"
 %%% End:
+
