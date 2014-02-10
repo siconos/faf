@@ -1,12 +1,13 @@
 import Siconos.Numerics as Numerics
 
 t0 = 0
-T = 30
+T = 7
 h = 0.0005
 g = 9.81
 theta = 0.50001
 mu = 0.7
-dump_itermax = 1000
+dump_itermax = 100
+dump_probability = .02
 NewtonMaxIter = 20
 itermax = 100000
 tolerance = 1e-8
