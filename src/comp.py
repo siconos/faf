@@ -1090,7 +1090,9 @@ if __name__ == '__main__':
             #for solver_name in comp_data:
             for solver in solvers:
                 solver_name=solver.name()
-                xscale('log')
+                if logscale:
+                    xscale('log')
+                    
                 if solver_name in comp_data :
                     plot(domain, rhos[solver_name], label=solver_name)
                     ylim(0, 1.0001)
