@@ -58,7 +58,7 @@ for o, a in opts:
 
     elif o == '--cf-scale':
         scale_factor = float(a)
-        
+
 print min_time, max_time
 if len(args) == 1:
     filename = args[0]
@@ -98,7 +98,7 @@ def set_position(instance, q0, q1, q2, q3, q4, q5, q6):
     transforms[instance].RotateWXYZ(angle * 180 / pi,
                                     axis[0],
                                     axis[1],
-                                    axis[2])    
+                                    axis[2])
 
 set_positionv = numpy.vectorize(set_position)
 
@@ -165,7 +165,7 @@ else:
 #def contact_point_reader():
 #    global dos
 #    dos.GetOutput().GetFieldData()
-    
+
 
 #contact_field = vtk.vtkPointData()
 #c1 = vtk.vtkPolyData()
@@ -577,7 +577,7 @@ if nstatic > 0:
     pos_data = numpy.concatenate((spos_data, dpos_data))
 else:
     pos_data = dpos_data[:].copy()
-    
+
 set_positionv(pos_data[id_t0, 1], pos_data[id_t0, 2], pos_data[id_t0, 3],
               pos_data[id_t0, 4], pos_data[id_t0, 5], pos_data[id_t0, 6],
               pos_data[id_t0, 7], pos_data[id_t0, 8])
@@ -588,16 +588,16 @@ interactor_renderer.GetInteractorStyle().SetCurrentStyleToTrackballCamera()
 
 # http://www.itk.org/Wiki/VTK/Depth_Peeling ?
 
-# #Use a render window with alpha bits (as initial value is 0 (false) ): 
+# #Use a render window with alpha bits (as initial value is 0 (false) ):
 renderer_window.SetAlphaBitPlanes(1)
 
-# # Force to not pick a framebuffer with a multisample buffer ( as initial value is 8): 
+# # Force to not pick a framebuffer with a multisample buffer ( as initial value is 8):
 renderer_window.SetMultiSamples(0)
 
-# # Choose to use depth peeling (if supported) (initial value is 0 (false) ) 
+# # Choose to use depth peeling (if supported) (initial value is 0 (false) )
 renderer.SetUseDepthPeeling(1)
 
-# # Set depth peeling parameters. 
+# # Set depth peeling parameters.
 renderer.SetMaximumNumberOfPeels(100)
 
 # # Set the occlusion ratio (initial value is 0.0, exact image)
@@ -650,6 +650,11 @@ def make_slider(title, observer, interactor,
     return slider_widget, slider_repres
 
 
+image_maker = vtk.vtkWindowToImageFilter()
+image_maker.SetInput(renderer_window)
+writer = vtk.vtkPNGWriter()
+writer.SetInputConnection(image_maker.GetOutputPort())
+
 class InputObserver():
 
     def __init__(self, times, slider_repres):
@@ -663,11 +668,12 @@ class InputObserver():
         self._renderer = renderer
         self._renderer_window = renderer_window
         self._times = times
+        self._image_counter = 0
 
     def update(self):
         index = bisect.bisect_left(self._times, self._time)
         index = max(0, index)
-        index = min(index, len(self._times)-1)        
+        index = min(index, len(self._times)-1)
         cf_prov._time = self._times[index]
         cf_prov.method()
 
@@ -709,6 +715,12 @@ class InputObserver():
         key = obj.GetKeySym()
         print 'key', key
 
+        if key == 'p':
+            self._image_counter += 1
+            image_maker.Update()
+            writer.SetFileName('vview-{0}.png'.format(self._image_counter))
+            writer.Write()
+
         if key == 'Up':
                 self._time_step = self._time_step * 2.
                 self._time += self._time_step
@@ -736,7 +748,7 @@ class InputObserver():
                 print 'camera focal point', self._renderer.GetActiveCamera().GetFocalPoint()
                 print 'camera clipping plane', self._renderer.GetActiveCamera().GetClippingRange()
 
-                
+
         if key == 'C':
                 this_view.action(self)
         self.update()
@@ -911,6 +923,8 @@ slwsc, slrepsc = make_slider('Scale',
                                                  scale_factor, scale_factor - scale_factor / 2,
                                                  scale_factor + scale_factor / 2,
                                                  0.01, 0.01, 0.01, 0.7)
+
+
 
 renderer_window.Render()
 interactor_renderer.Initialize()

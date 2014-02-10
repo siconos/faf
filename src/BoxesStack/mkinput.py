@@ -27,26 +27,6 @@ with open('input.dat', 'w') as f:
     # ground
     f.write('1 -1 0 0  0 -.5 1 0 0 0 0 0 0 0 0 0\n')
 
-    for k in range(0,2):
-
-        for i in range(0,4):
-
-            theta = (i + 3) * alpha
-            a = 0
-            b = 0
-            c = 1
-            n = sin(theta / 2) / norm((a, b, c))
-
-            r = btQuaternion(a*n, b*n, c*n, cos(theta/2))
-            r = mul(r, r1)
-
-            r.normalize()
-
-            q = (6.3*cos(alpha*(i)), 6.3*sin(alpha*(i)), 2.5 * k + 2.5)
-            o = (r.w(), r.x(), r.y(), r.z())
-
-            f.write('2 -2 1 {0} {1} 0 0 0 0 0 0\n'.format(s_v(q),s_v(o)))
-
     for k in range(0,50):
 
         theta = 0
