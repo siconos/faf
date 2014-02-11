@@ -846,13 +846,8 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 #all_solvers = [nsgs, snsgs, TrescaFixedPoint, localac, Prox, DeSaxceFixedPoint,
 #               FixedPointProjection, VIFixedPointProjection, ExtraGrad, VIExtraGrad]
 
-<<<<<<< HEAD
-all_solvers = [nsgs, snsgs, TrescaFixedPoint,
-               Prox, Prox2, Prox3, Prox4,
-               localac,
-=======
+
 all_solvers = [nsgs, snsgs, TrescaFixedPoint, Prox, Prox2, Prox3, Prox4, Prox5, localac, DeSaxceFixedPoint,
->>>>>>> add Prox5
                VIFixedPointProjection, VIExtraGrad]
 
 if user_solvers == []:
