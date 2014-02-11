@@ -731,6 +731,9 @@ Prox2 = SiconosSolver(name="ProximalFixedPoint2",
                      maxiter=maxiter, precision=precision)
 
 Prox2.SolverOptions().dparam[5]=2.0 # nu
+
+
+
 Prox2.SolverOptions().internalSolvers.iparam[3] = 1000000
 
 Prox3 = SiconosSolver(name="ProximalFixedPoint3",
@@ -744,6 +747,18 @@ Prox3.SolverOptions().dparam[4]=1.1 # sigma
 Prox3.SolverOptions().dparam[5]=2.0 # nu
 
 Prox3.SolverOptions().internalSolvers.iparam[3] = 1000000
+
+Prox4 = SiconosSolver(name="ProximalFixedPoint4",
+                     API=N.frictionContact3D_proximal,
+                     TAG=N.SICONOS_FRICTION_3D_PROX,
+                     iparam_iter=7,
+                     dparam_err=1,
+                     maxiter=maxiter, precision=precision)
+
+Prox4.SolverOptions().dparam[4]=100 # sigma
+Prox4.SolverOptions().dparam[5]=1.0 # nu
+
+Prox4.SolverOptions().internalSolvers.iparam[3] = 1000000
 
 ExtraGrad = SiconosSolver(name="ExtraGradient",
                           API=N.frictionContact3D_ExtraGradient,
@@ -817,7 +832,9 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 #all_solvers = [nsgs, snsgs, TrescaFixedPoint, localac, Prox, DeSaxceFixedPoint,
 #               FixedPointProjection, VIFixedPointProjection, ExtraGrad, VIExtraGrad]
 
-all_solvers = [nsgs, snsgs, TrescaFixedPoint, Prox, localac,
+all_solvers = [nsgs, snsgs, TrescaFixedPoint,
+               Prox, Prox2, Prox3, Prox4,
+               localac,
                VIFixedPointProjection, VIExtraGrad]
 
 if user_solvers == []:
@@ -1060,7 +1077,7 @@ if __name__ == '__main__':
                     gp.write('set term tikz standalone monochrome  size 5in,3in font \'\\small\\sf\';  \\\n')
                     gp.write('extension = \'.tex\'; \\\n')
                     gp.write('set output basename.extension; \\\n')
-                    gp.write('print "output =", basename.extension; \\\n')
+                    gp.write('print "output = ", basename.extension; \\\n')
 
                     gp.write('else \\\n')
                     gp.write('set term aqua;\\\n')
@@ -1195,7 +1212,7 @@ if __name__ == '__main__':
                     gp.write('set term tikz standalone monochrome  size 5in,3in font \'\\small\\sf\';  \\\n')
                     gp.write('extension = \'.tex\'; \\\n')
                     gp.write('set output basename.extension; \\\n')
-                    gp.write('print "output =", basename.extension; \\\n')
+                    gp.write('print "output = ", basename.extension; \\\n')
                     gp.write('else \\\n')
                     gp.write('set term aqua;\\\n')
                     gp.write(' \n')
