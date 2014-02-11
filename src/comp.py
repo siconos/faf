@@ -748,17 +748,31 @@ Prox3.SolverOptions().dparam[5]=2.0 # nu
 
 Prox3.SolverOptions().internalSolvers.iparam[3] = 1000000
 
+
 Prox4 = SiconosSolver(name="ProximalFixedPoint4",
                      API=N.frictionContact3D_proximal,
                      TAG=N.SICONOS_FRICTION_3D_PROX,
                      iparam_iter=7,
                      dparam_err=1,
                      maxiter=maxiter, precision=precision)
-
 Prox4.SolverOptions().dparam[4]=100 # sigma
 Prox4.SolverOptions().dparam[5]=1.0 # nu
 
 Prox4.SolverOptions().internalSolvers.iparam[3] = 1000000
+
+
+Prox5 = SiconosSolver(name="ProximalFixedPoint5",
+                     API=N.frictionContact3D_proximal,
+                     TAG=N.SICONOS_FRICTION_3D_PROX,
+                     iparam_iter=7,
+                     dparam_err=1,
+                     maxiter=maxiter, precision=precision)
+
+Prox5.SolverOptions().dparam[4]=1000.0 # sigma 
+Prox5.SolverOptions().dparam[5]=1.0 # nu
+
+Prox5.SolverOptions().internalSolvers.iparam[3] = 1000000
+
 
 ExtraGrad = SiconosSolver(name="ExtraGradient",
                           API=N.frictionContact3D_ExtraGradient,
@@ -832,9 +846,13 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 #all_solvers = [nsgs, snsgs, TrescaFixedPoint, localac, Prox, DeSaxceFixedPoint,
 #               FixedPointProjection, VIFixedPointProjection, ExtraGrad, VIExtraGrad]
 
+<<<<<<< HEAD
 all_solvers = [nsgs, snsgs, TrescaFixedPoint,
                Prox, Prox2, Prox3, Prox4,
                localac,
+=======
+all_solvers = [nsgs, snsgs, TrescaFixedPoint, Prox, Prox2, Prox3, Prox4, Prox5, localac, DeSaxceFixedPoint,
+>>>>>>> add Prox5
                VIFixedPointProjection, VIExtraGrad]
 
 if user_solvers == []:
