@@ -143,7 +143,7 @@ Florent Cadoux, Claude Lemar\'echal, J\'er\^ome Malick,\\ Florence Bertails--Des
 %   \end{block}
 % \end{frame}
 
-\frame{\tableofcontents}
+% \frame{\tableofcontents}
 
 
 \include{introduction}
@@ -174,6 +174,8 @@ Florent Cadoux, Claude Lemar\'echal, J\'er\^ome Malick,\\ Florence Bertails--Des
   \begin{enumerate}
   \item A bunch of articles in the literature
   \item any ``Swiss--knife'' solution : efficiency OR robustness  
+  \item Newton--based solver solves efficiently the problems but robustness issues
+  \item first order iterative methods solves all the problems but very slowly  
   \item the rank of the $H$ matrix (ratio number of contact unknows/number of d.o.f) plays an important role. 
   \end{enumerate}
 \end{block}
@@ -197,9 +199,9 @@ Florent Cadoux, Claude Lemar\'echal, J\'er\^ome Malick,\\ Florence Bertails--Des
     {What is FCLIB ?}
     \begin{itemize}
     \item A open source collection of Frictional Contact (FC) problems
-      stored in a specific HDF5 format
+      stored in a specific HDF5 format 
     \item A open source light implementation of Input/Output functions
-      in C Language to read and write problems
+      in C Language to read and write problems (Python and Matlab coming soon)
     \end{itemize}
   \end{block}
 

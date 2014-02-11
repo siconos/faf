@@ -38,8 +38,7 @@
     \begin{minipage}{0.49\linewidth}
       \begin{tabular}{|p{0.7\textwidth}|c|}
         coefficient of friction & $0.3$ \\[\ssep]
-
-        number of problems & 1017 \\[\ssep]
+        number of problems & 1514 \\[\ssep]
         number of degree of freedom & [48 : 60] \\[\ssep]
         number of contact & [8 :28] \\[\ssep]
         required accuracy   & $10^{-8}$    
@@ -50,18 +49,12 @@
 }
 \frame{
   \frametitle{First comparisons. Chain}
-  \includegraphics[width=1.05\textwidth]{distrib-Chain.pdf}
+  \includegraphics[width=1.10\textwidth]{distrib-Chain.pdf}
 }
 \frame{
   \frametitle{First comparisons. Chain}
-  \includegraphics[width=1.05\textwidth]{profile-Chain-1_100.pdf}
+    \centerline{\includegraphics[width=1.10\textwidth]{profile-Chain.pdf}}
 }
-\frame{
-  \frametitle{First comparisons. Chain}
-  \includegraphics[width=1.05\textwidth]{profile-Chain-1_1000log.pdf}
-}
-
-
 
 \subsection{Capsules}
 
@@ -86,20 +79,13 @@
 }
 \frame{
   \frametitle{First comparisons. Capsules}
-  \includegraphics[width=1.05\textwidth]{distrib-Capsules.pdf}
-}
-% \frame{
-%   \frametitle{First comparisons. Capsules}
-%     \includegraphics[width=1.05\textwidth]{profile-Capsules-1_10.pdf}
-% }
-\frame{
-  \frametitle{First comparisons. Capsules}
-  \includegraphics[width=1.05\textwidth]{profile-Capsules-1_100.pdf}
+  \includegraphics[width=1.10\textwidth]{distrib-Capsules.pdf}
 }
 \frame{
   \frametitle{First comparisons. Capsules}
-  \includegraphics[width=1.05\textwidth]{profile-Capsules-1_1000log.pdf}
+  \centerline{\includegraphics[width=1.10\textwidth]{profile-Capsules.pdf}}
 }
+
 
 
 
@@ -111,21 +97,62 @@
   \begin{block}
     {50 boxes stacked under gravity.}
     $$ $$
-  \begin{minipage}{0.49\linewidth}
+  \begin{minipage}{0.14\linewidth}
     \includegraphics[width=1.0\textwidth]{BoxesStack}
+  \end{minipage}
+  \begin{minipage}{0.25\linewidth}
+    \includegraphics[width=1.0\textwidth]{BoxesStack2}
   \end{minipage}
   \begin{minipage}{0.49\linewidth}
     \begin{tabular}{|p{0.7\textwidth}|c|}
       coefficient of friction &  0.7\\[\ssep]
-      number of problems &  \\[\ssep]
-      number of degree of freedom & [] \\[\ssep]
-      number of contact &  []\\[\ssep]
+      number of problems &  1159 \\[\ssep]
+      number of degree of freedom & [6 : 300] \\[\ssep]
+      number of contact &  [ 0: 200]\\[\ssep]
       required accuracy   & $10^{-8}$
     \end{tabular}
   \end{minipage}
 \end{block}
 }
+\frame{
+  \frametitle{First comparisons. BoxesStack}
+  \includegraphics[width=1.10\textwidth]{distrib-BoxesStack1.pdf}
+}
+\frame{
+  \frametitle{First comparisons. BoxesStack}
+  \centerline{\includegraphics[width=1.1\textwidth]{profile-BoxesStack1.pdf}}
+}
 
+
+\subsection{Performance profiles. Kaplas}
+
+\frame{
+  \frametitle{First comparisons. Kaplas}
+  \begin{block}
+    {50 boxes stacked under gravity.}
+    $$ $$
+  \begin{minipage}{0.50\linewidth}
+    \includegraphics[width=1.0\textwidth]{KaplasTower}
+  \end{minipage}
+  \begin{minipage}{0.49\linewidth}
+    \begin{tabular}{|p{0.7\textwidth}|c|}
+      coefficient of friction &  0.3\\[\ssep]
+      number of problems &  201 \\[\ssep]
+      number of degree of freedom & [72 : 864] \\[\ssep]
+      number of contact &  [ 0: 950]\\[\ssep]
+      required accuracy   & $10^{-8}$
+    \end{tabular}
+  \end{minipage}
+\end{block}
+}
+\frame{
+  \frametitle{First comparisons. Kaplas}
+  \includegraphics[width=1.10\textwidth]{distrib-KaplasTower.pdf}
+}
+\frame{
+  \frametitle{First comparisons. Kaplas}
+  \centerline{\includegraphics[width=1.1\textwidth]{profile-KaplasTower.pdf}}
+}
 
 
 %%% Local Variables:

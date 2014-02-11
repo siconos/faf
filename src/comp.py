@@ -1074,7 +1074,7 @@ if __name__ == '__main__':
                     gp.write('\n')
                     gp.write('term_choice_tikz=1\n')
                     gp.write('if (term_choice_tikz == 1) \\\n')
-                    gp.write('set term tikz standalone monochrome  size 5in,3in font \'\\small\\sf\';  \\\n')
+                    gp.write('set term tikz standalone monochrome  size 5in,3in font \'\\scriptsize\\sf\';  \\\n')
                     gp.write('extension = \'.tex\'; \\\n')
                     gp.write('set output basename.extension; \\\n')
                     gp.write('print "output = ", basename.extension; \\\n')
@@ -1085,7 +1085,7 @@ if __name__ == '__main__':
                     gp.write('set xrange [{0}:{1}]\n'.format(domain[0]-0.01, domain[len(domain)-1]))
                     gp.write('set yrange [-0.01:1.01]\n')
                     gp.write('set ylabel \'$\\rho(\\tau)$ \' \n')
-                    gp.write('set key right bottom\n')
+                    gp.write('set key below right vertical maxrows 4\n')
                     print filename.partition('-')[0]
                     if logscale:
                         gp.write('set logscale x\n')
@@ -1093,7 +1093,7 @@ if __name__ == '__main__':
                     else:
                         gp.write('set xlabel \'$\\tau$ ({0})\' \n'.format(measure_name))
                                            
-                    gp.write('set title \'{0}\'\n'.format(filename.partition('-')[0]));
+                    #gp.write('set title \'{0}\'\n'.format(filename.partition('-')[0]));
                     gp.write('plot ')
                     gp.write(','.join(['resultfile using 1:{0} t "{1}" w l'.format(index + 2, solver.name()) 
                                        for index, solver in enumerate(filter(lambda s: s._name in comp_data, solvers)) ]))

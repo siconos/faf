@@ -43,14 +43,51 @@
    \end{itemize}
 }
 
-\subsection{Matrix Splitting and projection based algorithms}
+\subsection{Matrix block--splitting and projection based algorithms}
 \frame{
-  \frametitle{Matrix Splitting and projection based algorithms}
+  \frametitle{Matrix block-splitting and projection based algorithms \cite{Moreau1994,Jean.Touzot1988}}
+  \begin{block}{Block splitting algorithm with $W^{\alpha\alpha}\in \RR^3$}
+    \begin{equation}\label{EQ:NSGS-local1}
+      \left\{ 
+        \begin{array}{l}
+          {u}^{\alpha}_{i+1} - { W}^{\alpha \alpha} {P}^{\alpha}_{i+1} = {q}^{\alpha} + \displaystyle\sum_{\beta<\alpha}^{~} { W}^{\alpha \beta} {r}^{\beta}_{i+1} + \displaystyle\sum_{\beta >\alpha}^{~} { W}^{\alpha \beta} {r}^{\beta}_{i}\\
+          ~\\
+          \widehat u^{\alpha}_{i+1} = \left[u_{\n,i+1}^{\alpha}+ \mu^{\alpha}\;||u^{\alpha}_{\t,i+1}||, u^{\alpha}_{\t,i+1}\right]^T \\ \\
+          {\bf K}^{\alpha,*} \ni \widehat u^{\alpha}_{i+1}  \perp r^{\alpha}_{i+1} \in {\bf K}^{\alpha} \\
+        \end{array} \right.
+    \end{equation}
+    for all $\alpha \in \{1\ldots m\}$.
+  \end{block}
+  \begin{block}{One contact point problem}
+    \begin{itemize}
+    \item closed form solutions
+    \item Any solver listed before.  
+    \end{itemize}
+  \end{block}
+  
 
+  
 }
 
 
-
+\subsection{Proximal point algorithms}
+\frame{
+  \frametitle{Proximal point algorithms \cite{Moreau1967,Rockafellar1976}}
+  \begin{block}{Problem to solve}
+    \begin{equation}
+      \label{eq:min}
+      \min_{x} f(x)
+    \end{equation} with as a special case $$ f(x) = \frac 1 2 G^\top(x) G(x)$$
+    We define the approximation problem for a given $x_k$
+    \begin{equation}
+      \label{eq:min}
+      x^\star = \argmin_{x}\, f(x) + \rho \|x-x_k\|^2 \stackrel{\Delta}{=} \prox_{f,rho} (x_k)
+    \end{equation}
+  \end{block}
+  \begin{block}{Proximal point algorithm}
+  $$  x_{k+1} =  \prox_{f,{rho_k}} (x_k)$$
+  \end{block}  
+}
 
 
 \subsection{Optimization based approach}
