@@ -190,6 +190,8 @@ keeper = []
 class CFprov():
 
     def __init__(self, data):
+        self._data = None
+        self._mu_coefs = None
         if data is not None:
             if len(data) > 0:
                 self._data = data
