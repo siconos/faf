@@ -5,19 +5,19 @@
 \frame{
   \frametitle{An existence result. (F. Cadoux PhD)}
   Let us introduce a slack variable
-  \begin{equation} \label{eq:chgVarDS}
+  \begin{equation*} \label{eq:chgVarDS}
     s^\alpha := \| u^\alpha_\t \|
-  \end{equation}
-  together with a new modified velocity
-  $$ \widetilde u := u + \alpha s $$ $g(u) = \alpha s$
+  \end{equation*}
+  New formulation of the modified velocity with $A \in \RR^{m\times n_c}$
+  $$ \hat u := u + A s \quad\quad  (g(u) = A s)$$
   The problem $\mathrm{FC/I}(M,H,f,w,\mu)$ can be reformulated as
-  \begin{equation}\label{eq:soccp1-convex}
+  \begin{equation*}\label{eq:soccp1-convex}
   \begin{cases}
     M v = {H} {r} + {f} \\[2mm]
-    \widetilde  u = H^\top v + w  + \alpha s  \\[2mm]
+    \widetilde  u = H^\top v + w  + A s  \\[2mm]
     K^\star \ni {\hat u} \perp r \in K
   \end{cases}
-\end{equation}
+\end{equation*}
 }
 \frame{
   \frametitle{An existence result.}
@@ -27,7 +27,7 @@
       \left\{
         \begin{array}{l}
           \min \quad J(v) := \frac{1}{2} v^\top M v + f^\top v \\
-          H^\top v + w + \alpha s \in K^\star
+          H^\top v + w + A s \in K^\star
         \end{array}
       \right.
     \end{equation}
@@ -41,7 +41,7 @@
         \end{array}
       \right.
     \end{equation}
-    with $q_s = q + \alpha s $
+    with $q_s = q + A s $
   \end{block}
   \begin{block}{Interest}
     Two convex program \ding{220} existence of solutions under feasibility conditions.
@@ -53,7 +53,7 @@
     Introducing
   $$ u(s) := \argmin_u (P_s) = \argmin_u (D_s) $$
   practically \alert{computable} by optimization software, and
-  $$ F^i(s) := \| u^i_T(s) \|, $$
+  $$ F^\alpha(s) := \| u^\alpha_T(s) \|, $$
   the incremental problem becomes a fixed point problem
   $$ F(s) = s $$
 \end{block}
@@ -62,10 +62,12 @@
 \frame{
   \frametitle{An existence result.}
 
-  \begin{block}{Assumption}
-    $$ \exists v \in \R^m \ : \ H v + w \in K^* $$
+  \begin{block}{Key assumption}
+    \begin{equation}
+      \exists v \in \R^m \ : \ H v + w \in K^\star \label{eq:key-assumption}
+  \end{equation}
   \end{block}
-  Using the assumption,
+  Using Assumption~(\ref{eq:key-assumption}),
   \begin{itemize}
   \item the application $F: \R_+^n \rightarrow \R_+^n$ is \alert{well-defined}, \alert{continuous} and \alert{bounded}
   \item apply Brouwer's theorem
@@ -78,7 +80,15 @@
 \frame{
   \frametitle{An existence result.}
   \begin{block}{Numerical validation of the assumption}
-    The assumption by solving a linear program over of a SOC.
+    The assumption by solving a linear program over a product  of SOC.\\ Find $x \geq 0$
+    \begin{equation*}
+      \label{eq:min-SOC}
+      \begin{cases}
+        \max x \\
+        H v + w - a x \in K^\star
+      \end{cases}
+    \end{equation*}
+    where $a = [ N^{\alpha,\top}]^\top \in \RR^m$.
   \end{block}
   \begin{block}{Numerical interest}
     The fixed point equation $F(s) = s$ can be tackled by

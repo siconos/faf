@@ -10,8 +10,6 @@
   \selectfont}%
 \fi\endgroup%
 \begin{picture}(10239,8411)(2224,-6135)
-\put(7351,-4486){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\vec{\sf s}$}%
-}}}}
 \put(6901,-4336){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\sf P$}%
 }}}}
 \put(9526,-436){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\sf -u_{\t}$}%
@@ -19,10 +17,6 @@
 \put(9901,-1036){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\sf - \hat{u}$}%
 }}}}
 \put(8990,-1462){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\sf -\hat{u}_{\n}$}%
-}}}}
-\put(6976,-3136){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\vec {\sf n}$}%
-}}}}
-\put(6359,-4707){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\sf -\hat{u}_{\n}$}%
 }}}}
 \put(8626,-4411){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\sf -\hat{u}$}%
 }}}}
@@ -38,6 +32,12 @@
 }}}}
 \put(5776,689){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\sf \bf K$}%
 }}}}
-\put(6526,-4036){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\vec{\sf t}$}%
+\put(6901,-3136){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}${\sf N}$}%
+}}}}
+\put(6376,-4711){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\sf -\hat{u}_{\n}$}%
+}}}}
+\put(7876,-4936){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\sf T_2$}%
+}}}}
+\put(5851,-4186){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\sf T_1$}%
 }}}}
 \end{picture}%

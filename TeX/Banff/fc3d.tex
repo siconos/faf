@@ -77,28 +77,28 @@
 }
 \frame{
   \frametitle{Signorini's condition and Coulomb's friction} 
-  Let us define the Coulomb friction  cone $K$ which is chosen as the isotropic second order cone 
-  \begin{equation}
-    \label{eq:CoulombCone}
-    K = \{r \in \RR^3 \mid \|r_\t\| \leq \mu r_n\},
-  \end{equation}
-  where $\mu$ is the coefficient of friction. 
+  \begin{block}{Modeling assumption}
+   Let $\mu$ be the coefficient of friction.  Let us define the Coulomb friction cone $K$ which is chosen as the
+    isotropic second order cone
+    \begin{equation}
+      \label{eq:CoulombCone}
+      K = \{r \in \RR^3 \mid \|r_\t\| \leq \mu r_n\}.
+    \end{equation}
+    The Coulomb friction states
+    \begin{itemize}
+    \item for the \tr{sticking case} that
+      \begin{equation}
+        \label{eq:Coulom-stick}
+        u_{\t} =0,\quad r \in K
+      \end{equation}
+    \item and for the \tr{sliding case} that
+      \begin{equation}
+        \label{eq:Coulom-slide}
+        u_{\t}  \neq 0,\quad r \in \partial K, \exists\, \alpha > 0, r_\t = -\alpha u_\t.
+      \end{equation}
+    \end{itemize}
+  \end{block}
 
-  The Coulomb friction  states for the \tr{sticking case} that 
-  \begin{equation}
-    \label{eq:Coulom-stick}
-    u_{\t} =0,\quad r \in K
-  \end{equation}
-  and for the \tr{sliding case} that
-  \begin{equation}
-    \label{eq:Coulom-slide}
-    u_{\t}  \neq 0,\quad r \in \partial K, \exists\, \alpha > 0, r_\t = -\alpha u_\t.
-  \end{equation}
-  
-
-}
-\frame{
-  \frametitle{Signorini's condition and Coulomb's friction} 
   \begin{block}
     {Disjunctive formulation of the frictional contact behavior}
     \begin{equation}
@@ -111,12 +111,14 @@
         \end{array}\right.
     \end{equation}
   \end{block}
+  
 
-  }
+}
+
 \frame{
   \frametitle{Signorini's condition and Coulomb's friction} 
   
-  \begin{block}{SOCCP formulation}
+  \begin{block}{Second Order Cone Complementarity (SOCCP) formulation}
   
     \begin{itemize}
     \item Modified relative velocity $\hat u \in \RR^3$ defined by
@@ -136,11 +138,11 @@
         \label{eq:dual-cone}
         K^\star = \{u \in \RR^3 \mid  r^\top u \geq 0, \quad \text{for all } r \in K   \}.
       \end{equation}
-      \item 
-      References : \cite{Acary.Brogliato2008,ZAMM:ZAMM201000073,DeSaxce92}.
 
     \end{itemize}
-  \end{block}
+ \end{block}
+    \vfill \small
+    \cite{DeSaxce92,Acary.Brogliato2008,ZAMM:ZAMM201000073}.
 
 }
 \frame{
@@ -148,7 +150,7 @@
    \begin{figure}[htbp]
   \centering
   \resizebox{!}{0.8\textheight}{\input{../figure/cone1-b.pdf_t}}
-  \caption{Coulomb's friction and the modified velocity $\widehat U$. The sliding case.}
+  \caption{Coulomb's friction and the modified velocity $\hat u$. The sliding case.}
   \label{fig:CoulombFrictionSlidingDeSaxce}
 \end{figure} 
 }
@@ -222,27 +224,36 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
         K^\star \ni {\hat u} \perp r \in K
       \end{cases}
     \end{equation}
-    with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldots n_c]^\top$.
+    with $g(u) = [[\mu^\alpha \|u^\alpha_\t\| {\sf N}^\alpha]^\top,  \alpha = 1\ldots n_c]^\top$.
     \qed
   \end{problem}
-  with $ W = H^\top M^{-1} H$ and $q = H^\top  M^{-1} f + w $.
+  
+  \begin{block}{Relation with the general problem}
+     $ W = H^\top M^{-1} H$ and $q = H^\top  M^{-1} f + w $.
+  \end{block}
+  
 }
 \frame{
   \frametitle{3D frictional contact problems} 
-  This problem is really representative of a lot of applications.
+  \begin{block}{Wide range of applications}
 
-  Origin of the linear relations~\cite{Acary.Cadoux2013}.
+    Origin of the linear relations~\cite{Acary.Cadoux2013}.
   $$  M v = {H} {r} + {f},\quad u = H^\top v + w$$
   \begin{itemize}
-  \item Time--discretization  of the discrete dynamical mechanical system
+  \item Time--discretization of the discrete dynamical mechanical
+    system
     \begin{itemize}
     \item Event--capturing time--stepping schemes
     \item Event--detecting time--stepping schemes (event-driven)
     \end{itemize}
-  \item   Time--discretization  and space discretization of the elasto dynamic problem of solids
-  \item   Space discretization of the quasi--static problem of solids.
+  \item Time--discretization and space discretization of the elasto
+    dynamic problem of solids
+  \item Space discretization of the quasi--static problem of solids.
   \end{itemize}
   with a possible linearization (Newton procedure.)
+\end{block}
+   \ding{220}  This problem is really representative of a lot of applications.
+
 
 }
 
@@ -257,8 +268,8 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
     \end{equation}
     \begin{itemize}
     \item if we neglect $g(\cdot)$, (\ref{eq:soccp3}) is a gentle
-      monotone SOCLCP that can be associated to a convex SOCQP.
-    \item otherwise, the problem is nonmontone and nonsmooth since
+      monotone SOCLCP that  is the KKT conditions of a convex SOCQP.
+    \item otherwise, the problem is nonmonotone and nonsmooth since
       $g()$ is nonsmooth
     \end{itemize}
     \ding{220} The problem is very hard to solve efficiently.
@@ -268,16 +279,13 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
      \item Variational inequality or normal cone inclusion
        \begin{equation}
          \label{eq:inclusion-1}
-         -(W r +q + g(Wr+q)) = - F(r)  \in N_K(r).
+         -(W r +q + g(Wr+q)) \stackrel{\Delta}= - F(r)  \in N_K(r).
        \end{equation}
      \item Nonsmooth equations $G(r) = 0$\\
-        The natural map $F^\nat$ associated with the VI (\ref{eq:vi}) is defined by
-        \begin{equation}
-          \label{eq:naturalmap}
-          F^\nat(z) = z - P_{X}(z-F(z)),
-        \end{equation}
-        and its variants (Alart-Curnier formulation)\\
-        SOCCP-functions. (Fisher-Bursmeister function)
+       $\bullet$ The natural map $F^\nat$ associated with the VI (\ref{eq:inclusion-1}) $ F^\nat(z) = z - P_{X}(z-F(z))$.\\
+       $\bullet$ Variants of this map (Alart-Curnier formulation, \ldots)\\
+       $\bullet$  one of the SOCCP-functions. (Fisher-Bursmeister function)\\
+     \item and many other ...
      \end{itemize}
    \end{block}
  }

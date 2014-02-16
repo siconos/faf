@@ -173,18 +173,19 @@ Florent Cadoux, Claude Lemar\'echal, J\'er\^ome Malick,\\ Florence Bertails--Des
 \begin{block}{Conclusions}
   \begin{enumerate}
   \item A bunch of articles in the literature
-  \item any ``Swiss--knife'' solution : efficiency OR robustness  
+  \item No ``Swiss--knife'' solution : choose efficiency OR robustness  
   \item Newton--based solver solves efficiently the problems but robustness issues
-  \item first order iterative methods solves all the problems but very slowly  
-  \item the rank of the $H$ matrix (ratio number of contacts unknows/number of d.o.f) plays an important role. 
+  \item First order iterative methods solves all the problems but very slowly  
+  \item The rank of the $H$ matrix (ratio number of contacts unknows/number of d.o.f) plays an important role. 
   \end{enumerate}
 \end{block}
 \vskip-3mm
 \begin{block}{Perspectives}
   \begin{enumerate}
-  \item Develop new algorithm
+  \item Develop new algorithm and compare other algorithm in the literature. \\
+    (issues with standard optimization software.)
   \item Study the influence of the friction coefficient, the size of problem, the conditionning of the problem , \ldots
-  \item Set up a collection of benchmarks  
+  \item Set up a collection of benchmarks  \ding{220} FCLIB
   \end{enumerate}
 \end{block}
 
@@ -194,7 +195,7 @@ Florent Cadoux, Claude Lemar\'echal, J\'er\^ome Malick,\\ Florence Bertails--Des
 
 \frame{
   \frametitle{FCLIB : a collection of discrete 3D Frictional Contact (FC) problems}
-  Our inspiration MCPLIB or CUTEst
+  Our inspiration: MCPLIB or CUTEst
   \begin{block}
     {What is FCLIB ?}
     \begin{itemize}
