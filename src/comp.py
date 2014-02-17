@@ -1250,8 +1250,8 @@ if __name__ == '__main__':
                    
                     gp.write('print \'binwidth =\', binwidth \n')
                     
-                    gp.write('set xlabel \'number of contact\' offset 0,1.2 \n')
-                    #gp.write('plot resultfile u (bin($1, binwidth)):(1.0) smooth freq w boxes title \'number of contact\'  \n')
+                    gp.write('set xlabel \'number of contacts\' offset 0,1.2 \n')
+                    #gp.write('plot resultfile u (bin($1, binwidth)):(1.0) smooth freq w boxes title \'number of contacts\'  \n')
                     gp.write('plot resultfile u (bin($1, binwidth)):(1.0) smooth freq w boxes notitle  \n')
                     gp.write('\n')
                     
@@ -1261,9 +1261,9 @@ if __name__ == '__main__':
                     gp.write('set boxwidth binwidth\n')                     
                     gp.write('set origin 0.0,winheight*1.0*trans+heightoff\n')
  
-                    gp.write('set xlabel \'number of degree of freedom \' offset 0,1.2 \n')
+                    gp.write('set xlabel \'number of degrees of freedom \' offset 0,1.2 \n')
                     
-                    #gp.write('plot resultfile u (bin($2, binwidth)):(1.0) smooth freq w boxes title  \'number of degree of freedom \' \n')
+                    #gp.write('plot resultfile u (bin($2, binwidth)):(1.0) smooth freq w boxes title  \'number of degrees of freedom \' \n')
                     gp.write('plot resultfile u (bin($2, binwidth)):(1.0) smooth freq w boxes notitle \n')
                     gp.write('\n')
                     
@@ -1272,8 +1272,8 @@ if __name__ == '__main__':
                     gp.write('print \'binwidth =\', binwidth \n')
                     
                     gp.write('set boxwidth binwidth\n')                    
-                    gp.write('set xlabel \'ratio number of contact unknowns/number of degree of freedom\' offset 0,1.2 \n')
-                    #gp.write('plot resultfile u (bin($3, binwidth)):(1.0) smooth freq w boxes title \'ratio number of contact unknowns/number of degree of freedom\' \n')
+                    gp.write('set xlabel \'ratio number of contacts unknowns/number of degrees of freedom\' offset 0,1.2 \n')
+                    #gp.write('plot resultfile u (bin($3, binwidth)):(1.0) smooth freq w boxes title \'ratio number of contacts unknowns/number of degrees of freedom\' \n')
                     gp.write('plot resultfile u (bin($3, binwidth)):(1.0) smooth freq w boxes notitle \n')
 
                     
