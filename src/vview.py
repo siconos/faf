@@ -138,30 +138,38 @@ instances = set()
 
 import numpy
 
-if not dat_file:
-    try:
-        inFile = h5py.File('out.hdf5', 'r')
-        spos_data = inFile['data']['static']
-        dpos_data = inFile['data']['dynamic']
-    except:
-        dat_file = True
 
-if dat_file:
-    spos_data = numpy.loadtxt(spos_filename, ndmin=2)
-    dpos_data = numpy.loadtxt(dpos_filename, ndmin=2)
+def load(dat_file):
+
+    if not dat_file:
+        try:
+            inFile = h5py.File('out.hdf5', 'r')
+            spos_data = inFile['data']['static']
+            dpos_data = inFile['data']['dynamic']
+        except:
+            dat_file = True
+
+    if dat_file:
+        spos_data = numpy.loadtxt(spos_filename, ndmin=2)
+        dpos_data = numpy.loadtxt(dpos_filename, ndmin=2)
 
 
-print spos_data.shape
-print dpos_data.shape
+    if dat_file:
+        cf_data = numpy.loadtxt(cf_filename)
+    else:
+        try:
+            cf_data = inFile['data']['cf'][:].copy()
+        except:
+            cf_data = None
 
-if dat_file:
-    cf_data = numpy.loadtxt(cf_filename)
-else:
-    try:
-        cf_data = inFile['data']['cf'][:].copy()
-    except:
-        cf_data = None
+    if dat_file:
+        solv_data = numpy.loadtxt('solv.dat', ndmin=2)
+    else:
+        solv_data = inFile['data']['solv']
 
+    return spos_data, dpos_data, cf_data, solv_data
+
+spos_data, dpos_data, cf_data, solv_data = load(dat_file)
 #def contact_point_reader():
 #    global dos
 #    dos.GetOutput().GetFieldData()
@@ -717,6 +725,39 @@ class InputObserver():
         key = obj.GetKeySym()
         print 'key', key
 
+        if key == 'r':
+            spos_data, dpos_data, cf_data, solv_data = load(dat_file)
+            cf_prov = CFprov(cf_data)
+            times = list(set(dpos_data[:, 0]))
+            times.sort()
+            ndyna = len(numpy.where(dpos_data[:, 0] == times[0]))
+            if len(spos_data) > 0:
+                nstatic = len(numpy.where(spos_data[:, 0] == times[0]))
+                instances = set(dpos_data[:, 1]).union(set(spos_data[:, 1]))
+            else:
+                nstatic = 0
+                instances = set(dpos_data[:, 1])
+            cf_prov._time = min(times[:])
+            cf_prov.method()
+            contact_posa.SetInputData(cf_prov._output)
+            contact_posa.Update()
+            contact_posb.SetInputData(cf_prov._output)
+            contact_posb.Update()
+            id_t0 = numpy.where(dpos_data[:, 0] == min(dpos_data[:, 0]))
+            contact_pos_force.Update()
+            contact_pos_norm.Update()
+            if nstatic > 0:
+                pos_data = numpy.concatenate((spos_data, dpos_data))
+            else:
+                pos_data = dpos_data[:].copy()
+            min_time = times[0]
+                
+            max_time = times[len(times) - 1]
+                
+            self._slider_repres.SetMinimumValue(min_time)
+            self._slider_repres.SetMaximumValue(max_time)
+            self.update()
+            
         if key == 'p':
             self._image_counter += 1
             image_maker.Update()
@@ -832,10 +873,7 @@ hlight.SetFocalPoint(0, 0, 0)
 hlight.SetLightTypeToHeadlight()
 renderer.AddLight(hlight)
 
-if dat_file:
-    solv_data = numpy.loadtxt('solv.dat', ndmin=2)
-else:
-    solv_data = inFile['data']['solv']
+
 
 #import numpy as np
 #import matplotlib.pyplot as plt
