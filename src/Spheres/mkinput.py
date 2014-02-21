@@ -49,14 +49,14 @@ with open('input.dat', 'w') as f:
 
     for x in range(0,10):
         for y in range(0,10):
-            for i in range(0,10):
+            for i in range(0,20):
 
                 theta = 0
                 a = 0
                 b = 0
                 c = 1
                 n = sin(theta / 2) / norm((a, b, c))
-                q1 = (10-2*x+random()/10., 10-2*y+random()/10., i + 5)
+                q1 = (10-2*x+random()/10., 10-2*y+random()/10., 2*i + 5)
 
                 r = btQuaternion(a * n, b * n, c * n, cos(theta / 2))
                 r = mul(r, r1)
