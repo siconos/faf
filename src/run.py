@@ -256,6 +256,15 @@ nopts.mathInfo = params.mathInfo
 
 # (5) broadphase contact detection
 broadphase = BulletSpaceFilter(model, nslaw)
+if 'multipointIterations' in dir(params):
+    if not params.multipointIterations:
+        print("""
+ConvexConvexMultipointIterations and PlaneConvexMultipointIterations are unset
+""")
+else:
+    broadphase.collisionConfiguration().setConvexConvexMultipointIterations()
+    broadphase.collisionConfiguration().setPlaneConvexMultipointIterations()
+
 
 # (6) Simulation setup with (1) (2) (3) (4) (5)
 simulation = BulletTimeStepping(timedisc, broadphase)

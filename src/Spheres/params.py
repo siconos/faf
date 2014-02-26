@@ -12,7 +12,7 @@ itermax = 100000
 NewtonMaxIter = 20
 tolerance = 1e-8
 solver = Numerics.SICONOS_FRICTION_3D_NSGS
-
+multipointIterations = False
 
 fileName = "Spheres"
 title = "Spheres"
