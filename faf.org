@@ -9,7 +9,7 @@
 ** LocalAlartCurnier
 + Possibility to avoit the LU factor of W ?
 + Guess rho with VIFixedPointProjection
-** Krylov tehniques
+** Krylov techniques
 + Work of Heyn et al.
 ** Acceleration of Gauss-Seidel Strategy
 + have a look to FISTA and Nesteroc work. INPPA

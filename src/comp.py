@@ -655,6 +655,12 @@ class SiconosHybridSolver(SiconosSolver):
         with h5py.File('comp.hdf5', 'r') as comp_file:
             return extern_guess(pfilename, 'NonsmoothGaussSeidel', 1, comp_file)
 
+        
+class SiconosWrappedSolver(SiconosSolver):
+    def __call__(self, problem, reactions, velocities):
+        return self._API(problem, reactions, velocities, self._SO)
+
+
 #
 # Some solvers
 #
@@ -803,6 +809,30 @@ VIFixedPointProjection = SiconosSolver(name="VIFixedPointProjection",
                           maxiter=maxiter, precision=precision)
 
 
+
+localac_wrapped = SiconosSolver(name="LocalAlartCurnierWrapped",
+                                API=N.frictionContact3D_localAlartCurnier,
+                                TAG=N.SICONOS_FRICTION_3D_LOCALAC,
+                                iparam_iter=1,
+                                dparam_err=1,
+                                maxiter=maxiter, precision=precision)
+
+def fc3d_localac_r(problem, reactions, velocities, _SO):
+    SO = N.SolverOptions(N.SICONOS_FRICTION_3D_VI_FPP)
+    SO.iparam[3] = 1000
+    N.frictionContact3D_VI_FixedPointProjection(problem, reactions, velocities, SO)
+    #    print '->',SO.dparam[3]
+    localac_wrapped.SolverOptions().dparam[3] = SO.dparam[3]
+    return localac_wrapped(problem, reactions, velocities)
+
+# flop measure only on localac    
+localacr = SiconosWrappedSolver(name="LocalacR", 
+                                API=fc3d_localac_r,
+                                TAG=N.SICONOS_FRICTION_3D_LOCALAC,
+                                iparam_iter=1,
+                                dparam_err=1,
+                                maxiter=maxiter, precision=precision)
+
 # 1 contact
 #Quartic = SiconosSolver(name="Quartic",
 #                        API=frictionContact3D_unitary_enumerative,
@@ -847,8 +877,9 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 #               FixedPointProjection, VIFixedPointProjection, ExtraGrad, VIExtraGrad]
 
 
-all_solvers = [nsgs, snsgs, TrescaFixedPoint, Prox, Prox2, Prox3, Prox4, Prox5, localac, DeSaxceFixedPoint,
+all_solvers = [nsgs, snsgs, TrescaFixedPoint, Prox, Prox2, Prox3, Prox4, Prox5, localac, localacr, DeSaxceFixedPoint,
                VIFixedPointProjection, VIExtraGrad]
+
 
 if user_solvers == []:
     solvers = all_solvers
