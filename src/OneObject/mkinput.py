@@ -9,6 +9,10 @@ from Siconos.Mechanics.ContactDetection.Bullet.BulletWrap import __mul__ as mul
 
 from random import random
 
+from Siconos.Mechanics.ContactDetection import Contactor
+from Siconos.Mechanics.ContactDetection.Bullet import IO
+
+
 theta1 = pi / 2
 a1 = 1
 b1 = 0
@@ -23,9 +27,26 @@ def s_v(v):
 
 alpha = pi / 2
 
-with open('input.dat', 'w') as f:
+with IO.Hdf5(mode='w') as io:
     # ground
-    f.write('1 -1 0 0  0 -.5 1 0 0 0 0 0 0 0 0 0\n')
+
+    io.insertConvexShape('Cube', [
+        (-1.0, 1.0, -1.0),
+        (-1.0, -1.0, -1.0),
+        (-1.0, -1.0, 1.0),
+        (-1.0, 1.0, 1.0),
+        (1.0, 1.0, 1.0),
+        (1.0, 1.0, -1.0),
+        (1.0, -1.0, -1.0),
+        (1.0, -1.0, 1.0)])
+
+    io.insertPrimitiveShape('Ground', 'Box', (30, 30, .5))
+
+    io.insertObject('ground', [Contactor('Ground')], 
+                    position = [0, 0, 0])
+
+
+    io.insertNewtonImpactFrictionNSL('contact', mu=0.7)
 
     for k in range(0,1):
 
@@ -48,4 +69,6 @@ with open('input.dat', 'w') as f:
         #v3 = (0, 0, 0, random(), random(), random())
         #v4 = (0, 0, 0, random(), random(), random())
 
-        f.write('0 0 1 {0} {1} {2}\n'.format(s_v(q1), s_v(o), s_v(v1)))
+        io.insertObject('cube', [Contactor('Cube')], position = [10*(k+1), 
+                                                               0, 0], 
+                        mass = 1)

@@ -255,7 +255,7 @@ nopts.description = params.description
 nopts.mathInfo = params.mathInfo
 
 # (5) broadphase contact detection
-broadphase = BulletSpaceFilter(model, nslaw)
+broadphase = BulletSpaceFilter(model)
 if 'multipointIterations' in dir(params):
     if not params.multipointIterations:
         print("""
@@ -281,7 +281,8 @@ else:
     external_forces = IO.apply_gravity
 
 
-with IO.Hdf5(broadphase, osi, set_external_forces=external_forces) as io:
+with IO.Hdf5(mode='r+', broadphase=broadphase, osi=osi,
+             set_external_forces=external_forces) as io:
 
     model.initialize(simulation)
 
