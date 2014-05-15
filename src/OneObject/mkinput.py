@@ -30,15 +30,17 @@ alpha = pi / 2
 with IO.Hdf5(mode='w') as io:
     # ground
 
-    io.insertConvexShape('Cube', [
-        (-1.0, 1.0, -1.0),
-        (-1.0, -1.0, -1.0),
-        (-1.0, -1.0, 1.0),
-        (-1.0, 1.0, 1.0),
-        (1.0, 1.0, 1.0),
-        (1.0, 1.0, -1.0),
-        (1.0, -1.0, -1.0),
-        (1.0, -1.0, 1.0)])
+#    io.insertConvexShape('Cube', [
+#        (-1.0, 1.0, -1.0),
+#        (-1.0, -1.0, -1.0),
+#        (-1.0, -1.0, 1.0),
+#        (-1.0, 1.0, 1.0),
+#        (1.0, 1.0, 1.0),
+#        (1.0, 1.0, -1.0),
+#        (1.0, -1.0, -1.0),
+#        (1.0, -1.0, 1.0)])
+
+    io.insertPrimitiveShape('Cube', 'Sphere', (1.,))
 
     io.insertPrimitiveShape('Ground', 'Box', (30, 30, .5))
 
@@ -69,6 +71,6 @@ with IO.Hdf5(mode='w') as io:
         #v3 = (0, 0, 0, random(), random(), random())
         #v4 = (0, 0, 0, random(), random(), random())
 
-        io.insertObject('cube', [Contactor('Cube')], position = [10*(k+1), 
-                                                               0, 0], 
+        io.insertObject('cube', [Contactor('Cube')], position = [0, 
+                                                                 0, 10*(k+1)], 
                         mass = 1)

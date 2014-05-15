@@ -1,16 +1,28 @@
 #!/usr/bin/env python
 import sys
-import shlex
+import os
 import vtk
 from vtk.util import numpy_support
-from math import atan2, pi, cos, sin
+from math import atan2, pi
 import bisect
 from numpy.linalg import norm
 import numpy
 import random
 import h5py
 import getopt
+from contextlib import contextmanager
+import tempfile
 
+#
+# a context manager for a *named* temp file
+#
+@contextmanager
+def tmpfile():
+    (_, tfilename) = tempfile.mkstemp()
+    fid = open(tfilename, 'w')
+    yield (fid, tfilename)
+    fid.close()
+    os.remove(tfilename)
 
 def usage():
     print '{0}: Usage'.format(sys.argv[0])
@@ -39,7 +51,6 @@ except getopt.GetoptError, err:
 
 min_time = None
 max_time = None
-dat_file = False
 scale_factor = 1
 for o, a in opts:
 
@@ -52,9 +63,6 @@ for o, a in opts:
 
     elif o == '--tmax':
         max_time = float(a)
-
-    elif o == '--dat':
-        dat_file = True
 
     elif o == '--cf-scale':
         scale_factor = float(a)
@@ -87,18 +95,21 @@ def axis_angle(q):
 
 axis_anglev = numpy.vectorize(axis_angle)
 transforms = dict()
+contactors = dict()
 
 
 def set_position(instance, q0, q1, q2, q3, q4, q5, q6):
 
     axis, angle = axis_angle((q3, q4, q5, q6))
 
-    transforms[instance].Identity()
-    transforms[instance].Translate(q0, q1, q2)
-    transforms[instance].RotateWXYZ(angle * 180 / pi,
-                                    axis[0],
-                                    axis[1],
-                                    axis[2])
+    for transform in transforms[instance]:
+
+        transform.Identity()
+        transform.Translate(q0, q1, q2)
+        transform.RotateWXYZ(angle * 180 / pi,
+                                        axis[0],
+                                        axis[1],
+                                        axis[2])
 
 set_positionv = numpy.vectorize(set_position)
 
@@ -121,55 +132,40 @@ cf_filename = 'cf.dat'
 
 refs = []
 refs_attrs = []
-with open(ref_filename, 'r') as ref_file:
-    for line in ref_file:
-        line_tokens = shlex.split(line)
-        refs.append(line_tokens[0])
-        refs_attrs.append([float(x) for x in line_tokens[1:]])
+#with open(ref_filename, 'r') as ref_file:
+#    for line in ref_file:
+##        line_tokens = shlex.split(line)
+#        refs.append(line_tokens[0])
+#        refs_attrs.append([float(x) for x in line_tokens[1:]])
 
 shape = dict()
-with open(bind_filename, 'r') as bind_file:
-    for line in bind_file:
-        obj_id, obj_shape = shlex.split(line)
-        shape[int(obj_id)] = int(obj_shape)
+
+#with open(bind_filename, 'r') as bind_file:
+#    for line in bind_file:
+#        obj_id, obj_shape = shlex.split(line)
+#        shape[int(obj_id)] = int(obj_shape)
 
 pos = dict()
-instances = set()
+instances = dict()
 
 import numpy
 
 
-def load(dat_file):
+def load():
 
-    if not dat_file:
-        try:
-            inFile = h5py.File('out.hdf5', 'r')
-            spos_data = inFile['data']['static']
-            dpos_data = inFile['data']['dynamic']
-        except:
-            dat_file = True
+    inFile = h5py.File('io.hdf5', 'r')
+    spos_data = inFile['data']['static']
+    dpos_data = inFile['data']['dynamic']
+    try:
+        cf_data = inFile['data']['cf'][:].copy()
+    except:
+        cf_data = None
 
-    if dat_file:
-        spos_data = numpy.loadtxt(spos_filename, ndmin=2)
-        dpos_data = numpy.loadtxt(dpos_filename, ndmin=2)
-
-
-    if dat_file:
-        cf_data = numpy.loadtxt(cf_filename)
-    else:
-        try:
-            cf_data = inFile['data']['cf'][:].copy()
-        except:
-            cf_data = None
-
-    if dat_file:
-        solv_data = numpy.loadtxt('solv.dat', ndmin=2)
-    else:
-        solv_data = inFile['data']['solv']
+    solv_data = inFile['data']['solv']
 
     return spos_data, dpos_data, cf_data, solv_data
 
-spos_data, dpos_data, cf_data, solv_data = load(dat_file)
+spos_data, dpos_data, cf_data, solv_data = load()
 #def contact_point_reader():
 #    global dos
 #    dos.GetOutput().GetFieldData()
@@ -289,10 +285,10 @@ ndyna = len(numpy.where(dpos_data[:, 0] == times[0]))
 
 if len(spos_data) > 0:
     nstatic = len(numpy.where(spos_data[:, 0] == times[0]))
-    instances = set(dpos_data[:, 1]).union(set(spos_data[:, 1]))
+#    instances = set(dpos_data[:, 1]).union(set(spos_data[:, 1]))
 else:
     nstatic = 0
-    instances = set(dpos_data[:, 1])
+#    instances = set(dpos_data[:, 1])
 
 
 
@@ -485,87 +481,128 @@ interactor_renderer = vtk.vtkRenderWindowInteractor()
 #renderer.SetActiveCamera(camera)
 #renderer.ResetCamera()
 
-readers = []
+readers = dict()
 mappers = []
 actors = []
 
-for ref, attrs in zip(refs, refs_attrs):
-    if '.vtp' in ref:
-        reader = vtk.vtkXMLPolyDataReader()
-        reader.SetFileName(ref)
-        readers.append(reader)
-    else:
-        if ref == 'Sphere':
-            source = vtk.vtkSphereSource()
-            source.SetRadius(attrs[0])
+with h5py.File('io.hdf5', 'r') as io:
 
-        elif ref == 'Cone':
-            source = vtk.vtkConeSource()
-            source.SetRadius(attrs[0])
-            source.SetHeight(attrs[1])
-            source.SetResolution(15)
-            source.SetDirection(0, 1, 0) # needed
+    for shape_name in io['data']['ref']:
 
-        elif ref == 'Cylinder':
-            source = vtk.vtkCylinderSource()
-            source.SetResolution(15)
-            source.SetRadius(attrs[0])
-            source.SetHeight(attrs[1])
-            #           source.SetDirection(0,1,0)
-
-        elif ref == 'Box':
-            source = vtk.vtkCubeSource()
-            source.SetXLength(attrs[0])
-            source.SetYLength(attrs[1])
-            source.SetZLength(attrs[2])
-
-        elif ref == 'Capsule':
-            sphere1 = vtk.vtkSphereSource()
-            sphere1.SetRadius(attrs[0])
-            sphere1.SetCenter(0, attrs[1] / 2, 0)
-            sphere1.SetThetaResolution(15)
-            sphere1.SetPhiResolution(15)
-            sphere1.Update()
-
-            sphere2 = vtk.vtkSphereSource()
-            sphere2.SetRadius(attrs[0])
-            sphere2.SetCenter(0, -attrs[1] / 2, 0)
-            sphere2.SetThetaResolution(15)
-            sphere2.SetPhiResolution(15)
-            sphere2.Update()
-
-            cylinder = vtk.vtkCylinderSource()
-            cylinder.SetRadius(attrs[0])
-            cylinder.SetHeight(attrs[1])
-            cylinder.SetResolution(15)
-            cylinder.Update()
+        if '.vtp' in shape_name:
+            with tmpfile() as tmpf:
+                tmpf.write(io['data']['ref'][shape_name][:])
+                reader = vtk.vtkXMLPolyDataReader()
+                reader.SetFileName(tmpf)
+                reader.Update()
+                readers[shape_name] = reader
+        elif 'primitive' not in io['data']['ref'][shape_name].attrs:
+            # a convex shape
+            points = vtk.vtkPoints()
+            convex = vtk.vtkConvexPointSet()
+            data = io['data']['ref'][shape_name][:]
+            convex.GetPointIds().SetNumberOfIds(data.shape[0])            
+            for id_, vertice in enumerate(io['data']['ref'][shape_name][:]):
+                points.InsertNextPoint(vertice[0], vertice[1], vertice[2])
+                convex.GetPointIds().SetId(id_, id_)
+            convex_grid = vtk.vtkUnstructuredGrid()
+            convex_grid.Allocate(1, 1)
+            convex_grid.InsertNextCell(convex.GetCellType(), convex.GetPointIds())
+            convex_grid.SetPoints(points)
 
             data = vtk.vtkMultiBlockDataSet()
-            data.SetNumberOfBlocks(3)
-            data.SetBlock(0, sphere1.GetOutput())
-            data.SetBlock(1, sphere2.GetOutput())
-            data.SetBlock(2, cylinder.GetOutput())
+            data.SetNumberOfBlocks(1)
+            data.SetBlock(0, convex_grid)
+
             source = vtk.vtkMultiBlockDataGroupFilter()
             add_compatiblity_methods(source)
             source.AddInputData(data)
 
-        readers.append(source)
+            readers[shape_name] = source
+
+        else:
+            primitive = io['data']['ref'][shape_name].attrs['primitive']
+            attrs = io['data']['ref'][shape_name][:][0]
+            if primitive == 'Sphere':
+                source = vtk.vtkSphereSource()
+                source.SetRadius(attrs[0])
+
+            elif primitive == 'Cone':
+                source = vtk.vtkConeSource()
+                source.SetRadius(attrs[0])
+                source.SetHeight(attrs[1])
+                source.SetResolution(15)
+                source.SetDirection(0, 1, 0) # needed
+
+            elif primitive == 'Cylinder':
+                source = vtk.vtkCylinderSource()
+                source.SetResolution(15)
+                source.SetRadius(attrs[0])
+                source.SetHeight(attrs[1])
+                #           source.SetDirection(0,1,0)
+
+            elif primitive == 'Box':
+                source = vtk.vtkCubeSource()
+                source.SetXLength(attrs[0])
+                source.SetYLength(attrs[1])
+                source.SetZLength(attrs[2])
+
+            elif primitive == 'Capsule':
+                sphere1 = vtk.vtkSphereSource()
+                sphere1.SetRadius(attrs[0])
+                sphere1.SetCenter(0, attrs[1] / 2, 0)
+                sphere1.SetThetaResolution(15)
+                sphere1.SetPhiResolution(15)
+                sphere1.Update()
+
+                sphere2 = vtk.vtkSphereSource()
+                sphere2.SetRadius(attrs[0])
+                sphere2.SetCenter(0, -attrs[1] / 2, 0)
+                sphere2.SetThetaResolution(15)
+                sphere2.SetPhiResolution(15)
+                sphere2.Update()
+
+                cylinder = vtk.vtkCylinderSource()
+                cylinder.SetRadius(attrs[0])
+                cylinder.SetHeight(attrs[1])
+                cylinder.SetResolution(15)
+                cylinder.Update()
+
+                data = vtk.vtkMultiBlockDataSet()
+                data.SetNumberOfBlocks(3)
+                data.SetBlock(0, sphere1.GetOutput())
+                data.SetBlock(1, sphere2.GetOutput())
+                data.SetBlock(2, cylinder.GetOutput())
+                source = vtk.vtkMultiBlockDataGroupFilter()
+                add_compatiblity_methods(source)
+                source.AddInputData(data)
+
+            readers[shape_name] = source
 
 
-for instance in instances:
-    mapper = vtk.vtkCompositePolyDataMapper()
-    mapper.SetInputConnection(readers[shape[int(instance)]].GetOutputPort())
-    mappers.append(mapper)
-    actor = vtk.vtkActor()
-    if int(instance) >= 0:
-        actor.GetProperty().SetOpacity(0.7)
-    actor.GetProperty().SetColor(random_color())
-    actor.SetMapper(mapper)
-    actors.append(actor)
-    renderer.AddActor(actor)
-    transform = vtk.vtkTransform()
-    actor.SetUserTransform(transform)
-    transforms[instance] = transform
+with h5py.File('io.hdf5', 'r') as io:
+    for instance_name in io['data']['input']:
+        instance = int(io['data']['input'][instance_name].attrs['id'])
+        contactors[instance] = []
+        transforms[instance] = []
+        for contactor_instance_name in io['data']['input'][instance_name]:
+            contactor_name = io['data']['input'][instance_name][contactor_instance_name].attrs['name']
+            contactors[instance].append(contactor_name)
+
+            mapper = vtk.vtkCompositePolyDataMapper()
+            mapper.SetInputConnection(readers[contactor_name].GetOutputPort())
+            mappers.append(mapper)
+            actor = vtk.vtkActor()
+            if io['data']['input'][instance_name].attrs['mass'] > 0:
+                actor.GetProperty().SetOpacity(0.7)
+
+            actor.GetProperty().SetColor(random_color())
+            actor.SetMapper(mapper)
+            actors.append(actor)
+            renderer.AddActor(actor)
+            transform = vtk.vtkTransform()
+            actor.SetUserTransform(transform)
+            transforms[instance].append(transform)
 
 renderer.AddActor(gactor)
 renderer.AddActor(cactor)
@@ -726,7 +763,7 @@ class InputObserver():
         print 'key', key
 
         if key == 'r':
-            spos_data, dpos_data, cf_data, solv_data = load(dat_file)
+            spos_data, dpos_data, cf_data, solv_data = load()
             cf_prov = CFprov(cf_data)
             times = list(set(dpos_data[:, 0]))
             times.sort()
