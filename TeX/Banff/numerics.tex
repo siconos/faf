@@ -96,7 +96,7 @@
       \label{eq:min-prox}
       \min_{x} f(x) + \rho \|x-x_k\|^2 
     \end{equation}
-with the optimal point $x\star$.
+with the optimal point $x^\star$.
     \begin{equation}
       \label{eq:min}
       x^\star  \stackrel{\Delta}{=} \prox_{f,\rho} (x_k)
@@ -105,8 +105,8 @@ with the optimal point $x\star$.
   \begin{block}{Proximal point algorithm}
   $$  x_{k+1} =  \prox_{f,{\rho_k}} (x_k)$$
   \end{block}
-  \begin{block}{Special case}
-    $$G(x)=0,\quad \quad f(x) = \frac 1 2 G^\top(x) G(x)$$
+  \begin{block}{Special case for solving $G(x)=0$ }
+    $$ f(x) = \frac 1 2 G^\top(x) G(x)$$
     
   \end{block}
 }
