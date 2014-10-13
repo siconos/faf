@@ -1,7 +1,6 @@
-
-check for ``solving frictional contact problem''
+Check for ``solving frictional contact problem''
 \begin{itemize}
-\item  in google, and scholar
+\item in google, and scholar
 \item Zentralblatt and MAthSciNet
 \end{itemize}
         
@@ -9,93 +8,104 @@ check for ``solving frictional contact problem''
 
 \section{Introduction}
 
-\subsection{Objectives}
-\begin{itemize}
-\item Simple iteratives  methods
-  \begin{itemize}
-  \item Fixed point 
-  \item Projection/splitting (PSOR)
-  \item Fake Coulomb Friction (Anitescu \& Tasora)
-  \end{itemize}
-\item zeroes of functions
-  \begin{itemize}
-  \item Alart-Curnier method
-  \item CKPS method
-  \item DeSaxce + Newton (Joli Feng)
-  \item Newton + line search (GP, Armijo, Non-monotone watch dogs)
-  \end{itemize}
-\item Optimisation-based methods
-  \begin{itemize}
-  \item ACLM (Fixed point, Newton, Quasi-Newton, ....)
-  \item SOCLCP (Kanno, et al.)
-  \item Successive approximations (Haslinger, ...) QP et SOC (Kucera)
-  \end{itemize}
-\end{itemize}
 
-En options
-\begin{itemize}
-\item SOCCP
-\item Interior point
-\item NCP (Fischer--bursmeister for SOC) smoothing hayashima fukushima ...
-\end{itemize}
+Forty years after the pioneering work of necas, haslinger, panagiatopoulos, ..., on numerically solving mechanical problems with contact and friction, there is still an active research activities on this subject in the computational mechanics and applied mathematics communities.  This can be explain by the fact that  mechanical systems with unilateral contact and Coulomb friction are difficult to numerically solve and the mathematical results of convergence of the numerical algorithms are rare and most of these required strong assumptions. In this paper, we want to give some insights of the advantages and weaknesses of standard solvers found in the literature by comparing them on the large sets of examples coming from a wide range of applications.
 
-\subsection{Test}
+To fix ideas, we want to discuss possible numerical solution procedures for the following three--dimensional discrete frictional contact problem and some of its variants.  Let $n_c\in \NN$ be the number of contact points and $n\in\NN$ the number of degree of freedom. Given a symmetric positive (semi-)definite matrix ${M} \in \RR^{n \times n}$, a vector $ {f} \in \RR^n$, a matrix  ${H} \in \RR^{n \times m}$ with $m= 3n_c$, a vector $w \in \RR^{m}$ and a vector of coefficients of friction $\mu \in \RR^{n_c}$, find three vectors $ {v} \in \RR^n$, $u\in\RR^m$ and $r\in \RR^m$ such that
+\begin{equation}\label{eq:soccp1}
+  \begin{array}{rcl}
+    M v = {H} {r} + {f}, &
+    u = H^\top v + w,  &
+    \hat u = u + g(u) ,\\[1mm]
+    &    K^\star \ni {\hat u} \perp r \in K,&
+  \end{array}
+\end{equation}
+where $g(u)$ is a nonsmooth function and $K\subset \RR^{3 n_c}$ is a Cartesian product of second order cone in $\RR^3$.   For each contact $\alpha$, the unknown variables  $u^\alpha\in\RR^3$ (relative velocity or gap at the contact point) and $r^\alpha\in\RR^3$ (reaction or impulse) are decomposed  in a contact local frame $(O^\alpha,{\sf N}^\alpha,{\sf T}^\alpha)$ such that $u^\alpha = u^\alpha_{\n} {\sf N}^\alpha +   u^{\alpha}_{\t}, u^\alpha_{\n} \in \RR, u^\alpha_{\t} \in \RR^2$ and  $r^\alpha = r^\alpha_{\n} {\sf N}^\alpha +   r^{\alpha}_{\t}, r^\alpha_{\n} \in \RR, r^\alpha_{\t} \in \RR^2$.
+% The Coulomb friction cone for a  contact $\alpha$ is defined by $K^{\alpha}  = \{r^\alpha, \|r^\alpha_\t \| \leq \mu^\alpha |r^\alpha_\n| \}$ and the set $K^{\alpha,\star}$ is its dual.
+The set $K$ is the cartesian product of Coulomb's friction cone at each contact, that is
+\begin{equation}
+  \label{eq:CC}
+  K = \prod_{\alpha=1\ldots n_c} K^{\alpha}  = \prod_{\alpha=1\ldots n_c} \{r^\alpha, \|r^\alpha_\t \| \leq \mu^\alpha |r^\alpha_\n| \}
+\end{equation}
+and $K^\star$ is dual.
+The function $g$ is defined as $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldots n_c]^\top$.
 
-\begin{itemize}
-\item collections
-  \begin{itemize}
-  \item spheres 
-    \begin{itemize}
-    \item flows and stacking (Example Tasora)
-    \end{itemize}
-  \item sticks
-    \begin{itemize}
-    \item flows and stacking (Example Tasora)
-    \end{itemize}
-  \item hair, LMGC clumps ??
-  \end{itemize}
-\item deformables quasi-static / dynamic
-  \begin{itemize}
-  \item Hertz 3D FEM
-  \item ...
-  \end{itemize}
-\end{itemize}
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[ scale=2,
+      axis/.style={ ->, >=stealth'},
+      normal/.style={ thick, ->, >=stealth'},
+      important line/.style={very thick},
+      dashed line/.style={dashed, thin},
+      every node/.style={color=black},
+      soldot/.style={only marks,mark=*},
+      holdot/.style={fill=white,only marks,mark=*}
+      ]
+      % body
+      \node (BodyA) at (1,-1) {Body A};
+      \fill[gray!20] (1,0) arc (0:-90:1);
+      \fill[gray!20] (1,0) arc (90:180:1);
+      \draw (1,0) arc (90:180:1);
 
-\subsection{parameters}
+      \node (BodyB) at (-1,1) {Body B};
+      \draw (0,1) arc (0:-90:1);
+      \fill[gray!20] (0,1) arc (90:180:1);
+      \fill[gray!20] (0,1) arc (0:-90:1);
 
-\begin{itemize}
-\item size (n, m), sparsity,
-\item matrix storage
-\item conditionning $M$ $W$
-\item rank of $H$ or $W$ on active contact
-\item parameter $\nu = m_c/n$
-\end{itemize}
+      % local frame
+      \def\nlength{0.35};
+      \coordinate (CA)  at  ({1.0-sqrt(2)/2.0},{-1.0+sqrt(2)/2.0});
+      \node[] at  (CA) [below] {$\sf O$};
+      \draw[holdot]  (CA) circle(0.05em);
+      \draw[normal] (CA) -- ($(CA)+({-\nlength*sqrt(2)/2.0},{+\nlength*sqrt(2)/2.0 })$) node [right] {$\,\sf N$};
+      \draw[normal] (CA) -- ($(CA)+({-\nlength*sqrt(2)/2.0},{-\nlength*sqrt(2)/2.0 })$) node [above] {$\sf T_1\quad$};
+      \draw[dashed line] (BodyA) -- (BodyB);
+      \draw[holdot] ($(CA)+({\nlength*sqrt(3)/2.0},{0.0})$) circle(0.2em);
+      \node at ($(CA)+({\nlength*sqrt(3)/2.0},{0.0})$) [right]{$\sf T_2$};
+      \draw[soldot] ($(CA)+({\nlength*sqrt(3)/2.0},{0.0})$) circle(0.02em);
+
+      \coordinate (CB)  at  ({-1.0+sqrt(2)/2.0},{1.0-sqrt(2)/2.0});
+      \node at  (CB) [above] {};
+      \draw[holdot]  (CB) circle(0.05em);
+
+      \draw[axis] (CA) -- (CB) node[midway, below left ] {$\sf u_\n$} ;
+
+      % \draw[axis] (0,-0.4) -- (0,0.4) node(yline)[right] {$\sgn(x)$};
+      % % lines
+      % \draw[important line] (-0.4,-0.3) -- (0.   ,-.3);
+      % \draw[important line] (0.0,0.3) --(.4,.3)  ;
+      % \coordinate (O) at (0.0, 0.05);
+      % \draw[fill] (O) circle (0.03em);
+      % \draw (0.0,0.05) node[right]{$a$};
+      % \draw (0.0,0.3) node[left]{$1$};
+      % \draw (0.0,-0.3) node[right]{$-1$};
+      % \draw[holdot] (0.0,0.3) circle (0.03em);
+      % \draw[holdot] (0.0,-.3) circle (0.03em);
+    \end{tikzpicture}
+\caption{Contact kinematic}
+\end{figure}
+
+We clearly choose to simplify a lot the general problems of formulating the contact problems with friction by avoiding to include too much side effects that are themselves interesting but render the study to difficult to carry out in a single article. We choose finite dimensional systems where the time dependence does not appear explicitely. For instance, we consider systems that are discretized in space and time if the original system is not a finite dimonsional system and if a dynamic or a quasi--static evolution is considered. In the same way, we consider a linear setting in a first attempt and we assume that  nonlinear mechanical bulk behaviors that can be treated at an upper level with a Newton linearization procedure. Even under these assumptions, we believe that there are a strong interest to work on the problem since it appears to be relativey generic in a large number of simulations of systems with contact and frictiom. We will develop this point in the Section ???. This problem is indeed at the heart of the simulation of mechanical systems with 3D Coulomb's friction and unilateral constraints. It might be the result of the time--discretization by event--capturing time--stepping methods or event--detecting (event--driven) techniques of dynamical systems with friction or the result of a space--discretization (by FEM for instance) of the quasi-static problems of frictional contact mechanics~\cite{Acary.Cadoux2013}.
 
 
-\begin{itemize}
-\item algorithms parameters ($\rho$)
-\end{itemize}
-
-\subsection{parameters}
-
-\begin{itemize}
-\item tolerance
-\item CPU time and memory or better flops (papi)
-\item Convergence rate (error w.r.t. flop)
-\item Scability
-\item Max time. 
-\item Obtained accuracy
-\item 
-\end{itemize}
 
 
-\subsection{What is not in this paper}
 
-We restrict ourselves to 3D friction with a nonlinear friction cone:
-\begin{itemize}
-\item no LCP
-\item no pivoting theory
-\end{itemize}
+
+On the mathematical programming point of view, the problem appears as Second Order Cone Complementarity Problem (SOCCP). If the nonlinear part of the problem is neglected ($g(u)=0$), the problem is an associated friction problem with dilatation, and by the way, is a gentle Second Order Cone Linear Complementarity Problem (SOCLCP) with a positive matrix $H^\top M^{-1} H$ (possibly semi--definite). When the non-associated character of the friction is taken into account through $g(u)$, the problem is non monotone and nonsmooth, and then very hard to solve efficiently.
+
+ It is not so difficult to design mechanical example on which a given algorithm failed to give a solution. The mathematical results of convergence of the numerical algorithms are rare and most of these required strong assumptions such that  the amount of friction, or full rank assumptions of matrices or operators or the dimension of the space in which the problem is formulated. We will come back on this point thereafter.
+
+
+Recall the assumption of the main result of convergence of some approach.
+
+
+
+
+In this article,  we will recall a result for the problem in~(\ref{eq:soccp1}) which ensures that a solution exists~\cite{ZAMM:ZAMM201000073}. In this framework, we will list several algorithms that have been previously developed for solving the SOCCP~(\ref{eq:soccp1}) mainly based variational inequality and nonsmooth equations reformulations. On one hand, we will show that algorithms based on Newton methods for nonsmooth equations solve quickly the problem when they succeed, but suffer from robustness issues mainly if the matrix $H$ has not full rank. On the other hand, the
+iterative methods dedicated to solving variational inequalities are quite robust but with an extremely slow rate of convergence. To sum up, as far as we know there is no option that combines time efficiency and robustness. To try to answer to this question, we develop an open collection of discrete frictional contact problems called FCLIB~\url{http://fclib.gforge.inria.fr} in order to offer a large library of problems to compare algorithms on a fair basis.  In this work, this collection is solved with the software {\sc Siconos} and its component {\sc Siconos/Numerics}~\url{http://siconos.gforge.inria.fr} .
+
+
 \clearpage
 \section{Description of the 3D frictional contact problems}
 
@@ -488,7 +498,7 @@ For Problem~\ref{prob:II},%  we have the VI (\ref{eq:vi-II}) that we rewrite for
 % -
 %  \left[\begin{array}{c}
 %         v \\ s
-%     \end{array}\right]
+v%     \end{array}\right]
 % ) = (r-s)^T W (r-s)   + \|u-v\|^2 + \sum _{\alpha =1}^{n_c} \mu^\alpha (x_\n-y_n) [\|[Wx+q]^\alpha_\t \| - \|[Wy+q]^\alpha_\t \|]
 % \end{equation}
 
@@ -1925,6 +1935,36 @@ kucera Dostal Haslinger ICNAAM 2004  + panagiotopoulos. Un coup N un coup T
 \label{Sec:MeasuringErrors}
 
 \section{Numerical comparisons}
+
+\subsection{parameters}
+
+\begin{itemize}
+\item size (n, m), sparsity,
+\item matrix storage
+\item conditionning $M$ $W$
+\item rank of $H$ or $W$ on active contact
+\item parameter $\nu = m_c/n$
+\end{itemize}
+
+
+\begin{itemize}
+\item algorithms parameters ($\rho$)
+\end{itemize}
+
+\subsection{parameters}
+
+\begin{itemize}
+\item tolerance
+\item CPU time and memory or better flops (papi)
+\item Convergence rate (error w.r.t. flop)
+\item Scability
+\item Max time.
+\item Obtained accuracy
+\item
+\end{itemize}
+
+
+
 
 
 \subsection{Benchmarks presentation}
