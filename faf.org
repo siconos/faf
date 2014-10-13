@@ -5,39 +5,39 @@
   + Work of Kleinert, Simeon Obermayr
 + FB and regularized FB for SOCCP
 ** Proximal point algorithm
-+ Continue to study the influence of the regulatization parameter
++ Continue to study the influence of the regularization parameter
 ** LocalAlartCurnier
-+ Possibility to avoit the LU factor of W ?
++ Possibility to avoid the LU factor of W ?
 + Guess rho with VIFixedPointProjection
 ** Krylov techniques
 + Work of Heyn et al.
 ** Acceleration of Gauss-Seidel Strategy
-+ have a look to FISTA and Nesteroc work. INPPA
++ Aitken--like strategy
++ have a look to FISTA and Nesterov work. INPPA
 ** Cadoux formulation
 + Implement Fixed point Iteration
   + Which internal solver ? Newton of convex SOCCP
 + Newton method on the problem $F(s)=s$
 * Literature
-** TODO Literature Renard
-   + add [[http://math.univ-lyon1.fr/~renard/papers/2008_frst.pdf]] in the list of reading
-** TODO Read Goldfarb Alizabeh
-   DEADLINE: <2013-10-31 Jeu>
-** TODO Read work of Kucera Dostal
-   DEADLINE: <2013-10-31 Jeu>
-** TODO CCP / SOCP
-   DEADLINE: <2013-11-15 Ven>
-*** SOCCP Fukushima, Hyashi Works
+** TODO Literature on Contact friction Algorithm
+   DEADLINE: <2014-04-07 Lun>
+*** Renard
+    add [[http://math.univ-lyon1.fr/~renard/papers/2008_frst.pdf]] in the list of reading
+*** Read work of Kucera Dostal
+*** CCP / SOCP
+**** Read Goldfarb Alizabeh
+**** SOCCP Fukushima, Hyashi Works
 +  [[/Users/acary/Publi/Optimisation/SOCCP]]
 + Combined and smoothing method
 + Matrix splitting
 
-*** Christian Kanzow, Izabella Ferenczi, and Masao Fukushima
-    ON THE LOCAL CONVERGENCE OF SEMISMOOTH NEWTON METHODS FOR LINEAR AND NONLINEAR SECOND-ORDER CONE PROGRAMS WITHOUT STRICT COMPLEMENTARITY∗
-    [[/Users/acary/Publi/Optimisation/SOCCP/Kanzow.Ferenczi.Fukushima_SIOPT2009.pdf]]
+**** Christian Kanzow, Izabella Ferenczi, and Masao Fukushima
+     ON THE LOCAL CONVERGENCE OF SEMISMOOTH NEWTON METHODS FOR LINEAR AND NONLINEAR SECOND-ORDER CONE PROGRAMS WITHOUT STRICT COMPLEMENTARITY∗
+     [[/Users/acary/Publi/Optimisation/SOCCP/Kanzow.Ferenczi.Fukushima_SIOPT2009.pdf]]
 
-*** Smoothing and BFGS work of Chen and Tseng
-  +  [[/Users/acary/Publi/Optimisation/SOCCP/Chen.Tseng_MP2005.pdf]]
-  + retrieve L-BFGS of Nocedal  ?  Use of M1QN3 ?
+**** Smoothing and BFGS work of Chen and Tseng
+   +  [[/Users/acary/Publi/Optimisation/SOCCP/Chen.Tseng_MP2005.pdf]]
+   + retrieve L-BFGS of Nocedal  ?  Use of M1QN3 ?
 ** Existing software
 *** SOCP: Software for Second-Order Cone Programming
 	 M. Lobo, L. Vandenberghe, and S. Boyd
@@ -66,7 +66,7 @@
   + Book of Konnov
      http://www.springer.com/business+%26+management/operations+research/book/978-3-540-67999-8?token=gbgen&wt_mc=Google-_-Book%20Search-_-Springer-_-EN
   + Have a look to On the Goldstein - Levitin - Polyak Gradient
-   Projection Method DIMITRI P. BERTSEKAS for a justification ont he generalized Armijo step rule
+   Projection Method DIMITRI P. BERTSEKAS for a justification on the generalized Armijo step rule
     [[/Users/acary/Publi/Optimisation/Bertsekas_IEEETAC1976.pdf]]
 ** TODO Have a look to paper about a Gauss-Newton
    approach with quite elaborate line search:
@@ -86,3 +86,43 @@
 + Work of Michael Ulbrich (Singapore Talk)
 ** Augmented Lagrangian formulation
 + Discuss with Paul Armand
+* Paper contact-friction 					  :ABC:PAPER:
+** Objectives
+   + Simple iteratives  methods
+     + Fixed point
+     + Projection/splitting (PSOR)
+     + Fake Coulomb Friction (Anitescu \& Tasora)
+   + zeroes of functions
+     + Alart-Curnier method
+     + CKPS method
+     + DeSaxce + Newton (Joli Feng)
+     + Newton + line search (GP, Armijo, Non-monotone watch dogs)
+   + Optimisation-based methods
+     + ACLM (Fixed point, Newton, Quasi-Newton, ....)
+     + SOCLCP (Kanno, et al.)
+     + Successive approximations (Haslinger, ...) QP et SOC (Kucera)
+   + Optional approach
+     + SOCCP
+     + Interior point
+     + NCP (Fischer--bursmeister for SOC) smoothing hayashima fukushima
+** Beyond the scope of the paper.
+   + no LCP
+   + no pivoting
+** Tests problems (FCLIB)
+   + collections
+     + spheres
+       + flows and stacking (Example Tasora)
+     + sticks
+       + flows and stacking (Example Tasora)
+     + hair, LMGC clumps ??
+   + deformables quasi-static / dynamic
+     + Hertz 3D FEM
+     + masonry
+
+** TODO read again and clean up the file
+    DEADLINE: <2014-10-29 Mer>
+  + Continue to work on the simulation
+** TODO draft the introduction
+    DEADLINE: <2014-10-29 Mer>
++ Add a list of approach not discussed in the paper. leave it as future work.
++
