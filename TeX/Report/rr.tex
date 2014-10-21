@@ -88,128 +88,10 @@
 %% \RCNancy % Nancy - Grand Est
 %% \RCRennes % Rennes - Bretagne Atlantique
 %\RCSophia % Sophia Antipolis M\'editerran\'ee
+
 \input{packages.tex}
 \input{macro.tex}
 
-\usepackage{showlabels}
-\usepackage{array}
-\usepackage{tikz}
-
-
-\usepackage{xkeyval,tkz-base}
-\usetikzlibrary{arrows}
-\usetikzlibrary{calc}
-
-
-\makeatletter
-\define@cmdkey[TKZ]{ell}{color}{}
-\define@cmdkey[TKZ]{ell}{shift}{}  
-\presetkeys[TKZ]{ell}{color = {},shift = 0}{}
- %  (#2,#3) coordonnée du centre (#4,#5) Ra et Rb 
-
-\newcommand*{\ellipseThreeD}[1][]{\tkz@ellipseThreeD[#1]}% 
-\def\tkz@ellipseThreeD[#1](#2,#3)(#4,#5){%
-\setkeys[TKZ]{ell}{#1}%
-  \draw[yshift=\cmdTKZ@ell@shift cm,dashed] (#4,0) arc(0:180:#4 and #5);
-  \draw[yshift=\cmdTKZ@ell@shift cm ] (-#4,0) arc(180:360:#4 and #5); 
-  \path[fill=\cmdTKZ@ell@color,opacity=0.5,shade](#2 cm,#3 cm) ellipse (#4 and #5);  
-}
-
-\newcommand*{\sellipseThreeD}[1][]{\tkz@sellipseThreeD[#1]}% 
-\def\tkz@sellipseThreeD[#1](#2,#3)(#4,#5){%
-\setkeys[TKZ]{ell}{#1}%
-  \draw[yshift=\cmdTKZ@ell@shift cm,dashed] (#4,0) arc(0:180:#4 and #5);
-  \draw[yshift=\cmdTKZ@ell@shift cm ] (-#4,0) arc(180:360:#4 and #5); 
-} 
-
-\def\tkzCone{\pgfutil@ifnextchar[{\tkz@cone}{\tkz@cone[]}} 
-\def\tkz@cone[#1]#2#3#4{%
-% #1    styles
-% #2    rayon R
-% #3    coeff d'aplatissement k
-% #4    Hauteur du cône H   
-% \pgfkeys{%
-% /tkzcone/.cd
-% }% 
-% \pgfqkeys{/tkzcone}{#1}%     
-\pgfmathsetmacro{\bb}{#2*#3}          
-\pgfmathsetmacro{\yy}{0}  
-\pgfmathsetmacro{\xx}{\bb} 
-
-%\pgfmathsetmacro{\yy}{#2*#2/#4}  
-%\pgfmathsetmacro{\xx}{#2*sqrt((1-\yy)/#4)} 
-
-
-
-\fill[color=blue!10] (0,#4)--(-\xx,\yy)  arc(180:360:\xx cm and .5 cm); 
-\pgfmathsetmacro{\ra}{\bb} 
-\pgfmathsetmacro{\rb}{\xx*sqrt(2.0)/8.0} 
-\ellipseThreeD[color=blue!30](0,0)(\ra cm, \rb cm)
-\draw (0,#4)--(\xx,\yy);
-\draw (0,#4)--(-\xx,\yy); 
-\node at (0,0) {0};
-\node at (\xx,\yy) {a};
-}% 
-
-\def\tkzCylinder{\pgfutil@ifnextchar[{\tkz@cylinder}{\tkz@cylinder[]}} 
-\def\tkz@cylinder[#1]#2#3#4{% 
-\pgfmathsetmacro{\bb}{#2*#3}          
-\pgfmathsetmacro{\yy}{\bb*\bb/#4}  
-\pgfmathsetmacro{\xx}{#2*sqrt((1-\yy)/#4)}
-  \fill[color=Maroon!10] (-\xx cm,0)--(-\xx cm,#4 cm)  
-         arc(180:360:\xx cm and .5 cm)--(\xx cm,0) 
-         arc(360:180:\xx cm and .5 cm);   
-\ellipseThreeD[color=Maroon!30](0,0)(\xx cm,.5 cm)
-\begin{scope}[yshift=#4 cm]
-  \draw[fill=\cmdTKZ@ell@color,opacity=0.5,shade](0,0) ellipse (\xx cm and .5 cm) ;  
-\end{scope}
-\draw (\xx cm,0)--(\xx cm,#4 cm);
-\draw (-\xx cm,0)--(-\xx cm,#4 cm); 
-
-}%  
-
-\def\tkzTruncatedCone{\pgfutil@ifnextchar[{\tkz@TruncatedCone}{\tkz@TruncatedCone[]}} 
-\def\tkz@TruncatedCone[#1]#2#3#4{%   
-\pgfmathsetmacro{\bb}{#2*#3}          
-\pgfmathsetmacro{\yy}{\bb*\bb/#4}  
-\pgfmathsetmacro{\xx}{#2*sqrt((1-\yy)/#4)}
-  \fill[color=Maroon!10] (-\xx cm,0)--(-0.5*\xx cm,#4 cm)  
-    arc(180:360:0.5*\xx cm and .25 cm)--(\xx cm,0) arc(360:180:\xx cm and .5 cm);     
-\ellipseThreeD[color=Maroon!30](0,0)(\xx cm,.5 cm)
-\begin{scope}[yshift=#4 cm]
-  \draw[fill=\cmdTKZ@ell@color,opacity=0.5,shade](0,0) ellipse (0.5*\xx cm and .25 cm);  
-\end{scope}
- \draw (\xx cm,0)--(0.5*\xx cm,#4 cm);
- \draw (-\xx cm,0)--(-0.5*\xx cm,#4 cm); 
-}%   
-
-\def\tkzSphere{\pgfutil@ifnextchar[{\tkz@Sphere}{\tkz@Sphere[]}} 
-\def\tkz@Sphere[#1]#2#3#4{%
-\pgfmathsetmacro{\bb}{#2*#3}          
-\pgfmathsetmacro{\yy}{\bb*\bb/#4}  
-\pgfmathsetmacro{\xx}{#2*sqrt((1-\yy)/#4)}      
-\filldraw[ball color=Maroon!10] (0,0) circle[radius=\xx];
-\sellipseThreeD(0,0)(\xx cm,.25 cm)  
-\begin{scope}[rotate=-90]
-\sellipseThreeD(0,0)(\xx cm,.25 cm)  
-\end{scope}   
-}% 
-
-\newcommand{\parapp}[3]{%
-\fill[Maroon!10,opacity=.5] (0,0,0)-- (#1,0,0) -- (#1,#3,0)  -- (0,#3,0) --cycle;
-\fill[Maroon!10,opacity=.5] (0,0,#2)-- (#1,0,#2) -- (#1,#3,#2)  -- (0,#3,#2) --cycle;
-\fill[Maroon!10,opacity=.5] (0,#3,0)-- (0,#3,#2) -- (#1,#3,#2) -- (#1,#3,0)--cycle;
-\fill[Maroon!10,opacity=.5] (0,0,0)-- (0,0,#2) -- (#1,0,#2) -- (#1,0,0)--cycle; 
-\draw[] (0,0,#2) -- (#1,0,#2) -- (#1,#3,#2) --(0,#3,#2) --(0,0,#2)
-        (#1,0,#2) -- (#1,0,0)  -- (#1,#3,0) --(0,#3,0) -- (0,#3,#2)    
-        (#1,#3,#2) -- (#1,#3,0);
-\draw[dashed] (0,0,0) -- (0,0,#2) (0,0,0)-- (#1,0,0) (0,0,0)-- (0,#3,0);
-
-}    
-
-\makeatother
-
-\usepackage{fancyhdr}\usepackage{lastpage}
 \fancyfoot[L]{}
 \fancyfoot[C]{}
 \fancyfoot[R]{\texttt{file rr.tex -- \isodayandtime}}
@@ -242,12 +124,7 @@
 \tableofcontents
 \newpage
 \input{body.tex}
-\clearpage
 
-\bibliographystyle{plainnat}
-\bibliography{./biblio/String,biblio,./biblio/NonSmooth,./biblio/Math,./biblio/Multibody,./biblio/Fem.bib,./biblio/Dae.bib,./biblio/Meca,./biblio/AnaNum.bib,./biblio/Math-Impact,./biblio/Contact,./biblio/Optim}
-
-\clearpage
 \input{appendix.tex}
 
 \end{document}

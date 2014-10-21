@@ -1,0 +1,44 @@
+\documentclass[10pt]{article}
+
+\input{packages.tex}
+\input{macro.tex}
+
+
+\fancyfoot[L]{}
+\fancyfoot[C]{}
+\fancyfoot[R]{\texttt{file paper.tex -- \isodayandtime}}
+\fancyhead[L]{\texttt{Solving 3D frictional contact problems. Acary \& Br\'emond}}
+\fancyhead[C]{}
+\renewcommand{\headheight}{22pt}
+\renewcommand{\topmargin}{-1cm}
+
+\fancyhead[R]{\texttt{\thepage/\pageref{LastPage}}}
+
+
+\title{Solving 3D frictional contact problems: Formulations and comparisons of numerical methods.}
+\author{Vincent Acary and Maurice Br\'emond}
+
+
+\graphicspath{{../figure/}}
+\renewcommand{\baselinestretch}{1.5}
+
+
+\begin{document}
+\pagestyle{fancy}
+\thispagestyle{fancy}
+\maketitle
+\tableofcontents
+\clearpage
+{\paragraph{Abstract} TBW}
+
+{\paragraph{keywords} Multibody systems, nonsmooth Mechanics,  unilateral constraints, Coulomb friction, impact, numerical methods}
+
+\input{body.tex}
+
+\input{appendix.tex}
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

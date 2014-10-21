@@ -110,6 +110,54 @@ that is
 \end{ndrva}
 
 \end{itemize}
+
+
+
+\section{Computation of components of subgradient of $F_{\vitwo}^\nat$}
+\label{Sec:Phi-natural-typeII}
+ For one contact, a possible computation of the remaining parts in $\Phi(u, r)$  is given by
+\begin{equation}
+  \label{eq:Phi-natural-typeII-rr}
+   \Phi_{r u}(u,r)  = 
+  \left\{
+    \begin{array}{lcl}
+      0  & \text { if } & r- \rho(u+g(u)) \in K    \\ \\
+      I - \partial_{r}[P_K(r-\rho(u+g(u)))]  & \text { if } &r- \rho(u+g(u))   \notin K
+    \end{array}\right.
+\end{equation}
+
+\begin{equation}
+  \label{eq:Phi-natural-typeII-ru}
+  \Phi_{r u}(u,r) = 
+  \left\{
+    \begin{array}{lcl}
+      \rho \left(I +
+      \left[\begin{array}{ccc}
+          0 & 0 & 0 \\
+          \Frac{u_\t}{\|u_\t\|} & 0 & 0 \\
+        \end{array}\right]
+      \right)  & \text { if } &
+      \begin{cases}
+        r- \rho(u+g(u)) \in K \\ u_\t \neq 0
+      \end{cases}
+      \\ \\
+      \rho\left(I +  \left[\begin{array}{ccc}
+          0 & 0 & 0 \\
+          s & 0 & 0 \\
+        \end{array}\right]\right), s \in \RR^2 , \|s\|=1  & \text { if } &
+    \begin{cases}
+      r- \rho(u+g(u)) \in K \\ u_\t = 0
+    \end{cases}
+    \\ \\
+      I        +\rho \left(I +  \left[\begin{array}{ccc}
+          0 & 0 & 0 \\
+          \Frac{u_\t}{\|u_\t\|} & 0 & 0 \\
+        \end{array}\right]\right)    \partial_{u}[P_K(r-\rho(u+g(u)))] & \text { if } &r- \rho(u+g(u))   \notin K
+    \end{array}\right.
+\end{equation}
+The computation of an element of $\partial P_K$ is given in Appendix~\ref{Sec:Ann:ConvexAnalysis}.
+
+
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "rr"

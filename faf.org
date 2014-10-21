@@ -173,3 +173,11 @@ v%     \end{array}\right]
     DEADLINE: <2014-10-29 Mer>
 + Add a list of approach not discussed in the paper. leave it as future work.
 +
+** Literature
+Check for ``solving frictional contact problem''
+\begin{itemize}
+\item in google, and scholar
+\item Zentralblatt and MAthSciNet
+\end{itemize}
+        
+
