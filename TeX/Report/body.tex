@@ -99,11 +99,14 @@ From the mathematical programming point of view, the problem appears to be a Sec
 where $K$ is a second order cone. If the nonlinear part of the problem (\ref{eq:soccp1}) is neglected ($g(u)=0$), the problem is an associated friction problem with dilatation, and by the way, is a gentle Second Order Cone Linear Complementarity Problem (SOCLCP) with a positive matrix $H^\top M^{-1} H$ (possibly semi--definite). When the non-associated character of the friction is taken into account through $g(u)$, the problem is non monotone and nonsmooth, and then very hard to solve efficiently. For a given numerical algorithm, it is, most of the time,  not so difficult to design mechanical example to run the algorithm into troubles. The mathematical results of convergence of the numerical algorithms are rare and most of these required strong assumptions such that  the amount of friction, or full rank assumptions of matrices or operators or the dimension of the space in which the problem is formulated. Among these results, we can cite the Czech school where the coefficient of friction is assumed to be bounded and small. This assumption allows us to use fixed point methods on the convex sub--problems of Tresca friction (constant friction threshold). We can also cite the result that are obtained in~\cite{Pang-Trinkle-96,Stewart.Trinkle1996,Anitescu.Potra97} where the friction cone is polyhedral (in 2D or by a faceting process). In that case, if the constraint are scleronomeous, Lemke's algorithm is able to solve the problem. The question of existence of solutions has been treated in~\cite{Klarbring-Pang-98,ZAMM:ZAMM201000073} under similar assumptions but with different techniques. The question of uniqueness remains a difficult problems in the general case.
 
 
-In this article,  after stating the problem with more details in Section~\ref{sec:description}, we recall the existence result of~\cite{ZAMM:ZAMM201000073} for the problem in~(\ref{eq:soccp1}) in Section \ref{sec:existence}. In this framework, we briefly present in Section~\ref{sec:formulation} a list of alternative formulations of the problem that are prone to the design of numerical solution procedures. Right after these formulations, we list some of the most standard algorithms dedicated to one of the previous formulation in Section. These algorithms that have been previously developed for solving the SOCCP~(\ref{eq:soccp1}) mainly based  variational inequality (Section~\ref{sec:numericalmethods,vi} and~\ref{Sec:SplittingTechniquesAndProx})
- and nonsmooth equations (Section~\ref{sec:newtonmethods}) or
- optimization--based (Section~\ref{Sec:OptimisationBasedMethods})
- reformulations.  
+In this article,  after stating the problem with more details in Section~\ref{sec:description}, we recall the existence result of~\cite{ZAMM:ZAMM201000073} for the problem in~(\ref{eq:soccp1}) in Section \ref{sec:existence}. In this framework, we briefly present in Section~\ref{sec:formulation} a list of alternative formulations of the problem that are prone to the design of numerical solution procedures. Right after these formulations, we list some of the most standard algorithms dedicated to one of the previous formulation in Section. These algorithms that have been previously developed for solving the SOCCP~(\ref{eq:soccp1}) mainly based  variational inequality (Section~\ref{sec:numericalmethods,vi} and~\ref{Sec:SplittingTechniquesAndProx}) and nonsmooth equations (Section~\ref{sec:newtonmethods}) or  optimization--based (Section~\ref{Sec:OptimisationBasedMethods}) reformulations.  
 
+Since it is difficult to be exhaustive on the approaches developed in the literature to solve frictional contact problems, we decided to leave out the scope of the paper the following approaches:
+\begin{itemize}
+\item the approaches that alter the fundamental assumptions of the 3D Coulomb friction model by faceting the cone as in the pioneering work of \cite{Klarbring86} and followed by~\cite{AlFahed.Stavroulakis.ea1991,Pang.Trinkle1996,Stewart.Trinkle1996,Anitescu.Potra97}, or by convexifying the Coulomb law (associated friction law with normal dilatency)~\cite{Heyn.ea_IJNME2013,Tasora.Anistescu_Meccanica2013,Tasora.Anistescu_CMAME2011,Anistescu.Tasora_COA2010,Tasora.Anistescu_CMAME2009}.
+\item Approaches that not give satisfactory results
+\item Approaches that we have not yet implemented. Interior point. SOCCP Solver.
+\end{itemize}
 
 The comparison are performed on a large set of examples using performance profiles. The main conclusion that are drawn from Section~\ref{sec:numericalcomparisons} are as follows.
 On one hand, we will show that algorithms based on Newton methods for nonsmooth equations solve quickly the problem when they succeed, but suffer from robustness issues mainly if the matrix $H$ has not full rank. On the other hand, the
@@ -230,10 +233,18 @@ The entire contact model (\ref{eq:contact-disjunctive}) can be put into a Second
   \label{eq:dual-cone}
   K^\star = \{u \in \RR^3 \mid  r^\top u \geq 0, \quad \text{for all } r \in K   \}.
 \end{equation}
+\begin{figure}\centering
+  \resizebox{!}{0.5\textheight}{\input{../figure/cone1-b.pdf_t}}
+  \caption{Coulomb's friction law in the sliding case.}
+\label{fig:CoulombLawSliding}
+\end{figure}
 
-
-
-
+% \begin{tikzpicture}
+%   % \tkzCone{3}{0.5}{5};\hspace{4cm}
+%   % \tkzCone{5}{1.0}{5};\hspace{4cm}
+%    \tkzCone{3}{2.0}{8};\hspace{4cm}
+%   %\tkzCone{5}{0.1}{5};
+% \end{tikzpicture}
 
 
 
@@ -361,12 +372,20 @@ and the vector $q$ as
 \end{equation}
 
 
-\section{Existence of solutions}
+\subsection{Existence of solutions}
 \label{sec:existence}
 
- \begin{ndrva}
-   one word in the existence criteria
- \end{ndrva}
+The question of the existence of solution for problem~\ref{prob:I} and~\ref{prob:II} have been studied in~\cite{Klarbring-Pang-98} and~\cite{ZAMM:ZAMM201000073} with different analysis techniques. One the assumption in~\cite{Klarbring-Pang-98} is weaker since the matrix $M$ is only semi--positive definite. The key assumption for existence of solutions is both papers is as follows
+\begin{equation}\label{ass}
+   \exists v\in \RR^m \,:\: H^\top v + w \in \mathrm{int}\, K^\star,
+\end{equation}
+or equivalently
+\begin{equation}\label{asseq}
+  w\in\mathrm{im}\, H + \mathrm{int}\, K^\star.
+\end{equation}
+Under the assumption, the problems~\ref{prob:I} and~\ref{prob:II} have a solution. The question to provide a solution procedure to compute has therefore a sense. In the sequel, we will compare numerical methods only when this assumption is satisfied.
+
+This assumption is easy verified in a large number of applications. For applications in nonsmooth dynamics where the unknown $v$ is a relative contact velocity, the term $w$ vanishes if we have only scleronomic constraints. For $w=0$, the assumption is trivially satisfied. Other practical situations are also detailed in~\cite{Acary.Cadoux2013}.
 
 % \subsection{Origins of the discrete problem}
 
@@ -392,21 +411,21 @@ and the vector $q$ as
 \section{Various alternative formulations prone to  numerical methods}
 %----------------------------------------------------------------------------------%
 \label{sec:formulation}
-In this section, various equivalent formulations of Problems~\ref{prob:I} and~\ref{prob:II} are given. We aim at showing that such problems can be recast into several well-known problems of the mathematical programming and optimization community.
+In this section, various equivalent formulations of Problems~\ref{prob:I} and~\ref{prob:II} are detailed. We aim at showing that such problems can be recast into several well-known problems of the mathematical programming and optimization community. These formulations will serve as a basis for the further sections on the numerical solution procedure.
 
-\subsection{Variational inequalities(VI) and Quasi-Variational inequalities(QVI)}
+\subsection{Variational inequalities(VI) }
 
-For the standard  theory of finite--dimensional variational inequalities, we refer to \cite{Harker.Pang1990} and \cite{Facchinei.Pang2003}. Let us define a finite-dimensional VI denoted by $\mathrm{VI}(X,F)$,
+ Let us define a finite-dimensional VI denoted by $\mathrm{VI}(X,F)$,
 \begin{equation}
   \label{eq:vi}
   F^\top(z)(y-z) \geq 0, \text{ for all } y \in X,
 \end{equation}
-with $X$ be a nonempty subset of $\RR^n$ and let $F$ be a mapping from $\RR^n$ into itself. The easiest way to state equivalent VI formulations of Problems~\ref{prob:I} and~\ref{prob:II} is to notice that
+with $X$ a nonempty subset of $\RR^n$ and $F$ a mapping from $\RR^n$ into itself (see \cite{Harker.Pang1990,Facchinei.Pang2003} for the standard  theory of finite--dimensional variational inequalities). The easiest way to state equivalent VI formulations of Problems~\ref{prob:I} and~\ref{prob:II} is to notice that
 \begin{equation}
   \label{eq:SOCCP-1}
   K^\star \ni {\hat u} \perp r \in K,
 \end{equation}
-is equivalent to the following inclusion into a normal cone
+is equivalent to the following normal cone inclusion
 \begin{equation}
   \label{eq:SOCCP-2}
   - {\hat u} \in N_K(r),
@@ -414,9 +433,9 @@ is equivalent to the following inclusion into a normal cone
 which is  in turns equivalent to the following VI
 \begin{equation}
   \label{eq:VI}
- \hat u^\top (s -r) \geq 0, \text{ for all } s \in K.
+ \hat u^\top (s -r) \geq 0, \text{ for all } s \in K
 \end{equation}
-
+by applying the definition of a normal cone to a convex set.
 For Problem~\ref{prob:I}, let us start by rewriting the problem~(\ref{eq:soccp1}) in a convenient form
 \begin{equation}
   \label{eq:soccp1-bis}
@@ -426,7 +445,7 @@ For Problem~\ref{prob:I}, let us start by rewriting the problem~(\ref{eq:soccp1}
    -(u + g(u)) \in N_K(r).
  \end{array}\right.
 \end{equation}
- Let us  define by $\bar K = \RR^n \times \RR^m \times K\subset \RR^{2m+n}$. The problem (\ref{eq:soccp1-bis}) is written as an inclusion into the normal cone to $\bar K$ as
+The problem (\ref{eq:soccp1-bis}) is written as an inclusion into the normal cone to $\bar K$ as
 \begin{equation}
   \label{eq:soccp1-ter}
   - \left[\begin{array}{l}
@@ -439,6 +458,7 @@ For Problem~\ref{prob:I}, let us start by rewriting the problem~(\ref{eq:soccp1}
 \end{array}\right]
 \right).
 \end{equation}
+with $\bar K = \RR^n \times \RR^m \times K\subset \RR^{2m+n}$.
 Finally, the VI formulation of Problem~\ref{prob:I} is given by
 \begin{equation}
   \label{eq:vi-I-bis}
@@ -463,8 +483,6 @@ Let us introduce a convenient notation for this formulation into $\mathrm{VI}(F_
     u + g(u)
   \end{array}\right],\quad \text{ and } X_{\vione} = \bar K = \RR^n \times \RR^m \times K\subset \RR^{2m+n}.
 \end{equation}
-
-
 For Problem~\ref{prob:II}, the following equivalent formulation in VI is directly obtained from
 \begin{equation}
   \label{eq:inclusion-1}
@@ -476,62 +494,22 @@ For Problem~\ref{prob:II}, the following equivalent formulation in VI is directl
   F_{\vitwo}(r) = W r +q + g(Wr+q)\text{ and } X_{\vitwo} = K.
 \end{equation}
 
-\begin{ndrva}
-  \begin{itemize}\item 
-    Concerning the mathematical property of these formulation,
-    ... monotonicity, co-positivity
-  \end{itemize}
-\end{ndrva}
-
-{\blue 
-
-\paragraph{monotonicity}
-
-For Problem~\ref{prob:II},%  we have the VI (\ref{eq:vi-II}) that we rewrite for our convenience with
-% \begin{equation}
-%   \label{eq:vi-II}
-%   F_{\vitwo}(u,r) =\left[
-%   \begin{array}{c}
-%     u - Wr -q
-%     u + g(u)
-% \end{array}\right]
-% \text{ and } X_{\vitwo} = \RR^{n_c}\times K.
-% \end{equation}
-% \begin{equation}
-%   \label{eq:mono-IIa}
-%     (F_{\vitwo}(u,r)-F_{\vitwo}(v,s))^T(
-%     \left[\begin{array}{c}
-%         u \\ r
-%     \end{array}\right]
-% -
-%  \left[\begin{array}{c}
-%         v \\ s
-v%     \end{array}\right]
-% ) = (r-s)^T W (r-s)   + \|u-v\|^2 + \sum _{\alpha =1}^{n_c} \mu^\alpha (x_\n-y_n) [\|[Wx+q]^\alpha_\t \| - \|[Wy+q]^\alpha_\t \|]
-% \end{equation}
-
-
-
-
-
+\paragraph{Solution properties.} 
+Concerning the mathematical properties of the obtained VI formulations, it is difficult to provide a very general result of existence and uniqueness of solutions. Nevertheless, in the case that the matrix $H$ has full rank and for small friction coefficients, a classical argument for the uniqueness of solution of VIs can be obtained. Since $W$ is a positive definite matrix if $H$ has full rank, we have  $(x-y)^T W (x-y) \geq C_W \|x-y\|^2$ with  $C_W>0$ and then we obtain
 \begin{equation}
   \label{eq:mono-II}
-    (F_{\vitwo}(x)-F_{\vitwo}(y))^T(x-y) = (x-y)^T W (x-y) + \sum _{\alpha =1}^{n_c} \mu^\alpha (x_\n-y_n) [\|[Wx+q]^\alpha_\t \| - \|[Wy+q]^\alpha_\t \|]
+  \begin{array}{rcl}
+    (F_{\vitwo}(x)-F_{\vitwo}(y))^T(x-y) &=& (x-y)^T W (x-y)  \\
+    &  & \quad\quad + \sum _{\alpha =1}^{n_c} \mu^\alpha (x^\alpha_\n-y^\alpha_\n) [\|[Wx+q]^\alpha_\t \| - \|[Wy+q]^\alpha_\t \|] \\
+    & \geq & C_W \|x-y\|^2  + \sum _{\alpha =1}^{n_c} \mu^\alpha (x^\alpha_\n-y^\alpha_\n) [\|[Wx+q]^\alpha_\t \| - \|[Wy+q]^\alpha_\t \|].
+  \end{array}
 \end{equation}
+It is obvious that for small value of the coefficient of friction, the mapping $F_\vitwo$ is strictly monotone and this ensures that the VI has at most one solution~\cite[Theorem 2.3.3]{Facchinei.Pang2003}. The fact that $H$ is full rank also implies that the assumption (\ref{ass}) for the existence of solutions is trivially satisfied. We can therefore conclude that there exists a unique solution to the $\mathrm{VI}(F_{\vitwo},X_{\vitwo})$. It is also therefore easy to conclude to the existence of a unique solution for  $\mathrm{VI}(F_{\vione},X_{\vione})$.
 
-\begin{equation}
-  \label{eq:Jac-II}
-    \nabla_r F_{\vitwo}(r) = W + W\left[
-    \begin{array}{cc}
-       0 & \mu \Frac{[W r+q]_\t}{\|[W r+q]_\t\|}\\
-       0 & 0
-    \end{array}\right]
-\end{equation}
+From the mechanical point of view, the rank deficiency of $H$ and the amount of friction seems to play a fundamental role in the question of the existence (and uniqueness) of solutions. In the numerical comparisons, we will attempt to get a deeper understanding on the role of these assumptions on the convergence of the algorithms. The rank deficiency  of $H$ is related to the number of constraints that are imposed to the system with respect to the number of degree of freedom in the system. It is closely related to the concept of hyperstaticity in overconstrained systems. In the most favorable cases, it yields  indeterminate Lagrange multipliers but also to unfeasible problems and then to the lost of solutions in the worth cases. The second assumption on the amount of friction is also well--know. The frictionless problem is  easy to solve if it is  feasible. It is clear that large friction coefficients prevent from sliding and the therefore increase the degree of hyperstaticity of the system. 
 
 
-
-}
-
+\subsection{Quasi-Variational inequalities(QVI)}
 
 Let $X$ be a multi-valued mapping  $\nbR^{n} \rightsquigarrow  \nbR^{n}$ and let  $F$ be a mapping form $\nbR^n$ into itself. The  quasi-variational inequality  problem, denoted by $\mathrm{QVI}(X,F)$ is to find a vector $z\in\nbR^n$ such that 
 \begin{equation}
@@ -562,7 +540,7 @@ Since $W$ is assumed to be semi-definite positive matrix, the affine mapping is 
 
 \subsection{Nonsmooth Equations}
 \label{Sec:NonsmoothEquations}
-In this section, we consider the reformulations of Problems~\ref{prob:I} and~\ref{prob:II} into various nonsmooth equations. More precisely for the problem of \ref{prob:I}, we search for an equation of the type
+In this section, we consider the reformulations of Problems~\ref{prob:I} and~\ref{prob:II} into various nonsmooth equations. More precisely for Problem~\ref{prob:I}, we search for an equation of the type
 \begin{equation}
   \label{eq:ne-1}
   G(v,u,r) = 0

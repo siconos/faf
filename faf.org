@@ -108,6 +108,53 @@
 ** Beyond the scope of the paper.
    + no LCP
    + no pivoting
+** Monotonicity of VI
+
+{\blue 
+
+\paragraph{monotonicity}
+
+For Problem~\ref{prob:II},%  we have the VI (\ref{eq:vi-II}) that we rewrite for our convenience with
+% \begin{equation}
+%   \label{eq:vi-II}
+%   F_{\vitwo}(u,r) =\left[
+%   \begin{array}{c}
+%     u - Wr -q
+%     u + g(u)
+% \end{array}\right]
+% \text{ and } X_{\vitwo} = \RR^{n_c}\times K.
+% \end{equation}
+% \begin{equation}
+%   \label{eq:mono-IIa}
+%     (F_{\vitwo}(u,r)-F_{\vitwo}(v,s))^T(
+%     \left[\begin{array}{c}
+%         u \\ r
+%     \end{array}\right]
+% -
+%  \left[\begin{array}{c}
+%         v \\ s
+v%     \end{array}\right]
+% ) = (r-s)^T W (r-s)   + \|u-v\|^2 + \sum _{\alpha =1}^{n_c} \mu^\alpha (x_\n-y_n) [\|[Wx+q]^\alpha_\t \| - \|[Wy+q]^\alpha_\t \|]
+% \end{equation}
+
+
+
+
+
+\begin{equation}
+  \label{eq:mono-II}
+    (F_{\vitwo}(x)-F_{\vitwo}(y))^T(x-y) = (x-y)^T W (x-y) + \sum _{\alpha =1}^{n_c} \mu^\alpha (x_\n-y_n) [\|[Wx+q]^\alpha_\t \| - \|[Wy+q]^\alpha_\t \|]
+\end{equation}
+
+\begin{equation}
+  \label{eq:Jac-II}
+    \nabla_r F_{\vitwo}(r) = W + W\left[
+    \begin{array}{cc}
+       0 & \mu \Frac{[W r+q]_\t}{\|[W r+q]_\t\|}\\
+       0 & 0
+    \end{array}\right]
+\end{equation}
+
 ** Tests problems (FCLIB)
    + collections
      + spheres
