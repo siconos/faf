@@ -113,6 +113,30 @@ that is
 
 
 
+
+
+In~\cite{Hayashi.ea2005}, the computation of the Clarke subdifferential of the projection operator is also done by inspecting the different cases using the spectral decomposition 
+\begin{equation}
+  \label{eq:Jordan-projection-Jacobian}
+  \partial P_K(x) =
+  \left\{
+    \begin{array}{cl}
+      I & \quad (\lambda_1>0, \lambda_2 >0 ) \\
+      \Frac{\lambda_2}{\lambda_1+\lambda_2} I +Z & \quad (\lambda_1< 0, \lambda_2 >0 ) \\
+      0 & \quad (\lambda_1< 0, \lambda_2 <0 ) \\
+      \co{I, I+Z} & \quad (\lambda_1=0, \lambda_2 >0 ) \\
+      \co{0, Z} & \quad (\lambda_1<0, \lambda_2 =0 ) \\
+      \co{0,  I, Z}  & \quad (\lambda_1=0, \lambda_2 =0 ) 
+    \end{array}
+  \right.
+\end{equation}
+A simple verification shows that the previous computation is an element of the subdifferential.
+\begin{ndrva}
+  to be checked carefully
+\end{ndrva}
+
+
+
 \section{Computation of components of subgradient of $F_{\vitwo}^\nat$}
 \label{Sec:Phi-natural-typeII}
  For one contact, a possible computation of the remaining parts in $\Phi(u, r)$  is given by
