@@ -170,10 +170,10 @@ v%     \end{array}\right]
 ** TODO read again and clean up the file
     DEADLINE: <2014-10-29 Mer>
   + Continue to work on the simulation
-** TODO draft the introduction
-    DEADLINE: <2014-10-29 Mer>
+** DONE draft the introduction
+   CLOSED: [2014-11-10 Lun 11:04] DEADLINE: <2014-10-29 Mer>
 + Add a list of approach not discussed in the paper. leave it as future work.
-+
+
 ** Literature
 Check for ``solving frictional contact problem''
 \begin{itemize}
