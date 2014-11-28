@@ -262,7 +262,11 @@ try:
     with_papi = True
     papi=cdll.LoadLibrary('/usr/local/lib/libpapi.so')
 except:
-    with_papi = False
+    try:
+        with_papi = True
+        papi=cdll.LoadLibrary('/usr/lib/x86_64-linux-gnu/libpapi.so.5.3.0.0')
+    except:
+        with_papi = False
 
 
 def init_flop():
@@ -671,6 +675,13 @@ localac = SiconosSolver(name="LocalAlartCurnier",
                         dparam_err=1,
                         maxiter=maxiter, precision=precision)
 
+localfb = SiconosSolver(name="LocalFischerBurmeister",
+                        API=N.frictionContact3D_localFischerBurmeister,
+                        TAG=N.SICONOS_FRICTION_3D_LOCALFB,
+                        iparam_iter=1,
+                        dparam_err=1,
+                        maxiter=maxiter, precision=precision)
+
 localac.SolverOptions().iparam[3] = 10000000
 
 
@@ -877,7 +888,7 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 #               FixedPointProjection, VIFixedPointProjection, ExtraGrad, VIExtraGrad]
 
 
-all_solvers = [nsgs, snsgs, TrescaFixedPoint, Prox, Prox2, Prox3, Prox4, Prox5, localac, localacr, DeSaxceFixedPoint,
+all_solvers = [nsgs, snsgs, TrescaFixedPoint, Prox, Prox2, Prox3, Prox4, Prox5, localac, localfb, localacr, DeSaxceFixedPoint,
                VIFixedPointProjection, VIExtraGrad]
 
 
