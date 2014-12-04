@@ -102,7 +102,7 @@ def dump_conditions(done, conds, from_conds, list_kconds, remove_conds, tab, nbo
 
         for iexpr in conds[icond]:
             assert not iexpr[1].is_Piecewise
-            print tab + tab + "{0}={1};".format(iexpr[0],local_ccode(nbops, iexpr[1]))
+            print tab + tab + "{0}={1}; CHECK({0});".format(iexpr[0],local_ccode(nbops, iexpr[1]))
 
         for _cond in cond:
             if _cond in from_conds:
@@ -205,23 +205,12 @@ def local_count_op(c, expr):
 #
 def local_ccode(count, expr):
 
+    return ccode(expr)
+#    if expr.is_Add:
+#        return '+'.join((local_ccode(count, e) for e in expr.args))
 
-
-    if expr.is_Pow:
-        (v,exp) = expr.args
-        if exp.is_Integer and v.is_Symbol:
-            count[0] += Symbol('MUL') * (exp-1)
-            return intpow2mult(v,exp)
-        else:
-            if not exp.is_Integer and (exp*Rational(2)).is_Integer:
-                count[0] += Symbol('SQRT')
-                return "sqrt("+local_ccode(count, expr**2) +")"
-            else:
-                count[0] = local_count_op(count[0], expr)
-                return ccode(expr)
-    else:
-        count[0] = local_count_op(count[0], expr)
-        return ccode(expr)
+#    elif expr.is_Mul:
+#        return '*'.join((local_ccode(count, e) for e in expr.args))
 
 
 
@@ -297,14 +286,14 @@ def dump_ccode(expr, array_format='ij', result_open='result[', result_close=']')
                 if var in is_relational and is_relational[var]:
                     print "  int {0} = 0;".format(var)
                 else:
-                    print "  double {0};".format(var)
+                    print "  double {0} = NAN;".format(var)
                 none_dumped[var] = True
 
         else:
             assert (not val.is_Piecewise)
             if not hasattr(val,"cond") and not hasattr(val, "lhs"):  # not Relational and not ExprCondPair
                 if var in declared:
-                    print "  double {0}={1};".format(var,local_ccode(nbops, val))
+                    print "  double {0}={1}; CHECK({0});".format(var,local_ccode(nbops, val))
             else:
                 print     "  int    {0}={1};".format(var, local_ccode(nbops, val))
 
@@ -322,6 +311,6 @@ def dump_ccode(expr, array_format='ij', result_open='result[', result_close=']')
     for var,val in conds[True]:
         if val is not None:
             if var not in declared:
-                print "  {0}={1};".format(var,local_ccode(nbops, val))
+                print "  {0}={1}; CHECK({0});".format(var,local_ccode(nbops, val))
 
 #    print "  /* operations : {0} */".format(nbops[0])

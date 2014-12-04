@@ -20,6 +20,7 @@ parser.add_option("--latex", action="store_true")
 parser.add_option("--ccode", action="store_true")
 parser.add_option("--ccodefac", action="store_true")
 parser.add_option("--ccodeAB", action="store_true")
+parser.add_option("--wrapper", action="store_true")
 (options, args) = parser.parse_args()
 
 
@@ -87,26 +88,27 @@ y = Matrix([[yn], [yt1], [yt2]])
 assert x.shape == (3,1)
 assert y.shape == (3,1)
 
-xt = Matrix(x[1:])
-yt = Matrix(y[1:])
-
-assert xt.shape == (2,1)
-assert yt.shape == (2,1)
-
 #1. direct computation 
 x_o_y = Matrix((x.transpose() * y)[:] + (y[0,0] * Matrix(x[1:]) + x[0,0] * Matrix(y[1:]))[:])
 
 assert x_o_y.shape == (3,1)
 
+#print x_o_y
+
 x_o_x = x_o_y.subs(y,x)
 
 y_o_y = x_o_y.subs(x,y)
 
-s = sqrt(1./2*(x[0,0] + sqrt(x[0,0]**2 - (x[1,0]**2+x[2,0]**2))))
+s = sqrt(.5*(x[0,0] + sqrt(x[0,0]**2 - (x[1,0]**2+x[2,0]**2))))
 
 sqrt_x = Matrix([[Piecewise((0, s<=0),(s, s>0))],
                  [Piecewise((0, s<=0),(x[1,0]/ (2.* s), s>0))],
                  [Piecewise((0, s<=0),(x[2,0]/ (2.* s), s>0))]])
+
+#print x
+#print y
+#print x_o_y
+
 
 
 phi_fb1 = x + y + sqrt_x.subs(x, x_o_x + y_o_y)
@@ -114,14 +116,28 @@ phi_fb1 = x + y + sqrt_x.subs(x, x_o_x + y_o_y)
 
 #2. with spectral decomposition
 
+
+
+xt = Matrix(x[1:])
+yt = Matrix(y[1:])
+
+assert xt.shape == (2,1)
+assert yt.shape == (2,1)
+
+Rand = Function('Rand')
+
 xnxt_p_ynyt = xn * xt + yn * yt
 xnxt_p_ynyt_norm = sqrt(xnxt_p_ynyt[0,0]**2 + xnxt_p_ynyt[1,0]**2)
 
+rand_v = Matrix([Rand(1), Rand(2)])
+
+n_rand_v = rand_v / rand_v.norm()
+
 _xu_1 = Piecewise((xnxt_p_ynyt[0,0] / xnxt_p_ynyt_norm, xnxt_p_ynyt_norm>0),
-                  (1, xnxt_p_ynyt_norm <= 0))
+                  (n_rand_v[0,0], xnxt_p_ynyt_norm <= 0))
 
 _xu_2 = Piecewise((xnxt_p_ynyt[1,0] / xnxt_p_ynyt_norm, xnxt_p_ynyt_norm>0),
-                  (0, xnxt_p_ynyt_norm <= 0))
+                  (n_rand_v[1,0], xnxt_p_ynyt_norm <= 0))
 
 
 # Abs in x.norm() even with assumptions.
@@ -134,10 +150,10 @@ lambda_1 = x_norm ** 2 + y_norm ** 2 - 2 * xnxt_p_ynyt_norm
 lambda_2 = x_norm ** 2 + y_norm ** 2 + 2 * xnxt_p_ynyt_norm
 
 
-u_1 = 1./2 * Matrix([1, - _xu_1, - _xu_2])
-u_2 = 1./2 * Matrix([1, _xu_1, _xu_2])
+u_1 = 0.5 * Matrix([1, - _xu_1, - _xu_2])
+u_2 = 0.5 * Matrix([1, _xu_1, _xu_2])
 
-phi_fb2 = x + y - (sqrt(lambda_1) * u_1 + sqrt(lambda_2) * u_2)
+phi_fb2 = x + y - (sqrt(Max(0,lambda_1)) * u_1 + sqrt(Max(0,lambda_2)) * u_2)
 
 #print phi_fb1
 #print phi_fb2
@@ -313,3 +329,70 @@ if options.ccodeAB:
     def_fun(ac_name + "ABGenerated")
     dump_ccode(A.row_join(B), array_format='fortran')
     end_fun()
+
+
+if options.wrapper:
+
+    print(
+        """
+void {0}FunctionGenerated(
+  double *reaction,
+  double *velocity,
+  double mu,
+  double *rho,
+  double *f,
+  double *A,
+  double *B)
+{{
+  double result[21];
+
+  assert(reaction);
+  assert(velocity);
+  assert(rho);
+
+  SET3(reaction);
+  SET3(velocity);
+  SET3(rho);
+
+
+  if (f && A && B)
+  {{
+
+    {0}FABGenerated(
+      *reaction0, *reaction1, *reaction2,
+      *velocity0, *velocity1, *velocity2,
+      mu,
+      *rho0, *rho1, *rho2,
+      result);
+    cpy3(result, f);
+    cpy3x3(result + 3, A);
+    cpy3x3(result + 12, B);
+  }}
+
+  else
+  {{
+    if (f)
+    {{
+      {0}FGenerated(
+        *reaction0, *reaction1, *reaction2,
+        *velocity0, *velocity1, *velocity2,
+        mu,
+        *rho0, *rho1, *rho2,
+        result);
+      cpy3(result, f);
+    }}
+
+    if (A && B)
+    {{
+      {0}ABGenerated(
+        *reaction0, *reaction1, *reaction2,
+        *velocity0, *velocity1, *velocity2,
+        mu,
+        *rho0, *rho1, *rho2,
+        result);
+      cpy3x3(result, A);
+      cpy3x3(result + 9, B);
+    }}
+  }}
+}}
+        """.format(ac_name))
