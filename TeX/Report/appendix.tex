@@ -49,8 +49,9 @@ Let $D=\{x \in \RR^3, \|x\| \leq 1\}$. We have
    \Frac I {\|z\|} - \Frac{z z^\top}{\|z\|^3} &\text{if }& z \notin D  
    \end{array}\right. 
 \end{equation}
-\subsection{Euclidean projection on the second order cone of $\RR^3$.}
 
+
+\subsection{Euclidean projection on the second order cone of $\RR^3$.}
 Let $K=\{x = [x_\n x_\t]^T \in \RR^3, x_\n \in \RR, \|x_{\t}\| \leq \mu x_{\n}\}$. We have 
 \begin{equation}
   \label{eq:proj}
@@ -65,6 +66,9 @@ Let $K=\{x = [x_\n x_\t]^T \in \RR^3, x_\n \in \RR, \|x_{\t}\| \leq \mu x_{\n}\}
       \end{array}\right]&\text{if}& z \notin K \text{ and } -z \notin K^*
     \end{array}\right. 
   \end{equation}
+
+\paragraph{Direct computation of an element of the subdifferential}
+
 The computation of the subdifferential are given as follows
 \begin{itemize}
 \item if $z\in K\setminus \partial K$, $\partial_z P_K(z) =I$,
@@ -112,25 +116,44 @@ that is
 \end{itemize}
 
 
+\paragraph{Computation of the subdifferential using the spectral decomposition}
 
 
-
-In~\cite{Hayashi.ea2005}, the computation of the Clarke subdifferential of the projection operator is also done by inspecting the different cases using the spectral decomposition 
+In~\cite{Hayashi.ea_SIOPT2005}, the computation of the Clarke subdifferential of the projection operator is also done by inspecting the different cases using the spectral decomposition
 \begin{equation}
   \label{eq:Jordan-projection-Jacobian}
   \partial P_K(x) =
   \left\{
-    \begin{array}{cl}
+    \begin{array}{ll}
       I & \quad (\lambda_1>0, \lambda_2 >0 ) \\
       \Frac{\lambda_2}{\lambda_1+\lambda_2} I +Z & \quad (\lambda_1< 0, \lambda_2 >0 ) \\
       0 & \quad (\lambda_1< 0, \lambda_2 <0 ) \\
-      \co{I, I+Z} & \quad (\lambda_1=0, \lambda_2 >0 ) \\
-      \co{0, Z} & \quad (\lambda_1<0, \lambda_2 =0 ) \\
-      \co{0,  I, Z}  & \quad (\lambda_1=0, \lambda_2 =0 ) 
+      \co\{I, I+Z\} & \quad (\lambda_1=0, \lambda_2 >0 ) \\
+      \co\{0, Z\} & \quad (\lambda_1<0, \lambda_2 =0 ) \\
+      \co\{0 \cup  I \cup S\}  & \quad (\lambda_1=0, \lambda_2 =0 )
     \end{array}
   \right.
 \end{equation}
-A simple verification shows that the previous computation is an element of the subdifferential.
+where
+\begin{equation}
+  \label{eq:Jordan-projection-Jacobian2}
+  \begin{array}{l}
+  Z  = \frac 1 2
+  \begin{bmatrix}
+    - y_\n & y_\t^\top\\
+    y_\t & - y_\n y_\t y_\t^\top
+  \end{bmatrix},\\
+  S = \left\{\frac 1 2 (1+\beta) I + \frac 1 2
+    \begin{bmatrix}
+      -\beta & w^\top \\
+      w & -\beta w w^\top
+    \end{bmatrix}\mid -1 \leq \beta \leq 1, \|w\|=1\right\}
+\end{array}
+\end{equation}
+with $y = x / \|x_\t\|$. A simple verification shows that the previous computation is an element of the subdifferential.
+
+
+
 \begin{ndrva}
   to be checked carefully
 \end{ndrva}
@@ -184,5 +207,5 @@ The computation of an element of $\partial P_K$ is given in Appendix~\ref{Sec:An
 
 %%% Local Variables: 
 %%% mode: latex
-%%% TeX-master: "rr"
+%%% TeX-master: "paper"
 %%% End: 
