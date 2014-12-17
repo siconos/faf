@@ -4,6 +4,7 @@
 + Interior points methods
   + Work of Kleinert, Simeon Obermayr
 + FB and regularized FB for SOCCP
++ Have a look to cvxopt (python and C)
 ** Proximal point algorithm
 + Continue to study the influence of the regularization parameter
 ** LocalAlartCurnier
@@ -19,25 +20,28 @@
   + Which internal solver ? Newton of convex SOCCP
 + Newton method on the problem $F(s)=s$
 * Literature
-** TODO Literature on Contact friction Algorithm
-   DEADLINE: <2014-04-07 Lun>
-*** Renard
-    add [[http://math.univ-lyon1.fr/~renard/papers/2008_frst.pdf]] in the list of reading
-*** Read work of Kucera Dostal
-*** CCP / SOCP
-**** Read Goldfarb Alizabeh
-**** SOCCP Fukushima, Hyashi Works
+  Check for ``solving frictional contact problem''
+  \begin{itemize}
+  \item in google, and scholar
+  \item Zentralblatt and MAthSciNet
+  \end{itemize}
+** Renard
+   add [[http://math.univ-lyon1.fr/~renard/papers/2008_frst.pdf]] in the list of reading
+** Read work of Kucera Dostal
+** CCP / SOCP
+*** Read Goldfarb Alizabeh
+*** SOCCP Fukushima, Hyashi Works
 +  [[/Users/acary/Publi/Optimisation/SOCCP]]
 + Combined and smoothing method
 + Matrix splitting
 
-**** Christian Kanzow, Izabella Ferenczi, and Masao Fukushima
-     ON THE LOCAL CONVERGENCE OF SEMISMOOTH NEWTON METHODS FOR LINEAR AND NONLINEAR SECOND-ORDER CONE PROGRAMS WITHOUT STRICT COMPLEMENTARITY∗
-     [[/Users/acary/Publi/Optimisation/SOCCP/Kanzow.Ferenczi.Fukushima_SIOPT2009.pdf]]
+*** Christian Kanzow, Izabella Ferenczi, and Masao Fukushima
+    ON THE LOCAL CONVERGENCE OF SEMISMOOTH NEWTON METHODS FOR LINEAR AND NONLINEAR SECOND-ORDER CONE PROGRAMS WITHOUT STRICT COMPLEMENTARITY∗
+    [[/Users/acary/Publi/Optimisation/SOCCP/Kanzow.Ferenczi.Fukushima_SIOPT2009.pdf]]
 
-**** Smoothing and BFGS work of Chen and Tseng
-   +  [[/Users/acary/Publi/Optimisation/SOCCP/Chen.Tseng_MP2005.pdf]]
-   + retrieve L-BFGS of Nocedal  ?  Use of M1QN3 ?
+*** Smoothing and BFGS work of Chen and Tseng
+  +  [[/Users/acary/Publi/Optimisation/SOCCP/Chen.Tseng_MP2005.pdf]]
+  + retrieve L-BFGS of Nocedal  ?  Use of M1QN3 ?
 ** Existing software
 *** SOCP: Software for Second-Order Cone Programming
 	 M. Lobo, L. Vandenberghe, and S. Boyd
@@ -83,10 +87,11 @@
   [[/Users/acary/Desktop/Lopez.ea_OO2012.pdf]]
   Definition des operateurs copositive
 ** QVI implementation
-+ Work of Facchinei (Singapore Talk)
-+ Work of Michael Ulbrich (Singapore Talk)
+  + Work of Facchinei (Singapore Talk)
+  + Work of Michael Ulbrich (Singapore Talk)
 ** Augmented Lagrangian formulation
 + Discuss with Paul Armand
+   
 * Paper contact-friction 					  :ABC:PAPER:
 ** Objectives
    + Simple iteratives  methods
@@ -168,17 +173,30 @@ v%     \end{array}\right]
      + Hertz 3D FEM
      + masonry
 
-** TODO read again and clean up the file
-    DEADLINE:<2014-10-29 Mer>
-  + Continue to work on the simulation
-** DONE draft the introduction
-   CLOSED: [2014-11-10 Lun 11:04] DEADLINE: <2014-10-29 Mer>
-+ Add a list of approach not discussed in the paper. leave it as future work.
+** TODO Complete the introduction
+   DEADLINE: <2014-12-27 Sam>
+   + Add a list of approach not discussed in the paper. leave it as future work.
+** TODO Complete Section 3
+   DEADLINE: <2014-12-27 Sam>
+   + Understand the continuity argument of Alart
+   + Find references for alternating projection N and after T
+** TODO Complete Section 4
+   DEADLINE: <2014-12-27 Sam>
+  + Section 4.1 
+    \begin{itemize}
+    \item situate the work of \cite{DeSaxce.Feng90,DeSaxce.Feng1998} and  \cite{Simo.Laursen1992,Laursen.Simo1993b}.
+    \item implement the work of Simo just to laugh
+    \item Have a careful look to the work of Krause.  
+    \end{itemize}
+  + Section 4.2
+    \begin{itemize}
+    \item Rule and efficient Choice of $\rho$.
+    \item Should we leave hyperplane projection ?
+    \item Acceleration techniques and Nesterov Method ?   FISTA and Nesterov work. INPPA
+    \end{itemize}
+  + Section 4.3
+    What can be retained from\cite{Heyn_PhD2013} ?
+    Krylov techniques
 
-** Literature
-Check for ``solving frictional contact problem''
-\begin{itemize}
-\item in google, and scholar
-\item Zentralblatt and MAthSciNet
-\end{itemize}
-        
+
+
