@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env sage
 
 #
 # print the Fischer Burmeister function and its derivatives in latex or c code
@@ -10,8 +10,12 @@
 
 
 from sympy import *
-from localcodegen import dump_ccode
+from sympy.core.numbers import  NaN
+from localcodegen import dump_ccode, dump_var
 from locallatex import print_latex_by_conditions
+import pickle
+
+init_printing()
 
 # not in python 2.7 -> see argparse
 from optparse import OptionParser
@@ -22,7 +26,6 @@ parser.add_option("--ccodefac", action="store_true")
 parser.add_option("--ccodeAB", action="store_true")
 parser.add_option("--wrapper", action="store_true")
 (options, args) = parser.parse_args()
-
 
 
 def def_fun(name):
@@ -44,8 +47,6 @@ def end_fun():
     print(r"}")
 
 
-var('R_N R_T1 R_T2 U_N U_T1 U_T2 rho_N rho_T1 rho_T2 D_N D_T1 D_T2')
-
 mu = Symbol('mu', positive=True, real=True)
 rn = Symbol('rn', real=True)
 rt1 = Symbol('rt1', real=True)
@@ -55,133 +56,202 @@ un = Symbol('un', real=True)
 ut1 = Symbol('ut1', real=True)
 ut2 = Symbol('ut2', real=True)
 
-rhon = Symbol('rhon', real=True)
-rhot1 = Symbol('rhot1', real=True)
-rhot2 = Symbol('rhot2', real=True)
+fn = Function('fn')
+ft1 = Function('ft1')
+ft2 = Function('ft2')
 
-D = Symbol('D', real=True)
+#xn = fn(mu, un, ut1, ut2)
+#xt1 = ft1(mu, un, ut1, ut2)
+#xt2 = ft2(mu, un, ut1, ut2)
 
-r = Matrix([rn, rt1, rt2]).transpose()
-
-u = Matrix([un, ut1, ut2]).transpose()
-
-rho = Matrix([rhon, rhot1, rhot2]).transpose()
-
-
-uun = un + mu * sqrt(ut1*ut1+ut2*ut2)
-uut1 = ut1
-uut2 = ut2
-
-
+xn =  un + mu * sqrt(ut1**2 + ut2**2)
+xt1 = mu * ut1
+xt2 = mu * ut2
 
 yn = mu * rn
 yt1 = rt1
 yt2 = rt2
 
-xn = uun
-xt1 = mu * ut1
-xt2 = mu * ut2
+u = Matrix([un, ut1, ut2])
+r = Matrix([rn, rt1, rt2])
 
-x = Matrix([[xn], [xt1], [xt2]])
-y = Matrix([[yn], [yt1], [yt2]])
+x = Matrix([xn, xt1, xt2])
+y = Matrix([yn, yt1, yt2])
 
-assert x.shape == (3,1)
-assert y.shape == (3,1)
+ut = Matrix([ut1, ut2])
 
-#1. direct computation 
-x_o_y = Matrix((x.transpose() * y)[:] + (y[0,0] * Matrix(x[1:]) + x[0,0] * Matrix(y[1:]))[:])
+assert x.shape == (3, 1)
+assert y.shape == (3, 1)
 
-assert x_o_y.shape == (3,1)
-
-#print x_o_y
-
-x_o_x = x_o_y.subs(y,x)
-
-y_o_y = x_o_y.subs(x,y)
-
-s = sqrt(.5*(x[0,0] + sqrt(x[0,0]**2 - (x[1,0]**2+x[2,0]**2))))
-
-sqrt_x = Matrix([[Piecewise((0, s<=0),(s, s>0))],
-                 [Piecewise((0, s<=0),(x[1,0]/ (2.* s), s>0))],
-                 [Piecewise((0, s<=0),(x[2,0]/ (2.* s), s>0))]])
-
-#print x
-#print y
-#print x_o_y
-
-
-
-phi_fb1 = x + y + sqrt_x.subs(x, x_o_x + y_o_y)
-
-
-#2. with spectral decomposition
-
-
+# with spectral decomposition
 
 xt = Matrix(x[1:])
 yt = Matrix(y[1:])
 
-assert xt.shape == (2,1)
-assert yt.shape == (2,1)
-
-Rand = Function('Rand')
-
-xnxt_p_ynyt = xn * xt + yn * yt
-xnxt_p_ynyt_norm = sqrt(xnxt_p_ynyt[0,0]**2 + xnxt_p_ynyt[1,0]**2)
-
-rand_v = Matrix([Rand(1), Rand(2)])
-
-n_rand_v = rand_v / rand_v.norm()
-
-_xu_1 = Piecewise((xnxt_p_ynyt[0,0] / xnxt_p_ynyt_norm, xnxt_p_ynyt_norm>0),
-                  (n_rand_v[0,0], xnxt_p_ynyt_norm <= 0))
-
-_xu_2 = Piecewise((xnxt_p_ynyt[1,0] / xnxt_p_ynyt_norm, xnxt_p_ynyt_norm>0),
-                  (n_rand_v[1,0], xnxt_p_ynyt_norm <= 0))
+assert xt.shape == (2, 1)
+assert yt.shape == (2, 1)
 
 
-# Abs in x.norm() even with assumptions.
+random1 = var('random1')
+random2 = var('random2')
 
-x_norm = sqrt(x[0,0]**2 + x[1,0]**2 + x[2,0]**2)
-y_norm = sqrt(y[0,0]**2 + y[1,0]**2 + y[2,0]**2)
+xnxt_p_ynyt = xn*xt + yn*yt
+
+rand_v = Matrix([random1, random2])
+rand_v_norm = sqrt(random1**2 + random2**2);
+n_rand_v = rand_v / rand_v_norm
+
+xnxt_p_ynyt_norm = sqrt(xnxt_p_ynyt[0]**2 + xnxt_p_ynyt[1]**2)
+x_norm = sqrt(xn**2 + xt1**2 + xt2**2)
+y_norm = sqrt(yn**2 + yt1**2 + yt2**2)
+
+_xu_1 = Piecewise(((xn * xt + yn * yt)[0, 0] / xnxt_p_ynyt_norm,
+                    xnxt_p_ynyt_norm > 0),
+                  (n_rand_v[0, 0], xnxt_p_ynyt_norm <= 0))
+
+_xu_2 = Piecewise(((xn * xt + yn * yt)[1, 0] / xnxt_p_ynyt_norm,
+                   xnxt_p_ynyt_norm > 0),
+                  (n_rand_v[1, 0], xnxt_p_ynyt_norm <= 0))
 
 
-lambda_1 = x_norm ** 2 + y_norm ** 2 - 2 * xnxt_p_ynyt_norm
-lambda_2 = x_norm ** 2 + y_norm ** 2 + 2 * xnxt_p_ynyt_norm
+
+u_1 = 0.5 * Matrix([1,
+                    -_xu_1,
+                    -_xu_2])
+
+u_2 = 0.5 * Matrix([1,
+                    _xu_1,
+                    _xu_2])
 
 
-u_1 = 0.5 * Matrix([1, - _xu_1, - _xu_2])
-u_2 = 0.5 * Matrix([1, _xu_1, _xu_2])
+lambda_1 = x_norm**2 + y_norm**2 - 2 * xnxt_p_ynyt_norm
+lambda_2 = x_norm**2 + y_norm**2 + 2 * xnxt_p_ynyt_norm
 
-phi_fb2 = x + y - (sqrt(Max(0,lambda_1)) * u_1 + sqrt(Max(0,lambda_2)) * u_2)
+phi_fb = x + y - (sqrt(lambda_1) * u_1 + sqrt(lambda_2) * u_2)
 
-#print phi_fb1
-#print phi_fb2
+FAC = phi_fb
 
-phi_fb = phi_fb2
+# ut_norm == 0
+# xnxt_p_ynyt_norm == 0
+# x_norm == 0
+# y_norm == 0
+# lambda_1 == 0
+# lambda_2 == 0
 
-phi2 =  phi_fb[0,0]
+A_ = phi_fb.jacobian(u)
+B_ = phi_fb.jacobian(r)
 
-phi31 = phi_fb[1,0]
+t = Symbol('t', positive=True, real=True)
 
-phi32 = phi_fb[2,0]
+from sympy.functions.elementary.piecewise import ExprCondPair
 
-u = Matrix([[un],[ut1],[ut2]])
 
-r = Matrix([[rn],[rt1],[rt2]])
 
-FAC = Matrix([[phi2],
-              [phi31],
-              [phi32]])
+def mlimit(expr, var, lim, dir=None):
+    import sage 
 
-A = Matrix([[diff(phi2,un), diff(phi2,ut1), diff(phi2, ut2)],
-            [diff(phi31,un), diff(phi31,ut1), diff(phi31, ut2)],
-            [diff(phi32,un), diff(phi32,ut1), diff(phi32, ut2)]])
+    if dir is None:
+        dir = sage.all.maple.right
+    return sage.all.maple('limit({0}, {1}={2}, {3})'.format(expr._sage_(),
+                                                            var, 
+                                                            lim, dir))._sage_()._sympy_()
 
-B = Matrix([[diff(phi2,rn), diff(phi2,rt1), diff(phi2, rt2)],
-            [diff(phi31,rn), diff(phi31,rt1), diff(phi31, rt2)],
-            [diff(phi32,rn), diff(phi32,rt1), diff(phi32, rt2)]])
+def piecewise_f(expr, f, i, j):
 
+    print i, j, f
+
+    p_expr = piecewise_fold(expr)
+
+    if hasattr(p_expr, 'is_Piecewise') and p_expr.is_Piecewise:
+        args = [(piecewise_f(e, f, i, j), c) for e, c in p_expr.args]
+
+        return Piecewise(*args)
+    else:
+
+        return f(p_expr)
+
+
+
+def utzero(e):
+    import sage
+
+    if hasattr(e, 'subs'):
+        xe = e.subs(ut1, t).subs(ut2, t)
+        return mlimit(xe, t, 0)
+#        return sage.all.limit(xe._sage_(), t=0, dir='+')._sympy_()
+    else:
+        return e
+
+def uzero(e):
+    import sage
+
+    if hasattr(e, 'subs'):
+        xe = e.subs(ut1, t).subs(ut2, t).subs(un, t)
+        return mlimit(xe, t, 0)
+#        return sage.all.limit(xe._sage_(), t=0, dir='+')._sympy_()
+    else:
+        return e
+
+def rzero(e):
+    import sage
+
+    if hasattr(e, 'subs'):
+        xe = e.subs(rt1, t).subs(rt2, t).subs(rn, t)
+        return mlimit(xe, t, 0)
+#        return sage.all.limit(xe._sage_(), t=0, dir='+')._sympy_()
+    else:
+        return e
+
+def xnxt_p_ynyt_zero(e):
+    import sage
+
+    if hasattr(e, 'subs'):
+        xe = e.subs(un, t).subs(rn, t).subs(ut1, t).subs(ut2, t).subs(rt1, t).subs(rt2, t)
+        
+        xxe = sage.all.maple.simplify(xe)
+
+        print xxe
+
+        return mlimit(xxe, t, 0)
+#        return sage.all.limit(xe._sage_(), t=0, dir='+')._sympy_()
+    else:
+        return e
+
+
+print piecewise_f(A_[1, 0], uzero, 1, 0)
+
+for i in range(0, 3):
+    for j in range(0, 3):
+        print i, j
+        piecewise_f(A_[i, j], utzero, i, j)
+        piecewise_f(A_[i, j], uzero, i, j)
+        piecewise_f(A_[i, j], xnxt_p_ynyt_zero, i, j)
+
+
+
+A = Matrix(3, 3, lambda i, j: 
+           Piecewise(
+                     (piecewise_f(A_[i, j], uzero, i, j),  x_norm<=0),
+                     (piecewise_f(A_[i, j], xnxt_p_ynyt_zero, i, j), And(xnxt_p_ynyt_norm<=0, x_norm>0)),
+                     (piecewise_f(A_[i, j], xnxt_p_ynyt_zero, i, j), And(lambda_1<=0, xnxt_p_ynyt_norm>0, x_norm>0)),
+                     (piecewise_f(A_[i, j], xnxt_p_ynyt_zero, i, j), And(lambda_2<=0, lambda_1>0, xnxt_p_ynyt_norm>0, x_norm>0)),
+                     (piecewise_f(A_[i, j], utzero, i, j), And(ut.norm()<=0,lambda_2>0, lambda_1>0, xnxt_p_ynyt_norm>0, x_norm>0)),
+                     (A_[i, j], And(ut.norm()>0, x_norm>0, xnxt_p_ynyt_norm>0, lambda_1>0, lambda_2>0))))
+
+
+B = Matrix(3, 3, lambda i, j: 
+           Piecewise((piecewise_f(B_[i, j], rzero, i, j),  y_norm<=0),
+                     (piecewise_f(B_[i, j], xnxt_p_ynyt_zero, i, j), xnxt_p_ynyt_norm<=0),
+                     (piecewise_f(B_[i, j], xnxt_p_ynyt_zero, i, j), lambda_1<=0),
+                     (piecewise_f(B_[i, j], xnxt_p_ynyt_zero, i, j), lambda_2<=0),
+                     (B_[i, j], And(y_norm>0, xnxt_p_ynyt_norm>0, lambda_1>0, lambda_2>0))))
+
+
+with open('A', 'w') as A_file:
+    pickle.dump(A, A_file)
+
+with open('B', 'w') as B_file:
+    pickle.dump(B, B_file)
 
 #
 # Toward Latex
@@ -190,7 +260,7 @@ B = Matrix([[diff(phi2,rn), diff(phi2,rt1), diff(phi2, rt2)],
 
 phi_2 = Symbol(r'\phi_2')
 phi_31 = Symbol(r'\phi_{3,T1}')
-phi_32 = Symbol(r'\phi_{3,T2}')
+phi_32 = Symbol(r'\phi_{3,T2}') 
 
 
 def map_matrix(fun,M):
@@ -213,18 +283,6 @@ def print_latex_value(name,value):
     print latex(with_latex_symbols(value))
     print latex(r'\end{align*}')
     print r'\paragraph{}'
-
-
-textU = with_latex_symbols(u)
-textR = with_latex_symbols(r)
-
-textA = Matrix([[diff(phi_2(U_N),U_N), diff(phi_2(U_T1),U_T1), diff(phi_2(U_T2),U_T2)],
-                [diff(phi_31(U_N),U_N), diff(phi_31(U_T1),U_T1), diff(phi_31(U_T2),U_T2)],
-                [diff(phi_32(U_N),U_N), diff(phi_32(U_T1),U_T1), diff(phi_32(U_T2),U_T2)]])
-
-textB = Matrix([[diff(phi_2(R_N),R_N), diff(phi_2(R_T1),R_T1), diff(phi_2(R_T2),R_T2)],
-                [diff(phi_31(R_N),R_N), diff(phi_31(R_T1),R_T1), diff(phi_31(R_T2),R_T2)],
-                [diff(phi_32(R_N),R_N), diff(phi_32(R_T1),R_T1), diff(phi_32(R_T2),R_T2)]])
 
 
 def resultFAC(i,j):
@@ -308,26 +366,43 @@ def dump_latex():
     print(r"\end{document}")
 
 
+
+
+
 if options.latex:
     dump_latex()
 
 ac_name = "frictionContact3D_FischerBurmeister"
 
+def change_var():
+    pass
+
 if options.ccode:
     def_fun(ac_name + "FABGenerated")
     Rnow = FAC.row_join(A).row_join(B)
-    dump_ccode(Rnow, array_format='fortran')
+
+    nrows, ncols = Rnow.shape
+
+    for i in range(0, nrows):
+        for j in range(0, ncols):
+            print '{'
+            dump_ccode(Rnow[i, j], array_format='fortran', offset=(i, j*nrows))
+            print '}'
     end_fun()
 
 if options.ccodefac:
     def_fun(ac_name + "FGenerated")
+
     dump_ccode(FAC, array_format='fortran')
+
     end_fun()
 
 
 if options.ccodeAB:
     def_fun(ac_name + "ABGenerated")
+
     dump_ccode(A.row_join(B), array_format='fortran')
+
     end_fun()
 
 
@@ -396,3 +471,6 @@ void {0}FunctionGenerated(
   }}
 }}
         """.format(ac_name))
+
+
+

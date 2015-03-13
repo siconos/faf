@@ -6,6 +6,7 @@
 
 from sympy import *
 from sympy.utilities.iterables import postorder_traversal
+from sympy.printing.ccode import CCodePrinter
 
 #
 # some dict operations
@@ -32,10 +33,12 @@ def append_list(d,k,l):
     else:
         d[k] = l
 
+
 #
 # add dependent conditions
 #
 def add_depend_conditions(var, expr, conds_var):
+
     for subtree in [ str(s) for s in postorder_traversal(expr) ]:
         if subtree in conds_var:
             append_list(conds_var, var, conds_var[subtree])
@@ -63,7 +66,7 @@ def conditions_dependencies(list_var, conds_var, conds):
     for var in [ str(v) for v in list_var ]:
         if var in conds_var:
             for lc in conds_var[var]:
-                print conds_var[var],lc
+                print(conds_var[var],lc)
     return from_conds, conds_ordered
 
 def dump_conditions(done, conds, from_conds, list_kconds, remove_conds, tab, nbops):
@@ -88,28 +91,28 @@ def dump_conditions(done, conds, from_conds, list_kconds, remove_conds, tab, nbo
         cond = tuple(lcond)
 
         if len(cond) == 1:
-            print tab + "if ({0})".format(local_ccode(nbops, cond[0]))
-            print tab + "{"
+            print(tab + "if ({0})".format(local_ccode(nbops, cond[0])))
+            print(tab + "{")
 
         else:
             if len(cond)>1:
                 s = tab + "if (({0}) ".format(local_ccode(nbops, cond[0]))
                 for c in cond[1:]:
-                    s = s + "&& ({0})".format(local_ccode(nbops, c))
-                    s = s + ")"
-                print s
-                print tab + "{"
+                    s += "&& ({0})".format(local_ccode(nbops, c))
+                s += ")"
+                print(s)
+                print(tab + "{")
 
         for iexpr in conds[icond]:
             assert not iexpr[1].is_Piecewise
-            print tab + tab + "{0}={1}; CHECK({0});".format(iexpr[0],local_ccode(nbops, iexpr[1]))
+            print(tab + tab + "{0}={1}; XCHECK({0});".format(iexpr[0],local_ccode(nbops, iexpr[1])))
 
         for _cond in cond:
             if _cond in from_conds:
                 dump_conditions(done, conds, from_conds, from_conds[_cond], [_cond], tab + "  ", nbops)
 
         if len(cond)>=1:
-            print tab + "};"
+            print(tab + "};")
 
 #
 # something = value in dump code
@@ -121,10 +124,9 @@ def set_var(var, expr, conds, conds_var, declared=None):
 
     iexpr = piecewise_fold(expr)
 
-    add_depend_conditions(var, iexpr, conds_var)
-
     if var in conds_var:
         iexpr = Piecewise(*[ (iexpr, c) for c in conds_var[var] ])
+
 
     if iexpr.is_Piecewise:
         for cond in iexpr.__getnewargs__():
@@ -200,12 +202,30 @@ def local_count_op(c, expr):
 
     return c+count
 
+class LocalCCodePrinter(CCodePrinter):
+    ''' we only change the way rational are output: do not force long double
+    temporary hack ...
+    '''
+
+    def __init__(self, settings={}):
+        CCodePrinter.__init__(self, settings)
+
+    def _print_Rational(self, expr):
+        p, q = int(expr.p), int(expr.q)
+        return '%d.0/%d.0' % (p, q)
+
+
 #
 # apply pow transformation
 #
 def local_ccode(count, expr):
 
-    return ccode(expr)
+    if hasattr(expr, 'is_random') and expr.is_random:
+        # (-1 1)
+        return '2*(rand() / RAND_MAX) - 1'
+
+
+    return LocalCCodePrinter().doprint(expr, None)
 #    if expr.is_Add:
 #        return '+'.join((local_ccode(count, e) for e in expr.args))
 
@@ -217,26 +237,35 @@ def local_ccode(count, expr):
 #
 # 2D output array layout can be c, fortran or i,j
 #
-def output_format(nrow,ncol,format):
-    if format=='fortran':
-        return lambda i,j: "{0}".format(i+j*nrow)
-    if format=='c':
-        return lambda i,j: "{0}".format(i*ncol+j)
-    if format=='ij':
-        return lambda i,j: "{0},{1}".format(i,j)
+def output_format(nrow, ncol, aformat, offset):
+
+    if aformat == 'fortran':
+        return lambda i, j: "{0}".format((i+offset[0])+(j+offset[1])*nrow)
+
+    if aformat == 'c':
+        return lambda i, j: "{0}".format((i+offset[0])*ncol+(j+offset[1]))
+
+    if aformat == 'ij':
+        return lambda i, j: "{0},{1}".format(i+offset[0], j+offset[1])
+
     assert(False)
 
+
+def dump_var(var, val):
+    print('  double {0}={1}; CHECK({0});'.format(var, val))
 
 #
 # dump c code output is a 2D array
 #
-def dump_ccode(expr, array_format='ij', result_open='result[', result_close=']'):
+def dump_ccode(expr, array_format='ij', result_open='result[', result_close=']', offset=(0,0)):
 
     # all conditions : key = assembled conditions, value = list of value expressions
     conds = dict()
 
     # always true init
     conds[True]=list()
+
+    conds["all"]=list()
 
     # variables conditions : key = variable, value = list of conditions
     conds_var = dict()
@@ -251,23 +280,36 @@ def dump_ccode(expr, array_format='ij', result_open='result[', result_close=']')
         return dump_ccode(Matrix([[expr]]),
                           array_format,
                           result_open,
-                          result_close)
+                          result_close,
+                          offset)
 
-    (w,g) = cse(expr)
+    (w, g) = cse(expr)
+
+    from_conds, conds_ordered = conditions_dependencies(list_var, conds_var, conds)
+
+    (nrow, ncol) = expr.shape
+    oformat = output_format(nrow, ncol, array_format, offset)
+
+    for i in range(nrow):
+        for j in range(ncol):
+            current_expr = piecewise_fold(g[0][ncol*i+j])
+            add_depend_conditions("{0}{1}{2}".format(result_open,oformat(i,j),result_close), current_expr, conds_var)
+
+    for sub in w:
+        var = str(sub[0])
+        add_depend_conditions(var, piecewise_fold(sub[1]), conds_var)
 
     for sub in w:
         set_var(str(sub[0]), piecewise_fold(sub[1]), conds, conds_var, declared)
 
     assert hasattr(expr, 'shape')
 
-    (nrow, ncol) = expr.shape
-    oformat = output_format(nrow, ncol, array_format)
+    
 
     for i in range(nrow):
         for j in range(ncol):
             current_expr = piecewise_fold(g[0][ncol*i+j])
             set_var("{0}{1}{2}".format(result_open,oformat(i,j),result_close), current_expr, conds, conds_var)
-
 
     none_dumped = dict()
     is_relational = dict()
@@ -280,37 +322,32 @@ def dump_ccode(expr, array_format='ij', result_open='result[', result_close=']')
                     if x[1] is not None:
                         is_relational[var] = x[1].is_Relational
 
-
         if val is None:
             if not var in none_dumped:
                 if var in is_relational and is_relational[var]:
-                    print "  int {0} = 0;".format(var)
+                    print("  int {0} = 0;".format(var))
                 else:
-                    print "  double {0} = NAN;".format(var)
+                    print("  double {0} = NAN;".format(var))
                 none_dumped[var] = True
 
         else:
             assert (not val.is_Piecewise)
             if not hasattr(val,"cond") and not hasattr(val, "lhs"):  # not Relational and not ExprCondPair
                 if var in declared:
-                    print "  double {0}={1}; CHECK({0});".format(var,local_ccode(nbops, val))
+                    print("  double {0}={1}; CHECK({0});".format(var,local_ccode(nbops, val)))
             else:
-                print     "  int    {0}={1};".format(var, local_ccode(nbops, val))
+                print("  int    {0}={1};".format(var, local_ccode(nbops, val)))
 
 
-    from_conds, conds_ordered = conditions_dependencies(list_var, conds_var, conds)
+   
 
     done = dict()
 
-
-
     dump_conditions(done, conds, from_conds, conds["all"], (), "  ", nbops)
-
-#    dump_conditions(done, conds, from_conds, list( set(list(conds))-set(list(from_conds))), (), "  ", nbops)
 
     for var,val in conds[True]:
         if val is not None:
             if var not in declared:
-                print "  {0}={1}; CHECK({0});".format(var,local_ccode(nbops, val))
+                print("  {0}={1}; XCHECK({0});".format(var,local_ccode(nbops, val)))
 
 #    print "  /* operations : {0} */".format(nbops[0])
