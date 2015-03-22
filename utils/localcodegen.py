@@ -18,6 +18,8 @@ def append(d,k,v):
         d[k] = list()
         d[k].append(v)
 
+
+
 class Is():
     """
     check type of an object x:
@@ -43,6 +45,52 @@ class SomeVars():
             self._counter += 1
             yield Symbol('{0}{1}'.format(self._name, self._counter))
 
+
+
+def flatten_piecewise(expr, upper_conds=None, conds=None, lconds=None):
+
+    if upper_conds is None:
+        upper_conds = []
+
+    if conds is None:
+        conds = dict()
+
+    if lconds is None:
+        lconds = []
+
+    p_expr = piecewise_fold(expr)
+
+    if p_expr.is_Piecewise:
+
+        for e, c in p_expr.args:
+            # O(n)
+            if c not in upper_conds:
+                current_conds = upper_conds + [c]
+
+                t_cc = tuple(current_conds)
+
+
+                if t_cc in conds:
+                    print p_expr
+                    print t_cc, e
+                    assert(False)
+
+                else:
+                    if not piecewise_fold(e).is_Piecewise:
+                        conds[t_cc] = e
+                        lconds.append(t_cc)
+                    else:
+                        flatten_piecewise(e, current_conds, conds, lconds)
+
+    if len(upper_conds) == 0:
+
+        if len(conds) > 0:
+            return Piecewise(*[(conds[k], And(*k)) for k in lconds])
+        else:
+            return p_expr
+
+    else:
+        return None
 
 
 class LocalCCodePrinter(CCodePrinter):
@@ -188,9 +236,13 @@ class LocalCCodePrinter(CCodePrinter):
     def doprint(self, expr, assign_to=None):
 
         # avoid bad (cond) ? (...) : (...) sequences
-        if Is(expr).Matrix:
+        if expr.is_Matrix:
+
             expr = Matrix(expr.shape[0], expr.shape[1],
-                          lambda i, j: piecewise_fold(expr[i, j]))
+                          lambda i, j: flatten_piecewise(expr[i, j]))
+
+        elif expr.is_Piecewise:
+            expr = flatten_piecewise(expr)
 
 
         # cse is meaningful only if assignment is specified
@@ -238,12 +290,50 @@ class LocalCCodePrinter(CCodePrinter):
 
     def _print_Assignment(self, expr):
 
-        comment = '// Assignment {0}={1}\n'.format(expr.lhs, expr.rhs)
+        comment = '/* Assignment {0}={1} */\n'.format(expr.lhs, expr.rhs)
 
         if not expr.rhs.is_Piecewise:
 
             if expr.rhs.is_Matrix:
-                return super(LocalCCodePrinter, self)._print_Assignment(expr)
+
+                clines = dict()
+                conds = []
+
+                for i in range(expr.rhs.shape[0]):
+                    for j in range(expr.rhs.shape[1]):
+                        elem = piecewise_fold(expr.rhs[i, j])
+
+                        if elem.is_Piecewise:
+                            for e, c in elem.args:
+                                if c not in clines:
+                                    clines[c] = []
+                                    conds.append(c)
+                                    clines[c].append(e)
+
+
+                lines = []
+                if len(conds)>0:
+                    for c in conds:
+                        lines.append(self._print_declarations([c]))
+                        lines.append(self._print_declarations(clines[c]))
+                        lines.append(self._print_affectations([c]))
+
+                    lines.append('if ({0})'.format(conds[0]))
+                    lines.append('{')
+                    self._inside_condition = True
+                    lines.append(self._print_affectations(clines[conds[0]]))
+                    self._inside_condition = False
+                    lines.append('}')
+                    for c in conds[1:]:
+                        lines.append('else if ({0})'.format(c))
+                        lines.append('{')
+                        self._inside_condition = True
+                        lines.append(self._print_affectations(clines[c]))
+                        self._inside_condition = False
+                        lines.append('}')
+
+
+                return '\n'.join(lines) + super(LocalCCodePrinter, self)._print_Assignment(expr)
 
             else:
                 return comment + self._print_declarations([expr.rhs]) +\
@@ -252,9 +342,9 @@ class LocalCCodePrinter(CCodePrinter):
 
         else:
 
-         conditions = [c for _, c in expr.rhs.args]
+            conditions = [c for _, c in expr.rhs.args]
 
-         return comment + self._print_declarations(conditions) +\
+            return comment + self._print_declarations(conditions) +\
                 self._print_affectations(conditions) +\
                 super(LocalCCodePrinter, self)._print_Assignment(expr)
 
@@ -274,10 +364,10 @@ class LocalCCodePrinter(CCodePrinter):
         PREC = precedence(expr)
 
         if expr.exp == -1:
-            return '1.0/(assert(NOT_ZERO({0})), {0})'.format(self.parenthesize(expr.base, PREC))
+            return '1.0/(assert(IS_NOT_ZERO({0})), {0})'.format(self.parenthesize(expr.base, PREC))
 
         elif expr.exp == 0.5:
-            return '(assert(POSITIVE({0})), sqrt({0}))'.format(self._print(expr.base))
+            return '(assert(IS_POSITIVE({0})), sqrt({0}))'.format(self._print(expr.base))
 
         elif expr.exp == 2:
 
@@ -285,7 +375,7 @@ class LocalCCodePrinter(CCodePrinter):
 
         elif expr.exp < 1 and expr.exp > -1:
 
-            return '(assert(POSITIVE({0}), pow({0}, {1})'.format(self._print(expr.base),
+            return '(assert(IS_POSITIVE({0})), pow({0}, {1}))'.format(self._print(expr.base),
                                           self._print(expr.exp))
 
         else:
@@ -336,11 +426,11 @@ class LocalCCodePrinter(CCodePrinter):
             return sign + '*'.join(a_str)
 
         elif len(b) == 1:
-            assert_p = '(assert(NOT_ZERO({0})), '.format(b_str[0])
+            assert_p = '(assert(IS_NOT_ZERO({0})), '.format(b_str[0])
 
             return assert_p + sign + '*'.join(a_str) + "/" + b_str[0] + ")"
         else:
-            assert_p = '(assert(NOT_ZERO({0})),'.format('*'.join(b_str))
+            assert_p = '(assert(IS_NOT_ZERO({0})),'.format('*'.join(b_str))
             return assert_p + sign + '*'.join(a_str) + "/(%s)" % '*'.join(b_str) + ")"
 
     def _print_Piecewise(self, expr):

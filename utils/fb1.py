@@ -225,7 +225,7 @@ def rzero(e):
 def xnxt_p_ynyt_zero(e):
 
     if hasattr(e, 'subs'):
-        xe = e.subs(ut1, t).subs(ut2, t).subs(rt1, t).subs(rt2, t)
+        xe = e.subs(ut1, t).subs(ut2, t).subs(un, t).subs(rt1, t).subs(rt2, t).subs(rn, t)
         #return limit(xe._sage_(), t=0, dir='+')._sympy_()
         return mlimit(xe, t, 0)
 

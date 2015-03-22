@@ -3,7 +3,7 @@
 # - dump Piecewise function with conditions factorization
 
 from sympy import *
-from localcodegen import set_var, piecewise_fold
+from localcodegenold import set_var, piecewise_fold
 
 def print_latex_by_conditions(expr, result):
     conds = dict()
