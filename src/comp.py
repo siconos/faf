@@ -40,6 +40,14 @@ import sys
 import hashlib
 import shlex
 
+#print os.path.join(os.path.dirname(sys.argv[0]), 'external/build')
+
+sys.path.append(os.path.join(os.path.dirname(sys.argv[0]), 'external/build'))
+
+try:
+    import BogusInterface
+except:
+    pass
 #logger = multiprocessing.log_to_stderr()
 #logger.setLevel(logging.INFO)
 
@@ -245,7 +253,7 @@ for o, a in opts:
 
     elif o == '--files':
 
-        files = split(a,',')
+        files = split(a, ',')
 
         for f in files:
 
@@ -254,8 +262,6 @@ for o, a in opts:
             else:
                 if os.path.exists('{0}.hdf5'.format(f)):
                     user_filenames += ['{0}.hdf5'.format(f)]
-
-
 
 from ctypes import cdll, c_float, c_longlong, byref
 try:
@@ -363,7 +369,22 @@ def _numberOfInvolvedDS(f):
             r = np.nan
     return r
 
-    
+def _dimension(f):
+    with h5py.File(f, 'r') as fclib_file:
+        try:
+            r = fclib_file['fclib_local']['spacedim'][0]
+        except:
+            r = np.nan
+    return r
+
+def _numberOfContacts(f):
+    with h5py.File(f, 'r') as fclib_file:
+        try:
+            r = fclib_file['fclib_local']['W']['m'][0]
+        except:
+            r = np.nan
+    return r
+
 def _cond_problem(filename):
     problem = read_fclib_format(filename)
     return float(problem.numberOfContacts * 3) / float(numberOfInvolvedDS(filename) * 6)
@@ -372,6 +393,10 @@ def _cond_problem(filename):
 read_fclib_format = Memoize(_read_fclib_format)
 
 numberOfInvolvedDS = Memoize(_numberOfInvolvedDS)
+
+numberOfContacts = Memoize(_numberOfContacts)
+
+dimension = Memoize(_dimension)
 
 cond_problem = Memoize(_cond_problem)
 
@@ -411,7 +436,12 @@ class Caller():
     def __call__(self, tpl):
 
         solver, filename = tpl
-        problem = read_fclib_format(filename)
+        if hasattr(solver, 'read_fclib_format'):
+            sproblem = solver.read_fclib_format(filename)
+            problem = read_fclib_format(filename)
+        else:
+            problem = read_fclib_format(filename)
+            sproblem = problem
 
         if (output_dat) :
             # write a dat file to create a test for Siconos/Numerics
@@ -421,7 +451,7 @@ class Caller():
 
 
 
-        pfilename = os.path.splitext(filename)[0]
+        pfilename = os.path.basename(os.path.splitext(filename)[0])
 
         output_filename = '{0}-{1}.hdf5'.format(solver.name(),
                                                 pfilename)
@@ -432,11 +462,11 @@ class Caller():
                 pass
 
         try:
-            self._internal_call(solver, problem, filename, pfilename, output_filename)
+            self._internal_call(solver, sproblem, filename, pfilename, output_filename)
 
         except Exception as e:
 
-            print e
+            print '--->',e
 
             try:
                os.remove(output_filename)
@@ -461,7 +491,7 @@ class Caller():
                 mflops = np.nan
 
                 attrs.create('filename', filename)
-                attrs.create('nc', problem.numberOfContacts)
+                attrs.create('nc', numberOfContacts(filename))
                 attrs.create('nds', numberOfInvolvedDS(filename))
                 attrs.create('cond_nc', cond_problem(filename))
                 attrs.create('digest', digest)
@@ -474,7 +504,7 @@ class Caller():
                 attrs.create('flpops', flpops)
                 attrs.create('mflops', mflops)
 
-                print(filename, problem.numberOfContacts, numberOfInvolvedDS(filename), cond_problem(filename), solver.name(), info, iter, err,
+                print(filename, numberOfContacts(filename), numberOfInvolvedDS(filename), cond_problem(filename), solver.name(), info, iter, err,
                       time_s, real_time, proc_time,
                       flpops, mflops)
 
@@ -489,15 +519,18 @@ class Caller():
     @timeout(utimeout)
     def _internal_call(self, solver, problem, filename, pfilename, output_filename):
 
+
         with h5py.File(output_filename, 'w') as output:
+
 
             data = output.create_group('data')
             comp_data = data.create_group('comp')
             solver_data = comp_data.create_group(solver.name())
+
             solver_problem_data = solver_data.create_group(pfilename)
             attrs = solver_problem_data.attrs
 
-            psize = problem.dimension * problem.numberOfContacts
+            psize = dimension(filename) * numberOfContacts(filename)
 
             info = None
             iter = None
@@ -510,17 +543,18 @@ class Caller():
 
             digest = hashlib.sha256(open(filename, 'rb').read()).digest()
 
-            solver_problem_data.create_dataset('reactions',
-                                               (0, psize),
-                                               maxshape=(None, psize))
+            if psize is not None:
+                solver_problem_data.create_dataset('reactions',
+                                                   (0, psize),
+                                                   maxshape=(None, psize))
 
-            solver_problem_data.create_dataset('velocities',
-                                               (0, psize),
-                                               maxshape=(None, psize))
+                solver_problem_data.create_dataset('velocities',
+                                                   (0, psize),
+                                                   maxshape=(None, psize))
 
-            solver_problem_data.create_dataset('errors',
-                                               (0, 1),
-                                               maxshape=(None, 1))
+                solver_problem_data.create_dataset('errors',
+                                                   (0, 1),
+                                                   maxshape=(None, 1))
 
             solver_problem_callback = \
               SolverCallback(output, solver_problem_data)
@@ -554,7 +588,7 @@ class Caller():
                 mflops = np.nan
 
             attrs.create('filename', filename)
-            attrs.create('nc', problem.numberOfContacts)
+            attrs.create('nc', numberOfContacts(filename))
             attrs.create('nds', numberOfInvolvedDS(filename))
             attrs.create('cond_nc', cond_problem(filename))
             attrs.create('digest', digest)
@@ -566,9 +600,9 @@ class Caller():
             attrs.create('proc_time', proc_time)
             attrs.create('flpops', flpops)
             attrs.create('mflops', mflops)
-
+                            
             # filename, solver name, revision svn, parameters, nb iter, err
-            print(filename, problem.numberOfContacts, numberOfInvolvedDS(filename), cond_problem(filename), solver.name(), info, iter, err,
+            print(filename, numberOfContacts(filename), numberOfInvolvedDS(filename), cond_problem(filename), solver.name(), info, iter, err,
                   time_s, real_time, proc_time,
                   flpops, mflops)
 
@@ -626,6 +660,7 @@ class SiconosSolver():
         mflops = c_float()
         init_flop()
         info = self._API(problem, reactions, velocities, self._SO)
+
         get_flop(real_time, proc_time, flpops, mflops)
         return (info, self._get(self._SO.iparam, self._iparam_iter),
                 self._get(self._SO.dparam, self._dparam_err),
@@ -651,6 +686,15 @@ class SiconosSolver():
     def name(self):
         return self._name
 
+class BogusSolver(SiconosSolver):
+    def read_fclib_format(self, filename):
+        return BogusInterface.FCLib.fclib_read_local(filename)
+
+def wrap_bogus_solve(problem, reactions, velocities, SO):
+    return BogusInterface.solve_fclib(problem, SO)
+
+bogus = BogusSolver(name="Bogus", API=wrap_bogus_solve, TAG=N.SICONOS_FRICTION_3D_LOCALFB, iparam_iter=1, dparam_err=1, maxiter=maxiter, precision=precision)
+
 
 class SiconosHybridSolver(SiconosSolver):
 
@@ -659,7 +703,7 @@ class SiconosHybridSolver(SiconosSolver):
         with h5py.File('comp.hdf5', 'r') as comp_file:
             return extern_guess(pfilename, 'NonsmoothGaussSeidel', 1, comp_file)
 
-        
+
 class SiconosWrappedSolver(SiconosSolver):
     def __call__(self, problem, reactions, velocities):
         return self._API(problem, reactions, velocities, self._SO)
@@ -760,7 +804,7 @@ Prox3 = SiconosSolver(name="ProximalFixedPoint3",
                      dparam_err=1,
                      maxiter=maxiter, precision=precision)
 
-Prox3.SolverOptions().dparam[4]=1.1 # sigma 
+Prox3.SolverOptions().dparam[4]=1.1 # sigma
 Prox3.SolverOptions().dparam[5]=2.0 # nu
 
 Prox3.SolverOptions().internalSolvers.iparam[3] = 1000000
@@ -785,7 +829,7 @@ Prox5 = SiconosSolver(name="ProximalFixedPoint5",
                      dparam_err=1,
                      maxiter=maxiter, precision=precision)
 
-Prox5.SolverOptions().dparam[4]=1000.0 # sigma 
+Prox5.SolverOptions().dparam[4]=1000.0 # sigma
 Prox5.SolverOptions().dparam[5]=1.0 # nu
 
 Prox5.SolverOptions().internalSolvers.iparam[3] = 1000000
@@ -836,8 +880,8 @@ def fc3d_localac_r(problem, reactions, velocities, _SO):
     localac_wrapped.SolverOptions().dparam[3] = SO.dparam[3]
     return localac_wrapped(problem, reactions, velocities)
 
-# flop measure only on localac    
-localacr = SiconosWrappedSolver(name="LocalacR", 
+# flop measure only on localac
+localacr = SiconosWrappedSolver(name="LocalacR",
                                 API=fc3d_localac_r,
                                 TAG=N.SICONOS_FRICTION_3D_LOCALAC,
                                 iparam_iter=1,
@@ -867,6 +911,7 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
                                      maxiter=maxiter, precision=precision)
 
 
+
 # check for correct flop
 #def pipo(*args,**kwargs):
 #    a=1.
@@ -889,14 +934,14 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 
 
 all_solvers = [nsgs, snsgs, TrescaFixedPoint, Prox, Prox2, Prox3, Prox4, Prox5, localac, localfb, localacr, DeSaxceFixedPoint,
-               VIFixedPointProjection, VIExtraGrad]
+               VIFixedPointProjection, VIExtraGrad, bogus]
 
 
 if user_solvers == []:
     solvers = all_solvers
 else:
     solvers = filter(lambda s: s._name in user_solvers, all_solvers)
-    for solver in solvers : print solver.name()
+#    for solver in solvers : print solver.name()
 
 
 
@@ -980,10 +1025,12 @@ caller = Caller()
 def collect(tpl):
 
     solver, filename = tpl
-    pfilename = os.path.splitext(filename)[0]
-    if os.path.exists(filename):
+
+    pfilename = os.path.basename(os.path.splitext(filename)[0])
+    results_filename = '{0}-{1}.hdf5'.format(solver.name(),pfilename)
+    if os.path.exists(results_filename) and not os.stat(results_filename).st_size == 0:
         try:
-            check_call(['h5copy','-p','-i{0}-{1}.hdf5'.format(solver.name(),pfilename),
+            check_call(['h5copy','-p','-i', results_filename,
                         '-ocomp.hdf5','-s/data/comp/{0}/{1}'.format(solver.name(),pfilename),
                         '-d/data/comp/{0}/{1}'.format(solver.name(),pfilename)])
             if not keep_files:
@@ -1032,7 +1079,7 @@ if __name__ == '__main__':
 
             # 1 n_problems
             n_problems = 0
-            
+
             for solver in solvers:
                 solver_name=solver.name()
                 if solver_name in comp_data :
@@ -1040,7 +1087,7 @@ if __name__ == '__main__':
                                                    random_sample_proba,
                                                    max_problems, cond_nc)
                     n_problems = max(n_problems, len(filenames))
-                    
+
             # 2 measures & min_measure
 
             for solver in solvers:
@@ -1119,7 +1166,7 @@ if __name__ == '__main__':
                 write_report(rhos,'rhos.txt')
                 write_report(solver_r,'solver_r.txt')
 
-                
+
                 with open('profile.gp','w') as gp:
                     #  all_rhos = [ domain ] + [ rhos[solver_name] for solver_name in comp_data ]
                     all_rhos = [ domain ] + [ rhos[solver.name()] for solver in filter(lambda s: s._name in comp_data, solvers) ]
@@ -1147,10 +1194,10 @@ if __name__ == '__main__':
                         gp.write('set xlabel \'$\\tau$ ({0}) (logscale)\' \n'.format(measure_name))
                     else:
                         gp.write('set xlabel \'$\\tau$ ({0})\' \n'.format(measure_name))
-                                           
+
                     #gp.write('set title \'{0}\'\n'.format(filename.partition('-')[0]));
                     gp.write('plot ')
-                    gp.write(','.join(['resultfile using 1:{0} t "{1}" w l'.format(index + 2, solver.name()) 
+                    gp.write(','.join(['resultfile using 1:{0} t "{1}" w l'.format(index + 2, solver.name())
                                        for index, solver in enumerate(filter(lambda s: s._name in comp_data, solvers)) ]))
                 # all_rhos = [ rhos[solver_name] for solver_name in comp_data ]
                 # g.plot(*all_rhos)
@@ -1164,7 +1211,7 @@ if __name__ == '__main__':
                 solver_name=solver.name()
                 if logscale:
                     xscale('log')
-                    
+
                 if solver_name in comp_data :
                     plot(domain, rhos[solver_name], label=solver_name)
                     ylim(0, 1.0001)
@@ -1261,7 +1308,7 @@ if __name__ == '__main__':
                     gp.write('min_ncond = min; max_ncond = max\n')
                     gp.write('\n')
                     gp.write('\n')
-                    
+
                     gp.write('term_choice_tikz=1\n')
                     gp.write('if (term_choice_tikz == 1) \\\n')
                     gp.write('set term tikz standalone monochrome  size 5in,3in font \'\\small\\sf\';  \\\n')
@@ -1288,39 +1335,39 @@ if __name__ == '__main__':
                     gp.write('numberofbox=50\n')
                     gp.write('print \'max_nc =\', max_nc,\'min_nc =\', min_nc \n')
                     gp.write('binwidth = (max_nc-min_nc)/numberofbox\n')
-                    gp.write('set boxwidth binwidth\n')                     
-                   
+                    gp.write('set boxwidth binwidth\n')
+
                     gp.write('print \'binwidth =\', binwidth \n')
-                    
+
                     gp.write('set xlabel \'number of contacts\' offset 0,1.2 \n')
                     #gp.write('plot resultfile u (bin($1, binwidth)):(1.0) smooth freq w boxes title \'number of contacts\'  \n')
                     gp.write('plot resultfile u (bin($1, binwidth)):(1.0) smooth freq w boxes notitle  \n')
                     gp.write('\n')
-                    
+
                     gp.write('binwidth = (max_ndof-min_ndof)/numberofbox\n')
                     gp.write('print \'binwidth =\', binwidth \n')
- 
-                    gp.write('set boxwidth binwidth\n')                     
+
+                    gp.write('set boxwidth binwidth\n')
                     gp.write('set origin 0.0,winheight*1.0*trans+heightoff\n')
- 
+
                     gp.write('set xlabel \'number of degrees of freedom \' offset 0,1.2 \n')
-                    
+
                     #gp.write('plot resultfile u (bin($2, binwidth)):(1.0) smooth freq w boxes title  \'number of degrees of freedom \' \n')
                     gp.write('plot resultfile u (bin($2, binwidth)):(1.0) smooth freq w boxes notitle \n')
                     gp.write('\n')
-                    
+
                     gp.write('set origin 0.0,winheight*0.0+heightoff\n')
                     gp.write('binwidth = (max_ncond-min_ncond)/numberofbox\n')
                     gp.write('print \'binwidth =\', binwidth \n')
-                    
-                    gp.write('set boxwidth binwidth\n')                    
+
+                    gp.write('set boxwidth binwidth\n')
                     gp.write('set xlabel \'ratio number of contacts unknowns/number of degrees of freedom\' offset 0,1.2 \n')
                     #gp.write('plot resultfile u (bin($3, binwidth)):(1.0) smooth freq w boxes title \'ratio number of contacts unknowns/number of degrees of freedom\' \n')
                     gp.write('plot resultfile u (bin($3, binwidth)):(1.0) smooth freq w boxes notitle \n')
 
-                    
 
-                    #gp.write(','.join(['resultfile using 1:{0} t "{1}" w l'.format(index + 2, solver.name()) 
+
+                    #gp.write(','.join(['resultfile using 1:{0} t "{1}" w l'.format(index + 2, solver.name())
                     #                    for index, solver in enumerate(filter(lambda s: s._name in comp_data, solvers)) ]))
                 # all_rhos = [ rhos[solver_name] for solver_name in comp_data ]
                 # g.plot(*all_rhos)
