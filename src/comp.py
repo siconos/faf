@@ -693,7 +693,21 @@ class BogusSolver(SiconosSolver):
 def wrap_bogus_solve(problem, reactions, velocities, SO):
     return BogusInterface.solve_fclib(problem, SO)
 
-bogus = BogusSolver(name="Bogus", API=wrap_bogus_solve, TAG=N.SICONOS_FRICTION_3D_LOCALFB, iparam_iter=1, dparam_err=1, maxiter=maxiter, precision=precision)
+bogusPureNewton = BogusSolver(name="BogusPureNewton", API=wrap_bogus_solve, TAG=N.SICONOS_FRICTION_3D_LOCALFB, iparam_iter=1, dparam_err=1, maxiter=maxiter, precision=precision)
+bogusPureNewton.SolverOptions().iparam[4]=0
+
+
+bogusPureEnumerative = BogusSolver(name="BogusPureEnumerative", API=wrap_bogus_solve, TAG=N.SICONOS_FRICTION_3D_LOCALFB, iparam_iter=1, dparam_err=1, maxiter=maxiter, precision=precision)
+bogusPureEnumerative.SolverOptions().iparam[4]=1
+
+
+bogusHybrid = BogusSolver(name="BogusHybrid", API=wrap_bogus_solve, TAG=N.SICONOS_FRICTION_3D_LOCALFB, iparam_iter=1, dparam_err=1, maxiter=maxiter, precision=precision)
+bogusHybrid.SolverOptions().iparam[4]=2
+
+
+bogusRevHybrid = BogusSolver(name="BogusRevHybrid", API=wrap_bogus_solve, TAG=N.SICONOS_FRICTION_3D_LOCALFB, iparam_iter=1, dparam_err=1, maxiter=maxiter, precision=precision)
+bogusRevHybrid.SolverOptions().iparam[4]=3
+
 
 
 class SiconosHybridSolver(SiconosSolver):
@@ -934,16 +948,13 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 
 
 all_solvers = [nsgs, snsgs, TrescaFixedPoint, Prox, Prox2, Prox3, Prox4, Prox5, localac, localfb, localacr, DeSaxceFixedPoint,
-               VIFixedPointProjection, VIExtraGrad, bogus]
+               VIFixedPointProjection, VIExtraGrad, bogusPureEnumerative, bogusPureNewton, bogusHybrid, bogusRevHybrid]
 
 
 if user_solvers == []:
     solvers = all_solvers
 else:
-    solvers = filter(lambda s: s._name in user_solvers, all_solvers)
-#    for solver in solvers : print solver.name()
-
-
+    solvers = filter(lambda s: any(us in s._name for us in user_solvers), all_solvers)
 
 
 def is_fclib_file(filename):
