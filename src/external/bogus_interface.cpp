@@ -12,12 +12,16 @@
 #include <Core/BlockSolvers/GaussSeidel.impl.hpp>
 #include <Interfaces/FrictionProblem.hpp>
 #include <Interfaces/FrictionProblem.impl.hpp>
+#include <Extra/SOC/FischerBurmeister.hpp>
 #include <Extra/SecondOrder.fwd.hpp>
 #include <iostream>
 #include <string>
 #include <fstream>
 #include <sys/stat.h>
 
+#include <FrictionContactProblem.h>
+#include <fclib_interface.h>
+#include <FrictionContact3D_localFischerBurmeister.h>
 
 /* This is for a switch over bogus strategies : PureNewton,
  * PureEnumerative, Hybrid, RevHybrid (default for coulomb
@@ -74,8 +78,6 @@ namespace bogus {
 
 
 }
-//#define USE_PG_FOR_CADOUX
-
 
 static const char* g_meth  = 0;
 
@@ -93,7 +95,11 @@ template< unsigned Dimension, bogus::local_soc_solver::Strategy Strat, typename 
 static double solve( const fclib_local* problem, const Eigen::SparseMatrixBase< EigenDerived >& ei_W,
                      Eigen::VectorXd &r, Eigen::VectorXd &u, const bool useCadoux, SolverOptions* SO )
 {
+
+  FrictionContactProblem* numerics_problem = from_fclib_local((fclib_local *)problem);
+
   double tol = SO->dparam[0];
+  double miter = SO->iparam[0];
 
 	bogus::DualFrictionProblemInterf< Dimension, Strat > dual ;
 	bogus::convert( ei_W, dual.W, Dimension, Dimension ) ;
@@ -107,12 +113,13 @@ static double solve( const fclib_local* problem, const Eigen::SparseMatrixBase< 
 	typename bogus::DualFrictionProblem< Dimension >::GaussSeidelType gs ;
 	gs.setTol( tol ) ;
   gs.setEvalEvery( 1 ) ;
-	gs.setAutoRegularization( 1.e-3 ) ;
+	gs.setAutoRegularization( -1 ) ;
 
 	bogus::Signal< unsigned, double > callback ;
 	callback.connect( &ackCurrentResidual );
 
 	double res = -1 ;
+  double fclib_res = -1;
 
 	if( useCadoux )
 	{
@@ -129,20 +136,72 @@ static double solve( const fclib_local* problem, const Eigen::SparseMatrixBase< 
 
 	} else {
 		g_meth = "GS" ;
-		gs.setMaxIters( 1.e5 );
+		gs.setMaxIters( miter );
 		gs.callback().connect( callback );
 
- 		res = dual.xsolveWith( gs, r.data() ) ;
+    {
+
+      fclib_solution sol;
+      sol.v = NULL;
+      sol.u = u.data();
+      sol.r = r.data() ;
+      sol.l = NULL ;
+
+      fclib_res = fclib_merit_local( (fclib_local *)problem, MERIT_1, &sol );
+
+      std::cout << " => .. FCLib Merit1: " << fclib_res << std::endl;
+
+      FrictionContactProblem* numerics_problem = from_fclib_local((fclib_local *)problem);
+
+      double fb_error[1];
+      frictionContact3D_FischerBurmeister_compute_error(numerics_problem, r.data(), u.data(), tol, SO, fb_error);
+
+      std::cout << " => .. Fischer norm: " << fb_error[0] <<std::endl;
+    }
+
+    bool again = true;
+    while(again)
+    {
+      res = dual.xsolveWith( gs, r.data() ) ;
+
+      u = dual.W * r + dual.b ;
+
+      fclib_solution sol;
+      sol.v = NULL;
+      sol.u = u.data();
+      sol.r = r.data() ;
+      sol.l = NULL ;
+
+      fclib_res = fclib_merit_local( (fclib_local *)problem, MERIT_1, &sol );
+
+      std::cout << " => .. FCLib Merit1: " << fclib_res << std::endl;
+
+      double fb_error[1];
+      frictionContact3D_FischerBurmeister_compute_error(numerics_problem, r.data(), u.data(), tol, SO, fb_error);
+
+      std::cout << " => .. Fischer norm: " << fb_error[0] <<std::endl;
+
+      if (fclib_res > tol)
+      {
+        again = true;
+        gs.setMaxIters (1000000);
+        gs.setTol(res/10);
+      }
+      else
+      {
+        again = false;
+      }
+    }
 	}
 
-	u = dual.W * r + dual.b ;
-
-  SO->dparam[1] = g_gs_err;
+  SO->dparam[1] = fclib_res;
   SO->iparam[1] = g_gs_iter;
-	return res ;
+
+  freeFrictionContactProblem(numerics_problem);
+	return fclib_res ;
 }
 
-int solve_fclib( const fclib_local* problem, SolverOptions* SO )
+int solve_fclib( const fclib_local* problem, double* reactions, double* velocities, SolverOptions* SO )
 {
 
   double tolerance = SO->dparam[0];
@@ -202,7 +261,9 @@ int solve_fclib( const fclib_local* problem, SolverOptions* SO )
 
 				double res = -1. ;
 				Eigen::VectorXd r, u ;
-				r.setZero( problem->W->n ) ;
+
+        r = Eigen::VectorXd::Map( reactions, problem->W->n ) ;
+        u = Eigen::VectorXd::Map( velocities, problem->W->n ) ;
 
         switch (strategy)
         {
@@ -245,9 +306,72 @@ int solve_fclib( const fclib_local* problem, SolverOptions* SO )
 
         }
 
+//        memcpy(reactions, r.data(), problem->W->n);
+//        memcpy(velocities, u.data(), problem->W->n);
+
+        fclib_solution sol ;
+				sol.v = NULL ;
+				sol.u = u.data();
+				sol.r = r.data() ;
+				sol.l = NULL ;
+        std::cout << " => .. FCLib Merit1: " << fclib_merit_local( (fclib_local *)problem, MERIT_1, &sol ) << std::endl ;
         return res >= tolerance;
 
       }
     }
   }
+}
+
+
+void compute_fb(double *reactions, double *velocities, double mu, double *result)
+{
+	Eigen::Matrix<double,3,1> x, y, r ;
+  x = Eigen::Matrix<double,3,1>::Map( reactions, 3 ) ;
+  y = Eigen::Matrix<double,3,1>::Map( velocities, 3 ) ;
+
+  bogus::FischerBurmeister< 3, double, true >::compute(mu, x, y, r);
+
+  result[0] = r[0];
+  result[1] = r[1];
+  result[2] = r[2];
+}
+
+
+void compute_jfb(double *reactions, double *velocities, double mu, double *fb,
+                 double *dfb_dr, double *dfb_dv)
+{
+  typedef bogus::FischerBurmeister< 3, double, true > FB;
+
+	Eigen::Matrix<double,3,1> x, y, f;
+  Eigen::Matrix<double,3,3> dfdx, dfdy;
+
+  x = Eigen::Matrix<double,3,1>::Map( reactions, 3 ) ;
+  y = Eigen::Matrix<double,3,1>::Map( velocities, 3 ) ;
+
+  FB::Traits::Vector yt ( y );
+	FB::Traits::np( yt ) += mu * FB::Traits::tp( y ).norm() ;
+
+  FB::BaseFunction::computeJacobian(mu, x, yt, f,
+                                    dfdx, dfdy);
+
+  FB::Traits::tc( dfdy ).noalias() +=
+    FB::Traits::nc( dfdy ) *  ( mu / FB::Traits::tp( y ).norm() ) * FB::Traits::tp( y ).transpose() ;
+
+  memcpy(fb, f.data(), 3*sizeof(double));
+  memcpy(dfb_dr, dfdx.data(), 9*sizeof(double));
+  memcpy(dfb_dv, dfdy.data(), 9*sizeof(double));
+}
+
+double norm_fb(double *reaction, double *velocity, double mu)
+{
+  typedef bogus::DualFrictionProblemInterf< 3u, bogus::local_soc_solver::Hybrid >::CoulombLawType CL;
+
+  Eigen::Matrix<double,3,1> u, r;
+
+  u = Eigen::Matrix<double,3,1>::Map ( velocity, 3 );
+  r = Eigen::Matrix<double,3,1>::Map ( reaction, 3 );
+
+  CL soclaw(1, &mu);
+
+  return soclaw.eval(0, u, r);
 }

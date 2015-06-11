@@ -9,7 +9,7 @@ import numpy as np
 import random
 import Siconos.Numerics as N
 N.setNumericsVerbose(0)
-#import Siconos.FCLib as FCL
+import Siconos.FCLib as FCL
 
 from scipy.sparse import csr_matrix
 
@@ -114,7 +114,7 @@ def extern_guess(problem_filename, solver_name, iteration, h5file):
 # estimate of condition number and norm from lsmr
 # http://www.stanford.edu/group/SOL/software/lsmr/LSMR-SISC-2011.pdf
 def _norm_cond(problem_filename):
-    problem = read_fclib_format(problem_filename)
+    problem = read_fclib_format(problem_filename)[1]
     A = csr_matrix(N.SBMtoSparse(problem.M)[1])
     r = lsmr(A, np.ones([A.shape[0], 1]))  # solve Ax = 1
     svd = svds(A)[1]
@@ -321,32 +321,37 @@ class RunableProcessing(multiprocessing.Process):
 
 
 def timeout(seconds, force_kill=True):
-    def wrapper(function):
-        def inner(*args, **kwargs):
-            now = time.time()
-            proc = RunableProcessing(function, *args, **kwargs)
-            proc.start()
-            proc.join(seconds)
-            if proc.is_alive():
-                if force_kill:
+    if seconds==0:
+        def wrapper(function):
+            return function
+        return wrapper
+    else:
+        def wrapper(function):
+            def inner(*args, **kwargs):
+                now = time.time()
+                proc = RunableProcessing(function, *args, **kwargs)
+                proc.start()
+                proc.join(seconds)
+                if proc.is_alive():
+                    if force_kill:
+                        proc.terminate()
+                    runtime = int(time.time() - now)
+                    raise TimeoutException('timed out after {0} seconds'.format(runtime))
+                if not proc.done():
                     proc.terminate()
-                runtime = int(time.time() - now)
-                raise TimeoutException('timed out after {0} seconds'.format(runtime))
-            if not proc.done():
-                proc.terminate()
-            assert proc.done()
-            success, result = proc.result()
-            if success:
-                #return time.time() - now, result
-                return result
-            else:
-                #raise time.time() - now, result
-                raise result
-        return inner
-    return wrapper
+                assert proc.done()
+                success, result = proc.result()
+                if success:
+                    #return time.time() - now, result
+                    return result
+                else:
+                    #raise time.time() - now, result
+                    raise result
+            return inner
+        return wrapper
 
 
-def _read_fclib_format(f):
+def _read_fclib_format(filename):
     #fc_problem = FCL.fclib_read_local(f)
     #solution = FCL.fclib_read_solution(f)
     #print FCL.fclib_merit_local(fc_problem, FCL.MERIT_1, solution)
@@ -357,8 +362,9 @@ def _read_fclib_format(f):
     #print FCL.fclib_merit_local(fc_problem, FCL.MERIT_1, solution)
     #problem = N.frictionContact_fclib_read(f)
     #    print '{0}: M.m={1}, numberOfContacts*3/dim = {2}'.format(f, problem.W.m, problem.numberOfContacts*3/problem.W.m)
-    problem =  N.frictionContact_fclib_read(f)
-    return problem
+    fclib_problem = FCL.fclib_read_local(filename)
+    numerics_problem =  N.from_fclib_local(fclib_problem)
+    return fclib_problem, numerics_problem
 
 
 def _numberOfInvolvedDS(f):
@@ -386,7 +392,7 @@ def _numberOfContacts(f):
     return r
 
 def _cond_problem(filename):
-    problem = read_fclib_format(filename)
+    problem = read_fclib_format(filename)[1]
     return float(problem.numberOfContacts * 3) / float(numberOfInvolvedDS(filename) * 6)
 
 
@@ -436,11 +442,13 @@ class Caller():
     def __call__(self, tpl):
 
         solver, filename = tpl
+
         if hasattr(solver, 'read_fclib_format'):
             sproblem = solver.read_fclib_format(filename)
-            problem = read_fclib_format(filename)
+            problem = read_fclib_format(filename)[1]
         else:
-            problem = read_fclib_format(filename)
+
+            problem = read_fclib_format(filename)[1]
             sproblem = problem
 
         if (output_dat) :
@@ -515,7 +523,6 @@ class Caller():
 
 
 
-
     @timeout(utimeout)
     def _internal_call(self, solver, problem, filename, pfilename, output_filename):
 
@@ -560,8 +567,8 @@ class Caller():
               SolverCallback(output, solver_problem_data)
 
             # need a function, not an instance method for PyObjectCall...
-            def pffff(r,v,e):
-                solver_problem_callback.get_step(r,v,e)
+            def pffff(r, v, e):
+                solver_problem_callback.get_step(r, v, e)
 
             if output_errors or output_velocities or output_reactions:
                 solver.SolverOptions().callback = pffff
@@ -570,11 +577,54 @@ class Caller():
             reactions, velocities = solver.guess(filename)
 
             try:
-                t0 = time.clock()
-                result = solver(problem, reactions, velocities)
-                time_s = time.clock() - t0 # on unix, t is CPU seconds elapsed (floating point)
+                again = True
+                info = 0
+                iter = 0
+                err = np.inf
+                real_time = 0.
+                proc_time = 0.
+                flpops = 0.
+                mflops = 0.
 
-                info, iter, err, real_time, proc_time, flpops, mflops = result
+                # several call to solver if the precision is not reached
+                while again:
+
+                    t0 = time.clock()
+                    result = solver(problem, reactions, velocities)
+                    time_s = time.clock() - t0 # on unix, t is CPU seconds elapsed (floating point)
+
+                    fclib_sol = FCL.fclib_solution()
+
+                    fclib_sol.v = None
+                    fclib_sol.r = reactions
+                    fclib_sol.u = velocities
+                    fclib_sol.l = None
+
+                    nerr = FCL.fclib_merit_local(read_fclib_format(filename)[0],
+                                                 FCL.MERIT_1, fclib_sol)
+
+                    _, xerr = N.FrictionContact3D_compute_error(read_fclib_format(filename)[1],
+                                                                reactions, velocities, precision, solver.SolverOptions())
+
+                    print nerr, xerr
+
+                    i_info, i_iter, i_err, i_real_time, i_proc_time, i_flpops, i_mflops = result
+
+                    info = i_info
+                    iter += i_iter
+                    err = i_err
+                    real_time += i_real_time
+                    proc_time += i_proc_time
+                    flpops += i_flpops
+                    mflops = (mflops + i_mflops)/2.
+
+                    if info == 0 and xerr >= precision:
+#                        solver.SolverOptions().iparam[0]=1
+                        solver.SolverOptions().dparam[0]=solver.SolverOptions().dparam[1]/10
+                        again = False
+                    else:
+                        again = False
+
 
             except Exception as exception:
                 print exception
@@ -600,7 +650,7 @@ class Caller():
             attrs.create('proc_time', proc_time)
             attrs.create('flpops', flpops)
             attrs.create('mflops', mflops)
-                            
+
             # filename, solver name, revision svn, parameters, nb iter, err
             print(filename, numberOfContacts(filename), numberOfInvolvedDS(filename), cond_problem(filename), solver.name(), info, iter, err,
                   time_s, real_time, proc_time,
@@ -668,7 +718,7 @@ class SiconosSolver():
                 flpops.value, mflops.value)
 
     def guess(self, filename):
-        problem = read_fclib_format(filename)
+        problem = read_fclib_format(filename)[1]
 
         with h5py.File(filename, 'r') as f:
             psize = problem.dimension * problem.numberOfContacts
@@ -691,7 +741,8 @@ class BogusSolver(SiconosSolver):
         return BogusInterface.FCLib.fclib_read_local(filename)
 
 def wrap_bogus_solve(problem, reactions, velocities, SO):
-    return BogusInterface.solve_fclib(problem, SO)
+    res = BogusInterface.solve_fclib(problem, reactions, velocities, SO)
+    return res
 
 bogusPureNewton = BogusSolver(name="BogusPureNewton", API=wrap_bogus_solve, TAG=N.SICONOS_FRICTION_3D_LOCALFB, iparam_iter=1, dparam_err=1, maxiter=maxiter, precision=precision)
 bogusPureNewton.SolverOptions().iparam[4]=0
@@ -902,11 +953,16 @@ localacr = SiconosWrappedSolver(name="LocalacR",
                                 dparam_err=1,
                                 maxiter=maxiter, precision=precision)
 
-# 1 contact
-#Quartic = SiconosSolver(name="Quartic",
-#                        API=frictionContact3D_unitary_enumerative,
-#                        iparam_iter=7,
-#                        dparam_err=1)
+#
+quartic = SiconosSolver(name="NonsmoothGaussSeidelQuartic",
+                        API=N.frictionContact3D_nsgs,
+                        TAG=N.SICONOS_FRICTION_3D_NSGS,
+                        iparam_iter=7,
+                        dparam_err=1, maxiter=maxiter, precision=precision)
+
+quartic3x3 = N.SolverOptions(N.SICONOS_FRICTION_3D_QUARTIC_NU)
+
+quartic.SolverOptions().internalSolvers = quartic3x3
 
 # 1 contact
 #AlartCurnierNewton = SiconosSolver(name="AlartCurnierNewton",
@@ -948,7 +1004,7 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 
 
 all_solvers = [nsgs, snsgs, TrescaFixedPoint, Prox, Prox2, Prox3, Prox4, Prox5, localac, localfb, localacr, DeSaxceFixedPoint,
-               VIFixedPointProjection, VIExtraGrad, bogusPureEnumerative, bogusPureNewton, bogusHybrid, bogusRevHybrid]
+               VIFixedPointProjection, VIExtraGrad, bogusPureEnumerative, bogusPureNewton, bogusHybrid, bogusRevHybrid, quartic]
 
 
 if user_solvers == []:
@@ -1271,7 +1327,7 @@ if __name__ == '__main__':
             for problem_filename in problem_filenames:
 
                 try:
-                    nc.append(read_fclib_format(problem_filename).numberOfContacts)
+                    nc.append(read_fclib_format(problem_filename)[1].numberOfContacts)
                 except:
                     pass
                 try:
