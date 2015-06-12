@@ -96,8 +96,6 @@ static double solve( const fclib_local* problem, const Eigen::SparseMatrixBase< 
                      Eigen::VectorXd &r, Eigen::VectorXd &u, const bool useCadoux, SolverOptions* SO )
 {
 
-  FrictionContactProblem* numerics_problem = from_fclib_local((fclib_local *)problem);
-
   double tol = SO->dparam[0];
   double miter = SO->iparam[0];
 
@@ -139,65 +137,17 @@ static double solve( const fclib_local* problem, const Eigen::SparseMatrixBase< 
 		gs.setMaxIters( miter );
 		gs.callback().connect( callback );
 
-    {
-
-      fclib_solution sol;
-      sol.v = NULL;
-      sol.u = u.data();
-      sol.r = r.data() ;
-      sol.l = NULL ;
-
-      fclib_res = fclib_merit_local( (fclib_local *)problem, MERIT_1, &sol );
-
-      std::cout << " => .. FCLib Merit1: " << fclib_res << std::endl;
-
-      FrictionContactProblem* numerics_problem = from_fclib_local((fclib_local *)problem);
-
-      double fb_error[1];
-      frictionContact3D_FischerBurmeister_compute_error(numerics_problem, r.data(), u.data(), tol, SO, fb_error);
-
-      std::cout << " => .. Fischer norm: " << fb_error[0] <<std::endl;
-    }
-
     bool again = true;
-    while(again)
-    {
-      res = dual.xsolveWith( gs, r.data() ) ;
 
-      u = dual.W * r + dual.b ;
+    res = dual.xsolveWith( gs, r.data() ) ;
 
-      fclib_solution sol;
-      sol.v = NULL;
-      sol.u = u.data();
-      sol.r = r.data() ;
-      sol.l = NULL ;
+    u = dual.W * r + dual.b ;
 
-      fclib_res = fclib_merit_local( (fclib_local *)problem, MERIT_1, &sol );
-
-      std::cout << " => .. FCLib Merit1: " << fclib_res << std::endl;
-
-      double fb_error[1];
-      frictionContact3D_FischerBurmeister_compute_error(numerics_problem, r.data(), u.data(), tol, SO, fb_error);
-
-      std::cout << " => .. Fischer norm: " << fb_error[0] <<std::endl;
-
-      if (fclib_res > tol)
-      {
-        again = true;
-        gs.setMaxIters (1000000);
-        gs.setTol(res/10);
-      }
-      else
-      {
-        again = false;
-      }
-    }
 	}
 
-  SO->dparam[1] = fclib_res;
+  SO->dparam[1] = res;
   SO->iparam[1] = g_gs_iter;
 
-  freeFrictionContactProblem(numerics_problem);
 	return fclib_res ;
 }
 
@@ -308,14 +258,6 @@ int solve_fclib( const fclib_local* problem, double* reactions, double* velociti
 
 //        memcpy(reactions, r.data(), problem->W->n);
 //        memcpy(velocities, u.data(), problem->W->n);
-
-        fclib_solution sol ;
-				sol.v = NULL ;
-				sol.u = u.data();
-				sol.r = r.data() ;
-				sol.l = NULL ;
-        std::cout << " => .. FCLib Merit1: " << fclib_merit_local( (fclib_local *)problem, MERIT_1, &sol ) << std::endl ;
-        return res >= tolerance;
 
       }
     }
