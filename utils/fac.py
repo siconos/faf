@@ -10,7 +10,8 @@
 
 
 from sympy import *
-from localcodegen import dump_ccode
+from sympy.core.numbers import  NaN
+from localcodegen import localccode
 from locallatex import print_latex_by_conditions
 
 # not in python 2.7 -> see argparse
@@ -21,6 +22,7 @@ parser.add_option("--latex", action="store_true")
 parser.add_option("--ccode", action="store_true")
 parser.add_option("--ccodefac", action="store_true")
 parser.add_option("--ccodeAB", action="store_true")
+parser.add_option("--wrapper", action="store_true")
 (options, args) = parser.parse_args()
 
 
@@ -79,7 +81,6 @@ _sup0 = Lambda(x, Piecewise((0, x<=0),(x, x>0)))
 # disk projection
 px = Piecewise((x,Matrix([x,y]).norm()<=D),(D*x/Matrix([x,y]).norm(),Matrix([x,y]).norm()>D))
 py = Piecewise((y,Matrix([x,y]).norm()<=D),(D*y/Matrix([x,y]).norm(),Matrix([x,y]).norm()>D))
-
 max0D0 = _sup0(D0)
 
 #
@@ -259,16 +260,85 @@ else:
 if options.ccode:
     def_fun(ac_name + "FABGenerated")
     Rnow = FAC.row_join(A).row_join(B)
-    dump_ccode(Rnow, array_format='fortran')
+
+    print localccode(Rnow, assign_to='result', array_format='Fortran')
     end_fun()
 
 if options.ccodefac:
     def_fun(ac_name + "FGenerated")
-    dump_ccode(FAC, array_format='fortran')
+    print localccode(FAC, assign_to='result', array_format='Fortran')
     end_fun()
 
 
 if options.ccodeAB:
     def_fun(ac_name + "ABGenerated")
-    dump_ccode(A.row_join(B), array_format='fortran')
+    print localccode(A.row_join(B), assign_to='result', array_format='Fortran')
     end_fun()
+
+if options.wrapper:
+
+    print(
+        """
+void {0}FunctionGenerated(
+  double *reaction,
+  double *velocity,
+  double mu,
+  double *rho,
+  double *f,
+  double *A,
+  double *B)
+{{
+  double result[21];
+
+  assert(reaction);
+  assert(velocity);
+  assert(rho);
+
+  SET3(reaction);
+  SET3(velocity);
+  SET3(rho);
+
+
+  if (f && A && B)
+  {{
+
+    {0}FABGenerated(
+      *reaction0, *reaction1, *reaction2,
+      *velocity0, *velocity1, *velocity2,
+      mu,
+      *rho0, *rho1, *rho2,
+      result);
+    cpy3(result, f);
+    cpy3x3(result + 3, A);
+    cpy3x3(result + 12, B);
+  }}
+
+  else
+  {{
+    if (f)
+    {{
+      {0}FGenerated(
+        *reaction0, *reaction1, *reaction2,
+        *velocity0, *velocity1, *velocity2,
+        mu,
+        *rho0, *rho1, *rho2,
+        result);
+      cpy3(result, f);
+    }}
+
+    if (A && B)
+    {{
+      {0}ABGenerated(
+        *reaction0, *reaction1, *reaction2,
+        *velocity0, *velocity1, *velocity2,
+        mu,
+        *rho0, *rho1, *rho2,
+        result);
+      cpy3x3(result, A);
+      cpy3x3(result + 9, B);
+    }}
+  }}
+}}
+        """.format(ac_name))
+
+
