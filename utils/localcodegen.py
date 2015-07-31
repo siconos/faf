@@ -92,7 +92,6 @@ def flatten_piecewise(expr, upper_conds=None, conds=None, lconds=None):
     else:
         return None
 
-
 class LocalCCodePrinter(CCodePrinter):
 
 
@@ -130,22 +129,25 @@ class LocalCCodePrinter(CCodePrinter):
         elif self._array_format == 'Fortran':
             return ((i, j) for j in range(cols) for i in range(rows))
 
+
+    def _fix_integer_power(self, expr):
+        subs = dict()
+
+        for subexpr in list(postorder_traversal(expr)):
+            if Is(subexpr).Pow:
+                if Is(subexpr.args[1]).Integer and subexpr.args[1]>0:
+                    expr = expr.subs(subexpr, Mul(*([subexpr.args[0]]*subexpr.args[1])))
+
+        return expr
+
     def _needed_symbols(self, expr):
 
         l = set()
+        symbols = set()
 
-        p_expr = expr
-
-        all_conditions = []
-        for i, subexpr in enumerate(postorder_traversal(p_expr)):
-            if Is(subexpr).Piecewise:
-                all_conditions += [c for _, c in subexpr.args]
-
-        if len(all_conditions)>0:
-            symbols = set([item for conditions in all_conditions
-                           for item in conditions.free_symbols])
-        else:
-            symbols = expr.free_symbols
+        for subexpr in postorder_traversal(expr):
+            if hasattr(subexpr, 'free_symbols'):
+                symbols = symbols.union(subexpr.free_symbols)
 
         for symb in symbols:
             if symb in self._decls:
@@ -171,7 +173,7 @@ class LocalCCodePrinter(CCodePrinter):
                     self._declared[var] = True
 
         if len(decls)>0:
-            return '\n'.join(decls) + '\n'
+            return '\n'.join(decls)
         else:
             return ''
 
@@ -191,7 +193,7 @@ class LocalCCodePrinter(CCodePrinter):
                 self._affcts[var] = True
 
         if len(affcts)>0:
-            return '\n'.join(affcts) + '\n'
+            return '\n'.join(affcts)
         else:
             return ''
 
@@ -236,6 +238,8 @@ class LocalCCodePrinter(CCodePrinter):
     def doprint(self, expr, assign_to=None):
 
         # avoid bad (cond) ? (...) : (...) sequences
+        expr = self._fix_integer_power(expr)
+
         if expr.is_Matrix:
 
             expr = Matrix(expr.shape[0], expr.shape[1],
@@ -248,6 +252,7 @@ class LocalCCodePrinter(CCodePrinter):
         # cse is meaningful only if assignment is specified
         if self._do_cse and assign_to is not None:
 
+
             (assignments, substitued_expr) = cse(expr, self._some_vars)
 
             subs = []
@@ -255,6 +260,7 @@ class LocalCCodePrinter(CCodePrinter):
             for (i, (var, val)) in enumerate(assignments):
 
                 self._varid[var] = i
+
                 self._decls[var] = val
 
                 if val in self._assignments_values:
@@ -262,22 +268,26 @@ class LocalCCodePrinter(CCodePrinter):
                 else:
                     self._assignments_values[val] = var
 
-            for var in self._decls:
-                if not self._decls[var].is_Symbol:
+            if subs != []:
+                for var in self._decls:
+                    if not self._decls[var].is_Symbol:
 
-                    try:
-                        self._decls[var] = self._decls[var].subs(subs)
-                    except:
-                        pass
+                        try:
+                            self._decls[var] = self._decls[var].subs(subs)
+                        except:
+                            pass
 
-            # idem...
-            try:
-                reworked_expr = substitued_expr[0].subs(subs)
-            except:
+                # idem...
+                try:
+                    reworked_expr = substitued_expr[0].subs(subs)
+                except:
+                    reworked_expr = substitued_expr[0]
+
+            else:
                 reworked_expr = substitued_expr[0]
 
-            decls = ''
-            affcts = ''
+                decls = ''
+                affcts = ''
 
         else:
             reworked_expr = expr
@@ -290,63 +300,79 @@ class LocalCCodePrinter(CCodePrinter):
 
     def _print_Assignment(self, expr):
 
-        comment = '/* Assignment {0}={1} */\n'.format(expr.lhs, expr.rhs)
+        if expr.rhs.is_Matrix:
 
-        if not expr.rhs.is_Piecewise:
+            clines = dict()
+            conds = []
 
-            if expr.rhs.is_Matrix:
+            for i in range(expr.rhs.shape[0]):
+                for j in range(expr.rhs.shape[1]):
+                    elem = piecewise_fold(expr.rhs[i, j])
 
-                clines = dict()
-                conds = []
-
-                for i in range(expr.rhs.shape[0]):
-                    for j in range(expr.rhs.shape[1]):
-                        elem = piecewise_fold(expr.rhs[i, j])
-
-                        if elem.is_Piecewise:
-                            for e, c in elem.args:
-                                if c not in clines:
-                                    clines[c] = []
-                                    conds.append(c)
-                                    clines[c].append(e)
+                    if elem.is_Piecewise:
+                        for e, c in elem.args:
+                            if c not in clines:
+                                clines[c] = []
+                                conds.append(c)
+                                clines[c].append(e)
 
 
-                lines = []
-                if len(conds)>0:
-                    for c in conds:
-                        lines.append(self._print_declarations([c]))
-                        lines.append(self._print_declarations(clines[c]))
-                        lines.append(self._print_affectations([c]))
+            lines = []
+            if len(conds)>0:
+                for c in conds:
+                    lines.append(self._print_declarations([c]))
+                    lines.append(self._print_declarations(clines[c]))
+                    lines.append(self._print_affectations([c]))
 
-                    lines.append('if ({0})'.format(conds[0]))
+                if_s = ['if', 'else if']
+                if_s_index = 0
+
+                if len(set().union(*[self._needed_symbols(e) for e in clines[conds[0]]])) > 0:
+                    lines.append('{0} ({1})'.format(if_s[if_s_index], conds[0]))
+                    if_s_index = 1
                     lines.append('{')
-                    self._inside_condition = True
+                    self._inside_condition += 1
                     lines.append(self._print_affectations(clines[conds[0]]))
-                    self._inside_condition = False
+                    self._inside_condition -= 1
                     lines.append('}')
                     for c in conds[1:]:
-                        lines.append('else if ({0})'.format(c))
-                        lines.append('{')
-                        self._inside_condition = True
-                        lines.append(self._print_affectations(clines[c]))
-                        self._inside_condition = False
-                        lines.append('}')
+                        if len(set().union(*[self._needed_symbols(e) for e in clines[c]])) > 0:
 
+                            lines.append('{0} ({1})'.format(if_s[if_s_index], c))
+                            if_s_index = 1
+                            lines.append('{')
+                            self._inside_condition += 1
+                            lines.append(self._print_affectations(clines[c]))
+                            self._inside_condition -= 1
+                            lines.append('}')
 
-                return '\n'.join(lines) + super(LocalCCodePrinter, self)._print_Assignment(expr)
-
-            else:
-                return comment + self._print_declarations([expr.rhs]) +\
-                    self._print_affectations([expr.rhs]) +\
-                    super(LocalCCodePrinter, self)._print_Assignment(expr)
+            return '\n'.join(filter(lambda s: len(s)>0, lines)) +\
+                super(LocalCCodePrinter, self)._print_Assignment(expr)
 
         else:
 
-            conditions = [c for _, c in expr.rhs.args]
+            comment = '\n/* Assignment {0}={1} */\n'.format(expr.lhs, expr.rhs)
 
-            return comment + self._print_declarations(conditions) +\
-                self._print_affectations(conditions) +\
-                super(LocalCCodePrinter, self)._print_Assignment(expr)
+            expr_rhs = piecewise_fold(expr.rhs)
+
+            if expr_rhs.is_Piecewise:
+
+                expressions, conditions = zip(*expr_rhs.args)
+
+                return comment + \
+                    self._print_declarations(conditions) +\
+                    self._print_affectations(conditions) +\
+                    self._print_declarations(expressions) +\
+                    super(LocalCCodePrinter, self)._print_Assignment(expr)
+            else:
+                expressions = [expr]
+
+                return comment + \
+                    self._print_declarations(expressions) +\
+                    self._print_affectations(expressions) +\
+                    super(LocalCCodePrinter, self)._print_Assignment(expr)
+
+            
 
 
 
@@ -371,7 +397,10 @@ class LocalCCodePrinter(CCodePrinter):
 
         elif expr.exp == 2:
 
-            return '{0}*{0}'.format(self._print(expr.base))
+            if expr.base.is_Atom:
+                return '{0}*{0}'.format(self._print(expr.base))
+            else:
+                return '({0})*({0})'.format(self._print(expr.base))
 
         elif expr.exp < 1 and expr.exp > -1:
 
@@ -460,13 +489,13 @@ class LocalCCodePrinter(CCodePrinter):
                 lines.append(if_st + ' ({0})'.format(self._print(cond)))
                 lines.append('{')
                 lines.append('DEBUG_PRINT("Case ({0}) is True.\\n");'.format(cond))
-
+                lines.append(self._print_affectations([expressions[num_cond]]))
                 lines.append(self._print(expressions[num_cond]))
 
                 lines.append('}')
 
             self._inside_condition -= 1
-            return "\n".join(lines)
+            return '\n'.join(filter(lambda s: len(s)>0, lines))
 
         else:
             # The piecewise was used in an expression, need to do inline
@@ -504,7 +533,7 @@ class LocalCCodePrinter(CCodePrinter):
                 pretty.append(line)
                 continue
             level -= decrease[n]
-            pretty.append("%s%s" % (self._tab*level, line))
+            pretty.append("%s%s" % (self._tab*(level+1), line))
             level += increase[n]
         return pretty
 
