@@ -576,6 +576,11 @@ class Caller():
             # get first guess or set guess to zero
             reactions, velocities = solver.guess(filename)
 
+            _, guess_err = N.FrictionContact3D_compute_error(read_fclib_format(filename)[1],
+                                                             reactions, velocities, precision, solver.SolverOptions())
+
+#            print "guess error:", guess_err
+
             try:
                 again = True
                 info = 0
@@ -591,6 +596,7 @@ class Caller():
 
                     t0 = time.clock()
                     result = solver(problem, reactions, velocities)
+
                     time_s = time.clock() - t0 # on unix, t is CPU seconds elapsed (floating point)
 
                     fclib_sol = FCL.fclib_solution()
@@ -777,12 +783,45 @@ class SiconosWrappedSolver(SiconosSolver):
 #
 # Some solvers
 #
-localac = SiconosSolver(name="LocalAlartCurnier",
-                        API=N.frictionContact3D_localAlartCurnier,
-                        TAG=N.SICONOS_FRICTION_3D_LOCALAC,
-                        iparam_iter=1,
-                        dparam_err=1,
-                        maxiter=maxiter, precision=precision)
+localACSTD = SiconosSolver(name="LocalAlartCurnierSTD",
+                                  API=N.frictionContact3D_localAlartCurnier,
+                                  TAG=N.SICONOS_FRICTION_3D_LOCALAC,
+                                  iparam_iter=1,
+                                  dparam_err=1,
+                                  maxiter=maxiter, precision=precision)
+
+localACSTD.SolverOptions().iparam[10] = 0;
+
+
+localACJeanMoreau = SiconosSolver(name="LocalAlartCurnierJeanMoreau",
+                                  API=N.frictionContact3D_localAlartCurnier,
+                                  TAG=N.SICONOS_FRICTION_3D_LOCALAC,
+                                  iparam_iter=1,
+                                  dparam_err=1,
+                                  maxiter=maxiter, precision=precision)
+
+localACJeanMoreau.SolverOptions().iparam[10] = 1;
+
+localACSTDGenerated = SiconosSolver(name="LocalAlartCurnierSTDGenerated",
+                                    API=N.frictionContact3D_localAlartCurnier,
+                                    TAG=N.SICONOS_FRICTION_3D_LOCALAC,
+                                    iparam_iter=1,
+                                    dparam_err=1,
+                                    maxiter=maxiter, precision=precision)
+
+localACSTDGenerated.SolverOptions().iparam[10] = 2;
+
+localACJeanMoreauGenerated = SiconosSolver(name="LocalAlartCurnierJeanMoreauGenerated",
+                                           API=N.frictionContact3D_localAlartCurnier,
+                                           TAG=N.SICONOS_FRICTION_3D_LOCALAC,
+                                           iparam_iter=1,
+                                           dparam_err=1,
+                                           maxiter=maxiter, precision=precision)
+
+localACJeanMoreauGenerated.SolverOptions().iparam[10] = 3;
+
+
+
 
 localfb = SiconosSolver(name="LocalFischerBurmeister",
                         API=N.frictionContact3D_localFischerBurmeister,
@@ -791,7 +830,7 @@ localfb = SiconosSolver(name="LocalFischerBurmeister",
                         dparam_err=1,
                         maxiter=maxiter, precision=precision)
 
-localac.SolverOptions().iparam[3] = 10000000
+#localac.SolverOptions().iparam[3] = 10000000
 
 
 hlocalac = SiconosHybridSolver(name = "HLocalAlartCurnier",
@@ -1003,8 +1042,7 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 #               FixedPointProjection, VIFixedPointProjection, ExtraGrad, VIExtraGrad]
 
 
-all_solvers = [nsgs, snsgs, TrescaFixedPoint, Prox, Prox2, Prox3, Prox4, Prox5, localac, localfb, localacr, DeSaxceFixedPoint,
-               VIFixedPointProjection, VIExtraGrad, bogusPureEnumerative, bogusPureNewton, bogusHybrid, bogusRevHybrid, quartic]
+all_solvers = [nsgs, snsgs, TrescaFixedPoint, Prox, Prox2, Prox3, Prox4, Prox5, localACSTD, localACSTDGenerated, localACJeanMoreau, localACJeanMoreauGenerated, localfb, localacr, DeSaxceFixedPoint, VIFixedPointProjection, VIExtraGrad, bogusPureEnumerative, bogusPureNewton, bogusHybrid, bogusRevHybrid, quartic]
 
 
 if user_solvers == []:
@@ -1283,7 +1321,7 @@ if __name__ == '__main__':
                     plot(domain, rhos[solver_name], label=solver_name)
                     ylim(0, 1.0001)
                     xlim(domain[0], domain[-1])
-                    legend()
+                    legend(loc=4)
                 grid()
 
 
