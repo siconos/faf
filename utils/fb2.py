@@ -329,7 +329,7 @@ if options.ccodefac:
 if options.ccodeAB:
     def_fun(ac_name + "ABGenerated")
 
-    print localccode(FAC, assign_to='result', array_format='Fortran')
+    print localccode(A.row_join(B), assign_to='result', array_format='Fortran')
 
     end_fun()
 
