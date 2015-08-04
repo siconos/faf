@@ -72,7 +72,9 @@ x = Wild('x')
 y = Wild('y')
 
 # max(0,x)
-_sup0 = Lambda(x, Piecewise((0, x<=0),(x, x>0)))
+#_sup0 = Lambda(x, Piecewise((0, x<=0),(x, x>0)))
+_sup0 = Lambda(x, Max(0, x))
+
 
 # not the same derivative in 0
 #_sup0 = Lambda(x, Rational(1,2)*(x+abs(x)))

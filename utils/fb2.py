@@ -26,6 +26,7 @@ parser.add_option("--ccode", action="store_true")
 parser.add_option("--ccodefac", action="store_true")
 parser.add_option("--ccodeAB", action="store_true")
 parser.add_option("--wrapper", action="store_true")
+parser.add_option("--merit", action="store_true")
 (options, args) = parser.parse_args()
 
 def load(v):
@@ -37,6 +38,8 @@ A = load('A')
 B = load('B')
 FAC = load('FAC')
 Rnow = load('Rnow')
+theta_phi_fb = load('theta_phi_fb')
+grad_theta_phi_fb = load('grad_theta_phi_fb')
 
 def def_fun(name):
     print("void " + name + r"""(
@@ -330,6 +333,20 @@ if options.ccodeAB:
     def_fun(ac_name + "ABGenerated")
 
     print localccode(A.row_join(B), assign_to='result', array_format='Fortran')
+
+    end_fun()
+
+if options.merit:
+
+    def_fun(ac_name + "FMeritGenerated")
+
+    print localccode(theta_phi_fb, assign_to='result', array_format='Fortran')
+
+    end_fun()
+
+    def_fun(ac_name + "GradFMeritGenerated")
+
+    print localccode(grad_theta_phi_fb, assign_to='result', array_format='Fortran')
 
     end_fun()
 

@@ -161,9 +161,10 @@ ref_solver_name = 'NonsmoothGaussSeidel'
 random_sample_proba = None
 max_problems = None
 cond_nc = None
+with_guess = True
 try:
     opts, args = getopt.gnu_getopt(sys.argv[1:], '',
-                                   ['help', 'flop', 'iter', 'time',
+                                   ['help', 'flop', 'iter', 'time', 'verbose','no-guess',
                                     'clean', 'display', 'display-convergence',
                                     'files=', 'solvers=',
                                     'random-sample=', 'max-problems=',
@@ -181,6 +182,8 @@ except getopt.GetoptError, err:
         usage()
         exit(2)
 for o, a in opts:
+    if o == '--verbose':
+        N.setNumericsVerbose(1)
     if o == '--flop':
         measure = 'flop'
     elif o == '--iter':
@@ -262,6 +265,8 @@ for o, a in opts:
             else:
                 if os.path.exists('{0}.hdf5'.format(f)):
                     user_filenames += ['{0}.hdf5'.format(f)]
+    elif o == '--no-guess':
+        with_guess = False
 
 from ctypes import cdll, c_float, c_longlong, byref
 try:
@@ -728,7 +733,7 @@ class SiconosSolver():
 
         with h5py.File(filename, 'r') as f:
             psize = problem.dimension * problem.numberOfContacts
-            if 'guesses' in f:
+            if with_guess and 'guesses' in f:
                 number_of_guesses = f['guesses']['number_of_guesses'][0]
                 velocities = f['guesses']['1']['u'][:]
                 reactions = f['guesses']['1']['r'][:]
@@ -791,6 +796,7 @@ localACSTD = SiconosSolver(name="LocalAlartCurnierSTD",
                                   maxiter=maxiter, precision=precision)
 
 localACSTD.SolverOptions().iparam[10] = 0;
+localACSTD.SolverOptions().iparam[3] = 10000000
 
 
 localACJeanMoreau = SiconosSolver(name="LocalAlartCurnierJeanMoreau",
@@ -801,6 +807,7 @@ localACJeanMoreau = SiconosSolver(name="LocalAlartCurnierJeanMoreau",
                                   maxiter=maxiter, precision=precision)
 
 localACJeanMoreau.SolverOptions().iparam[10] = 1;
+localACJeanMoreau.SolverOptions().iparam[3] = 10000000
 
 localACSTDGenerated = SiconosSolver(name="LocalAlartCurnierSTDGenerated",
                                     API=N.frictionContact3D_localAlartCurnier,
@@ -810,6 +817,7 @@ localACSTDGenerated = SiconosSolver(name="LocalAlartCurnierSTDGenerated",
                                     maxiter=maxiter, precision=precision)
 
 localACSTDGenerated.SolverOptions().iparam[10] = 2;
+localACSTDGenerated.SolverOptions().iparam[3] = 10000000
 
 localACJeanMoreauGenerated = SiconosSolver(name="LocalAlartCurnierJeanMoreauGenerated",
                                            API=N.frictionContact3D_localAlartCurnier,
@@ -819,18 +827,31 @@ localACJeanMoreauGenerated = SiconosSolver(name="LocalAlartCurnierJeanMoreauGene
                                            maxiter=maxiter, precision=precision)
 
 localACJeanMoreauGenerated.SolverOptions().iparam[10] = 3;
+localACJeanMoreauGenerated.SolverOptions().iparam[3] = 10000000
 
 
 
+localfb_gp = SiconosSolver(name="LocalFischerBurmeisterGP",
+                           API=N.frictionContact3D_localFischerBurmeister,
+                           TAG=N.SICONOS_FRICTION_3D_LOCALFB,
+                           iparam_iter=1,
+                           dparam_err=1,
+                           maxiter=maxiter, precision=precision)
 
-localfb = SiconosSolver(name="LocalFischerBurmeister",
-                        API=N.frictionContact3D_localFischerBurmeister,
-                        TAG=N.SICONOS_FRICTION_3D_LOCALFB,
-                        iparam_iter=1,
-                        dparam_err=1,
-                        maxiter=maxiter, precision=precision)
+localfb_gp.SolverOptions().iparam[3] = 1000000
+localfb_gp.SolverOptions().iparam[11] = 0
+localfb_gp.SolverOptions().iparam[12] = 6
 
-#localac.SolverOptions().iparam[3] = 10000000
+localfb_fblsa = SiconosSolver(name="LocalFischerBurmeisterFBLSA",
+                              API=N.frictionContact3D_localFischerBurmeister,
+                              TAG=N.SICONOS_FRICTION_3D_LOCALFB,
+                              iparam_iter=1,
+                              dparam_err=1,
+                              maxiter=maxiter, precision=precision)
+
+localfb_fblsa.SolverOptions().iparam[3] = 1000000
+localfb_fblsa.SolverOptions().iparam[11] = 1
+localfb_fblsa.SolverOptions().iparam[12] = 6
 
 
 hlocalac = SiconosHybridSolver(name = "HLocalAlartCurnier",
@@ -1042,7 +1063,7 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 #               FixedPointProjection, VIFixedPointProjection, ExtraGrad, VIExtraGrad]
 
 
-all_solvers = [nsgs, snsgs, TrescaFixedPoint, Prox, Prox2, Prox3, Prox4, Prox5, localACSTD, localACSTDGenerated, localACJeanMoreau, localACJeanMoreauGenerated, localfb, localacr, DeSaxceFixedPoint, VIFixedPointProjection, VIExtraGrad, bogusPureEnumerative, bogusPureNewton, bogusHybrid, bogusRevHybrid, quartic]
+all_solvers = [nsgs, snsgs, TrescaFixedPoint, Prox, Prox2, Prox3, Prox4, Prox5, localACSTD, localACSTDGenerated, localACJeanMoreau, localACJeanMoreauGenerated, localfb_gp, localfb_fblsa, localacr, DeSaxceFixedPoint, VIFixedPointProjection, VIExtraGrad, bogusPureEnumerative, bogusPureNewton, bogusHybrid, bogusRevHybrid, quartic]
 
 
 if user_solvers == []:

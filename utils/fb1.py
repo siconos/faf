@@ -102,6 +102,17 @@ phi_fb = x + y - (sqrt(lambda_1) * u_1 + sqrt(lambda_2) * u_2)
 
 FAC = phi_fb
 
+theta_phi_fb = .5 * (phi_fb[0]**2 + phi_fb[1]**2 + phi_fb[2]**2)
+
+with open('theta_phi_fb', 'w') as theta_phi_fb_file:
+    pickle.dump(theta_phi_fb, theta_phi_fb_file)
+
+grad_theta_phi_fb = Matrix([[theta_phi_fb.diff(rn), theta_phi_fb.diff(rt1), theta_phi_fb.diff(rt2)]])
+
+with open('grad_theta_phi_fb', 'w') as grad_theta_phi_fb_file:
+    pickle.dump(grad_theta_phi_fb, grad_theta_phi_fb_file)
+
+exit(0)
 # ut_norm == 0
 # xnxt_p_ynyt_norm == 0
 # x_norm == 0
@@ -152,7 +163,6 @@ def _maple_piecewise(expr):
         return p_expr
 
 maple_piecewise = Memoize(_maple_piecewise)
-
 
 
 def _mlimit(expr, var, lim, dir=None):
@@ -278,3 +288,4 @@ Rnow = FAC.row_join(A).row_join(B)
 
 with open('Rnow', 'w') as Rnow_file:
     pickle.dump(Rnow, Rnow_file)
+

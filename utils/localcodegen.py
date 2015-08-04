@@ -362,14 +362,14 @@ class LocalCCodePrinter(CCodePrinter):
                 return comment + \
                     self._print_declarations(conditions) +\
                     self._print_affectations(conditions) +\
-                    self._print_declarations(expressions) +\
+                    self._print_declarations(expressions) + '\n' +\
                     super(LocalCCodePrinter, self)._print_Assignment(expr)
             else:
                 expressions = [expr]
 
                 return comment + \
                     self._print_declarations(expressions) +\
-                    self._print_affectations(expressions) +\
+                    self._print_affectations(expressions) + '\n' +\
                     super(LocalCCodePrinter, self)._print_Assignment(expr)
 
             
