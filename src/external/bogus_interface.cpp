@@ -117,7 +117,6 @@ static double solve( const fclib_local* problem, const Eigen::SparseMatrixBase< 
 	callback.connect( &ackCurrentResidual );
 
 	double res = -1 ;
-  double fclib_res = -1;
 
 	if( useCadoux )
 	{
@@ -148,7 +147,7 @@ static double solve( const fclib_local* problem, const Eigen::SparseMatrixBase< 
   SO->dparam[1] = res;
   SO->iparam[1] = g_gs_iter;
 
-	return fclib_res ;
+	return res ;
 }
 
 int solve_fclib( const fclib_local* problem, double* reactions, double* velocities, SolverOptions* SO )
@@ -256,8 +255,10 @@ int solve_fclib( const fclib_local* problem, double* reactions, double* velociti
 
         }
 
-//        memcpy(reactions, r.data(), problem->W->n);
-//        memcpy(velocities, u.data(), problem->W->n);
+        memcpy(reactions, r.data(), problem->W->n);
+        memcpy(velocities, u.data(), problem->W->n);
+
+        return res >= tolerance;
 
       }
     }

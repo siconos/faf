@@ -208,7 +208,7 @@ def usage():
 
 try:
     opts, args = getopt.gnu_getopt(sys.argv[1:], '',
-                                   ['help', 'flop', 'iter', 'time', 'verbose','no-guess',
+                                   ['help', 'flop', 'iter', 'time', 'verbose=','no-guess',
                                     'clean', 'display', 'display-convergence',
                                     'files=', 'solvers-exact=', 'solvers=',
                                     'random-sample=', 'max-problems=',
@@ -227,7 +227,7 @@ except getopt.GetoptError, err:
         exit(2)
 for o, a in opts:
     if o == '--verbose':
-        N.setNumericsVerbose(1)
+        N.setNumericsVerbose(int(a))
     if o == '--help':
         usage()
         exit(2)
@@ -654,13 +654,12 @@ class Caller():
                     fclib_sol.u = velocities
                     fclib_sol.l = None
 
-                    nerr = FCL.fclib_merit_local(read_fclib_format(filename)[0],
-                                                 FCL.MERIT_1, fclib_sol)
+                    #nerr = FCL.fclib_merit_local(read_fclib_format(filename)[0],
+                    #                             FCL.MERIT_1, fclib_sol)
 
-                    _, xerr = N.FrictionContact3D_compute_error(read_fclib_format(filename)[1],
-                                                                reactions, velocities, precision, solver.SolverOptions())
+#                    _, xerr = N.FrictionContact3D_compute_error(read_fclib_format(filename)[1],
+#                                                                reactions, velocities, precision, solver.SolverOptions())
 
-                    print nerr, xerr
 
                     i_info, i_iter, i_err, i_real_time, i_proc_time, i_flpops, i_mflops = result
 
@@ -672,13 +671,24 @@ class Caller():
                     flpops += i_flpops
                     mflops = (mflops + i_mflops)/2.
 
-                    if info == 0 and xerr >= precision:
+#                   if info == 0 and xerr >= precision:
 #                        solver.SolverOptions().iparam[0]=1
-                        solver.SolverOptions().dparam[0]=solver.SolverOptions().dparam[1]/10
-                        again = False
-                    else:
-                        again = False
+#                        solver.SolverOptions().dparam[0]=solver.SolverOptions().dparam[1]/10
+#                        print 'precision not reached : ', xerr, '>', precision
+#                        again = False
+#                    else:
+#                        again = False
 
+                    again = False
+
+                    if info != 0:
+                        time_s = np.nan
+                        iter = np.nan
+                        err = np.nan
+                        real_time = np.nan
+                        proc_time = np.nan
+                        flpops = np.nan
+                        mflops = np.nan
 
             except Exception as exception:
                 print exception
@@ -847,6 +857,9 @@ localACSTD = SiconosSolver(name="NSN-AlartCurnier",
                            maxiter=maxiter, precision=precision)
 
 localACSTD.SolverOptions().iparam[10] = 0;
+localACSTD.SolverOptions().iparam[11] = 0;
+localACSTD.SolverOptions().iparam[12] = 10;
+localACSTD.SolverOptions().iparam[13] = 1;
 localACSTD.SolverOptions().iparam[3] = 10000000
 
 
@@ -859,6 +872,9 @@ localACJeanMoreau = SiconosSolver(name="NSN-JeanMoreau",
                                   maxiter=maxiter, precision=precision)
 
 localACJeanMoreau.SolverOptions().iparam[10] = 1;
+localACJeanMoreau.SolverOptions().iparam[11] = 0;
+localACJeanMoreau.SolverOptions().iparam[12] = 10;
+localACJeanMoreau.SolverOptions().iparam[13] = 1;
 localACJeanMoreau.SolverOptions().iparam[3] = 10000000
 
 localACSTDGenerated = SiconosSolver(name="NSN-AlartCurnier-Generated",
@@ -870,6 +886,9 @@ localACSTDGenerated = SiconosSolver(name="NSN-AlartCurnier-Generated",
                                     maxiter=maxiter, precision=precision)
 
 localACSTDGenerated.SolverOptions().iparam[10] = 2;
+localACSTDGenerated.SolverOptions().iparam[11] = 0;
+localACSTDGenerated.SolverOptions().iparam[12] = 10;
+localACSTDGenerated.SolverOptions().iparam[13] = 1;
 localACSTDGenerated.SolverOptions().iparam[3] = 10000000
 
 localACJeanMoreauGenerated = SiconosSolver(name="NSN-JeanMoreau-Generated",
@@ -881,6 +900,9 @@ localACJeanMoreauGenerated = SiconosSolver(name="NSN-JeanMoreau-Generated",
                                            maxiter=maxiter, precision=precision)
 
 localACJeanMoreauGenerated.SolverOptions().iparam[10] = 3;
+localACJeanMoreauGenerated.SolverOptions().iparam[11] = 0;
+localACJeanMoreauGenerated.SolverOptions().iparam[12] = 10;
+localACJeanMoreauGenerated.SolverOptions().iparam[13] = 1;
 localACJeanMoreauGenerated.SolverOptions().iparam[3] = 10000000
 
 
@@ -896,6 +918,7 @@ localfb_gp = SiconosSolver(name="NSN-FischerBurmeister-GP",
 localfb_gp.SolverOptions().iparam[3] = 1000000
 localfb_gp.SolverOptions().iparam[11] = 0
 localfb_gp.SolverOptions().iparam[12] = 6
+localfb_gp.SolverOptions().iparam[13] = 1
 
 localfb_fblsa = SiconosSolver(name="NSN-FischerBurmeister-FBLSA",
                               gnuplot_name="NSN-FB-FBLSA",
@@ -907,7 +930,20 @@ localfb_fblsa = SiconosSolver(name="NSN-FischerBurmeister-FBLSA",
 
 localfb_fblsa.SolverOptions().iparam[3] = 1000000
 localfb_fblsa.SolverOptions().iparam[11] = 1
-localfb_fblsa.SolverOptions().iparam[12] = 6
+localfb_fblsa.SolverOptions().iparam[12] = 10
+localfb_fblsa.SolverOptions().iparam[13] = 1
+
+localfb_nls = SiconosSolver(name="LocalFischerBurmeisterNLS",
+                              API=N.frictionContact3D_localFischerBurmeister,
+                              TAG=N.SICONOS_FRICTION_3D_LOCALFB,
+                              iparam_iter=1,
+                              dparam_err=1,
+                              maxiter=maxiter, precision=precision)
+
+localfb_nls.SolverOptions().iparam[3] = 1000000
+localfb_nls.SolverOptions().iparam[11] = -1
+localfb_nls.SolverOptions().iparam[12] = 10
+localfb_nls.SolverOptions().iparam[13] = 1
 
 
 hlocalac = SiconosHybridSolver(name = "HLocalAlartCurnier",

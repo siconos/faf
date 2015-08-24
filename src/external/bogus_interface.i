@@ -5,10 +5,10 @@
 %import FCLib.i
 
 %typemap(in) (double *data)
-  (PyArrayObject* array =NULL, int is_new_object=0)
+  (PyArrayObject* array =NULL)
 {
-  array = obj_to_array_allow_conversion($input, NPY_DOUBLE,
-                                        &is_new_object);
+  array = obj_to_array_no_conversion($input,
+                                     NPY_DOUBLE);
   if (!array
       || !require_native(array))
     SWIG_fail;
