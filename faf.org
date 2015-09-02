@@ -2,7 +2,8 @@
 ** Newton method based on SOCCP formulation
 ** General SOCCP solver
 + Interior points methods
-  + Work of Kleinert, Simeon Obermayr
+  + Work of Kleinert, Simeon and Obermayr
+  +    
 + FB and regularized FB for SOCCP
 + Have a look to cvxopt (python and C)
 ** Proximal point algorithm
@@ -15,9 +16,15 @@
 ** Acceleration of Gauss-Seidel Strategy
 + Aitken--like strategy
 + have a look to FISTA and Nesterov work. INPPA
-** Cadoux formulation
+** Cadoux formulation.
 + Implement Fixed point Iteration
-  + Which internal solver ? Newton of convex SOCCP
+  + Which internal solver ? 
+    + the internal solver must use the convexity of the problem
+    + Block-splitting + local solver (PSOR + list of solver) Copy of nsgs with psor options
+      
+      
+      
+Newton method of convex SOCCP
 + Newton method on the problem $F(s)=s$
 * Literature
   Check for ``solving frictional contact problem''
@@ -99,16 +106,18 @@
      + Projection/splitting (PSOR)
      + Fake Coulomb Friction (Anitescu \& Tasora)
    + Complementarity function (zeroes of functions)
-     + Alart-Curnier method
+     + Alart--Curnier method
      + Jean--Moreau method
      + DeSaxce + Newton (Joli Feng)
-     + Fischer--bursmeister for SOCCP ( smoothing hayashima fukushima
+     + Fischer--bursmeister for SOCCP (smoothing hayashima fukushima)
      + Newton
        + line search (GP, Armijo, Non-monotone watch dogs)
+
    + Optimisation-based methods
      + Successive approximations (Haslinger, ...) QP et SOC (Kucera)
      + ACLM (Fixed point, Newton, Quasi-Newton, ....)
      + SOCLCP (Kanno, et al.)
+
    + Optional approach
      + SOCP (Optimization approach)
      + Interior point
@@ -191,12 +200,11 @@ v%     \end{array}\right]
   + Section 4.2
     \begin{itemize}
     \item Rule and efficient Choice of $\rho$.
-    \item Should we leave hyperplane projection ?
-    \item Acceleration techniques and Nesterov Method ?   FISTA and Nesterov work. INPPA
+    \item Should we remove hyperplane projection ?
+    \item Acceleration techniques and Nesterov Method ? FISTA and Nesterov work. INPPA
     \end{itemize}
   + Section 4.3
     What can be retained from\cite{Heyn_PhD2013} ?
-    Krylov techniques
-
-
+    Krylov techniques 
+  
 
