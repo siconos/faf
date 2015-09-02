@@ -894,6 +894,20 @@ TrescaFixedPoint = SiconosSolver(name="TrescaFixedPoint",
                                  dparam_err=1,
                                  maxiter=maxiter, precision=precision)
 
+ACLMFixedPoint = SiconosSolver(name="ACLMFixedPoint",
+                                 API=N.frictionContact3D_ACLMFixedPoint,
+                                 TAG=N.SICONOS_FRICTION_3D_ACLMFP,
+                                 iparam_iter=7,
+                                 dparam_err=1,
+                                 maxiter=maxiter, precision=precision)
+
+SOCLCP = SiconosSolver(name="SOCLCP",
+                       API=N.frictionContact3D_SOCLCP,
+                       TAG=N.SICONOS_FRICTION_3D_SOCLCP,
+                       iparam_iter=7,
+                       dparam_err=1,
+                       maxiter=maxiter, precision=precision)
+
 DeSaxceFixedPoint = SiconosSolver(name="DeSaxceFixedPoint",
                                   API=N.frictionContact3D_DeSaxceFixedPoint,
                                   TAG=N.SICONOS_FRICTION_3D_DSFP,
@@ -1063,7 +1077,7 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 #               FixedPointProjection, VIFixedPointProjection, ExtraGrad, VIExtraGrad]
 
 
-all_solvers = [nsgs, snsgs, TrescaFixedPoint, Prox, Prox2, Prox3, Prox4, Prox5, localACSTD, localACSTDGenerated, localACJeanMoreau, localACJeanMoreauGenerated, localfb_gp, localfb_fblsa, localacr, DeSaxceFixedPoint, VIFixedPointProjection, VIExtraGrad, bogusPureEnumerative, bogusPureNewton, bogusHybrid, bogusRevHybrid, quartic]
+all_solvers = [nsgs, snsgs, TrescaFixedPoint, ACLMFixedPoint, SOCLCP, Prox, Prox2, Prox3, Prox4, Prox5, localACSTD, localACSTDGenerated, localACJeanMoreau, localACJeanMoreauGenerated, localfb_gp, localfb_fblsa, localacr, DeSaxceFixedPoint, VIFixedPointProjection, VIExtraGrad,  quartic]
 
 
 if user_solvers == []:
@@ -1244,7 +1258,6 @@ if __name__ == '__main__':
                         except:
                             measure[solver_name][ip] = np.nan
                         ip += 1
-
 
             # 3 solver_r
             #            for solver_name in comp_data:

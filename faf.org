@@ -16,16 +16,21 @@
 ** Acceleration of Gauss-Seidel Strategy
 + Aitken--like strategy
 + have a look to FISTA and Nesterov work. INPPA
-** Cadoux formulation.
+** ACLM formulation.
 + Implement Fixed point Iteration
   + Which internal solver ? 
-    + the internal solver must use the convexity of the problem
-    + Block-splitting + local solver (PSOR + list of solver) Copy of nsgs with psor options
+    + the internal solver must use the convexity of the problem SOCQP ?
+    + Block-splitting + local solver (PSOR + list of solver). Copy of nsgs with psor options DONE
+    + Remain to add Newton--based solver ?
++ ACLM with SOCLCP solver
+  + What is the good strategy for the internal solver ?
+    very accurate convergence or  loose ONE
       
-      
-      
-Newton method of convex SOCCP
-+ Newton method on the problem $F(s)=s$
++ Newton method of convex SOCLCP or SOCQP
+  Newton method on the problem $F(s)=s$
+
+*** TODO Alternative strategy to drive to convergence. ?
+
 * Literature
   Check for ``solving frictional contact problem''
   \begin{itemize}
@@ -208,3 +213,35 @@ v%     \end{array}\right]
     Krylov techniques 
   
 
+
+* Comparison tools
+
+** using comp
+   
++ parallel usage
+  ls *.hdf5 | parallel comp.py --timeout=100 --no-collect '--file={}'
++ --no-collect   
+  leave the result into separate file that are named according the solver and the name of the problem
++ --just--collect
+  collect all the result into comp.hdf5
++ --timeout=10   
+  set the maximum time of computation for a solver to 10 seconds
++ --domain='a:d:b'
+  restrict the domain of the performance profile to the interval [a,b] with a step of d
+  or a perfomance profile a should be greater or equal 1
++ --iter  OBSOLETE ?
+  select the number iteration as the measure for the perfomance profile
++ --time OBSOLETE ?
+  select the computation time as the measure for the perfomance profile
++ --flop OBSOLETE ?
++ --measure=value
+  select the value  as the measure for the perfomance profile
+  possible values are time, iter, flpops
+
+
++ usage
+
+  comp.py   --display --time --domain='1:0.1:10'  comp.hdf5
+
+
+  comp.py --display --measure=time --solvers=Gauss,Tresca,SOCLCP,ACLM --domain=1:0.1:100
