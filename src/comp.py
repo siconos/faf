@@ -162,6 +162,44 @@ random_sample_proba = None
 max_problems = None
 cond_nc = None
 with_guess = True
+
+
+def usage():
+  print "\n \n"
+  print 'Usage: '+sys.argv[0]+'[option]'
+  print "Options : "
+  print " --help "   
+  print "   display this message"
+  print " --no-collect "   
+  print "   leave the result into separate file that are named according the solver and the name of the problem"
+  print " --just--collect"
+  print "   collect all the result into comp.hdf5"
+  print " --timeout=n"  
+  print "   set the maximum time of computation for each problem to n seconds (default",utimeout,"s)"
+  print " --maxiter=n"  
+  print "   set the maximum time of iteration for each problem to n iterations (default",maxiter,")"
+  print " --domain='a:d:b'"
+  print "   restrict the domain of the performance profile to the interval [a,b] with a step of d (default",domain[0],":",domain[1]-domain[0],":",domain[-1]+domain[1]-domain[0],")"
+  print "   or a perfomance profile a should be greater or equal 1"
+  print " --measure=value"
+  print "   select the value  as the measure for the perfomance profile. Possible values are time, iter, flpops"
+  print " --display"
+  print "   perform the computation of performance profile and display it in matplotlib"
+  print " --new"
+  print "   remove comp.hdf5 file"
+  print " "
+  print " Other options have to be documented" 
+  print " "
+  print " Usage examples:"
+
+  toto = """
+  comp.py   --display --time --domain='1:0.1:10'  comp.hdf5
+  
+  comp.py --display --measure=time --solvers=Gauss,Tresca,SOCLCP,ACLM --domain=1:0.1:100
+  """
+  print toto
+  
+
 try:
     opts, args = getopt.gnu_getopt(sys.argv[1:], '',
                                    ['help', 'flop', 'iter', 'time', 'verbose','no-guess',
@@ -184,12 +222,9 @@ except getopt.GetoptError, err:
 for o, a in opts:
     if o == '--verbose':
         N.setNumericsVerbose(1)
-    if o == '--flop':
-        measure = 'flop'
-    elif o == '--iter':
-        measure = 'iter'
-    elif o == '--time':
-        measure = 'time'
+    if o == '--help':
+        usage()
+        exit(2)
     elif o == '--timeout':
         utimeout = float(a)
     elif o == '--maxiter':
