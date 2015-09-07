@@ -812,7 +812,7 @@ class SiconosHybridSolver(SiconosSolver):
     def guess(self, filename):
         pfilename = os.path.splitext(filename)[0]
         with h5py.File('comp.hdf5', 'r') as comp_file:
-            return extern_guess(pfilename, 'NonsmoothGaussSeidel', 1, comp_file)
+            return extern_guess(pfilename, 'NSGS', 1, comp_file)
 
 
 class SiconosWrappedSolver(SiconosSolver):
@@ -823,7 +823,7 @@ class SiconosWrappedSolver(SiconosSolver):
 #
 # Some solvers
 #
-localACSTD = SiconosSolver(name="LocalAlartCurnierSTD",
+localACSTD = SiconosSolver(name="NSN-AlartCurnier",
                                   API=N.frictionContact3D_localAlartCurnier,
                                   TAG=N.SICONOS_FRICTION_3D_LOCALAC,
                                   iparam_iter=1,
@@ -834,7 +834,7 @@ localACSTD.SolverOptions().iparam[10] = 0;
 localACSTD.SolverOptions().iparam[3] = 10000000
 
 
-localACJeanMoreau = SiconosSolver(name="LocalAlartCurnierJeanMoreau",
+localACJeanMoreau = SiconosSolver(name="NSN-JeanMoreau",
                                   API=N.frictionContact3D_localAlartCurnier,
                                   TAG=N.SICONOS_FRICTION_3D_LOCALAC,
                                   iparam_iter=1,
@@ -844,7 +844,7 @@ localACJeanMoreau = SiconosSolver(name="LocalAlartCurnierJeanMoreau",
 localACJeanMoreau.SolverOptions().iparam[10] = 1;
 localACJeanMoreau.SolverOptions().iparam[3] = 10000000
 
-localACSTDGenerated = SiconosSolver(name="LocalAlartCurnierSTDGenerated",
+localACSTDGenerated = SiconosSolver(name="NSN-AlartCurnier-Generated",
                                     API=N.frictionContact3D_localAlartCurnier,
                                     TAG=N.SICONOS_FRICTION_3D_LOCALAC,
                                     iparam_iter=1,
@@ -854,7 +854,7 @@ localACSTDGenerated = SiconosSolver(name="LocalAlartCurnierSTDGenerated",
 localACSTDGenerated.SolverOptions().iparam[10] = 2;
 localACSTDGenerated.SolverOptions().iparam[3] = 10000000
 
-localACJeanMoreauGenerated = SiconosSolver(name="LocalAlartCurnierJeanMoreauGenerated",
+localACJeanMoreauGenerated = SiconosSolver(name="NSN-JeanMoreau-Generated",
                                            API=N.frictionContact3D_localAlartCurnier,
                                            TAG=N.SICONOS_FRICTION_3D_LOCALAC,
                                            iparam_iter=1,
@@ -866,7 +866,7 @@ localACJeanMoreauGenerated.SolverOptions().iparam[3] = 10000000
 
 
 
-localfb_gp = SiconosSolver(name="LocalFischerBurmeisterGP",
+localfb_gp = SiconosSolver(name="NSN-FB-GP",
                            API=N.frictionContact3D_localFischerBurmeister,
                            TAG=N.SICONOS_FRICTION_3D_LOCALFB,
                            iparam_iter=1,
@@ -877,7 +877,7 @@ localfb_gp.SolverOptions().iparam[3] = 1000000
 localfb_gp.SolverOptions().iparam[11] = 0
 localfb_gp.SolverOptions().iparam[12] = 6
 
-localfb_fblsa = SiconosSolver(name="LocalFischerBurmeisterFBLSA",
+localfb_fblsa = SiconosSolver(name="NSN-FB-FBLSA",
                               API=N.frictionContact3D_localFischerBurmeister,
                               TAG=N.SICONOS_FRICTION_3D_LOCALFB,
                               iparam_iter=1,
@@ -898,14 +898,14 @@ hlocalac = SiconosHybridSolver(name = "HLocalAlartCurnier",
 
 hlocalac.SolverOptions().iparam[3] = 10000000
 
-nsgs = SiconosSolver(name="NonsmoothGaussSeidel",
+nsgs = SiconosSolver(name="NSGS-Default",
                      API=N.frictionContact3D_nsgs,
                      TAG=N.SICONOS_FRICTION_3D_NSGS,
                      iparam_iter=7,
                      dparam_err=1,
                      maxiter=maxiter, precision=precision)
 
-snsgs = SiconosSolver(name="ShuffledNonsmoothGaussSeidel",
+snsgs = SiconosSolver(name="NSGS-Default-Shuffled",
                      API=N.frictionContact3D_nsgs,
                      TAG=N.SICONOS_FRICTION_3D_NSGS,
                      iparam_iter=7,
@@ -915,42 +915,74 @@ snsgs = SiconosSolver(name="ShuffledNonsmoothGaussSeidel",
 snsgs.SolverOptions().iparam[9] = 1
 
 # only dense
-nsgsv = SiconosSolver(name="NonsmoothGaussSeidelVelocity",
+nsgsv = SiconosSolver(name="NSGS-Velocity",
                       API=N.frictionContact3D_nsgs_velocity,
                       TAG=N.SICONOS_FRICTION_3D_NSGSV,
                       iparam_iter=7,
                       dparam_err=1,
                       maxiter=maxiter, precision=precision)
 
-TrescaFixedPoint = SiconosSolver(name="TrescaFixedPoint",
+TrescaFixedPoint = SiconosSolver(name="TrescaFixedPoint-NSGS-PLI",
                                  API=N.frictionContact3D_TrescaFixedPoint,
                                  TAG=N.SICONOS_FRICTION_3D_TFP,
                                  iparam_iter=7,
                                  dparam_err=1,
                                  maxiter=maxiter, precision=precision)
 
-ACLMFixedPoint = SiconosSolver(name="ACLMFixedPoint",
+ACLMFixedPoint = SiconosSolver(name="ACLMFixedPoint-SOCLCP-NSGS-Default",
                                  API=N.frictionContact3D_ACLMFixedPoint,
                                  TAG=N.SICONOS_FRICTION_3D_ACLMFP,
                                  iparam_iter=7,
                                  dparam_err=1,
                                  maxiter=maxiter, precision=precision)
 
-SOCLCP = SiconosSolver(name="SOCLCP",
+SOCLCP = SiconosSolver(name="SOCLCP-NSGS-Default",
                        API=N.frictionContact3D_SOCLCP,
                        TAG=N.SICONOS_FRICTION_3D_SOCLCP,
                        iparam_iter=7,
                        dparam_err=1,
                        maxiter=maxiter, precision=precision)
 
-DeSaxceFixedPoint = SiconosSolver(name="DeSaxceFixedPoint",
+DeSaxceFixedPoint = SiconosSolver(name="FixedPoint-DeSaxce",
                                   API=N.frictionContact3D_DeSaxceFixedPoint,
                                   TAG=N.SICONOS_FRICTION_3D_DSFP,
                                   iparam_iter=7,
                                   dparam_err=1,
                                   maxiter=maxiter, precision=precision)
 
-Prox = SiconosSolver(name="ProximalFixedPoint",
+ExtraGrad = SiconosSolver(name="ExtraGradient",
+                          API=N.frictionContact3D_ExtraGradient,
+                          TAG=N.SICONOS_FRICTION_3D_EG,
+                          iparam_iter=7,
+                          dparam_err=1,
+                          maxiter=maxiter, precision=precision)
+
+FixedPointProjection = SiconosSolver(name="FixedPoint-Projection",
+                          API=N.frictionContact3D_fixedPointProjection,
+                          TAG=N.SICONOS_FRICTION_3D_FPP,
+                          iparam_iter=7,
+                          dparam_err=1,
+                          maxiter=maxiter, precision=precision)
+
+VIExtraGrad = SiconosSolver(name="ExtraGradient-VI",
+                          API=N.frictionContact3D_VI_ExtraGradient,
+                          TAG=N.SICONOS_FRICTION_3D_VI_EG,
+                          iparam_iter=7,
+                          dparam_err=1,
+                          maxiter=maxiter, precision=precision)
+
+VIFixedPointProjection = SiconosSolver(name="FixedPoint-VI",
+                          API=N.frictionContact3D_VI_FixedPointProjection,
+                          TAG=N.SICONOS_FRICTION_3D_VI_FPP,
+                          iparam_iter=7,
+                          dparam_err=1,
+                          maxiter=maxiter, precision=precision)
+
+
+
+
+
+Prox = SiconosSolver(name="Proximal-NSGS-v0",
                      API=N.frictionContact3D_proximal,
                      TAG=N.SICONOS_FRICTION_3D_PROX,
                      iparam_iter=7,
@@ -958,7 +990,7 @@ Prox = SiconosSolver(name="ProximalFixedPoint",
                      maxiter=maxiter, precision=precision)
 Prox.SolverOptions().internalSolvers.iparam[3] = 1000000
 
-Prox2 = SiconosSolver(name="ProximalFixedPoint2",
+Prox2 = SiconosSolver(name="Proximal-NSGS-v2",
                      API=N.frictionContact3D_proximal,
                      TAG=N.SICONOS_FRICTION_3D_PROX,
                      iparam_iter=7,
@@ -971,7 +1003,7 @@ Prox2.SolverOptions().dparam[5]=2.0 # nu
 
 Prox2.SolverOptions().internalSolvers.iparam[3] = 1000000
 
-Prox3 = SiconosSolver(name="ProximalFixedPoint3",
+Prox3 = SiconosSolver(name="Proximal-NSGS-v3",
                      API=N.frictionContact3D_proximal,
                      TAG=N.SICONOS_FRICTION_3D_PROX,
                      iparam_iter=7,
@@ -984,7 +1016,7 @@ Prox3.SolverOptions().dparam[5]=2.0 # nu
 Prox3.SolverOptions().internalSolvers.iparam[3] = 1000000
 
 
-Prox4 = SiconosSolver(name="ProximalFixedPoint4",
+Prox4 = SiconosSolver(name="Proximal-NSGS-v4",
                      API=N.frictionContact3D_proximal,
                      TAG=N.SICONOS_FRICTION_3D_PROX,
                      iparam_iter=7,
@@ -996,7 +1028,7 @@ Prox4.SolverOptions().dparam[5]=1.0 # nu
 Prox4.SolverOptions().internalSolvers.iparam[3] = 1000000
 
 
-Prox5 = SiconosSolver(name="ProximalFixedPoint5",
+Prox5 = SiconosSolver(name="Proximal-NSGS-v5",
                      API=N.frictionContact3D_proximal,
                      TAG=N.SICONOS_FRICTION_3D_PROX,
                      iparam_iter=7,
@@ -1009,37 +1041,9 @@ Prox5.SolverOptions().dparam[5]=1.0 # nu
 Prox5.SolverOptions().internalSolvers.iparam[3] = 1000000
 
 
-ExtraGrad = SiconosSolver(name="ExtraGradient",
-                          API=N.frictionContact3D_ExtraGradient,
-                          TAG=N.SICONOS_FRICTION_3D_EG,
-                          iparam_iter=7,
-                          dparam_err=1,
-                          maxiter=maxiter, precision=precision)
-
-FixedPointProjection = SiconosSolver(name="FixedPointProjection",
-                          API=N.frictionContact3D_fixedPointProjection,
-                          TAG=N.SICONOS_FRICTION_3D_FPP,
-                          iparam_iter=7,
-                          dparam_err=1,
-                          maxiter=maxiter, precision=precision)
-
-VIExtraGrad = SiconosSolver(name="VIExtraGradient",
-                          API=N.frictionContact3D_VI_ExtraGradient,
-                          TAG=N.SICONOS_FRICTION_3D_VI_EG,
-                          iparam_iter=7,
-                          dparam_err=1,
-                          maxiter=maxiter, precision=precision)
-
-VIFixedPointProjection = SiconosSolver(name="VIFixedPointProjection",
-                          API=N.frictionContact3D_VI_FixedPointProjection,
-                          TAG=N.SICONOS_FRICTION_3D_VI_FPP,
-                          iparam_iter=7,
-                          dparam_err=1,
-                          maxiter=maxiter, precision=precision)
 
 
-
-localac_wrapped = SiconosSolver(name="LocalAlartCurnierWrapped",
+localac_wrapped = SiconosSolver(name="NSN-AlartCurnier-Wrapped",
                                 API=N.frictionContact3D_localAlartCurnier,
                                 TAG=N.SICONOS_FRICTION_3D_LOCALAC,
                                 iparam_iter=1,
@@ -1055,7 +1059,7 @@ def fc3d_localac_r(problem, reactions, velocities, _SO):
     return localac_wrapped(problem, reactions, velocities)
 
 # flop measure only on localac
-localacr = SiconosWrappedSolver(name="LocalacR",
+localacr = SiconosWrappedSolver(name="NSN-AlartCurnier-R",
                                 API=fc3d_localac_r,
                                 TAG=N.SICONOS_FRICTION_3D_LOCALAC,
                                 iparam_iter=1,
@@ -1063,7 +1067,7 @@ localacr = SiconosWrappedSolver(name="LocalacR",
                                 maxiter=maxiter, precision=precision)
 
 #
-quartic = SiconosSolver(name="NonsmoothGaussSeidelQuartic",
+quartic = SiconosSolver(name="NSGS-Quartic",
                         API=N.frictionContact3D_nsgs,
                         TAG=N.SICONOS_FRICTION_3D_NSGS,
                         iparam_iter=7,
@@ -1112,7 +1116,7 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 #               FixedPointProjection, VIFixedPointProjection, ExtraGrad, VIExtraGrad]
 
 
-all_solvers = [nsgs, snsgs, TrescaFixedPoint, ACLMFixedPoint, SOCLCP, Prox, Prox2, Prox3, Prox4, Prox5, localACSTD, localACSTDGenerated, localACJeanMoreau, localACJeanMoreauGenerated, localfb_gp, localfb_fblsa, localacr, DeSaxceFixedPoint, VIFixedPointProjection, VIExtraGrad,  quartic]
+all_solvers = [nsgs, snsgs, quartic, TrescaFixedPoint, ACLMFixedPoint, DeSaxceFixedPoint, VIFixedPointProjection, VIExtraGrad, SOCLCP, Prox, Prox2, Prox3, Prox4, Prox5, localACSTD, localACSTDGenerated,  localacr, localACJeanMoreau, localACJeanMoreauGenerated, localfb_gp, localfb_fblsa]
 
 
 if user_solvers == []:

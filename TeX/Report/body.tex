@@ -1184,18 +1184,19 @@ A basic idea of algorithm is to perform fixed point iterations on the mapping
   \label{eq:skew-fixed-point}
    z \mapsto P_{X,D}(z-D^{-1} F(z)).
 \end{equation}
-yielding to Algorithm~\ref{Algo:FP-vi}.
+yielding to Algorithm~\ref{Algo:FP-vi}
 \begin{algorithm}
   \begin{algorithmic}
     {\sf
       \STATE $ $
       \REQUIRE $\sf F,X$ Data of VI~(\ref{eq:vi})
-      \REQUIRE $\sf D$ a symmetric positive definite matrix
       \REQUIRE $\sf z_0$ initial values and $\sf tol >0$ a tolerance
+      \REQUIRE $\rho_0$ initial value for $\rho$
       \ENSURE  $\sf z$ solution of VI~(\ref{eq:vi})
       \STATE   $\sf k \leftarrow 0$ 
       \WHILE {$\sf error > tol$} 
-      \STATE $\sf z_{k+1} \leftarrow P_{X,D}(z_k - D^{-1}\,F(z_k))$
+      \STATE Update the value of $\rho_k$
+      \STATE $\sf z_{k+1} \leftarrow P_{X}(z_k - \rho_k\,F(z_k))$
       \STATE Evaluate $\sf error$.
       \STATE $\sf k \leftarrow k+1$
       \ENDWHILE
@@ -1292,13 +1293,14 @@ yielding to Algorithm~\ref{Algo:FP-qvi}.
   \begin{algorithmic}
     {\sf
       \STATE $ $
-      \REQUIRE $\sf F,X$ Data of Problem~\ref{eq:vi}
-      \REQUIRE $\sf D$ a symmetric positive definite matrix
-      \REQUIRE $z_0$ initial values and $\sf tol >0$ a tolerance
-      \ENSURE  $\sf z$ solution of Problem~\ref{eq:vi}
+      \REQUIRE $\sf F,X$ Data of VI~(\ref{eq:vi})
+      \REQUIRE $z_0$ initial values and $\sf tol >0$ a tolerance  
+      \REQUIRE $\rho_0$ initial value for $\rho$
+      \ENSURE  $\sf z$ solution of VI~(\ref{eq:vi})
       \STATE   $\sf k \leftarrow 0$ 
       \WHILE {$\sf error > tol$} 
-      \STATE $\sf z_{k+1} \leftarrow P_{X(z_k),D}(z_k - D^{-1}\,F(z_k))$
+      \STATE Update the value of $\rho_k$
+      \STATE $\sf z_{k+1} \leftarrow P_{X(z_k)}(z_k - \rho_k\,F(z_k))$
       \STATE Evaluate $\sf error$.
       \STATE $\sf k \leftarrow k+1$
       \ENDWHILE
@@ -1309,7 +1311,7 @@ yielding to Algorithm~\ref{Algo:FP-qvi}.
 \end{algorithm}
 For Problem~\ref{prob:II} and~(\ref{eq:Moreau--Jean-1}), we get the following iteration rule
 \begin{equation}
-  \label{eq:FP-CKPS-II}
+  \label{eq:FP-MJ-II}
   \begin{cases}
     u_{k+1} \leftarrow W r_{k} +q\\
     r_{\n,k+1} \leftarrow P_{\RR^{n_c}_+}(r_{\n,k} -\rho_\n u_{\n,k+1}) \\
@@ -1328,9 +1330,9 @@ and with the ~(\ref{eq:AC-1}), we get
 We will see in Section~\ref{Sec:OptimisationBasedMethods} that more evolved algorithms can be written exploiting the structure of the convex optimization sub-problems.
 
 
-% Algorithm~\ref{Algo:FP-CKPS-II}. For the tangential part, the projection is performed on $D(\mu,r_{\n,k})$ at the iteration $k$. It can be also performed on  $D(\mu,r_{\n,k+1})$. We will see in Section~\ref{Sec:OptimisationBasedMethods} that more evolved algorithms can be written exploiting the convex optimization sub-problems
+% Algorithm~\ref{Algo:FP-MJ-II}. For the tangential part, the projection is performed on $D(\mu,r_{\n,k})$ at the iteration $k$. It can be also performed on  $D(\mu,r_{\n,k+1})$. We will see in Section~\ref{Sec:OptimisationBasedMethods} that more evolved algorithms can be written exploiting the convex optimization sub-problems
 % \begin{algorithm}
-%   \label{Algo:FP-CKPS-II}
+%   \label{Algo:FP-MJ-II}
 %   \begin{algorithmic}
 %     {\sf
 %       \STATE $ $
@@ -1364,20 +1366,24 @@ We will see in Section~\ref{Sec:OptimisationBasedMethods} that more evolved algo
     & Description 
     & parameters\\
     \hline
-    \sf FP-VI-1 
-    &  Algorithm~\ref{Algo:FP-vi} with the iteration rule~(\ref{eq:FP-vi-Ibis})
-    & $D$ or $\rho$\\
+    \sf FP-DS
+    &  Algorithm~\ref{Algo:FP-vi} with the iteration rule~(\ref{eq:FP-vi-II}) and fixed $\rho$
+    & $\rho$ \\
+    %\hline
+    % \sf FP-VI-1 
+    % &  Algorithm~\ref{Algo:FP-vi} with the iteration rule~(\ref{eq:FP-vi-Ibis})
+    % & $D$ or $\rho$\\
     \hline
-    \sf FP-VI-2 
-    &  Algorithm~\ref{Algo:FP-vi} with the iteration rule~(\ref{eq:FP-vi-II})
-    & $D$ or $\rho$\\
+    \sf FP-VI-UP
+    &  Algorithm~\ref{Algo:FP-vi} with the iteration rule~(\ref{eq:FP-vi-II}) and updating rule
+    & $\ldots$\\
     \hline
-    \sf FP-QVI-ACI-2 
-    &  Algorithm~\ref{Algo:FP-qvi} with the iteration rule~(\ref{eq:FP-CKPS-II})
+    \sf FP-QVI-MJ
+    &  Algorithm~\ref{Algo:FP-qvi} with the iteration rule~(\ref{eq:FP-MJ-II}) and fixed $\rho\_n,\rho_\t$
     & $\rho_\n,\rho_\t$\\
      \hline
-    \sf FP-QVI-ACI-2 
-    &  Algorithm~\ref{Algo:FP-qvi} with the iteration rule~(\ref{eq:FP-AC-II})
+    \sf FP-QVI-AC 
+    &  Algorithm~\ref{Algo:FP-qvi} with the iteration rule~(\ref{eq:FP-AC-II}) and fixed $\rho,\rho_\t$
     & $\rho_\n,\rho_\t$\\
    \hline    
   \end{tabular}
@@ -1387,9 +1393,10 @@ We will see in Section~\ref{Sec:OptimisationBasedMethods} that more evolved algo
 
 \begin{ndrva}
   \begin{itemize}
-  \item situate the work of \cite{DeSaxce.Feng90,DeSaxce.Feng1998} and  \cite{Simo.Laursen1992,Laursen.Simo1993b}.
-  \item implement the work of Simo just to laugh
-  \item Have a careful look to the work of Krause.  
+  \item Situate the work of \cite{DeSaxce.Feng90,DeSaxce.Feng1998} and  \cite{Simo.Laursen1992,Laursen.Simo1993b}.
+  \item Have a careful look to the work of Krause.
+  \item Implement the work of Simo just to laugh
+  \item Implement the FP-QVI-MJ and FP-QVI-AC within the De Saxce approach ?
   \end{itemize}
 \end{ndrva} 
 
