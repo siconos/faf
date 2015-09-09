@@ -146,6 +146,7 @@ gnuplot_distrib = False
 output_dat=False
 user_filenames = []
 user_solvers = []
+user_solvers_exact = []
 utimeout = 10
 keep_files = False
 output_errors = False
@@ -170,6 +171,8 @@ def usage():
   print "Options : "
   print " --help "   
   print "   display this message"
+  print " --verbose "   
+  print "   enable verbose mode equal to 1 for Siconos Numerics"
   print " --no-collect "   
   print "   leave the result into separate file that are named according the solver and the name of the problem"
   print " --just--collect"
@@ -187,7 +190,10 @@ def usage():
   print "   perform the computation of performance profile and display it in matplotlib"
   print " --new"
   print "   remove comp.hdf5 file"
-  print " "
+  print " --solvers=string"
+  print "   use keyworks in s separated by comma for filtering solvers"
+  print " --solvers-exact=string"
+  print "   use exact names of solvers in s separated by comma for filtering solvers"
   print " Other options have to be documented" 
   print " "
   print " Usage examples:"
@@ -204,7 +210,7 @@ try:
     opts, args = getopt.gnu_getopt(sys.argv[1:], '',
                                    ['help', 'flop', 'iter', 'time', 'verbose','no-guess',
                                     'clean', 'display', 'display-convergence',
-                                    'files=', 'solvers=',
+                                    'files=', 'solvers-exact=', 'solvers=',
                                     'random-sample=', 'max-problems=',
                                     'timeout=', 'maxiter=', 'precision=',
                                     'keep-files', 'new', 'errors',
@@ -255,6 +261,8 @@ for o, a in opts:
         output_reactions = True
     elif o == '--solvers':
         user_solvers = split(a, ',')
+    elif o == '--solvers-exact':
+        user_solvers_exact = split(a, ',')
     elif o == '--just-collect':
         ask_compute = False
     elif o == '--no-collect':
@@ -922,6 +930,62 @@ nsgsv = SiconosSolver(name="NSGS-Velocity",
                       dparam_err=1,
                       maxiter=maxiter, precision=precision)
 
+psor1 = SiconosSolver(name="PSOR-Default-1.1",
+                     API=N.frictionContact3D_nsgs,
+                     TAG=N.SICONOS_FRICTION_3D_NSGS,
+                     iparam_iter=7,
+                     dparam_err=1,
+                     maxiter=maxiter, precision=precision)
+psor1.SolverOptions().iparam[8] = 1
+psor1.SolverOptions().dparam[8] = 1.1
+
+psor2 = SiconosSolver(name="PSOR-Default-1.3",
+                     API=N.frictionContact3D_nsgs,
+                     TAG=N.SICONOS_FRICTION_3D_NSGS,
+                     iparam_iter=7,
+                     dparam_err=1,
+                     maxiter=maxiter, precision=precision)
+psor2.SolverOptions().iparam[8] = 1
+psor2.SolverOptions().dparam[8] = 1.3
+
+psor3 = SiconosSolver(name="PSOR-Default-1.5",
+                     API=N.frictionContact3D_nsgs,
+                     TAG=N.SICONOS_FRICTION_3D_NSGS,
+                     iparam_iter=7,
+                     dparam_err=1,
+                     maxiter=maxiter, precision=precision)
+psor3.SolverOptions().iparam[8] = 1
+psor3.SolverOptions().dparam[8] = 1.5
+
+psor4 = SiconosSolver(name="PSOR-Default-1.0",
+                     API=N.frictionContact3D_nsgs,
+                     TAG=N.SICONOS_FRICTION_3D_NSGS,
+                     iparam_iter=7,
+                     dparam_err=1,
+                     maxiter=maxiter, precision=precision)
+psor4.SolverOptions().iparam[8] = 1
+psor4.SolverOptions().dparam[8] = 1.0
+
+psor5 = SiconosSolver(name="PSOR-Default-0.8",
+                     API=N.frictionContact3D_nsgs,
+                     TAG=N.SICONOS_FRICTION_3D_NSGS,
+                     iparam_iter=7,
+                     dparam_err=1,
+                     maxiter=maxiter, precision=precision)
+psor5.SolverOptions().iparam[8] = 1
+psor5.SolverOptions().dparam[8] = 0.8
+
+psor6 = SiconosSolver(name="PSOR-Default-0.5",
+                     API=N.frictionContact3D_nsgs,
+                     TAG=N.SICONOS_FRICTION_3D_NSGS,
+                     iparam_iter=7,
+                     dparam_err=1,
+                     maxiter=maxiter, precision=precision)
+psor6.SolverOptions().iparam[8] = 1
+psor6.SolverOptions().dparam[8] = 0.5
+
+
+
 TrescaFixedPoint = SiconosSolver(name="TrescaFixedPoint-NSGS-PLI",
                                  API=N.frictionContact3D_TrescaFixedPoint,
                                  TAG=N.SICONOS_FRICTION_3D_TFP,
@@ -964,6 +1028,10 @@ FixedPointProjection = SiconosSolver(name="FixedPoint-Projection",
                           dparam_err=1,
                           maxiter=maxiter, precision=precision)
 
+
+
+
+
 VIExtraGrad = SiconosSolver(name="ExtraGradient-VI",
                           API=N.frictionContact3D_VI_ExtraGradient,
                           TAG=N.SICONOS_FRICTION_3D_VI_EG,
@@ -978,7 +1046,31 @@ VIFixedPointProjection = SiconosSolver(name="FixedPoint-VI",
                           dparam_err=1,
                           maxiter=maxiter, precision=precision)
 
+VIFixedPointProjection1 = SiconosSolver(name="FixedPoint-VI-v1",
+                          API=N.frictionContact3D_VI_FixedPointProjection,
+                          TAG=N.SICONOS_FRICTION_3D_VI_FPP,
+                          iparam_iter=7,
+                          dparam_err=1,
+                          maxiter=maxiter, precision=precision)
 
+VIFixedPointProjection1.SolverOptions().iparam[1] = 1
+
+VIFixedPointProjection2 = SiconosSolver(name="FixedPoint-VI-v2",
+                          API=N.frictionContact3D_VI_FixedPointProjection,
+                          TAG=N.SICONOS_FRICTION_3D_VI_FPP,
+                          iparam_iter=7,
+                          dparam_err=1,
+                          maxiter=maxiter, precision=precision)
+
+VIFixedPointProjection2.SolverOptions().iparam[1] = 2
+VIFixedPointProjection3 = SiconosSolver(name="FixedPoint-VI-v3",
+                          API=N.frictionContact3D_VI_FixedPointProjection,
+                          TAG=N.SICONOS_FRICTION_3D_VI_FPP,
+                          iparam_iter=7,
+                          dparam_err=1,
+                          maxiter=maxiter, precision=precision)
+
+VIFixedPointProjection3.SolverOptions().iparam[1] = 3
 
 
 
@@ -1114,17 +1206,22 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 
 #all_solvers = [nsgs, snsgs, TrescaFixedPoint, localac, Prox, DeSaxceFixedPoint,
 #               FixedPointProjection, VIFixedPointProjection, ExtraGrad, VIExtraGrad]
+#all_solvers = [nsgs, snsgs, quartic, TrescaFixedPoint, ACLMFixedPoint, DeSaxceFixedPoint, VIFixedPointProjection, VIFixedPointProjection1, VIFixedPointProjection2, VIFixedPointProjection3, VIExtraGrad, SOCLCP, Prox, Prox2, Prox3, Prox4, Prox5, localACSTD, localACSTDGenerated,  localacr, localACJeanMoreau, localACJeanMoreauGenerated, localfb_gp, localfb_fblsa]
 
+all_solvers = [nsgs, snsgs, quartic, psor1,psor2, psor3, psor4,psor5, psor6, TrescaFixedPoint, ACLMFixedPoint, DeSaxceFixedPoint, VIFixedPointProjection, VIExtraGrad, SOCLCP, Prox, Prox2, Prox3, Prox4, Prox5, localACSTD, localACSTDGenerated,  localacr, localACJeanMoreau, localACJeanMoreauGenerated, localfb_gp, localfb_fblsa]
 
-all_solvers = [nsgs, snsgs, quartic, TrescaFixedPoint, ACLMFixedPoint, DeSaxceFixedPoint, VIFixedPointProjection, VIExtraGrad, SOCLCP, Prox, Prox2, Prox3, Prox4, Prox5, localACSTD, localACSTDGenerated,  localacr, localACJeanMoreau, localACJeanMoreauGenerated, localfb_gp, localfb_fblsa]
+solvers=[]
+if user_solvers != []:
+    print "user_solvers", user_solvers
+    solvers.extend( filter(lambda s: any(us in s._name for us in user_solvers), all_solvers))
 
+if user_solvers_exact != []:
+    print "user_solvers_exact", user_solvers_exact
+    solvers.extend(filter(lambda s: any(us ==  s._name  for us in user_solvers_exact), all_solvers))
 
-if user_solvers == []:
-    solvers = all_solvers
-else:
-    solvers = filter(lambda s: any(us in s._name for us in user_solvers), all_solvers)
-
-
+if solvers == []:
+    solvers= all_solvers
+    
 def is_fclib_file(filename):
     r = False
     try:
