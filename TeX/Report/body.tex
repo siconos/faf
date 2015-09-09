@@ -90,10 +90,10 @@ From the mathematical programming point of view, the problem appears to be a Sec
     K^\star \ni x \perp y \in K
   \end{cases}
 \end{equation}
-where $K$ is a second order cone. If the nonlinear part of the problem (\ref{eq:soccp1}) is neglected ($g(u)=0$), the problem is an associated friction problem with dilatation, and by the way, is a gentle Second Order Cone Linear Complementarity Problem (SOCLCP) with a positive matrix $H^\top M^{-1} H$ (possibly semi--definite). When the non-associated character of the friction is taken into account through $g(u)$, the problem is non monotone and nonsmooth, and then very hard to solve efficiently. For a given numerical algorithm, it is, most of the time,  not so difficult to design mechanical example to run the algorithm into troubles. The mathematical results of convergence of the numerical algorithms are rare and most of these required strong assumptions such that  the amount of friction, or full rank assumptions of matrices or operators or the dimension of the space in which the problem is formulated. Among these results, we can cite the Czech school where the coefficient of friction is assumed to be bounded and small. This assumption allows us to use fixed point methods on the convex sub--problems of Tresca friction (constant friction threshold). We can also cite the result that are obtained in~\cite{Pang.Trinkle1996,Stewart.Trinkle1996,Anitescu.Potra97} where the friction cone is polyhedral (in 2D or by a faceting process). In that case, if the constraint are scleronomeous, Lemke's algorithm is able to solve the problem. The question of existence of solutions has been treated in~\cite{Klarbring.Pang1998,ZAMM:ZAMM201000073} under similar assumptions but with different techniques. The question of uniqueness remains a difficult problems in the general case.
+where $K$ is a second order cone. If the nonlinear part of the problem (\ref{eq:soccp1}) is neglected ($g(u)=0$), the problem is an associated friction problem with dilatation, and by the way, is a gentle Second Order Cone Linear Complementarity Problem (SOCLCP) with a positive matrix $H^\top M^{-1} H$ (possibly semi--definite). When the non-associated character of the friction is taken into account through $g(u)$, the problem is non monotone and nonsmooth, and then very hard to solve efficiently. For a given numerical algorithm, it is, most of the time,  not so difficult to design mechanical example to run the algorithm into troubles. The mathematical results of convergence of the numerical algorithms are rare and most of these required strong assumptions such that  the amount of friction, or full rank assumptions of matrices or operators or the dimension of the space in which the problem is formulated. Among these results, we can cite the Czech school where the coefficient of friction is assumed to be bounded and small. This assumption allows us to use fixed point methods on the convex sub--problems of Tresca friction (constant friction threshold). We can also cite the result that are obtained in~\cite{Pang.Trinkle1996,Stewart.Trinkle1996,Anitescu.Potra97} where the friction cone is polyhedral (in 2D or by a faceting process). In that case, if the constraint are scleronomeous, Lemke's algorithm is able to solve the problem. The question of existence of solutions has been treated in~\cite{Klarbring.Pang1998,Acary.ea_ZAMM2011} under similar assumptions but with different techniques. The question of uniqueness remains a difficult problems in the general case.
 
 
-In this article,  after stating the problem with more details in Section~\ref{sec:description}, we recall the existence result of~\cite{ZAMM:ZAMM201000073} for the problem in~(\ref{eq:soccp1}) in Section \ref{sec:existence}. In this framework, we briefly present in Section~\ref{sec:formulation} a list of alternative formulations of the problem that are prone to the design of numerical solution procedures. Right after these formulations, we list some of the most standard algorithms dedicated to one of the previous formulation in Section. These algorithms that have been previously developed for solving the SOCCP~(\ref{eq:soccp1}) mainly based  variational inequality (Section~\ref{sec:numericalmethods,vi} and~\ref{Sec:SplittingTechniquesAndProx}) and nonsmooth equations (Section~\ref{sec:newtonmethods}) or  optimization--based (Section~\ref{Sec:OptimisationBasedMethods}) reformulations.  
+In this article,  after stating the problem with more details in Section~\ref{sec:description}, we recall the existence result of~\cite{Acary.ea_ZAMM2011} for the problem in~(\ref{eq:soccp1}) in Section \ref{sec:existence}. In this framework, we briefly present in Section~\ref{sec:formulation} a list of alternative formulations of the problem that are prone to the design of numerical solution procedures. Right after these formulations, we list some of the most standard algorithms dedicated to one of the previous formulation in Section. These algorithms that have been previously developed for solving the SOCCP~(\ref{eq:soccp1}) mainly based  variational inequality (Section~\ref{sec:numericalmethods,vi} and~\ref{Sec:SplittingTechniquesAndProx}) and nonsmooth equations (Section~\ref{sec:newtonmethods}) or  optimization--based (Section~\ref{Sec:OptimisationBasedMethods}) reformulations.  
 
 Since it is difficult to be exhaustive on the approaches developed in the literature to solve frictional contact problems, we decided to leave out the scope of the paper the following approaches:
 \begin{itemize}
@@ -221,7 +221,7 @@ Note that (\ref{eq:Coulomb-inclusion}) is not equivalent to a complementarity pr
 
 \paragraph{SOCCP formulation of the Signorini-Coulomb model}
 
-In \cite{Acary.Brogliato2008,ZAMM:ZAMM201000073}, another formulation is proposed inspired by the so-called bipotential \cite{DeSaxce92,DeSaxce.Feng90,DeSaxce.Feng_MCM1998}. Operating a change of variable, we introduce the modified relative velocity $\hat u \in \RR^3$ defined by
+In \cite{Acary.Brogliato2008,Acary.ea_ZAMM2011}, another formulation is proposed inspired by the so-called bipotential \cite{DeSaxce92,DeSaxce.Feng90,DeSaxce.Feng_MCM1998}. Operating a change of variable, we introduce the modified relative velocity $\hat u \in \RR^3$ defined by
 \begin{equation}
   \label{eq:modified-velocity}
   \hat u = u +\mu \|u_\t\| \sf N.
@@ -376,7 +376,7 @@ and the vector $q$ as
 \subsection{Existence of solutions}
 \label{sec:existence}
 
-The question of the existence of solution for problem~\ref{prob:I} and~\ref{prob:II} have been studied in~\cite{Klarbring.Pang1998} and~\cite{ZAMM:ZAMM201000073} with different analysis techniques. One the assumption in~\cite{Klarbring.Pang1998} is weaker since the matrix $M$ is only semi--positive definite. The key assumption for existence of solutions is both papers is as follows
+The question of the existence of solution for problem~\ref{prob:I} and~\ref{prob:II} have been studied in~\cite{Klarbring.Pang1998} and~\cite{Acary.ea_ZAMM2011} with different analysis techniques. One the assumption in~\cite{Klarbring.Pang1998} is weaker since the matrix $M$ is only semi--positive definite. The key assumption for existence of solutions is both papers is as follows
 \begin{equation}\label{ass}
    \exists v\in \RR^m \,:\: H^\top v + w \in \mathrm{int}\, K^\star,
 \end{equation}
@@ -1166,13 +1166,13 @@ Problem~\ref{prob:I} may be also reformulated in this form
     \right.
   \end{cases}
 \end{equation} 
-In this latter formulation, the optimization sub--problem appears as a strictly convex optimization problem ($M$ is assumed to be semi--definite positive) under (possibly redundant) cone constraints. If this sub--problem is feasible, the sub--problem admits a unique solution. This formulation introduced in~\cite{Cadoux2009} and developped in~\cite{Acary.Cadoux2013,ZAMM:ZAMM201000073} has been used to give an existence criteria to the discrete frictional contact problems. Furthermore, this existence criteria can be numerically checked. We will see in the sequel what could be its interest for solving the problems, we are concerned.
+In this latter formulation, the optimization sub--problem appears as a strictly convex optimization problem ($M$ is assumed to be semi--definite positive) under (possibly redundant) cone constraints. If this sub--problem is feasible, the sub--problem admits a unique solution. This formulation introduced in~\cite{Cadoux2009} and developped in~\cite{Acary.Cadoux2013,Acary.ea_ZAMM2011} has been used to give an existence criteria to the discrete frictional contact problems. Furthermore, this existence criteria can be numerically checked. We will see in the sequel what could be its interest for solving the problems, we are concerned.
 \clearpage
 \section{Numerical methods for VIs}
 \label{sec:numericalmethods,vi}
 
 
-\subsection{Basic fixed point algorithms}
+\subsection{Basic fixed point  and projection methods for VI}
 
 Starting from the VI formulations~(\ref{eq:vi}) or more precisely an associated nonsmooth equation through the natural map,
 \begin{equation}
@@ -1184,7 +1184,8 @@ A basic idea of algorithm is to perform fixed point iterations on the mapping
   \label{eq:skew-fixed-point}
    z \mapsto P_{X,D}(z-D^{-1} F(z)).
 \end{equation}
-yielding to Algorithm~\ref{Algo:FP-vi}
+yielding to Algorithm~\ref{Algo:FP-vi} with the specific choice of $D=1/\rho_k \, I$. The choice of the updating rule of $\rho_k$ will be detailed in Section~\ref{sec:numericalmethods,vi,adaptive}.
+
 \begin{algorithm}
   \begin{algorithmic}
     {\sf
@@ -1279,7 +1280,7 @@ For the formulation (\ref{eq:vi-II}), the following iterations are performed
 %   \caption{Fixed point iterations on Problem~\ref{prob:II} based on VI~(\ref{eq:vi-II})}
 % \end{algorithm}
 The convergence of such methods are generally demonstrated for strongly monotone VI. For the problems we are concerned, this assumption is not satisfied, but we will see in the sequel that such methods can converge in practical numerical applications. 
-Algorithm~\ref{Algo:FP-vi} with the iteration rule~(\ref{eq:FP-vi-II}) has been originally proposed in \cite{DeSaxce.Feng1998}. The algorithm is called Uzawa's algorithm by reference to the algorithm due to Uzawa in computing the optimal values of convex program by primal-dual techniques.
+Algorithm~\ref{Algo:FP-vi} with the iteration rule~(\ref{eq:FP-vi-II}) and a fixed value of $\rho_k$ has been originally proposed in \cite{DeSaxce.Feng1998}. The algorithm is called Uzawa's algorithm by reference to the algorithm due to Uzawa in computing the optimal values of convex program by primal-dual techniques.
 
 
 
@@ -1358,70 +1359,29 @@ We will see in Section~\ref{Sec:OptimisationBasedMethods} that more evolved algo
   More interesting in alternating context because we have two convex sub-problems.
 \end{ndrva}
 
-\begin{table}
-  \centering
-  \begin{tabular}{|l|l|l|}
-    \hline
-    { Algorithm}
-    & Description 
-    & parameters\\
-    \hline
-    \sf FP-DS
-    &  Algorithm~\ref{Algo:FP-vi} with the iteration rule~(\ref{eq:FP-vi-II}) and fixed $\rho$
-    & $\rho$ \\
-    %\hline
-    % \sf FP-VI-1 
-    % &  Algorithm~\ref{Algo:FP-vi} with the iteration rule~(\ref{eq:FP-vi-Ibis})
-    % & $D$ or $\rho$\\
-    \hline
-    \sf FP-VI-UP
-    &  Algorithm~\ref{Algo:FP-vi} with the iteration rule~(\ref{eq:FP-vi-II}) and updating rule
-    & $\ldots$\\
-    \hline
-    \sf FP-QVI-MJ
-    &  Algorithm~\ref{Algo:FP-qvi} with the iteration rule~(\ref{eq:FP-MJ-II}) and fixed $\rho\_n,\rho_\t$
-    & $\rho_\n,\rho_\t$\\
-     \hline
-    \sf FP-QVI-AC 
-    &  Algorithm~\ref{Algo:FP-qvi} with the iteration rule~(\ref{eq:FP-AC-II}) and fixed $\rho,\rho_\t$
-    & $\rho_\n,\rho_\t$\\
-   \hline    
-  \end{tabular}
-  \caption{Naming convention for the algorithms}
-  \label{tab:FP-algos}
-\end{table}
+\paragraph{Extragradient methods}
 
-\begin{ndrva}
-  \begin{itemize}
-  \item Situate the work of \cite{DeSaxce.Feng90,DeSaxce.Feng1998} and  \cite{Simo.Laursen1992,Laursen.Simo1993b}.
-  \item Have a careful look to the work of Krause.
-  \item Implement the work of Simo just to laugh
-  \item Implement the FP-QVI-MJ and FP-QVI-AC within the De Saxce approach ?
-  \end{itemize}
-\end{ndrva} 
-
-
-
-
-\subsection{Projection methods for VI}
-
-The extragradient method \citep{Korpelevich1976} is also a well-known method for VI which improves the previous projection method.  It can be described as
+The extragradient method~\citep{Korpelevich1976} is also a well-known method for VI which improves the previous projection method.  It can be described as
 \begin{equation}
   \label{eq:vi-ge5}
-  z_{k+1} \leftarrow P_X(z_{k}-\rho\,F(P_X(z_k-\rho F(z_k))))
+  \begin{array}{lcl}
+    \bar z_{k} &\leftarrow& P_X(z_k-\rho F(z_k))\\
+    z_{k+1} &\leftarrow& P_X(z_{k}-\rho\,F(\bar z_k))
+  \end{array}
 \end{equation}
 and formulated in Algorithm~\ref{Algo:ExtraGradient-vi}.
 \begin{algorithm}
   \begin{algorithmic}
     {\sf
       \STATE $ $
-      \REQUIRE $\sf F,X$ Data of Problem~\ref{eq:vi}
-      \REQUIRE $\sf D$ a symmetric positive definite matrix
+      \REQUIRE $\sf F,X$ Data of VI~(\ref{eq:vi})
       \REQUIRE $z_0$ initial values and $\sf tol >0$ a tolerance
-      \ENSURE  $\sf z$ solution of Problem~\ref{eq:vi}
+      \ENSURE  $\sf z$ solution of VI~(\ref{eq:vi})
       \STATE   $\sf k \leftarrow 0$ 
       \WHILE {$\sf error > tol$} 
-      \STATE $\sf z_{k+1} \leftarrow P_X(z_{k}-\rho\,F(P_X(z_k-\rho F(z_k))))$
+      \STATE Update the value of $\rho_k$
+      \STATE $\sf \bar z_{k} \leftarrow P_X(z_{k}-\rho_k F(z_k))$
+      \STATE $\sf z_{k+1} \leftarrow P_X(z_{k}-\rho_k\,F(\bar z_k))$
       \STATE Evaluate $\sf error$.
       \STATE $\sf k \leftarrow k+1$
       \ENDWHILE
@@ -1430,12 +1390,119 @@ and formulated in Algorithm~\ref{Algo:ExtraGradient-vi}.
   \end{algorithmic}
   \caption{Extragradient method for the VI~(\ref{eq:vi})}  \label{Algo:ExtraGradient-vi}
 \end{algorithm}
-The convergence of this method requires  that the function $F$ is Lipschitz--continuous and pseudo--monotone and that a solution exists. This method has been further extended in \citep{Solodov.Tseng1996} by
+The convergence of this method requires  that the function $F$ is Lipschitz--continuous and pseudo--monotone and that a solution exists. 
+
+In~\citep{He.Liao_JOTA2002}, the extragradient method is reinterpreted as a prediction-correction method applied to the proximal point algorithm. Indeed, the proximal point algorithm amounts to solving the following VI for a given $z_k$
 \begin{equation}
-  \label{eq:VI-Proj3}
-  z_{k+1}\leftarrow z_k-\tau P^{-1}\left[T_{\rho}(z_k)-T_{\rho}(P_X(z_k-\rho F(z_k)) )\right], \quad \tau >0
+  \label{eq:PPA-VI1}
+  ((z-z_k)+ \alpha_k F(z))^\top(y-z) \geq 0, \text{ for all } y \in X \text{ and } \alpha_k >0
 \end{equation}
-where $P\in \nbR^{n\times n}$ is a PD matrix and  $T_\rho=I-\rho F$
+or equivalently
+\begin{equation}
+  \label{eq:PPA-VI2}
+  z = P_{X}(z - [z - z_k + \alpha_k F(z)]) = P_{X}( z_k - \alpha_k F(z)).
+\end{equation}
+Searching for a solution $z_{k+1}$ of~(\ref{eq:PPA-VI2}) yields
+\begin{equation}
+  \label{eq:PPA-VI3}
+  z_{k+1} = P_{X}( z_k - \alpha_k F(z_{k+1})])
+\end{equation}
+which can be viewed as a implicit version of the basic fixed point iteration based on~(\ref{eq:skew-fixed-point-qvi}). A prediction--correction method based may be written as 
+\begin{equation}
+  \label{eq:PPA-VI4}
+  \begin{array}{lcl}
+    \bar z_{k} &\leftarrow& P_X(z_k-\rho_k F(z_k))\\
+    z_{k+1} &\leftarrow& P_X(z_{k}-\alpha_k\,F(\bar z_k))
+  \end{array}
+\end{equation}
+where $\alpha_k$ and $\rho_k$ have to be updated at each iteration.
+
+\paragraph{Projection and contraction methods} The extragradient method needs to projection on $X$ per iteration. In order to improve the basic fixed point method but with only one projection per step, \citet{Solodov.Tseng1996} and \citet{He_AMO1997} consdider
+\begin{equation}
+  \label{eq:VI-ProjectionContraction1}
+  z_{k+1}\leftarrow z_k- \gamma(z_k,\rho) D^{-1}\left[T_{\rho}(z_k)-T_{\rho}(P_X(z_k-\rho F(z_k)) )\right],
+\end{equation}
+where $D\in \nbR^{n\times n}$ is a PD matrix and  $T_\rho=I-\rho F$. The goal is to choose $\rho \in (0,+\infty)$ sufficiently small so that $T_\rho$ is a strongly monotone mapping. Substituting the expression of $T_\rho$ in~(\ref{eq:VI-ProjectionContraction1}), we get
+\begin{equation}
+  \label{eq:VI-ProjectionContraction2}
+  \begin{array}{lcl}
+    \bar z_{k} &\leftarrow& P_X(z_k-\rho F(z_k))\\
+    z_{k+1} &\leftarrow& z_k - \gamma(z_k,\rho) D^{-1}\left[z_k-\bar z_k - \rho( F(z_k)- F(\bar z_k))\right].
+  \end{array}
+\end{equation}
+With the analogy with a gradient method,  the search direction $d(z,\rho))$ may be introduced
+\begin{equation}
+  \label{eq:VI-projectionContraction3}
+    d(z,\rho) = z- P_X(z-\rho F(z))  - \rho (F(z) - F(P_X(z-\rho F(z)))) 
+  \end{equation}
+The method (\ref{eq:VI-ProjectionContraction2}) can be written as 
+\begin{equation}
+  \label{eq:VI-projectionContraction4}
+  \begin{array}{lcl}
+    \bar z_{k} &\leftarrow& P_X(z_k-\rho F(z_k))\\
+    d_k  &\leftarrow&  z_k - \bar z_k - \rho (F(z_k) - F(\bar z_k)) \\
+    z_{k+1} &\leftarrow & z_k - \gamma(z_k,\rho) D^{-1} d_k.
+  \end{array}
+\end{equation}
+where the function $\gamma(z,\rho)$ appears as a step-length in the search direction.
+In~\citep{He_AMO1997}, the matrix $D=I$ is the identity matrix and the step-size is chosen as
+\begin{equation}
+  \label{eq:VI-projectionContraction5}
+  \begin{array}{lcl}
+    \gamma (z,\rho) = \Frac{\theta [ z - P_X(z-\rho F(z)) ]^\top d(z,\rho)}{\|d(z,\rho)\|^2}, \theta \in (0,2).
+  \end{array}
+\end{equation}
+with the parameter $\rho$ such that
+\begin{equation}
+  \label{eq:VI-projectionContraction6}
+  \begin{array}{lcl}
+    \rho \|F(z_k) - F(\bar z_k)\| \leq L \|z_k - \bar z_k\|, \text{ with } L \in (0,1)
+  \end{array}
+\end{equation}
+In~\citep{Solodov.Tseng1996}, the step-size is chosen as
+\begin{equation}
+  \label{eq:VI-projectionContraction7}
+  \begin{array}{lcl}
+    \gamma (z,\rho) = \Frac{\theta (1-L) \| z - P_X(z-\rho F(z))\|^2} {\|P^{1/2}d(z,\rho)\|^2}, \theta \in (0,2), L\in (0,1),
+  \end{array}
+\end{equation}
+with the parameter $\rho$ such that
+\begin{equation}
+  \label{eq:VI-projectionContraction8}
+  \begin{array}{lcl}
+    \rho (z_k-\bar z_k)(F(z_k) - F(\bar z_k) \leq L \|z_k - \bar z_k\|^2, \text{ with } L \in (0,1)
+  \end{array}
+\end{equation}
+The resulting algorithm is described in Algorithm~\ref{Algo:ProjectionContraction-vi}. The updating rule for $\rho_k$ is will detailed in Section~\ref{sec:numericalmethods,vi,adaptive} in order to satisfy the conditions~(\ref{eq:VI-projectionContraction6}) or~(\ref{eq:VI-projectionContraction8}).
+
+
+\begin{algorithm}
+  \begin{algorithmic}
+    {\sf
+      \STATE $ $
+      \REQUIRE $\sf F,X$ Data of VI~(\ref{eq:vi})
+      \REQUIRE $\sf D$ a symmetric positive definite matrix
+      \REQUIRE $z_0$ initial values and $\sf tol >0$ a tolerance
+      \ENSURE  $\sf z$ solution of VI~(\ref{eq:vi})
+      \STATE   $\sf k \leftarrow 0$ 
+      \WHILE {$\sf error > tol$} 
+      \STATE Update the value of $\rho_k$ satisfying~(\ref{eq:VI-projectionContraction6}) or~(\ref{eq:VI-projectionContraction8})
+      \STATE $\sf \bar z_{k} \leftarrow P_X(z_k-\rho_k F(z_k))$
+      \STATE $\sf d_k  \leftarrow  z_k - \bar z_k - \rho_k (F(z_k) - F(\bar z_k)) $
+      \STATE $\sf \gamma_k \leftarrow \gamma(z_k,\rho_k)$ with (\ref{eq:VI-projectionContraction5}) or~(\ref{eq:VI-projectionContraction7})
+      \STATE $\sf z_{k+1} \leftarrow  z_k - \gamma_k D^{-1} d_k$
+      \STATE Evaluate $\sf error$.
+      \STATE $\sf k \leftarrow k+1$
+      \ENDWHILE
+      \STATE $\sf z \leftarrow z_{k}$ 
+    }
+  \end{algorithmic}
+  \caption{Projection and Contraction method for the VI~(\ref{eq:vi})}  \label{Algo:ProjectionContraction-vi}
+\end{algorithm}
+
+Other more evolved projected iterative methods can be found in~\citep{He.ea_COA2012-I,He.ea_COA2012-II}.
+
+\paragraph{Hyperplane projection method}
 The hyperplane projection method has been introduced by \citep{Konnov1993}. The convergence has been proved under the assumptions that $F$ is  a continuous pseudo-monotone mapping. The method is described in Algorithm~\ref{Algo:HPA}.
 \begin{algorithm}
   \begin{algorithmic}
@@ -1464,6 +1531,48 @@ The hyperplane projection method has been introduced by \citep{Konnov1993}. The 
   \caption{Hyperplane projection method \citep{Konnov1993}}  \label{Algo:HPA}
 \end{algorithm}
 
+\subsection{Self-adaptive step-size rules}
+\label{sec:numericalmethods,vi,adaptive}
+
+In~\citep{Khobotov_CMMP1987}, a method is proposed to improve the extragradient method of~\citet{Korpelevich1976} by adapting $\rho_k$ is the following way. The goal is the find $\rho_k$ that satisfies
+  \begin{equation}
+    \label{eq:khobotov1}
+    0 < \rho_k \leq \min\left\{\bar\rho,L \Frac{\|z_k-\bar z_k\|}{\|F(z_k)-F(\bar z_k)\|}\right\}\text{ with } L \in (0,1)
+  \end{equation}
+where $\bar \rho$ is the maximum value of $\rho_k$ which is chosen in the light of the specific problem.  The goal is clearly to find a coefficient that is bounded by the local Lipschitz constant. The standard way to do that is to use a Armijo--type procedure by successively trying value of $\rho_k = \bar \rho \nu^m$ with $m\in\NN$ and $\nu\in (0,1)$. The parameter $\nu$ is typically chosen as $2/3$.  In the original paper of \cite{Khobotov_CMMP1987}, there is no procedure to size $\bar \rho$ or to update it. In~\cite{He.Liao_JOTA2002}, a method is proposed to update $\bar \rho$ if the criteria~(\ref{eq:khobotov1}) is largely satisfied for $\bar\rho$ in the context of prediction--correction. The approach is summarized in Algorithm~\label{Algo:Up1}.  The parameter $L$ typically chosen around $0.9$ is a safety coefficient in the evaluation of $\rho_k$. The parameter $L_{min}$ that implies a increase of $\rho_k$ is chosen around $0.3$. 
+\begin{algorithm}
+  \begin{algorithmic}
+    {\sf
+      \STATE $ $
+      \REQUIRE $\sf F,X$
+      \REQUIRE Search and safety parameters. $\sf L \in (0,1), 0< L_{min} < L, \nu \in (0,1)$
+      \REQUIRE Initial values $\sf z_k \in X, \rho_{k-1} >0$
+      \STATE $\sf \rho_k \leftarrow \rho_{k-1}$
+      \STATE $\sf \bar z_{k} \leftarrow P_X(z_k-\rho_k F(z_k))$
+      \STATE $\sf r _{k} \leftarrow \Frac{\rho_k \|F(z_k)-F(\bar z_k)\| }{\|z_k-\bar z_k\|} $
+      \WHILE {$\sf  r_k > L $} 
+      \STATE $\sf \rho_k \leftarrow \nu \,\rho_k\, \min\left\{1, 1/r_k\right\}$ 
+      \STATE $\sf \bar z_{k} \leftarrow P_X(z_k-\rho_k F(z_k))$
+      \STATE $\sf r _{k} \leftarrow \Frac{\rho_k \|F(z_k)-F(\bar z_k)\| }{\|z_k-\bar z_k\|} $
+      \ENDWHILE
+      \STATE Perform the correction step of extragradient or prediction--correction method.
+      \IF {$\sf r_k < L_{min}$}
+      \STATE $\sf \rho_k = \frac 1 \nu \rho_k$ 
+      \ENDIF
+    }
+  \end{algorithmic}
+  \caption{Updating rule for $\rho_k$}  \label{Algo:Up1}
+\end{algorithm}
+
+In~\citep{Han.Lo_CMA2002},  a similar procedure is used for the extragradient method by the increasing step of $\rho_k$ is done after the correction as in~\cite{He.Liao_JOTA2002}. In~\citep{Solodov.Tseng1996}, similar Armijo--like technique is used. Nevertheless, the ratio $r_k$ is computed as follows:
+\begin{equation}
+  \label{eq:SolodovTseng-r}
+  r _{k} \leftarrow \Frac{\rho_k(z_k-\bar z_k)^\top(F(z_k)-F(\bar z_k)}{ \|z_k-\bar z_k\|^2 }.
+\end{equation}
+In practice, this choice appears to be too severe and has not been used.
+
+Other more evolved step--lengths strategies can be found in \citep{Wang_JCAM2010}.
+\subsection{Naming convention}
 \begin{table}
   \centering
   \begin{tabular}{|l|l|l|}
@@ -1472,6 +1581,25 @@ The hyperplane projection method has been introduced by \citep{Konnov1993}. The 
     & Description 
     & parameters\\
     \hline
+    \sf FP-DS
+    &  Algorithm~\ref{Algo:FP-vi} with the iteration rule~(\ref{eq:FP-vi-II}) and fixed $\rho$
+    & $\rho$ \\
+    %\hline
+    % \sf FP-VI-1 
+    % &  Algorithm~\ref{Algo:FP-vi} with the iteration rule~(\ref{eq:FP-vi-Ibis})
+    % & $D$ or $\rho$\\
+    \hline
+    \sf FP-VI-UP
+    &  Algorithm~\ref{Algo:FP-vi} with the iteration rule~(\ref{eq:FP-vi-II}) and updating rule
+    & $\ldots$\\
+    \hline
+    \sf FP-QVI-MJ
+    &  Algorithm~\ref{Algo:FP-qvi} with the iteration rule~(\ref{eq:FP-MJ-II}) and fixed $\rho\_n,\rho_\t$
+    & $\rho_\n,\rho_\t$\\
+     \hline
+    \sf FP-QVI-AC 
+    &  Algorithm~\ref{Algo:FP-qvi} with the iteration rule~(\ref{eq:FP-AC-II}) and fixed $\rho,\rho_\t$
+    & $\rho_\n,\rho_\t$\\
     \sf EG-VI-1 
     & Algorithm~\ref{Algo:ExtraGradient-vi} with the formulation (\ref{eq:vi-I})
     & $\rho$\\ 
@@ -1489,18 +1617,26 @@ The hyperplane projection method has been introduced by \citep{Konnov1993}. The 
     & $\sigma,\tau$\\ 
     \hline
   \end{tabular}
-  \caption{Naming convention for the algorithms}
+  \caption{Naming convention for the algorithms based on VI formulations.}
   \label{tab:Projection-algos}
 \end{table}
 
 
 \begin{ndrva}
   \begin{itemize}
+  \item Situate the work of \cite{DeSaxce.Feng90,DeSaxce.Feng1998} and  \cite{Simo.Laursen1992,Laursen.Simo1993b}.
+  \item Cite somewhere \citep{Laborde.Renard_MMAS2008}
+  \item Have a careful look to the work of Krause.
+  \item Implement the work of Simo just to laugh
+  \item Implement the FP-QVI-MJ and FP-QVI-AC within the De Saxce approach ?
   \item Rule and efficient Choice of $\rho$.
   \item Should we leave hyperplane projection ?
   \item Acceleration techniques and Nesterov Method ? FISTA and Nesterov work. INPPA 
+  \item To be classified \cite{Yan.ea_CMA2008,Han.Lo_CMA2002,Han.Sun_CMA2004,Han_AMC2006,Yan.ea_AMC2009}
+  \item Implement ~\citep{He.Liao_JOTA2002} prediction-correction method ?
   \end{itemize}
 \end{ndrva}
+
 
 
 
@@ -1957,6 +2093,92 @@ The problem on each contact~(\ref{eq:psor-3}) has exactly the same structure as 
 \end{algorithm}
 
 In~\cite{Jourdan.Alart.ea98}, this method is developed in the Gauss-Seidel configuration ($\omega=1$) with a local Newton solver based on the Alart--Curnier formulation. If the local solver is only one iteration of the VI solver based on projection, we get a standard splitting techniques for VI. In Table~\ref{tab:PSOR-algos}, the methods based on PSOR used in the comparison are summarized.
+
+\begin{ndrva}
+  \begin{itemize}
+  \item Situate \cite{Hayashi.ea_JCAM2005}
+  \item Do not forget the overrelaxation and some heuristic to adapt convergence (line search).
+  \item Accelration technique
+    Aitken acceleration. Lebon, Raous et al.
+    
+    Problem~\ref{prob:I} ??
+    
+    contractive sequence transformations in 
+    
+    C. Brezinski et M. Redivo-Zaglia, Extrapolation Methods, Theory and Practise, North- Holland, Amsterdam, 1992.
+    
+    J.P. Delahaye, Sequence transformations, Springer Verlag, Berlin, 1988.
+  \end{itemize}
+\end{ndrva}
+
+
+
+
+\subsection{Proximal points techniques}
+
+\begin{ndrva}
+  Small introduction on proximal functions of Moreau, algo of Martinet
+  and result of Rockafellar (see \cite{Chen.Teboublle_SIOPT1993})
+\end{ndrva}
+
+Without entering into theoretical aspects, the key idea of proximal points algorithms it to replace the original $\mathrm{VI}(F,X)$ by a sequence of $\mathrm{VI}(F_{\rho,x_k},X)$  problems such that 
+\begin{equation}
+  \label{eq:prox-algo-1}
+  F_{\rho,x}(z) = z - x_k+ \alpha F(z) , \quad \rho > 0 
+\end{equation}
+with the property that $\lim_{ k \rightarrow +\infty} \| x_k -z \| = 0$. This is usually performed by defining a sequence $x_k$ such that
+\begin{equation}
+  \label{eq:prox-algo-2}
+  x_{k+1} = (1-\omega) x_{k} + \omega z_{k+1}
+\end{equation}
+where $\omega$ is a relaxation parameter and $z_{k+1}$ the solution of $\mathrm{VI}(F_{\rho,x_k},X)$. The algorithm is described in algorithm~\ref{Algo:PPA-vi}
+\begin{algorithm}
+  \begin{algorithmic}
+    {\sf
+      \STATE $ $
+      \REQUIRE $\sf F,X$ Data of VI~(\ref{eq:vi})
+      \REQUIRE $\sf \omega$ relaxation parameter
+      \REQUIRE $\sf \alpha$ proximal point parameter
+      \REQUIRE $\sf x_0$ initial values
+      \REQUIRE $\sf tol >0, tol_{in}$ tolerances
+      \ENSURE  $\sf z$ solution of VI~(\ref{eq:vi})
+      \STATE   $\sf k \leftarrow 0$ 
+      \WHILE {$\sf error > tol$} 
+      \STATE Solve $\mathrm{VI}(F_{\alpha,x_k},X)$ for $\sf z_{k+1}$ with tolerance $\sf tol_{in}$
+      \STATE $\sf x_{k+1} \leftarrow (1-\omega) x_{k} + \omega z_{k+1}$
+      \STATE Evaluate $\sf error$.
+      \STATE $\sf k \leftarrow k+1$
+      \ENDWHILE
+      \STATE $\sf z \leftarrow z_{k+1}$ 
+    }
+  \end{algorithmic}
+  \caption{Proximal point algorithm for the VI~(\ref{eq:vi})}  \label{Algo:PPA-vi}
+\end{algorithm}
+
+For solving the sub-problem $\mathrm{VI}(F_{\alpha,x_k},X)$, any of the previous presented algorithms can be used. In this sense, the proximal point algorithm defined a general family of algorithm. The main interest of the proximal point algorithm is the regularization it introduces in the  definition (\ref{eq:prox-algo-1}). For instance, let consider an affine VI, that is defined with $F(z)=M z+q$. The function is the sub-problem is given by
+\begin{equation}
+  \label{eq:prox-algo-4}
+   F_{\alpha,x}(z) = (I + \alpha M) z - x_k + \rho q , \quad \rho > 0 .
+\end{equation}
+We can easily that for sufficiently small $\rho$, we get a monotone affine VI and even better an strongly monotone VI. For Problem~\ref{prob:II} with $F_{\vitwo}$, the proximal point algorithm yields
+\begin{equation}
+  \label{eq:prox-algo-5}
+   F_{\vitwo,\rho,x}(r) = (I + \alpha W) r - x_k + \alpha( q + g(W r +q )) , \quad \rho > 0 .
+\end{equation}
+and it should not be difficult to prove that with a small $\rho$ parameter that we get a monotone VI.  Naturally, there is a price to pay, smaller the parameter $\rho$ is, easier the VI problem is, but the resulting solution of $z_{k+1}$ is far from the solution.
+
+The use of proximal point algorithm can be very interesting when the solving of the problem suffers for the lack of regularity of the operator. For instance, the Newton methods are in trouble when the Jacobian is not invertible. Thanks to the proximal point algorithm, we can retrieve invertible Jacobian.
+
+
+\begin{ndrva}
+  \begin{itemize}
+  \item Prove it !
+  \item Is there a analogy with choosing a small $r$ ?
+  \item Techniques of \citep{Han_JCAM2008} for sizing alpha
+  \end{itemize}
+\end{ndrva}
+
+\subsection{Naming convention}
 \begin{table}
   \centering
   \begin{tabular}{|l|l|l|}
@@ -1972,90 +2194,12 @@ In~\cite{Jourdan.Alart.ea98}, this method is developed in the Gauss-Seidel confi
     \sf PSOR-VI-1 
     &  Algorithm~\ref{Algo:PSOR-II} with one iteration of {\sf FP-VI-2} for the local solver. 
     & $\omega,tol$ and  $D$ or $\rho$\\
-   \hline    
+    \hline    
     \sf PSOR-VI-2 
     &  Algorithm~\ref{Algo:PSOR-II} with {\sf FP-VI-2}  for the local solver up to $tol_2$ tolerance. 
     & $\omega,tol,tol_2$ and  $D$ or $\rho$\\
-   \hline
-   \ldots \\
-   \hline
-  \end{tabular}
-  \caption{Naming convention for the algorithms based on PSOR}
-  \label{tab:PSOR-algos}
-\end{table}
-
-\begin{ndrva}
- Do not forget the overrelaxation and some heuristic to adapt convergence (line search).
-  
- Aitken acceleration. Lebon, Raous et al.
-
- Problem~\ref{prob:I} ??
-\end{ndrva}
-
-
-
-situate 
-
-
-\subsection{Proximal points techniques}
-
-Without entering into theoretical details, the key idea of proximal points algorithms it to replace the original $\mathrm{VI}(F,X)$ by a sequence of $\mathrm{VI}(F_{\rho,x_k},X)$  problems such that 
-\begin{equation}
-  \label{eq:prox-algo-1}
-  F_{\rho,x}(z) = z - x _k+ \rho F(z) , \quad \rho > 0 
-\end{equation}
-with the property that $\lim_{ k \rightarrow +\infty} \| x_k -z \| = 0$. This is usually performed by defining a sequence $x_k$ such that
-\begin{equation}
-  \label{eq:prox-algo-2}
-  x_{k+1} = (1-\omega) x_{k} + \omega z_{k+1}
-\end{equation}
-where $\omega$ is a relaxation parameter and $z_{k+1}$ the solution of $\mathrm{VI}(F_{\rho,x_k},X)$. The algorithm is described in algorithm~\ref{Algo:PPA-vi}
-\begin{algorithm}
-  \begin{algorithmic}
-    {\sf
-      \STATE $ $
-      \REQUIRE $\sf F,X$ Data of Problem~\ref{eq:vi}
-      \REQUIRE $\sf \omega, \rho$ relaxation parameters
-      \REQUIRE $\sf x_0$ initial values and $\sf tol >0, tol_2$ tolerances
-      \ENSURE  $\sf z$ solution of Problem~\ref{eq:vi}
-      \STATE   $\sf k \leftarrow 0$ 
-      \WHILE {$\sf error > tol$} 
-      \STATE Solve $\mathrm{VI}(F_{\rho,x_k},X)$ for $\sf z_{k+1}$ with tolerance $tol_2$
-      \STATE $\sf x_{k+1} \leftarrow (1-\omega) x_{k} + \omega z_{k+1}$
-      \STATE Evaluate $\sf error$.
-      \STATE $\sf k \leftarrow k+1$
-      \ENDWHILE
-      \STATE $\sf z \leftarrow z_{k}$ 
-    }
-  \end{algorithmic}
-  \caption{Proximal point algorithm for the VI~(\ref{eq:vi})}  \label{Algo:PPA-vi}
-\end{algorithm}
-
-For solving the sub-problem $\mathrm{VI}(F_{\rho,x_k},X)$, any of the previous presented algorithms can be used. In this sense, the proximal point algorithm defined a general family of algorithm. The main interest of the proximal point algorithm is the regularization it introduces in the  definition (\ref{eq:prox-algo-1}). For instance, let consider an affine VI, that is defined with $F(z)=M z+q$. The function is the sub-problem is given by
-\begin{equation}
-  \label{eq:prox-algo-4}
-   F_{\rho,x}(z) = (I + \rho M) z - x_k + \rho q , \quad \rho > 0 .
-\end{equation}
-We can easily that for sufficiently small $\rho$, we get a monotone affine VI and even better an strongly monotone VI. For Problem~\ref{prob:II} with $F_{\vitwo}$, the proximal point algorithm yields
-\begin{equation}
-  \label{eq:prox-algo-5}
-   F_{\vitwo,\rho,x}(r) = (I + \rho W) r - x_k + \rho( q + g(W r +q )) , \quad \rho > 0 .
-\end{equation}
-and it should not be difficult to prove that with a small $\rho$ parameter that we get a monotone VI.  Naturally, there is a price to pay, smaller the parameter $\rho$ is, easier the VI problem is, but the resulting evaluation of $z_k$ is far from the solution.
-
-\begin{ndrva}
-  \begin{itemize}
-\item     Prove it !
-\item Is there a analogy with choosing a small $r$ ?
-  \end{itemize}
-
-\end{ndrva}
-
-The use of proximal point algorithm can be very interesting when the solving of the problem suffers for the lack of regularity of the operator. For instance, the Newton methods are in trouble when the Jacobian is not invertible. Thanks to the proximal point algorithm, we can retrieve invertible Jacobian.
-
-\begin{table}
-  \centering
-  \begin{tabular}{|l|l|l|}
+    \hline
+    \ldots \\
     \hline
     { Algorithm}
     & Description 
@@ -2064,14 +2208,11 @@ The use of proximal point algorithm can be very interesting when the solving of 
     \sf PPA-AC-1 
     &  Algorithm~\ref{Algo:PPA-vi} with Alart-Curnier 
     & $\omega,\rho$\\
-   \hline
+    \hline
   \end{tabular}
-  \caption{Naming convention for the algorithms based on PPA}
-  \label{tab:PPA-algos}
+  \caption{Naming convention for the algorithms based on splitting and proximal algorithms}
+  \label{tab:PSOR-PPA-algos}
 \end{table}
-
-
-situate \cite{Hayashi.ea_JCAM2005}
 
 \section{Interior point methods for SOCCP}
 \label{Sec:InteriorPoint}

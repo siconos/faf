@@ -8,6 +8,11 @@
 + Have a look to cvxopt (python and C)
 ** Proximal point algorithm
 + Continue to study the influence of the regularization parameter
++ Literature
+  + Chen.Teboublle_SIOPT1993
+    [[/Users/acary/Publi/Optimisation/Chen.Teboulle_SIOPT1993.pdf]]
+  + 
+
 ** LocalAlartCurnier
 + Possibility to avoid the LU factor of W ?
 + Guess rho with VIFixedPointProjection
@@ -65,21 +70,47 @@
 ** Extra gradient method and De Saxce Fixed point
    The value of the parameter strongly influences the convergence.
   + An implementation is present in the routine. What is the source ?
-  + Way to compute the optimizal parameter rho.
+  + Adaptive step-size rule.
     + Marcotte and Wu 1995 (see LNACM 35)
-      Too theoritic
+      Too theoritic.
+    + Khobotov_CMMP1987
+      Modification of the extra-gradient method for solving variational inequalities and certain optimization problems.
+      /Users/acary/Publi/Optimisation/VariationalInequalities/Khobotov_CMMP1987.pdf
+      --> First  implementation of an Armijo rule for EG method.
+    + Solodov.Tseng1996, He.Liao_JOTA2002,Han.Lo_CMA2002.
+            
+      Two New Self-Adaptive Projection Methods for Variational Inequality Problems  Han Lo CMA 2002
+      [[/Users/acary/Publi/Optimisation/VariationalInequalities/Han.Lo_CMA2002.pdf]]
+
+      [[/Users/acary/Publi/Optimisation/VariationalInequalities/He.Liao_JOTA2002.pdf]]
+
+      [[/Users/acary/Publi/Optimisation/VariationalInequalities/Solodov.Tseng_SICOPT1996.pdf]]
+      
+      --> Armijo step-size rule with differents criteria for the Lipschitz condition.
+    + Chen.ea_EJOR2001
+      A self-adaptive self-adaptive projection and contraction algorithm for the tra􏰼c assignment problem with path-speci®c costs projection and contraction algorithm for the trac assignment problem with path-speci®c costs  
+      [[/Users/acary/Publi/Optimisation/VariationalInequalities/Chen.ea_EJOR2001.pdf]]
+      --> Application of Projection and contraction methods to traffic assignment problem
+    + Han_JCAM2008
+      A generalized proximal-point-based prediction–correction method for variational inequality problems
+      [[/Users/acary/Publi/Optimisation/VariationalInequalities/Han_JCAM2008.pdf]]
+      --> A generalized proximal-point-based prediction–correction algorithm.  
+      --> Use a Bregman function to compute generalization of Proximal algorihtm
+      (see  Chen.Teboublle_SIOPT1993  [[/Users/acary/Publi/Optimisation/Chen.Teboulle_SIOPT1993.pdf]])
+      
+
     + Unified framework of extragradient-type methods for pseudomonotone variational inequalities
-	YJ Wang, NH Xiu, CY Wang - Journal of Optimization Theory and …, 2001 - Springer
-	http://219.218.19.2/lzf/lzf/wjj/6.pdf
+	  YJ Wang, NH Xiu, CY Wang - Journal of Optimization Theory and …, 2001 - Springer
+	  http://219.218.19.2/lzf/lzf/wjj/6.pdf
     + Paper of Noor.
       [[/Users/acary/Publi/Optimisation/VariationalInequalities/Noor_JOTA2003.pdf]]
     + Two New Self-Adaptive Projection Methods for Variational Inequality Problems  Han Lo CMA 2002
       Line search with augmentation of the coefficient.
       [[/Users/acary/Publi/Optimisation/VariationalInequalities/Han.Lo_CMA2002.pdf]]
-    + [[/Users/acary/Publi/Optimisation/VariationalInequalities/He.Liao_JOTA2002.pdf]]
+    +
     + D.F. Sun, A new step-size skill for solving a class of nonlinear projection equations, Journal of Computational Mathematics 13, 357-368, (1995).
       [[/Users/acary/Publi/Optimisation/VariationalInequalities/Sun_JCAM95.pdf]]
-  
+      
   + Book of Konnov
       http://www.springer.com/business+%26+management/operations+research/book/978-3-540-67999-8?token=gbgen&wt_mc=Google-_-Book%20Search-_-Springer-_-EN
     + Have a look to On the Goldstein - Levitin - Polyak Gradient
