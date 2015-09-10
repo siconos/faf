@@ -869,15 +869,41 @@ where $\bar\lambda_1,\bar\lambda_2\in \RR$ and $\bar u_1,\bar u_2\in\RR^3$ are t
 
 
 
-% \begin{ndrva}
-%   Finally, note that
-%   \begin{equation}
-%     \label{eq:equiv}
-%     K^* \ni x \perp y \in K \Longleftrightarrow K^* \ni x \cdot y \in K
-%   \end{equation}
-% Check there is no troubles with $\mu =0$. This has to be done for all of this section.
-% \end{ndrva}
 
+\paragraph{Fischer-Burmeister function for the frictional contact problem}
+
+
+
+\begin{equation}
+  \label{eq:FB-II}
+   F_{FB}(u,r) =   \left[
+     \begin{array}{l} 
+       u - W r -q\\
+       \Phi_{FB}\left(
+       \begin{bmatrix}
+         \mu r_\n \\
+         r_\t
+       \end{bmatrix},
+       \begin{bmatrix}
+         \frac 1 \mu (u_\n+ \mu \|u_\t\|)\\
+         r_\t
+       \end{bmatrix}
+       \right)
+     \end{array}\right] 
+   = 0.
+\end{equation}
+\begin{ndrva}
+  TBW
+  
+  Define $\Phi_FB$ for all contacts
+  
+  Finally, note that
+  \begin{equation}
+    \label{eq:equiv}
+    K^* \ni x \perp y \in K \Longleftrightarrow K^* \ni x \cdot y \in K
+  \end{equation}
+  Check there is no troubles with $\mu =0$. This has to be done for all of this section.
+\end{ndrva}
 
 
 \subsection{Alternative  complementarity formulations}
@@ -1539,21 +1565,49 @@ In~\citep{Khobotov_CMMP1987}, a method is proposed to improve the extragradient 
     \label{eq:khobotov1}
     0 < \rho_k \leq \min\left\{\bar\rho,L \Frac{\|z_k-\bar z_k\|}{\|F(z_k)-F(\bar z_k)\|}\right\}\text{ with } L \in (0,1)
   \end{equation}
-where $\bar \rho$ is the maximum value of $\rho_k$ which is chosen in the light of the specific problem.  The goal is clearly to find a coefficient that is bounded by the local Lipschitz constant. The standard way to do that is to use a Armijo--type procedure by successively trying value of $\rho_k = \bar \rho \nu^m$ with $m\in\NN$ and $\nu\in (0,1)$. The parameter $\nu$ is typically chosen as $2/3$.  In the original paper of \cite{Khobotov_CMMP1987}, there is no procedure to size $\bar \rho$ or to update it. In~\cite{He.Liao_JOTA2002}, a method is proposed to update $\bar \rho$ if the criteria~(\ref{eq:khobotov1}) is largely satisfied for $\bar\rho$ in the context of prediction--correction. The approach is summarized in Algorithm~\label{Algo:Up1}.  The parameter $L$ typically chosen around $0.9$ is a safety coefficient in the evaluation of $\rho_k$. The parameter $L_{min}$ that implies a increase of $\rho_k$ is chosen around $0.3$. 
+where $\bar \rho$ is the maximum value of $\rho_k$ which is chosen in the light of the specific problem.  The goal is clearly to find a coefficient that is bounded by the local Lipschitz constant. The standard way to do that is to use a Armijo--type procedure by successively trying value of $\rho_k = \bar \rho \nu^m$ with $m\in\NN$ and $\nu\in (0,1)$. The parameter $\nu$ is typically chosen as $2/3$.  In the original paper of \cite{Khobotov_CMMP1987}, there is no procedure to size $\bar \rho$ or to update it. In~\cite{He.Liao_JOTA2002} and in the context of prediction--correction, the author proposes to use the rule $\rho_k =  \rho_{k-1} \nu^m$ and  if the criteria~(\ref{eq:khobotov1}) is largely satisfied for $\rho_{k}$, the value is increased.
+In~\citep{Han.Lo_CMA2002},  a similar procedure is used for the extragradient method by the increasing step of $\rho_k$ is done after the correction as in~\cite{He.Liao_JOTA2002}.
+ The criteria~(\ref{eq:khobotov1}) is  verified by computing the ratio
+\begin{equation}
+  \label{eq:Khobotov-r}
+  r _{k} \leftarrow \Frac{\rho_k \|F(z_k)-F(\bar z_k)\|}{ \|z_k-\bar z_k\| }.
+\end{equation}
+ In~\citep{Solodov.Tseng1996}, similar Armijo--like technique is used. Nevertheless, the ratio $r_k$ is computed as follows:
+\begin{equation}
+  \label{eq:SolodovTseng-r}
+  r _{k} \leftarrow \Frac{\rho_k(z_k-\bar z_k)^\top(F(z_k)-F(\bar z_k))}{ \|z_k-\bar z_k\|^2 }.
+\end{equation}
+In~\cite{Han.Sun_CMA2004}, the ration $r_k$ is evaluated as
+\begin{equation}
+  \label{eq:HanSun-r}
+  r _{k} \leftarrow \Frac{\rho_k \|z_k-\bar z_k\|^2 }{(z_k-\bar z_k)^\top(F(z_k)-F(\bar z_k))}.
+\end{equation}
+but in practice this choice appears to be the worth one. 
+
+
+  The approach is summarized in Algorithm~\ref{Algo:Up1}. The parameter $L$ typically chosen around $0.9$ is a safety coefficient in the evaluation of $\rho_k$. The parameter $L_{min}$ that implies a increase of $\rho_k$ is chosen around $0.3$.
+In~Algorithm~\ref{Algo:Up1}, a Boolean option is added to the standard Armijo approach. The approximation $\bar z_k$ is updated within the self--adaptive loop. This trick is not justifies by any theoretical argument and is most of the paper this operation is not performed but in pratice (see Section ~\ref{Sec:Comparison,VI,step-length}) it appears to improve the convergence speed.
+ The update of the Armijo rule $\rho_k \leftarrow \nu \,\rho_k$ can also be replaced by  $\rho_k \leftarrow \nu \,\rho_k\, \min\left\{1, 1/r_k\right\}$ but it appears that this trick does improve the self--adaptive procedure. Other more evolved step--lengths strategies can be found in \citep{Wang_JCAM2010} that have been tried in this study.
+
 \begin{algorithm}
   \begin{algorithmic}
     {\sf
       \STATE $ $
       \REQUIRE $\sf F,X$
       \REQUIRE Search and safety parameters. $\sf L \in (0,1), 0< L_{min} < L, \nu \in (0,1)$
+      \REQUIRE $\sf isUpdateInTheLoop$ Boolean option
       \REQUIRE Initial values $\sf z_k \in X, \rho_{k-1} >0$
       \STATE $\sf \rho_k \leftarrow \rho_{k-1}$
       \STATE $\sf \bar z_{k} \leftarrow P_X(z_k-\rho_k F(z_k))$
-      \STATE $\sf r _{k} \leftarrow \Frac{\rho_k \|F(z_k)-F(\bar z_k)\| }{\|z_k-\bar z_k\|} $
+      \STATE Evaluate $r_k$ with (\ref{eq:Khobotov-r}) (or (\ref{eq:SolodovTseng-r}))
       \WHILE {$\sf  r_k > L $} 
-      \STATE $\sf \rho_k \leftarrow \nu \,\rho_k\, \min\left\{1, 1/r_k\right\}$ 
+      \STATE $\sf \rho_k \leftarrow \nu \,\rho_k$ 
+      \IF {isUpdateInTheLoop}
+      \STATE $\sf \bar z_{k} \leftarrow P_X(\bar z_k-\rho_k F(\bar z_k))$
+      \ELSE
       \STATE $\sf \bar z_{k} \leftarrow P_X(z_k-\rho_k F(z_k))$
-      \STATE $\sf r _{k} \leftarrow \Frac{\rho_k \|F(z_k)-F(\bar z_k)\| }{\|z_k-\bar z_k\|} $
+      \ENDIF
+      \STATE Evaluate $r_k$ with (\ref{eq:Khobotov-r}) (or (\ref{eq:SolodovTseng-r}))
       \ENDWHILE
       \STATE Perform the correction step of extragradient or prediction--correction method.
       \IF {$\sf r_k < L_{min}$}
@@ -1564,18 +1618,10 @@ where $\bar \rho$ is the maximum value of $\rho_k$ which is chosen in the light 
   \caption{Updating rule for $\rho_k$}  \label{Algo:Up1}
 \end{algorithm}
 
-In~\citep{Han.Lo_CMA2002},  a similar procedure is used for the extragradient method by the increasing step of $\rho_k$ is done after the correction as in~\cite{He.Liao_JOTA2002}. In~\citep{Solodov.Tseng1996}, similar Armijo--like technique is used. Nevertheless, the ratio $r_k$ is computed as follows:
-\begin{equation}
-  \label{eq:SolodovTseng-r}
-  r _{k} \leftarrow \Frac{\rho_k(z_k-\bar z_k)^\top(F(z_k)-F(\bar z_k)}{ \|z_k-\bar z_k\|^2 }.
-\end{equation}
-In practice, this choice appears to be too severe and has not been used.
-
-Other more evolved step--lengths strategies can be found in \citep{Wang_JCAM2010}.
 \subsection{Naming convention}
 \begin{table}
   \centering
-  \begin{tabular}{|l|l|l|}
+  \begin{tabular}{|l|p{0.7\textwidth}|l|}
     \hline
     { Algorithm}
     & Description 
@@ -1589,10 +1635,6 @@ Other more evolved step--lengths strategies can be found in \citep{Wang_JCAM2010
     % &  Algorithm~\ref{Algo:FP-vi} with the iteration rule~(\ref{eq:FP-vi-Ibis})
     % & $D$ or $\rho$\\
     \hline
-    \sf FP-VI-UP
-    &  Algorithm~\ref{Algo:FP-vi} with the iteration rule~(\ref{eq:FP-vi-II}) and updating rule
-    & $\ldots$\\
-    \hline
     \sf FP-QVI-MJ
     &  Algorithm~\ref{Algo:FP-qvi} with the iteration rule~(\ref{eq:FP-MJ-II}) and fixed $\rho\_n,\rho_\t$
     & $\rho_\n,\rho_\t$\\
@@ -1600,6 +1642,15 @@ Other more evolved step--lengths strategies can be found in \citep{Wang_JCAM2010
     \sf FP-QVI-AC 
     &  Algorithm~\ref{Algo:FP-qvi} with the iteration rule~(\ref{eq:FP-AC-II}) and fixed $\rho,\rho_\t$
     & $\rho_\n,\rho_\t$\\
+    \hline
+    \sf FP-VI-UPK
+    &  Algorithm~\ref{Algo:FP-vi} with the iteration rule~(\ref{eq:FP-vi-II}) and Algorithm~\ref{Algo:Up1} with (\ref{eq:Khobotov-r}) 
+    & $\ldots$\\
+    \hline
+    \sf FP-VI-UPTS
+    &  Algorithm~\ref{Algo:FP-vi} with the iteration rule~(\ref{eq:FP-vi-II}) and Algorithm~\ref{Algo:Up1} with (\ref{eq:SolodovTseng-r}) 
+    & $\ldots$\\
+    \hline
     \sf EG-VI-1 
     & Algorithm~\ref{Algo:ExtraGradient-vi} with the formulation (\ref{eq:vi-I})
     & $\rho$\\ 
@@ -1746,7 +1797,6 @@ Similar computations can be found in~\cite{Joli.Feng2008} where a Newton method 
 
 
 In \cite{Hayashi.ea_SIOPT2005}, spectral decomposition of the projection + smoothing. ==> semi-smooth Newton method XXX Sub-differential in Appendix.
-
 
 \begin{ndrva}
 Idea :  Iteration can also be interesting to state a Newton method on the normal map since the evaluation of $F$ is only made on $K$ and not outside. Perhaps, we can control the regularity of the subgradients of $F(P_X(z))$
@@ -1915,15 +1965,14 @@ For Problem~\ref{prob:I}, the same structure of the sub-gradient as in~(\ref{eq:
 
 \subsubsection{Newton method based on  SOCC-function}
 \label{Sec:Num-SOCCP}
+
 \begin{ndrva}
   This is perhaps  too much
 \end{ndrva}
 
 
-
 \begin{ndrva}
   Is the proj formulation better than FB for all the reason related to the augmented Lagrangian approach
-
   See \cite{Mirar.Arora_SMO2004-I} for an automatic adaption of the penalization coefficient ? Link woth the work of Armand
 \end{ndrva}
 
@@ -1953,15 +2002,10 @@ where $e = (1,0,0)$ is the identity element of the Jordan algebra, that is $e \c
 
 
 
-
-
-
-
-
 \subsection{Damped Newton and Line-search procedures}
 
 \begin{itemize}
-\item   (GP, Armijo, Non-monotone watch dogs)
+\item   (GP, Armijo, FBLSA, Non-monotone watch dogs)
 \end{itemize}
 
 
@@ -1969,47 +2013,62 @@ where $e = (1,0,0)$ is the identity element of the Jordan algebra, that is $e \c
 
 \begin{table}[htbp]
   \centering
-  \begin{tabular}{|l|l|l|}
+  \begin{tabular}{|l|p{0.6\textwidth}|l|}
     \hline
     { Algorithm}
     & Description 
     & parameters\\
+    % \hline
+    % \sf NSN-NA-1
+    % &  Algorithm~\ref{Algo:NSN} with natural map for Problem~\ref{prob:I}
+    % & \\
     \hline
-    \sf NSN-NA-1 
-    &  Algorithm~\ref{Algo:NSN} with natural map for Problem~\ref{prob:I}
-    & \\
-   \hline
-    \sf NSN-NA-2 
-    &  Algorithm~\ref{Algo:NSN} with natural map for Problem~\ref{prob:II}
-    & \\
-    \hline
-     \sf NSN-AC-1 
-    &  Algorithm~\ref{Algo:NSN} with Alart-Curnier for Problem~\ref{prob:I}  
-    & \\
-   \hline
-    \sf NSN-AC-2 
-    &  Algorithm~\ref{Algo:NSN} with Alart-Curnier for Problem~\ref{prob:II}
+    \sf NSN-NM 
+    &  Algorithm~\ref{Algo:NSN} with the natural map formulation~(\ref{eq:natural-II})
     & \\
     \hline
-     \sf NSN-CKPS-1 
-    &  Algorithm~\ref{Algo:NSN} with CKPS for Problem~\ref{prob:I}
+    % \sf NSN-AC-1 
+    % &  Algorithm~\ref{Algo:NSN} with Alart-Curnier formulation for Problem~\ref{prob:I}  
+    % & \\
+    % \hline
+    \sf NSN-AC
+    &  Algorithm~\ref{Algo:NSN} with the Alart--Curnier formulation~(\ref{eq:AC-II})
     & \\
-   \hline
-    \sf NSN-CKPS-2 
-    &  Algorithm~\ref{Algo:NSN} with CKPS for Problem~\ref{prob:II}
+    \hline
+    % \sf NSN-JM-1 
+    % &  Algorithm~\ref{Algo:NSN} with Jean--Moreau formulation for Problem~\ref{prob:I}
+    % & \\
+    % \hline
+    \sf NSN-JM 
+    &  Algorithm~\ref{Algo:NSN} with the Jean--Moreau formulation~(\ref{eq:MJ-II})
     & \\
-   \hline
-    \sf NSN-NA-GP-1 
-    &  Algorithm~\ref{Algo:NSN} with natural map for Problem~\ref{prob:I} and GP line search
+    \hline
+    \sf NSN-FB 
+    &  Algorithm~\ref{Algo:NSN} with the Fischer-Burmeister formulation~(\ref{eq:FB-II})
     & \\
-  \hline
-     \sf \ldots 
+    \hline
+    \sf NSN-AC-GP
+    &  Algorithm~\ref{Algo:NSN} with the Alart--Curnier formulation~(\ref{eq:AC-II}) and the Goldstein--Price (GP) line search
+    & \\
+    \hline
+    \sf NSN-AC-FBLSA
+    &  Algorithm~\ref{Algo:NSN} with the Alart--Curnier formulation~(\ref{eq:AC-II}) and the FBLSA line search
+    & \\
+    \hline
+    \sf NSN-FB-GP 
+    &  Algorithm~\ref{Algo:NSN} with the Fischer-Burmeister formulation~(\ref{eq:FB-II}) and the Goldstein--Price (GP) line search
+    & \\
+    \hline
+    \sf NSN-FB-FBLSA
+    &  Algorithm~\ref{Algo:NSN} with the Fischer-Burmeister formulation~(\ref{eq:FB-II}) and the  FBLSA line search
+    & \\
+    \hline
+    \sf \ldots 
     &  \ldots
     & \\
-  \hline
-     
-   \end{tabular}
-  \caption{Naming convention for the algorithms based on nonsmooth Newton method}
+    \hline
+  \end{tabular}
+  \caption{Naming convention for the algorithms based on nonsmooth Newton (NSN) method}
   \label{tab:NSN-algos}
 \end{table}
 
@@ -2181,32 +2240,40 @@ The use of proximal point algorithm can be very interesting when the solving of 
 \subsection{Naming convention}
 \begin{table}
   \centering
-  \begin{tabular}{|l|l|l|}
+  \begin{tabular}{|l|p{0.6\textwidth}|l|}
     \hline
     { Algorithm}
     & Description 
     & parameters\\
     \hline
-    \sf PSOR-AC-1 
-    &  Algorithm~\ref{Algo:PSOR-II} with the local solver ??
-    & $\omega,tol$\\
+    \sf NSGS-AC
+    & Algorithm~\ref{Algo:PSOR-II} with $\omega=1$ with the local solver NSN-AC with tolerance $tol_{local}$
+    & $tol, tol_{local}$\\
     \hline
-    \sf PSOR-VI-1 
-    &  Algorithm~\ref{Algo:PSOR-II} with one iteration of {\sf FP-VI-2} for the local solver. 
-    & $\omega,tol$ and  $D$ or $\rho$\\
-    \hline    
-    \sf PSOR-VI-2 
-    &  Algorithm~\ref{Algo:PSOR-II} with {\sf FP-VI-2}  for the local solver up to $tol_2$ tolerance. 
-    & $\omega,tol,tol_2$ and  $D$ or $\rho$\\
+    \sf NSGS-FP-DS-VI-One
+    & Algorithm~\ref{Algo:PSOR-II} with $\omega=1$ with one iteration of FP-DS for the local solver
+    & $tol$\\
     \hline
-    \ldots \\
+    \sf NSGS-FP-VI-UPK
+    & Algorithm~\ref{Algo:PSOR-II} with $\omega=1$ with FP-VI-UPK for the local solver with tolerance $tol_{local}$
+    & $tol, tol_{local}$\\
     \hline
-    { Algorithm}
-    & Description 
-    & parameters\\
+    \sf NSGS-EXACT
+    & Algorithm~\ref{Algo:PSOR-II} with $\omega=1$ with the exact local solver.
+    & $tol, tol_{local}$\\
     \hline
-    \sf PPA-AC-1 
-    &  Algorithm~\ref{Algo:PPA-vi} with Alart-Curnier 
+    \hline
+    \sf PSOR-AC 
+    &  Algorithm~\ref{Algo:PSOR-II} with  with the local solver NSN-AC with tolerance $tol_{local}$
+    & $\omega, tol,  tol_{local}$\\
+    \hline
+    \hline
+    \sf PPA-AC 
+    &  Algorithm~\ref{Algo:PPA-vi} with the NSN-AC solver as internal solver.
+    & $\omega,\rho$\\
+    \hline
+    \sf PPA-NSGS-AC
+    &  Algorithm~\ref{Algo:PPA-vi} with the NSGS-AC solver as internal solver.
     & $\omega,\rho$\\
     \hline
   \end{tabular}
@@ -2259,6 +2326,32 @@ methods of successive approximation successive approximations is a natural tool 
 
 \subsection{SOCCP approach}
 
+
+\subsection{Naming convention}
+
+\begin{table}
+  \centering
+  \begin{tabular}{|l|p{0.6\textwidth}|l|}
+    \hline
+    { Algorithm}
+    & Description 
+    & parameters\\
+    \hline
+    \sf TRESCA-NSGS-FP-VI
+    & 
+    & $tol, tol_{local}$\\
+    \hline
+    \sf ACLM-NSGS-FP-VI
+    & 
+    & $tol, tol_{local}$\\
+    \hline
+    \hline
+  \end{tabular}
+  \caption{Naming convention for the algorithms based on splitting and proximal algorithms}
+  \label{tab:PSOR-PPA-algos}
+\end{table}
+
+
 \section{Numerical comparisons}
 \label{sec:numericalcomparisons}
 \subsection{Measuring errors}
@@ -2296,10 +2389,43 @@ methods of successive approximation successive approximations is a natural tool 
 \subsection{Benchmarks presentation}
 
 \subsection{Sofware \& implementation details}
-
+\clearpage
 \subsection{Comparison of methods by family}
 
+\subsubsection{Numerical methods for VI}
 
+\paragraph{Evaluation of the influence of the self--adaptive procedure for step length}
+\label{Sec:Comparison,VI,step-length}
+\begin{figure}
+  \centering
+  \includegraphics[width=0.8\textwidth]{../figure/profile-Capsules-reduced-FixedPoint-VI-1_10-time.pdf}
+  \caption{Evaluation of the influence of the self--adaptive procedure for step length. Capsules tests (reduced).}
+  \label{fig:profile-Capsules-reduced--FixedPoint-VI-1_10-time}
+\end{figure}
+In Figure~\ref{fig:profile-Capsules-reduced--FixedPoint-VI-1_10-time}, we study the effect of the self--adaptive procedure in Algorithm~\ref{Algo:Up1} on the convergence of the of the fixed point method in Algorithm~\ref{Algo:FP-vi}.
+
+
+\paragraph{Comparison between fixed point, extragradient and projection--contraction method.}
+
+
+\subsubsection{Comparison of PSOR algorithm with respect to  the relaxation parameter $\omega$}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.8\textwidth]{../figure/profile-Capsules-PSOR-1_15-time.pdf}
+  \caption{Effect of relation coefficient $\omega$ in PSOR-AC algorithm( $tol = 10^{-8}, tol_{local} = 10^{-16}$). Capsules tests. $timeout=10s$}
+  \label{fig:profile-Capsules-PSOR-1_15-time}
+\end{figure}
+
+In Figure~\ref{fig:profile-Capsules-PSOR-1_15-time}, we study the effect of the relaxation parameter $\omega$ ranging from $[0.5,1.5]$ on the computational time.  Two conclusions can be drawn a) with increasing values of $\omega$, the PSOR algorithm increases its convergence rate as we van observe for $\tau=1$ but b) the robustness of the algorithm is weaken. Indeed, $\tau=15$, we observe that the performance profile is flat and the number of problems solved is higher for valued of $\omega$ around $1$.
+
+To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$. If it accelerates drastically the rate of convergence of the algorithm for some problems it deteriorates the convergence for other. Further studies would be needed to design self--adaptive schemes for the choice of $\omega$.
+
+\begin{ndrva}
+  \item redo this comparison on a set of mixed examples 
+  \item add some results with $\omega =1.8$ to show that higher values will destroy the convergence.
+  \item is it possible to find sizing rule in the literature ?
+\end{ndrva}
 \subsection{Robustness}
 
 \subsection{Convergence rate}

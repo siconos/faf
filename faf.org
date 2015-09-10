@@ -1,4 +1,9 @@
 * Development in Siconos/Numerics
+** VI methods
+   + Projection Contraction techniques ==>  in Fixed point VI
+   + Prediction Correction type Extragradient ==> in Extragradient   He.Liao_JOTA2002   Noor_CMA2002 Algo 3.8 of Noor_JOTA2003
+   + Two-step forward–backward splitting-type algorithms Noor_CMA1999 Noor_MCM1999
+     + Forward--backward splitting de Tseng.
 ** Newton method based on SOCCP formulation
 ** General SOCCP solver
 + Interior points methods
@@ -8,11 +13,6 @@
 + Have a look to cvxopt (python and C)
 ** Proximal point algorithm
 + Continue to study the influence of the regularization parameter
-+ Literature
-  + Chen.Teboublle_SIOPT1993
-    [[/Users/acary/Publi/Optimisation/Chen.Teboulle_SIOPT1993.pdf]]
-  + 
-
 ** LocalAlartCurnier
 + Possibility to avoid the LU factor of W ?
 + Guess rho with VIFixedPointProjection
@@ -73,22 +73,29 @@
   + Adaptive step-size rule.
     + Marcotte and Wu 1995 (see LNACM 35)
       Too theoritic.
+    + Book of Konnov
+      http://www.springer.com/business+%26+management/operations+research/book/978-3-540-67999-8?token=gbgen&wt_mc=Google-_-Book%20Search-_-Springer-_-EN
+      + Have a look to On the Goldstein - Levitin - Polyak Gradient
+     Projection Method DIMITRI P. BERTSEKAS for a justification on the generalized Armijo step rule
+      [[/Users/acary/Publi/Optimisation/Bertsekas_IEEETAC1976.pdf]]
     + Khobotov_CMMP1987
       Modification of the extra-gradient method for solving variational inequalities and certain optimization problems.
       /Users/acary/Publi/Optimisation/VariationalInequalities/Khobotov_CMMP1987.pdf
       --> First  implementation of an Armijo rule for EG method.
-    + Solodov.Tseng1996, He.Liao_JOTA2002,Han.Lo_CMA2002.
+    + Solodov.Tseng1996, Han.Lo_CMA2002.
             
       Two New Self-Adaptive Projection Methods for Variational Inequality Problems  Han Lo CMA 2002
       [[/Users/acary/Publi/Optimisation/VariationalInequalities/Han.Lo_CMA2002.pdf]]
 
-      [[/Users/acary/Publi/Optimisation/VariationalInequalities/He.Liao_JOTA2002.pdf]]
-
       [[/Users/acary/Publi/Optimisation/VariationalInequalities/Solodov.Tseng_SICOPT1996.pdf]]
       
       --> Armijo step-size rule with differents criteria for the Lipschitz condition.
+    + He.Liao_JOTA2002
+      [[/Users/acary/Publi/Optimisation/VariationalInequalities/He.Liao_JOTA2002.pdf]]
+      --> Armijo step-size rule with differents criteria for the Lipschitz condition.
+      --> Prediction--Correction type Method
     + Chen.ea_EJOR2001
-      A self-adaptive self-adaptive projection and contraction algorithm for the tra􏰼c assignment problem with path-speci®c costs projection and contraction algorithm for the trac assignment problem with path-speci®c costs  
+      A self-adaptive self-adaptive projection and contraction algorithm for the traffic assignment problem with path-speci®c costs projection and contraction algorithm for the trac assignment problem with path-speciic costs  
       [[/Users/acary/Publi/Optimisation/VariationalInequalities/Chen.ea_EJOR2001.pdf]]
       --> Application of Projection and contraction methods to traffic assignment problem
     + Han_JCAM2008
@@ -97,25 +104,64 @@
       --> A generalized proximal-point-based prediction–correction algorithm.  
       --> Use a Bregman function to compute generalization of Proximal algorihtm
       (see  Chen.Teboublle_SIOPT1993  [[/Users/acary/Publi/Optimisation/Chen.Teboulle_SIOPT1993.pdf]])
-      
-
-    + Unified framework of extragradient-type methods for pseudomonotone variational inequalities
-	  YJ Wang, NH Xiu, CY Wang - Journal of Optimization Theory and …, 2001 - Springer
-	  http://219.218.19.2/lzf/lzf/wjj/6.pdf
-    + Paper of Noor.
+    + Liao.Wang_CMA2002, Han_AMC2006
+      --> Projection and contraction methods with a given sequence t_k Classical Cauchy method
+      --> seems not to have a real interest for us
+    + Han.Sun_CMA2008
+      --> rule for Lipschitz constant inverse of Solodov !!
+    + Noor_JOTA2003
       [[/Users/acary/Publi/Optimisation/VariationalInequalities/Noor_JOTA2003.pdf]]
-    + Two New Self-Adaptive Projection Methods for Variational Inequality Problems  Han Lo CMA 2002
-      Line search with augmentation of the coefficient.
-      [[/Users/acary/Publi/Optimisation/VariationalInequalities/Han.Lo_CMA2002.pdf]]
-    +
+      + discussion on inertial proximal method.
+	ALVAREZ, F., and ATTOUCH, H., An Inertial Proximal Method for Maximal
+        Monotone Operators ûia Discretization of a Nonlinear Oscillator with Damping,
+	Set-Valued Analysis, Vol. 9, pp. 3–11, 2001.
+      + long review of various algorithm
+	+ Algo 3.1. Fixed point
+	+ Algo 3.2. Inertial proximal method.
+	+ Algo 3.3. Extragradient method
+	+ Algo 3.4. Extragradient method with Wiener Hopf (Projection correction) He.Liao_JOTA2002
+	  
+	+ Algo 3.5. Prediction--Correction type extragradient. bvery similar to previous one Noor_CMA2002
+	+ Algo 3.6. Two-step forward–backward splitting-type algorithms Noor_CMA1999 Noor_MCM1999
+	+ Algo 3.7. Self-adaptative version of 3.6
+	+ Algo 3.8. unified extragradient type method.
+	  contains 3.4 
+
+    + Wang.ea_JOTA2001
+      Unified framework of extragradient-type methods for pseudomonotone variational inequalities
+      YJ Wang, NH Xiu, CY Wang - Journal of Optimization Theory and …, 2001 - Springer
+    
+      
     + D.F. Sun, A new step-size skill for solving a class of nonlinear projection equations, Journal of Computational Mathematics 13, 357-368, (1995).
       [[/Users/acary/Publi/Optimisation/VariationalInequalities/Sun_JCAM95.pdf]]
       
-  + Book of Konnov
-      http://www.springer.com/business+%26+management/operations+research/book/978-3-540-67999-8?token=gbgen&wt_mc=Google-_-Book%20Search-_-Springer-_-EN
-    + Have a look to On the Goldstein - Levitin - Polyak Gradient
-     Projection Method DIMITRI P. BERTSEKAS for a justification on the generalized Armijo step rule
-      [[/Users/acary/Publi/Optimisation/Bertsekas_IEEETAC1976.pdf]]
+==> Retrieve
+NOOR, M. A., A Modified Extragradient Method for General Monotone Vari-
+ational Inequalities, Computers and Mathematics with Applications, Vol. 38, pp.
+19–24, 1999.
+
+NOOR, M. A., New Extragradient-Type Methods for General Variational
+Inequalities, Journal of Mathematical Analysis and Applications, Vol. 277,
+pp. 379–395, 2002.
+
+NOOR, M. A., Some Algorithms for General Monotone Mixed Variational
+Inequalities, Mathematics and Computer Modelling, Vol. 29, pp. 1–9, 1999.
+
+IUSEM, A. N., and SVAITER, B. F., A Variant of Korpeleûich’s Method for Vari- ational Inequalities with a New Search Strategy, Optimization, Vol. 42, pp. 309– 321, 1997.
+
+2. SOLODOV, M. V., and SVAITER, B. F., A New Projection Method for Variational Inequality Problems, SIAM Journal on Control and Optimization, Vol. 37, pp. 765–776, 1999.
+
+
+** Proximal point algorithms
+  + Chen.Teboublle_SIOPT1993
+    [[/Users/acary/Publi/Optimisation/Chen.Teboulle_SIOPT1993.pdf]]
+  + ALVAREZ, F., and ATTOUCH, H., An Inertial Proximal Method for Maximal
+     Monotone Operators ûia Discretization of a Nonlinear Oscillator with Damping,
+     Set-Valued Analysis, Vol. 9, pp. 3–11, 2001.
+  + A new proximal-based globalization strategy for the Josephy-Newton method for variational inequalities
+    Optimization Methods and Software (Impact Factor: 1.21). 01/2002; 17(5). 
+    Solodov Svaiter
+
 ** TODO Have a look to paper about a Gauss-Newton
    approach with quite elaborate line search:
    http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=5509
