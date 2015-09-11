@@ -944,47 +944,47 @@ psor1 = SiconosSolver(name="PSOR-Default-0.5",
                       TAG=N.SICONOS_FRICTION_3D_NSGS,
                       iparam_iter=7,
                       dparam_err=1,
-                     maxiter=maxiter, precision=precision)
+                      maxiter=maxiter, precision=precision)
 psor1.SolverOptions().iparam[8] = 1
 psor1.SolverOptions().dparam[8] = 0.5
 
 psor2 = SiconosSolver(name="PSOR-Default-0.8",
                       gnuplot_name="PSOR-AC \$\\\omega=0.8\$",
-                     API=N.frictionContact3D_nsgs,
-                     TAG=N.SICONOS_FRICTION_3D_NSGS,
-                     iparam_iter=7,
-                     dparam_err=1,
-                     maxiter=maxiter, precision=precision)
+                      API=N.frictionContact3D_nsgs,
+                      TAG=N.SICONOS_FRICTION_3D_NSGS,
+                      iparam_iter=7,
+                      dparam_err=1,
+                      maxiter=maxiter, precision=precision)
 psor2.SolverOptions().iparam[8] = 1
 psor2.SolverOptions().dparam[8] = 0.8
 
 psor3 = SiconosSolver(name="PSOR-Default-1.0",
                       gnuplot_name="PSOR-AC \$\\\omega=1.0\$",
-                     API=N.frictionContact3D_nsgs,
-                     TAG=N.SICONOS_FRICTION_3D_NSGS,
-                     iparam_iter=7,
-                     dparam_err=1,
-                     maxiter=maxiter, precision=precision)
+                      API=N.frictionContact3D_nsgs,
+                      TAG=N.SICONOS_FRICTION_3D_NSGS,
+                      iparam_iter=7,
+                      dparam_err=1,
+                      maxiter=maxiter, precision=precision)
 psor3.SolverOptions().iparam[8] = 1
 psor3.SolverOptions().dparam[8] = 1.0
 
 psor4 = SiconosSolver(name="PSOR-Default-1.1",
                       gnuplot_name="PSOR-AC \$\\\omega=1.1\$",
-                     API=N.frictionContact3D_nsgs,
-                     TAG=N.SICONOS_FRICTION_3D_NSGS,
-                     iparam_iter=7,
-                     dparam_err=1,
-                     maxiter=maxiter, precision=precision)
+                      API=N.frictionContact3D_nsgs,
+                      TAG=N.SICONOS_FRICTION_3D_NSGS,
+                      iparam_iter=7,
+                      dparam_err=1,
+                      maxiter=maxiter, precision=precision)
 psor4.SolverOptions().iparam[8] = 1
 psor4.SolverOptions().dparam[8] = 1.1
 
 psor5 = SiconosSolver(name="PSOR-Default-1.3",
                       gnuplot_name="PSOR-AC \$\\\omega=1.3\$",
-                     API=N.frictionContact3D_nsgs,
-                     TAG=N.SICONOS_FRICTION_3D_NSGS,
-                     iparam_iter=7,
-                     dparam_err=1,
-                     maxiter=maxiter, precision=precision)
+                      API=N.frictionContact3D_nsgs,
+                      TAG=N.SICONOS_FRICTION_3D_NSGS,
+                      iparam_iter=7,
+                      dparam_err=1,
+                      maxiter=maxiter, precision=precision)
 psor5.SolverOptions().iparam[8] = 1
 psor5.SolverOptions().dparam[8] = 1.3
 
@@ -1028,11 +1028,11 @@ TrescaFixedPoint = SiconosSolver(name="TrescaFixedPoint-NSGS-PLI",
                                  maxiter=maxiter, precision=precision)
 
 ACLMFixedPoint = SiconosSolver(name="ACLMFixedPoint-SOCLCP-NSGS-Default",
-                                 API=N.frictionContact3D_ACLMFixedPoint,
-                                 TAG=N.SICONOS_FRICTION_3D_ACLMFP,
-                                 iparam_iter=7,
-                                 dparam_err=1,
-                                 maxiter=maxiter, precision=precision)
+                               API=N.frictionContact3D_ACLMFixedPoint,
+                               TAG=N.SICONOS_FRICTION_3D_ACLMFP,
+                               iparam_iter=7,
+                               dparam_err=1,
+                               maxiter=maxiter, precision=precision)
 
 SOCLCP = SiconosSolver(name="SOCLCP-NSGS-Default",
                        API=N.frictionContact3D_SOCLCP,
@@ -1056,25 +1056,25 @@ ExtraGrad = SiconosSolver(name="ExtraGradient",
                           maxiter=maxiter, precision=precision)
 
 FixedPointProjection = SiconosSolver(name="FixedPoint-Projection",
-                          API=N.frictionContact3D_fixedPointProjection,
-                          TAG=N.SICONOS_FRICTION_3D_FPP,
-                          iparam_iter=7,
-                          dparam_err=1,
-                          maxiter=maxiter, precision=precision)
+                                     API=N.frictionContact3D_fixedPointProjection,
+                                     TAG=N.SICONOS_FRICTION_3D_FPP,
+                                     iparam_iter=7,
+                                     dparam_err=1,
+                                     maxiter=maxiter, precision=precision)
 
 VIExtraGrad = SiconosSolver(name="ExtraGradient-VI",
-                          API=N.frictionContact3D_VI_ExtraGradient,
-                          TAG=N.SICONOS_FRICTION_3D_VI_EG,
-                          iparam_iter=7,
-                          dparam_err=1,
-                          maxiter=maxiter, precision=precision)
+                            API=N.frictionContact3D_VI_ExtraGradient,
+                            TAG=N.SICONOS_FRICTION_3D_VI_EG,
+                            iparam_iter=7,
+                            dparam_err=1,
+                            maxiter=maxiter, precision=precision)
 
 VIFixedPointProjection = SiconosSolver(name="FixedPoint-VI",
-                          API=N.frictionContact3D_VI_FixedPointProjection,
-                          TAG=N.SICONOS_FRICTION_3D_VI_FPP,
-                          iparam_iter=7,
-                          dparam_err=1,
-                          maxiter=maxiter, precision=precision)
+                                       API=N.frictionContact3D_VI_FixedPointProjection,
+                                       TAG=N.SICONOS_FRICTION_3D_VI_FPP,
+                                       iparam_iter=7,
+                                       dparam_err=1,
+                                       maxiter=maxiter, precision=precision)
 
 VIFixedPointProjection000 = SiconosSolver(name="FixedPoint-VI-m000",
                                           gnuplot_name="FP-VI-UPK True",
@@ -1101,11 +1101,11 @@ VIFixedPointProjection100.SolverOptions().iparam[2] = 0
 VIFixedPointProjection100.SolverOptions().iparam[3] = 0
 
 VIFixedPointProjection200 = SiconosSolver(name="FixedPoint-VI-m200",
-                          API=N.frictionContact3D_VI_FixedPointProjection,
-                          TAG=N.SICONOS_FRICTION_3D_VI_FPP,
-                          iparam_iter=7,
-                          dparam_err=1,
-                          maxiter=maxiter, precision=precision)
+                                          API=N.frictionContact3D_VI_FixedPointProjection,
+                                          TAG=N.SICONOS_FRICTION_3D_VI_FPP,
+                                          iparam_iter=7,
+                                          dparam_err=1,
+                                          maxiter=maxiter, precision=precision)
 
 VIFixedPointProjection200.SolverOptions().iparam[1] = 2
 VIFixedPointProjection200.SolverOptions().iparam[2] = 0
@@ -1136,44 +1136,44 @@ VIFixedPointProjection110.SolverOptions().iparam[2] = 1
 VIFixedPointProjection110.SolverOptions().iparam[3] = 0
 
 VIFixedPointProjection210 = SiconosSolver(name="FixedPoint-VI-m210",
-                          API=N.frictionContact3D_VI_FixedPointProjection,
-                          TAG=N.SICONOS_FRICTION_3D_VI_FPP,
-                          iparam_iter=7,
-                          dparam_err=1,
-                          maxiter=maxiter, precision=precision)
+                                          API=N.frictionContact3D_VI_FixedPointProjection,
+                                          TAG=N.SICONOS_FRICTION_3D_VI_FPP,
+                                          iparam_iter=7,
+                                          dparam_err=1,
+                                          maxiter=maxiter, precision=precision)
 
 VIFixedPointProjection210.SolverOptions().iparam[1] = 2
 VIFixedPointProjection210.SolverOptions().iparam[2] = 1
 VIFixedPointProjection210.SolverOptions().iparam[3] = 0
 
 VIFixedPointProjection011 = SiconosSolver(name="FixedPoint-VI-m011",
-                          API=N.frictionContact3D_VI_FixedPointProjection,
-                          TAG=N.SICONOS_FRICTION_3D_VI_FPP,
-                          iparam_iter=7,
-                          dparam_err=1,
-                          maxiter=maxiter, precision=precision)
+                                          API=N.frictionContact3D_VI_FixedPointProjection,
+                                          TAG=N.SICONOS_FRICTION_3D_VI_FPP,
+                                          iparam_iter=7,
+                                          dparam_err=1,
+                                          maxiter=maxiter, precision=precision)
 
 VIFixedPointProjection011.SolverOptions().iparam[1] = 0
 VIFixedPointProjection011.SolverOptions().iparam[2] = 1
 VIFixedPointProjection011.SolverOptions().iparam[3] = 1
 
 VIFixedPointProjection111 = SiconosSolver(name="FixedPoint-VI-m111",
-                          API=N.frictionContact3D_VI_FixedPointProjection,
-                          TAG=N.SICONOS_FRICTION_3D_VI_FPP,
-                          iparam_iter=7,
-                          dparam_err=1,
-                          maxiter=maxiter, precision=precision)
+                                          API=N.frictionContact3D_VI_FixedPointProjection,
+                                          TAG=N.SICONOS_FRICTION_3D_VI_FPP,
+                                          iparam_iter=7,
+                                          dparam_err=1,
+                                          maxiter=maxiter, precision=precision)
 
 VIFixedPointProjection111.SolverOptions().iparam[1] = 1
 VIFixedPointProjection111.SolverOptions().iparam[2] = 1
 VIFixedPointProjection111.SolverOptions().iparam[3] = 1
 
 VIFixedPointProjection211 = SiconosSolver(name="FixedPoint-VI-m211",
-                          API=N.frictionContact3D_VI_FixedPointProjection,
-                          TAG=N.SICONOS_FRICTION_3D_VI_FPP,
-                          iparam_iter=7,
-                          dparam_err=1,
-                          maxiter=maxiter, precision=precision)
+                                          API=N.frictionContact3D_VI_FixedPointProjection,
+                                          TAG=N.SICONOS_FRICTION_3D_VI_FPP,
+                                          iparam_iter=7,
+                                          dparam_err=1,
+                                          maxiter=maxiter, precision=precision)
 
 VIFixedPointProjection211.SolverOptions().iparam[1] = 2
 VIFixedPointProjection211.SolverOptions().iparam[2] = 1
@@ -1189,7 +1189,8 @@ VIFixedPointProjectionxxx= [
     VIFixedPointProjection000, VIFixedPointProjection100,
     VIFixedPointProjection010, VIFixedPointProjection110] 
 
-Prox = SiconosSolver(name="Proximal-NSGS-v0",
+Prox = SiconosSolver(name="PROX-NSN-AC-nu1-v0",
+                     gnuplot_name="PPA-NSN-AC  \$ \\\mu=1, \\\sigma=5.0\$",
                      API=N.frictionContact3D_proximal,
                      TAG=N.SICONOS_FRICTION_3D_PROX,
                      iparam_iter=7,
@@ -1197,58 +1198,152 @@ Prox = SiconosSolver(name="Proximal-NSGS-v0",
                      maxiter=maxiter, precision=precision)
 Prox.SolverOptions().internalSolvers.iparam[3] = 1000000
 
-Prox2 = SiconosSolver(name="Proximal-NSGS-v2",
+Prox0 = SiconosSolver(name="PROX-NSN-AC-nu1-v00",
+                      gnuplot_name="PPA-NSN-AC  \$ \\\\mu=1, \\\sigma=0.5\$",
+                      API=N.frictionContact3D_proximal,
+                      TAG=N.SICONOS_FRICTION_3D_PROX,
+                      iparam_iter=7,
+                      dparam_err=1,
+                      maxiter=maxiter, precision=precision)
+Prox0.SolverOptions().internalSolvers.iparam[3] = 1000000
+Prox0.SolverOptions().dparam[4]=0.5 # sigma
+
+Prox1 = SiconosSolver(name="PROX-NSN-AC-nu1-v1",
+                      gnuplot_name="PPA-NSN-AC  \$ \\\\mu=1, \\\sigma=1.0\$",
+                      API=N.frictionContact3D_proximal,
+                      TAG=N.SICONOS_FRICTION_3D_PROX,
+                      iparam_iter=7,
+                      dparam_err=1,
+                      maxiter=maxiter, precision=precision)
+Prox1.SolverOptions().internalSolvers.iparam[3] = 1000000
+Prox1.SolverOptions().dparam[4]=1.0 # sigma
+
+Prox2 = SiconosSolver(name="PROX-NSN-AC-nu1-v2",
+                     gnuplot_name="PPA-NSN-AC  \$ \\\mu=1, \\\sigma=4.0\$",
                      API=N.frictionContact3D_proximal,
                      TAG=N.SICONOS_FRICTION_3D_PROX,
                      iparam_iter=7,
                      dparam_err=1,
                      maxiter=maxiter, precision=precision)
-
-Prox2.SolverOptions().dparam[5]=2.0 # nu
-
-
-
 Prox2.SolverOptions().internalSolvers.iparam[3] = 1000000
+Prox2.SolverOptions().dparam[4]=4.0 # sigma
 
-Prox3 = SiconosSolver(name="Proximal-NSGS-v3",
-                     API=N.frictionContact3D_proximal,
-                     TAG=N.SICONOS_FRICTION_3D_PROX,
-                     iparam_iter=7,
-                     dparam_err=1,
-                     maxiter=maxiter, precision=precision)
-
-Prox3.SolverOptions().dparam[4]=1.1 # sigma
-Prox3.SolverOptions().dparam[5]=2.0 # nu
-
+Prox3 = SiconosSolver(name="PROX-NSN-AC-nu1-v3",
+                      gnuplot_name="PPA-NSN-AC  \$ \\\mu=1, \\\sigma=50\$",
+                      API=N.frictionContact3D_proximal,
+                      TAG=N.SICONOS_FRICTION_3D_PROX,
+                      iparam_iter=7,
+                      dparam_err=1,
+                      maxiter=maxiter, precision=precision)
+Prox3.SolverOptions().dparam[4]=50 # sigma
 Prox3.SolverOptions().internalSolvers.iparam[3] = 1000000
 
-
-Prox4 = SiconosSolver(name="Proximal-NSGS-v4",
-                     API=N.frictionContact3D_proximal,
-                     TAG=N.SICONOS_FRICTION_3D_PROX,
-                     iparam_iter=7,
-                     dparam_err=1,
-                     maxiter=maxiter, precision=precision)
+Prox4 = SiconosSolver(name="PROX-NSN-AC-nu1-v4",
+                      gnuplot_name="PPA-NSN-AC  \$ \\\mu=1, \\\sigma=100\$",
+                      API=N.frictionContact3D_proximal,
+                      TAG=N.SICONOS_FRICTION_3D_PROX,
+                      iparam_iter=7,
+                      dparam_err=1,
+                      maxiter=maxiter, precision=precision)
 Prox4.SolverOptions().dparam[4]=100 # sigma
-Prox4.SolverOptions().dparam[5]=1.0 # nu
-
 Prox4.SolverOptions().internalSolvers.iparam[3] = 1000000
 
 
-Prox5 = SiconosSolver(name="Proximal-NSGS-v5",
-                     API=N.frictionContact3D_proximal,
-                     TAG=N.SICONOS_FRICTION_3D_PROX,
-                     iparam_iter=7,
-                     dparam_err=1,
-                     maxiter=maxiter, precision=precision)
-
-Prox5.SolverOptions().dparam[4]=1000.0 # sigma
-Prox5.SolverOptions().dparam[5]=1.0 # nu
-
+Prox5 = SiconosSolver(name="PROX-NSN-AC-nu1-v5",
+                      gnuplot_name="PPA-NSN-AC  \$ \\\mu=1, \\\sigma=1000\$",
+                      API=N.frictionContact3D_proximal,
+                      TAG=N.SICONOS_FRICTION_3D_PROX,
+                      iparam_iter=7,
+                      dparam_err=1,
+                      maxiter=maxiter, precision=precision)
 Prox5.SolverOptions().internalSolvers.iparam[3] = 1000000
+Prox5.SolverOptions().dparam[4]=1000.0 # sigma
 
+Prox6 = SiconosSolver(name="PROX-NSN-AC-nu2-v0",
+                      gnuplot_name="PPA-NSN-AC  \$ \\\mu=2, \\\sigma=5.0\$",
+                      API=N.frictionContact3D_proximal,
+                      TAG=N.SICONOS_FRICTION_3D_PROX,
+                      iparam_iter=7,
+                      dparam_err=1,
+                      maxiter=maxiter, precision=precision)
+Prox6.SolverOptions().dparam[5]=2.0 # nu
+Prox6.SolverOptions().internalSolvers.iparam[3] = 1000000
 
+Prox7 = SiconosSolver(name="PROX-NSN-AC-nu2-v1",
+                      gnuplot_name="PPA-NSN-AC  \$ \\\mu=2, \\\sigma=1.0\$",
+                      API=N.frictionContact3D_proximal,
+                      TAG=N.SICONOS_FRICTION_3D_PROX,
+                      iparam_iter=7,
+                      dparam_err=1,
+                      maxiter=maxiter, precision=precision)
+Prox7.SolverOptions().internalSolvers.iparam[3] = 1000000
+Prox7.SolverOptions().dparam[4]=50.0 # sigma
+Prox7.SolverOptions().dparam[5]=2.0 # nu
 
+Prox8 = SiconosSolver(name="PROX-NSN-AC-nu2-v2",
+                      gnuplot_name="PPA-NSN-AC  \$ \\\mu=2, \\\sigma=50.0\$",
+                      API=N.frictionContact3D_proximal,
+                      TAG=N.SICONOS_FRICTION_3D_PROX,
+                      iparam_iter=7,
+                      dparam_err=1,
+                      maxiter=maxiter, precision=precision)
+Prox8.SolverOptions().dparam[5]=2.0 # nu
+Prox8.SolverOptions().internalSolvers.iparam[3] = 1000000
+
+Prox9 = SiconosSolver(name="PROX-NSN-AC-nu2-v3",
+                      gnuplot_name="PPA-NSN-AC  \$ \\\mu=2, \\\sigma=100.0\$",
+                      API=N.frictionContact3D_proximal,
+                      TAG=N.SICONOS_FRICTION_3D_PROX,
+                      iparam_iter=7,
+                      dparam_err=1,
+                      maxiter=maxiter, precision=precision)
+Prox9.SolverOptions().internalSolvers.iparam[3] = 1000000
+Prox9.SolverOptions().dparam[4]=50.0 # sigma
+Prox9.SolverOptions().dparam[5]=2.0 # nu
+
+Prox10 = SiconosSolver(name="PROX-NSN-AC-nu0.5-v0",
+                      gnuplot_name="PPA-NSN-AC  \$ \\\mu=0.5, \\\sigma=5.0\$",
+                      API=N.frictionContact3D_proximal,
+                      TAG=N.SICONOS_FRICTION_3D_PROX,
+                      iparam_iter=7,
+                      dparam_err=1,
+                      maxiter=maxiter, precision=precision)
+Prox10.SolverOptions().dparam[5]=0.5 # nu
+Prox10.SolverOptions().internalSolvers.iparam[3] = 1000000
+
+Prox11 = SiconosSolver(name="PROX-NSN-AC-nu0.5-v1",
+                      gnuplot_name="PPA-NSN-AC  \$ \\\mu=0.5, \\\sigma=1.0\$",
+                      API=N.frictionContact3D_proximal,
+                      TAG=N.SICONOS_FRICTION_3D_PROX,
+                      iparam_iter=7,
+                      dparam_err=1,
+                      maxiter=maxiter, precision=precision)
+Prox11.SolverOptions().internalSolvers.iparam[3] = 1000000
+Prox11.SolverOptions().dparam[4]=50.0 # sigma
+Prox11.SolverOptions().dparam[5]=0.5 # nu
+
+Prox12 = SiconosSolver(name="PROX-NSN-AC-nu0.5-v2",
+                      gnuplot_name="PPA-NSN-AC  \$ \\\mu=0.5, \\\sigma=50.0\$",
+                      API=N.frictionContact3D_proximal,
+                      TAG=N.SICONOS_FRICTION_3D_PROX,
+                      iparam_iter=7,
+                      dparam_err=1,
+                      maxiter=maxiter, precision=precision)
+Prox12.SolverOptions().dparam[5]=0.5 # nu
+Prox12.SolverOptions().internalSolvers.iparam[3] = 1000000
+
+Prox13 = SiconosSolver(name="PROX-NSN-AC-nu0.5-v3",
+                      gnuplot_name="PPA-NSN-AC  \$ \\\mu=0.5, \\\sigma=100.0\$",
+                      API=N.frictionContact3D_proximal,
+                      TAG=N.SICONOS_FRICTION_3D_PROX,
+                      iparam_iter=7,
+                      dparam_err=1,
+                      maxiter=maxiter, precision=precision)
+Prox13.SolverOptions().internalSolvers.iparam[3] = 1000000
+Prox13.SolverOptions().dparam[4]=50.0 # sigma
+Prox13.SolverOptions().dparam[5]=0.5 # nu
+
+Proxxxx= [Prox0, Prox1, Prox2, Prox3, Prox4, Prox5, Prox6, Prox7, Prox8, Prox9]#, Prox10, Prox11, Prox12, Prox13 ]
 
 localac_wrapped = SiconosSolver(name="NSN-AlartCurnier-Wrapped",
                                 API=N.frictionContact3D_localAlartCurnier,
@@ -1325,14 +1420,15 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 
 all_solvers = [nsgs, snsgs, quartic,
                TrescaFixedPoint, ACLMFixedPoint, DeSaxceFixedPoint,
-               VIFixedPointProjection,
-               VIExtraGrad, SOCLCP,
-               Prox, Prox2, Prox3, Prox4, Prox5, localACSTD,
-               localACSTDGenerated,  localacr, localACJeanMoreau, localACJeanMoreauGenerated, localfb_gp, localfb_fblsa]
+               VIFixedPointProjection, VIExtraGrad,
+               SOCLCP,
+               localACSTD,localACSTDGenerated,  localacr, localACJeanMoreau, localACJeanMoreauGenerated, localfb_gp, localfb_fblsa,
+               Prox]
 
-
-all_solvers.extend(VIFixedPointProjectionxxx)
-all_solvers.extend(psorxxx)
+# specific studies of solvers.
+#all_solvers.extend(VIFixedPointProjectionxxx)
+#all_solvers.extend(psorxxx)
+#all_solvers.extend(Proxxxx)
 
 solvers=[]
 if user_solvers != []:
@@ -1588,7 +1684,7 @@ if __name__ == '__main__':
                     gp.write('set xrange [{0}:{1}]\n'.format(domain[0]-0.01, domain[len(domain)-1]))
                     gp.write('set yrange [-0.01:1.01]\n')
                     gp.write('set ylabel \'$\\rho(\\tau)$ \' \n')
-                    maxrows=len(solvers)/3+1
+                    maxrows=len(solvers)/2+1
                     gp.write('set key below right vertical maxrows {0}\n'.format(maxrows))
                     print filename.partition('-')[0]
                     if logscale:
