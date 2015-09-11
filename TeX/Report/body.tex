@@ -741,7 +741,9 @@ and  Problem~\ref{prob:II}  as
 
 
 \begin{ndrva}
-  understand the continuity comment of Alart ?
+  + understand the continuity comment of Alart ?
+  
+  + Simo--Laursen ?
 \end{ndrva}
 
 %In \cite{Leung.ea1998} and \cite{Xuewen.ea2000}, alternative equations reformulations are proposed mainly based on the reformulation of the problem in the plane of sliding.
@@ -2268,7 +2270,7 @@ The use of proximal point algorithm can be very interesting when the solving of 
     & $\omega, tol,  tol_{local}$\\
     \hline
     \hline
-    \sf PPA-AC 
+    \sf PPA-NSN-AC 
     &  Algorithm~\ref{Algo:PPA-vi} with the NSN-AC solver as internal solver.
     & $\omega,\rho$\\
     \hline
@@ -2352,7 +2354,7 @@ methods of successive approximation successive approximations is a natural tool 
 \end{table}
 
 
-\section{Numerical comparisons}
+\section{Comparison framework}
 \label{sec:numericalcomparisons}
 \subsection{Measuring errors}
 \label{Sec:MeasuringErrors}
@@ -2367,32 +2369,31 @@ methods of successive approximation successive approximations is a natural tool 
 \item parameter $\nu = m_c/n$
 \end{itemize}
 
-
 \begin{itemize}
 \item algorithms parameters ($\rho$)
 \end{itemize}
 
+
 \subsection{Measure of performance}
-
 \begin{itemize}
-\item tolerance
-\item CPU time and memory or better flops (papi)
-\item Convergence rate (error w.r.t. flop)
-\item Scability
-\item Max time.
-\item Obtained accuracy
-\item
+\item CPU time and memory or better flops (papi) for a fixed user tolerance
+\item Reached accuracy for a given CPU effort
 \end{itemize}
-
-
+Other studies.
+\begin{itemize}
+\item Convergence rate (error w.r.t. flop within the iteration process)
+\item Scalable properties () study with a set of large size ?
+\end{itemize}
 
 \subsection{Benchmarks presentation}
 
 \subsection{Sofware \& implementation details}
 \clearpage
-\subsection{Comparison of methods by family}
 
-\subsubsection{Numerical methods for VI}
+
+\section{Comparison of methods by family}
+
+\subsection{Numerical methods for VI}
 
 \paragraph{Evaluation of the influence of the self--adaptive procedure for step length}
 \label{Sec:Comparison,VI,step-length}
@@ -2408,7 +2409,7 @@ In Figure~\ref{fig:profile-Capsules-reduced--FixedPoint-VI-1_10-time}, we study 
 \paragraph{Comparison between fixed point, extragradient and projection--contraction method.}
 
 
-\subsubsection{Comparison of PSOR algorithm with respect to  the relaxation parameter $\omega$}
+\subsection{Comparison of PSOR algorithm with respect to  the relaxation parameter $\omega$}
 
 \begin{figure}
   \centering
@@ -2426,11 +2427,33 @@ To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$
   \item add some results with $\omega =1.8$ to show that higher values will destroy the convergence.
   \item is it possible to find sizing rule in the literature ?
 \end{ndrva}
-\subsection{Robustness}
 
-\subsection{Convergence rate}
+      
+\subsection{Comparison of PPA-NSN-AC algorithm with respect to  the step-size parameter $\sigma$, $\mu$}
 
-\subsection{CPU and memory efforts}
+\begin{figure}
+  \centering
+  \includegraphics[width=0.8\textwidth]{../figure/profile-Capsules-reduced-PPA-NSN-AC-1_10-time.pdf}
+  \includegraphics[width=0.8\textwidth]{../figure/profile-Capsules-reduced-PPA-NSN-AC-1_10-time-bis.pdf}
+   \caption{Effect of the step-size parameter $\sigma$, $\mu$ in PPA-NSN-AC algorithm( $tol = 10^{-8}$). Capsules tests. $timeout=10s$}
+  \label{fig:profile-Capsules-reduced-PPA-NSN-AC-1_10-time}
+\end{figure}
+\begin{ndrva}
+  \item redo this comparison on a set of mixed examples 
+  \item add some results with $\nu < 1 $
+\end{ndrva}
+
+
+\section{Comparison of different families of solvers.}
+
+
+\subsection{CPU and memory efforts for a given tolerance}
+
+Analyze the quickest one and the more robust one.
+
+\subsection{Analyze reached accuracy for a given time}
+
+
 
 
 
