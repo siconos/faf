@@ -1068,13 +1068,47 @@ Prox = SiconosSolver(name="PROX-NSN-AC",
                      maxiter=maxiter, precision=precision)
 Prox.SolverOptions().internalSolvers.iparam[3] = 1000000
 
+ProxFB = SiconosSolver(name="PROX-NSN-FB-GP",
+                     gnuplot_name="PPA-NSN-FB-GP  \$ \\\mu=1, \\\sigma=5.0\$",
+                     API=N.frictionContact3D_proximal,
+                     TAG=N.SICONOS_FRICTION_3D_PROX,
+                     iparam_iter=7,
+                     dparam_err=1,
+                     maxiter=maxiter, precision=precision)
+
+localfb_gp_inprox = N.SolverOptions(N.SICONOS_FRICTION_3D_LOCALFB)
+localfb_gp_inprox.iparam[3] = 1000000
+localfb_gp_inprox.iparam[11] = 0
+
+localfb_gp_inprox.iparam[12] = 6
+
+ProxFB.SolverOptions().internalSolvers = localfb_gp_inprox
+ProxFB.SolverOptions().internalSolvers.iparam[3] = 1000000
+
+ProxFB_fblsa = SiconosSolver(name="PROX-NSN-FB-FBLSA",
+                     gnuplot_name="PPA-NSN-FB-FBLSA  \$ \\\mu=1, \\\sigma=5.0\$",
+                     API=N.frictionContact3D_proximal,
+                     TAG=N.SICONOS_FRICTION_3D_PROX,
+                     iparam_iter=7,
+                     dparam_err=1,
+                     maxiter=maxiter, precision=precision)
+localfb_fblsa_inprox = N.SolverOptions(N.SICONOS_FRICTION_3D_LOCALFB)
+localfb_fblsa_inprox.iparam[3] = 1000000
+localfb_fblsa_inprox.iparam[11] = 1
+localfb_fblsa_inprox.iparam[12] = 6
+ProxFB_fblsa.SolverOptions().internalSolvers = localfb_fblsa_inprox
+ProxFB_fblsa.SolverOptions().internalSolvers.iparam[3] = 1000000
+
+
+
+
 sigmavalues= [0.5, 1.0, 4.0, 5.0, 50, 100.0, 1000.0 ]
 muvalues= [0.5, 1.0, 2.0]
 prox_series =[]
 for mu in muvalues:
     for sigma in sigmavalues:
         prox_solver  = SiconosSolver(name="PROX-NSN-AC-nu"+str(mu)+"-sigma"+str(sigma),
-                                     gnuplot_name="PPA-NSN-AC  \$ \\\mu="+str(0.5)+", \\\sigma="+str(sigma)+"\$",
+                                     gnuplot_name="PPA-NSN-AC  \$ \\\mu="+str(mu)+", \\\sigma="+str(sigma)+"\$",
                                      API=N.frictionContact3D_proximal,
                                      TAG=N.SICONOS_FRICTION_3D_PROX,
                                      iparam_iter=7,
@@ -1163,7 +1197,7 @@ all_solvers = [nsgs, snsgs, quartic, psor,
                VIFixedPointProjection, VIExtraGrad,
                SOCLCP,
                localACSTD,localACSTDGenerated,  localacr, localACJeanMoreau, localACJeanMoreauGenerated, localfb_gp, localfb_fblsa,
-               Prox]
+               Prox, ProxFB, ProxFB_fblsa]
 
 # specific studies of solvers.
 all_solvers.extend(VIFixedPointProjection_series)
@@ -1182,6 +1216,7 @@ if user_solvers_exact != []:
 if solvers == []:
     solvers= all_solvers
 
+#solvers = [ProxFB]
 print "Operations will be run for solvers :", [ s._name for s in solvers]
     
 def is_fclib_file(filename):
@@ -1227,6 +1262,10 @@ if user_filenames == []:
 else:
     all_filenames = user_filenames
 
+   
+#all_filenames=['BoxesStack1-i9841-33.hdf5']
+#ask_collect = False
+    
 __problem_filenames = subsample_problems(all_filenames,
                                          random_sample_proba,
                                          max_problems, None)
