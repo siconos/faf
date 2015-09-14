@@ -1,0 +1,2 @@
+Needs an installed siconos numerics library.
+Needs to compile lmgc90 with -DWITH_SICONOS_NUMERICS=1.
