@@ -10,11 +10,11 @@ checkDirectories()
 Initialize()
 SetDimension(3,0)
 
-### computation's parameters definition ### 
+### computation's parameters definition ###
 utilities_logMes('INIT TIME STEPPING')
 nb_iter = 10
-dt = 1e-3  
-theta = 0.5  
+dt = 1e-3
+theta = 0.5
 
 POLYR_SkipAutomaticReorientation()
 
@@ -24,14 +24,15 @@ PRPRx_LowSizeArrayPolyr(100)
 
 nlgs_3D_DiagonalResolution()
 
-freq_detect = 1  
+freq_detect = 1
 itermax = 5000
-tol = 1.e-8  
-relax = 1. #0.25 
+tol = 1.e-8
+relax = 1. #0.25
 #       123456789012345678901234567890
 solver='nlgs                          '
+solver_output=3
 
-SiconosNumerics_SetParameters(solver,tol,10,itermax,relax,0,0)
+SiconosNumerics_SetParameters(solver,tol,10,itermax,relax,0,solver_output)
 
 freq_visu = 1
 ref_radius = 0.1
@@ -96,14 +97,14 @@ for k in range(nb_iter):
     #
     utilities_logMes('COMPUTE Fint')
     RBDY3_ComputeBulk()
-    # 
+    #
     utilities_logMes('COMPUTE Free Vlocy')
     RBDY3_ComputeFreeVelocity()
     #
     utilities_logMes('SELECT PROX TACTORS')
     overall_SelectProxTactors(freq_detect)
     PRPRx_SelectProxTactors()
-    
+
 
     PRPRx_RecupRloc()
 
@@ -144,4 +145,3 @@ RBDY3_WriteLastDof()
 
 # postpro_3D_ClosePostproFiles()
 CloseDisplayFiles()
-

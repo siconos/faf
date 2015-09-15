@@ -31,14 +31,14 @@ mats.addMaterial(stone)
 # ajout des marches dans le conteneur
 blk = lecture(name='gmsh/bof.msh', dim=dim)
 #reorientSurfacicElements(blk)
-block1 = surfacicMeshToRigid3D(surfacic_mesh=blk, model=mR3D, material=stone, color = 'BLUEx')  
+block1 = surfacicMeshToRigid3D(surfacic_mesh=blk, model=mR3D, material=stone, color = 'BLUEx')
 block1.imposeDrivenDof(component=[1, 2, 3, 4, 5, 6], dofty='vlocy')
 bodies.addAvatar(block1)
 
 for i in xrange(0,9):
   blk = lecture(name='gmsh/bof.msh', dim=dim)
   #reorientSurfacicElements(blk)
-  block = surfacicMeshToRigid3D(surfacic_mesh=blk, model=mR3D, material=stone, color = 'BLUEx')  
+  block = surfacicMeshToRigid3D(surfacic_mesh=blk, model=mR3D, material=stone, color = 'BLUEx')
   #block2.rotate(type='axis', alpha=math.pi, axis=[0,1,0,], center=block2.nodes[1].coor)
   block.translate(dz=(i+1)*0.5)
   bodies.addAvatar(block)
@@ -49,9 +49,9 @@ tacts.addBehav(iqsg0)
 
 # definition d'une table de visibilite pour le
 # contact polyedre-polyedre
-sv = see_table(CorpsCandidat='RBDY3', candidat='POLYR', 
+sv = see_table(CorpsCandidat='RBDY3', candidat='POLYR',
 colorCandidat='BLUEx', behav=iqsg0,
-CorpsAntagoniste='RBDY3', antagoniste='POLYR', 
+CorpsAntagoniste='RBDY3', antagoniste='POLYR',
 colorAntagoniste='BLUEx', alert=.1)
 # ajout de la table de visibilite dans le conteneur
 # de tables de visibilite
@@ -64,7 +64,7 @@ writeBulkBehav(mats, chemin='./DATBOX/', dim=dim, gravy=[0., 0., -9.81])
 writeBodies(bodies, chemin='./DATBOX/')
 #   * les deplacements et vitesses initiaux
 writeDofIni(bodies, chemin='./DATBOX/')
-#   * les conditions aux limites 
+#   * les conditions aux limites
 writeDrvDof(bodies, chemin='./DATBOX/')
 #   * les contacts envisages
 writeTactBehav(tacts, svs, chemin='./DATBOX/')

@@ -10,11 +10,11 @@ checkDirectories()
 Initialize()
 SetDimension(3,0)
 
-### computation's parameters definition ### 
+### computation's parameters definition ###
 utilities_logMes('INIT TIME STEPPING')
 nb_iter = 1000
-dt = 1e-3  
-theta = 0.5  
+dt = 1e-3
+theta = 0.5
 
 POLYR_SkipAutomaticReorientation()
 
@@ -24,14 +24,14 @@ PRPRx_LowSizeArrayPolyr(100)
 
 nlgs_3D_DiagonalResolution()
 
-freq_detect = 1  
-tol = 0.1666e-8  
+freq_detect = 1
+tol = 0.1666e-8
 relax = 1.
 type = 'Stored_Delassus_Loops         '
-norm = 'Maxm ' 
-gs_it1 = 1000  
+norm = 'Maxm '
+gs_it1 = 1000
 gs_it2 = 100
-freq_detect = 1  
+freq_detect = 1
 
 freq_visu = 1
 ref_radius = 0.1
@@ -75,24 +75,10 @@ utilities_logMes('WRITE DRIVEN DOF')
 overall_WriteDrivenDof()
 RBDY3_WriteDrivenDof()
 
-<<<<<<< .mine
-# ### post3D ##
-# post3D_SetDisplayedField('POSITION        ')
-# post3D_SetDisplayedField('AVERAGE VELOCITY')
-# display_3D_SetDisplayedField('TACTOR')
-# display_3D_SetDisplayedField('INTERACTION')
-=======
+
 OpenDisplayFiles()
->>>>>>> .r864
 
-<<<<<<< .mine
-#postpro_3D_PostproBeforeComputation()
 
-# #post3D_Init()
-# display_3D_Init(0)
-
-=======
->>>>>>> .r864
 ### compute masses ###
 utilities_logMes('COMPUTE MASS')
 RBDY3_ComputeMass()
@@ -110,14 +96,14 @@ for k in range(nb_iter):
     #
     utilities_logMes('COMPUTE Fint')
     RBDY3_ComputeBulk()
-    # 
+    #
     utilities_logMes('COMPUTE Free Vlocy')
     RBDY3_ComputeFreeVelocity()
     #
     utilities_logMes('SELECT PROX TACTORS')
     overall_SelectProxTactors(freq_detect)
     PRPRx_SelectProxTactors()
-    
+
 
     PRPRx_RecupRloc()
 
@@ -130,29 +116,11 @@ for k in range(nb_iter):
     utilities_logMes('COMPUTE DOF')
     RBDY3_ComputeDof()
     #
-<<<<<<< .mine
-    # ### post3D ###
-    # post3D_Update()
-    # overall_WriteOutDisplayFile(freq_visu)
-    # display_3D_WriteOutDisplayFile(0)
-    # # visualisation des joints
-    # if k % freq_visu == 0 :
-    #   PRPRx_VisavisVTKDrawAll()
-=======
-    ### post3D ###
+
     WriteDisplayFiles(freq_visu,ref_radius)
     # visualisation des joints
     if k % freq_visu == 0 :
       PRPRx_VisavisVTKDrawAll()
->>>>>>> .r864
-
-<<<<<<< .mine
-    # ### postpro ###
-    # postpro_3D_PostproDuringComputation()
-=======
-    ### postpro ###
-    #postpro_3D_PostproDuringComputation()
->>>>>>> .r864
 
     utilities_logMes('UPDATE DOF')
     TimeEvolution_UpdateStep()
@@ -168,8 +136,5 @@ for k in range(nb_iter):
 TimeEvolution_WriteLastDof()
 RBDY3_WriteLastDof()
 
-<<<<<<< .mine
-#postpro_3D_ClosePostproFiles()
-=======
+
 CloseDisplayFiles()
->>>>>>> .r864
