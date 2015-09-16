@@ -143,6 +143,7 @@ display_distrib_var = False
 gnuplot_profile = False
 logscale=False
 gnuplot_distrib = False
+gnuplot_with_color = True
 output_dat=False
 user_filenames = []
 user_solvers = []
@@ -163,8 +164,8 @@ random_sample_proba = None
 max_problems = None
 cond_nc = None
 with_guess = True
-
-
+with_mumps = 0
+file_filter=None
 def usage():
   print "\n \n"
   print 'Usage: '+sys.argv[0]+'[option]'
@@ -194,6 +195,9 @@ def usage():
   print "   use keyworks in s separated by comma for filtering solvers"
   print " --solvers-exact=string"
   print "   use exact names of solvers in s separated by comma for filtering solvers"
+  print " --with_mumps= 0 or 1"
+  print "   use mumps as linear system solver"
+
   print " Other options have to be documented" 
   print " "
   print " Usage examples:"
@@ -218,7 +222,7 @@ try:
                                     'just-collect', 'cond-nc=', 'display-distrib=',
                                     'no-collect', 'domain=', 'replace-solver=',
                                     'gnuplot-profile','gnuplot-distrib', 'logscale',
-                                    'output-dat' ])
+                                    'output-dat', 'with_mumps=', 'file-filter='])
 
 
 except getopt.GetoptError, err:
@@ -291,6 +295,8 @@ for o, a in opts:
         gnuplot_distrib=True
     elif o == '--output-dat':
         output_dat=True
+    elif o == '--with_mumps':
+        with_mumps=1
     elif o == '--new':
         try:
             os.remove('comp.hdf5')
@@ -308,6 +314,9 @@ for o, a in opts:
             else:
                 if os.path.exists('{0}.hdf5'.format(f)):
                     user_filenames += ['{0}.hdf5'.format(f)]
+    elif o == '--file-filter':
+        file_filter=split(a, ',')
+        
     elif o == '--no-guess':
         with_guess = False
 
@@ -643,10 +652,11 @@ class Caller():
                 while again:
 
                     t0 = time.clock()
+                    #t0 = time.process_time()
                     result = solver(problem, reactions, velocities)
 
                     time_s = time.clock() - t0 # on unix, t is CPU seconds elapsed (floating point)
-
+                    #time_s  = time.process_time() -t0
                     fclib_sol = FCL.fclib_solution()
 
                     fclib_sol.v = None
@@ -859,7 +869,7 @@ localACSTD = SiconosSolver(name="NSN-AlartCurnier",
 localACSTD.SolverOptions().iparam[10] = 0;
 localACSTD.SolverOptions().iparam[11] = 0;
 localACSTD.SolverOptions().iparam[12] = 10;
-localACSTD.SolverOptions().iparam[13] = 1;
+localACSTD.SolverOptions().iparam[13] = with_mumps;
 localACSTD.SolverOptions().iparam[3] = 10000000
 
 
@@ -874,7 +884,7 @@ localACJeanMoreau = SiconosSolver(name="NSN-JeanMoreau",
 localACJeanMoreau.SolverOptions().iparam[10] = 1;
 localACJeanMoreau.SolverOptions().iparam[11] = 0;
 localACJeanMoreau.SolverOptions().iparam[12] = 10;
-localACJeanMoreau.SolverOptions().iparam[13] = 1;
+localACJeanMoreau.SolverOptions().iparam[13] = with_mumps;
 localACJeanMoreau.SolverOptions().iparam[3] = 10000000
 
 localACSTDGenerated = SiconosSolver(name="NSN-AlartCurnier-Generated",
@@ -888,7 +898,7 @@ localACSTDGenerated = SiconosSolver(name="NSN-AlartCurnier-Generated",
 localACSTDGenerated.SolverOptions().iparam[10] = 2;
 localACSTDGenerated.SolverOptions().iparam[11] = 0;
 localACSTDGenerated.SolverOptions().iparam[12] = 10;
-localACSTDGenerated.SolverOptions().iparam[13] = 1;
+localACSTDGenerated.SolverOptions().iparam[13] = with_mumps;
 localACSTDGenerated.SolverOptions().iparam[3] = 10000000
 
 localACJeanMoreauGenerated = SiconosSolver(name="NSN-JeanMoreau-Generated",
@@ -902,7 +912,7 @@ localACJeanMoreauGenerated = SiconosSolver(name="NSN-JeanMoreau-Generated",
 localACJeanMoreauGenerated.SolverOptions().iparam[10] = 3;
 localACJeanMoreauGenerated.SolverOptions().iparam[11] = 0;
 localACJeanMoreauGenerated.SolverOptions().iparam[12] = 10;
-localACJeanMoreauGenerated.SolverOptions().iparam[13] = 1;
+localACJeanMoreauGenerated.SolverOptions().iparam[13] = with_mumps;
 localACJeanMoreauGenerated.SolverOptions().iparam[3] = 10000000
 
 
@@ -917,8 +927,8 @@ localfb_gp = SiconosSolver(name="NSN-FischerBurmeister-GP",
 
 localfb_gp.SolverOptions().iparam[3] = 1000000
 localfb_gp.SolverOptions().iparam[11] = 0
-localfb_gp.SolverOptions().iparam[12] = 6
-localfb_gp.SolverOptions().iparam[13] = 1
+localfb_gp.SolverOptions().iparam[12] = 500
+localfb_gp.SolverOptions().iparam[13] = with_mumps
 
 localfb_fblsa = SiconosSolver(name="NSN-FischerBurmeister-FBLSA",
                               gnuplot_name="NSN-FB-FBLSA",
@@ -931,7 +941,7 @@ localfb_fblsa = SiconosSolver(name="NSN-FischerBurmeister-FBLSA",
 localfb_fblsa.SolverOptions().iparam[3] = 1000000
 localfb_fblsa.SolverOptions().iparam[11] = 1
 localfb_fblsa.SolverOptions().iparam[12] = 10
-localfb_fblsa.SolverOptions().iparam[13] = 1
+localfb_fblsa.SolverOptions().iparam[13] = with_mumps
 
 localfb_nls = SiconosSolver(name="LocalFischerBurmeisterNLS",
                               API=N.frictionContact3D_localFischerBurmeister,
@@ -943,7 +953,7 @@ localfb_nls = SiconosSolver(name="LocalFischerBurmeisterNLS",
 localfb_nls.SolverOptions().iparam[3] = 1000000
 localfb_nls.SolverOptions().iparam[11] = -1
 localfb_nls.SolverOptions().iparam[12] = 10
-localfb_nls.SolverOptions().iparam[13] = 1
+localfb_nls.SolverOptions().iparam[13] = with_mumps
 
 
 hlocalac = SiconosHybridSolver(name = "HLocalAlartCurnier",
@@ -1050,7 +1060,57 @@ VIExtraGrad = SiconosSolver(name="ExtraGradient-VI",
                             iparam_iter=7,
                             dparam_err=1,
                             maxiter=maxiter, precision=precision)
+VIExtraGrad1 = SiconosSolver(name="ExtraGradient-VI1s",
+                            API=N.frictionContact3D_VI_ExtraGradient,
+                            TAG=N.SICONOS_FRICTION_3D_VI_EG,
+                            iparam_iter=7,
+                            dparam_err=1,
+                            maxiter=maxiter, precision=precision)
+VIExtraGrad1.SolverOptions().dparam[4]=0.6
+VIExtraGrad1.SolverOptions().dparam[5]=1/0.7
+VIExtraGrad1.SolverOptions().dparam[6]=0.9
+VIExtraGrad1.SolverOptions().dparam[7]=0.3
 
+
+
+iparam1_values = [0,1,2]
+iparam2_values = [0,1]
+iparam3_values = [0,1]
+iparam3_values = [0]
+VIExtraGrad_series=[]
+for i1 in iparam1_values:
+    for i2 in iparam2_values:
+        for i3 in iparam3_values:
+            if i1 == 0 :
+                g_name="EG-VI-UPK"
+            elif i1 == 1 :
+                g_name="EG-VI-UPTS"
+            elif i1 == 2:
+                g_name="EG-VI-UPHS"
+
+            if i2 == 0:
+                g_name = g_name + " True" 
+            elif i2 == 1:
+                g_name = g_name + " False"
+                
+            if i3 == 0:
+                g_name = g_name 
+            elif i3 == 1:
+                g_name = g_name + " min" 
+
+            VIExtraGrad_solver= SiconosSolver(name="ExtraGrad-VI-"+str(i1)+str(i2)+str(i3),
+                                                         gnuplot_name=g_name,
+                                                         API=N.frictionContact3D_VI_ExtraGradient,
+                                                         TAG=N.SICONOS_FRICTION_3D_VI_EG,
+                                                         iparam_iter=7,
+                                                         dparam_err=1,
+                                                         maxiter=maxiter, precision=precision)
+            VIExtraGrad_solver.SolverOptions().iparam[1] = i1
+            VIExtraGrad_solver.SolverOptions().iparam[2] = i2
+            VIExtraGrad_solver.SolverOptions().iparam[3] = i3
+            VIExtraGrad_series.append(VIExtraGrad_solver)
+
+            
 VIFixedPointProjection = SiconosSolver(name="FixedPoint-VI",
                                        API=N.frictionContact3D_VI_FixedPointProjection,
                                        TAG=N.SICONOS_FRICTION_3D_VI_FPP,
@@ -1111,7 +1171,9 @@ ProxFB = SiconosSolver(name="PROX-NSN-FB-GP",
                      iparam_iter=7,
                      dparam_err=1,
                      maxiter=maxiter, precision=precision)
-
+ProxFB.SolverOptions().internalSolvers.iparam[3] = 1000000
+ProxFB.SolverOptions().dparam[4]=5.0 # sigma
+ProxFB.SolverOptions().dparam[5]=1.0 # nu
 localfb_gp_inprox = N.SolverOptions(N.SICONOS_FRICTION_3D_LOCALFB)
 localfb_gp_inprox.iparam[3] = 1000000
 localfb_gp_inprox.iparam[11] = 0
@@ -1230,15 +1292,19 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 
 all_solvers = [nsgs, snsgs, quartic, psor,
                TrescaFixedPoint, ACLMFixedPoint, DeSaxceFixedPoint,
-               VIFixedPointProjection, VIExtraGrad,
+               VIFixedPointProjection, VIExtraGrad,VIExtraGrad1,
                SOCLCP,
                localACSTD,localACSTDGenerated,  localacr, localACJeanMoreau, localACJeanMoreauGenerated, localfb_gp, localfb_fblsa,
                Prox, ProxFB, ProxFB_fblsa]
 
 # specific studies of solvers.
-all_solvers.extend(VIFixedPointProjection_series)
-all_solvers.extend(psor_series)
-all_solvers.extend(prox_series)
+#all_solvers.extend(VIFixedPointProjection_series)
+#all_solvers.extend(VIExtraGrad_series)
+#all_solvers.extend(psor_series)
+#all_solvers.extend(prox_series)
+all_solvers.remove(quartic)
+
+
 
 solvers=[]
 if user_solvers != []:
@@ -1294,10 +1360,14 @@ solver_r = dict()
 
 
 if user_filenames == []:
-    all_filenames = glob('*.hdf5')
+    if file_filter==None:
+        all_filenames = glob('*.hdf5')
+    else:
+        all_filenames = filter(lambda f: any(uf in f for uf in file_filter), glob('*.hdf5'))
+   
 else:
-    all_filenames = user_filenames
-
+    
+        all_filenames = user_filenames
    
 #all_filenames=['BoxesStack1-i9841-33.hdf5']
 #ask_collect = False
@@ -1510,8 +1580,15 @@ if __name__ == '__main__':
 
                     #gp.write('set title \'{0}\'\n'.format(filename.partition('-')[0]));
                     gp.write('plot ')
-                    gp.write(','.join(['resultfile using 1:{0} t "{1}" w l'.format(index + 2, solver.gnuplot_name())
-                                       for index, solver in enumerate(filter(lambda s: s._name in comp_data, solvers)) ]))
+                    if (gnuplot_with_color):
+                        gp.write(
+                            ','.join(['resultfile using 1:{0} t "{1}" w l dashtype {2} linecolor {3}'.format(index + 2, solver.gnuplot_name(),index+1,index%6+1)
+                                      for index, solver in enumerate(filter(lambda s: s._name in comp_data, solvers)) ]))
+                    else:
+                        gp.write(
+                            ','.join(['resultfile using 1:{0} t "{1}" w l dashtype {2} linecolor {3}'.format(index + 2, solver.gnuplot_name(),index+1,8)
+                                      for index, solver in enumerate(filter(lambda s: s._name in comp_data, solvers)) ]))
+                        
                 # all_rhos = [ rhos[solver_name] for solver_name in comp_data ]
                 # g.plot(*all_rhos)
 
