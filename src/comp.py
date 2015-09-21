@@ -166,6 +166,7 @@ cond_nc = None
 with_guess = True
 with_mumps = 0
 file_filter=None
+gnuplot_separate_keys = False
 def usage():
   print "\n \n"
   print 'Usage: '+sys.argv[0]+'[option]'
@@ -221,7 +222,7 @@ try:
                                     'velocities', 'reactions', 'measure=',
                                     'just-collect', 'cond-nc=', 'display-distrib=',
                                     'no-collect', 'domain=', 'replace-solver=',
-                                    'gnuplot-profile','gnuplot-distrib', 'logscale',
+                                    'gnuplot-profile','gnuplot-distrib', 'logscale', 'gnuplot-separate-keys',
                                     'output-dat', 'with_mumps=', 'file-filter='])
 
 
@@ -293,6 +294,8 @@ for o, a in opts:
         logscale=True
     elif o == '--gnuplot-distrib':
         gnuplot_distrib=True
+    elif o == 'gnuplot-separate-keys':
+        gnuplot_separate_keys = True
     elif o == '--output-dat':
         output_dat=True
     elif o == '--with_mumps':
@@ -979,6 +982,16 @@ snsgs = SiconosSolver(name="NSGS-AC-Shuffled",
                      maxiter=maxiter, precision=precision)
 snsgs.SolverOptions().iparam[9] = 1
 
+nsgs_pli = SiconosSolver(name="NSGS-PLI",
+                     API=N.frictionContact3D_nsgs,
+                     TAG=N.SICONOS_FRICTION_3D_NSGS,
+                     iparam_iter=7,
+                     dparam_err=1,
+                     maxiter=maxiter, precision=precision)
+nsgs_pli.SolverOptions().solverId = N.SICONOS_FRICTION_3D_ProjectionOnConeWithLocalIteration
+
+
+ 
 # only dense
 nsgsv = SiconosSolver(name="NSGS-Velocity",
                       API=N.frictionContact3D_nsgs_velocity,
@@ -986,6 +999,7 @@ nsgsv = SiconosSolver(name="NSGS-Velocity",
                       iparam_iter=7,
                       dparam_err=1,
                       maxiter=maxiter, precision=precision)
+
 
 omega=1.5
 psor = SiconosSolver(name="PSOR-AC",
@@ -1290,12 +1304,17 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 #               FixedPointProjection, VIFixedPointProjection, ExtraGrad, VIExtraGrad]
 #all_solvers = [nsgs, snsgs, quartic, TrescaFixedPoint, ACLMFixedPoint, DeSaxceFixedPoint, VIFixedPointProjection, VIFixedPointProjection1, VIFixedPointProjection2, VIFixedPointProjection3, VIExtraGrad, SOCLCP, Prox, Prox2, Prox3, Prox4, Prox5, localACSTD, localACSTDGenerated,  localacr, localACJeanMoreau, localACJeanMoreauGenerated, localfb_gp, localfb_fblsa]
 
-all_solvers = [nsgs, snsgs, quartic, psor,
-               TrescaFixedPoint, ACLMFixedPoint, DeSaxceFixedPoint,
+all_solvers = [nsgs, nsgs_pli, snsgs, quartic, psor,
+               TrescaFixedPoint, DeSaxceFixedPoint,
                VIFixedPointProjection, VIExtraGrad,VIExtraGrad1,
                SOCLCP,
-               localACSTD,localACSTDGenerated,  localacr, localACJeanMoreau, localACJeanMoreauGenerated, localfb_gp, localfb_fblsa,
-               Prox, ProxFB, ProxFB_fblsa]
+               localACSTD,localACSTDGenerated,  localacr, localACJeanMoreau, localACJeanMoreauGenerated,
+               Prox,  ProxFB,
+               ACLMFixedPoint, localfb_gp]
+
+all_solver_unstable = [localfb_fblsa, ProxFB_fblsa]
+
+all_solvers.extend(all_solver_unstable)
 
 # specific studies of solvers.
 #all_solvers.extend(VIFixedPointProjection_series)
@@ -1560,6 +1579,7 @@ if __name__ == '__main__':
                     gp.write('if (term_choice_tikz == 1) \\\n')
                     gp.write('set term tikz standalone monochrome  size 5in,3in font \'\\scriptsize\\sf\';  \\\n')
                     gp.write('extension = \'.tex\'; \\\n')
+                    gp.write('extension_legend = \'_legend.tex\'; \\\n')
                     gp.write('set output basename.extension; \\\n')
                     gp.write('print "output = ", basename.extension; \\\n')
 
@@ -1580,14 +1600,43 @@ if __name__ == '__main__':
 
                     #gp.write('set title \'{0}\'\n'.format(filename.partition('-')[0]));
                     gp.write('plot ')
-                    if (gnuplot_with_color):
-                        gp.write(
-                            ','.join(['resultfile using 1:{0} t "{1}" w l dashtype {2} linecolor {3}'.format(index + 2, solver.gnuplot_name(),index+1,index%6+1)
-                                      for index, solver in enumerate(filter(lambda s: s._name in comp_data, solvers)) ]))
+                    gnuplot_separate_keys =True
+                    if gnuplot_separate_keys:
+                        if (gnuplot_with_color):
+                            gp.write(
+                                ','.join(['resultfile using 1:{0} notitle w l  dashtype {1} linecolor {2}'.format(index + 2,index+1,index%6+1)
+                                          for index, solver in enumerate(filter(lambda s: s._name in comp_data, solvers)) ]))
+                            
+                            gp.write('\n set output basename.extension_legend; \n')
+                            gp.write('print "output = ", basename.extension_legend; \n \n')
+                            gp.write('unset border; \n \n')
+                            gp.write('unset tics; \n \n')
+                            gp.write('unset xlabel; \n \n')
+                            gp.write('unset ylabel; \n \n')
+                            gp.write('set term tikz standalone monochrome  size 5in,1.5in font \'\\scriptsize\\sf\';  \\\n')
+ 
+                            gp.write('set key right inside vertical maxrows {0}\n'.format(maxrows))
+
+                            gp.write('\n plot [0:1] [0:1]')
+                            gp.write(
+                                ','.join([' NaN t "{1}" w l dashtype {2} linecolor {3}'.format(index + 2, solver.gnuplot_name(),index+1,index%6+1)
+                                          for index, solver in enumerate(filter(lambda s: s._name in comp_data, solvers)) ]))
+
+                            
+                            
+                        else:
+                            gp.write(
+                                ','.join(['resultfile using 1:{0} t "{1}" w l dashtype {2} linecolor {3}'.format(index + 2, solver.gnuplot_name(),index+1,8)
+                                          for index, solver in enumerate(filter(lambda s: s._name in comp_data, solvers)) ]))
                     else:
-                        gp.write(
-                            ','.join(['resultfile using 1:{0} t "{1}" w l dashtype {2} linecolor {3}'.format(index + 2, solver.gnuplot_name(),index+1,8)
-                                      for index, solver in enumerate(filter(lambda s: s._name in comp_data, solvers)) ]))
+                        if (gnuplot_with_color):
+                            gp.write(
+                                ','.join(['resultfile using 1:{0} t "{1}" w l dashtype {2} linecolor {3}'.format(index + 2, solver.gnuplot_name(),index+1,index%6+1)
+                                          for index, solver in enumerate(filter(lambda s: s._name in comp_data, solvers)) ]))
+                        else:
+                            gp.write(
+                                ','.join(['resultfile using 1:{0} t "{1}" w l dashtype {2} linecolor {3}'.format(index + 2, solver.gnuplot_name(),index+1,8)
+                                          for index, solver in enumerate(filter(lambda s: s._name in comp_data, solvers)) ]))
                         
                 # all_rhos = [ rhos[solver_name] for solver_name in comp_data ]
                 # g.plot(*all_rhos)
