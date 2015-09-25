@@ -3,6 +3,14 @@
 # parallel usage :
 # ls *.hdf5 | parallel comp.py --timeout=100 --no-collect '--file={}'
 
+#
+# comp.py --max-problems=10 --no-compute --no-collect # output problems.txt
+# cat problems.txt | parallel comp.py --timeout=100 --no-collect '--file={}'
+#
+#
+
+
+
 from glob import glob
 from itertools import product
 import numpy as np
@@ -79,7 +87,12 @@ class WithCriterium():
         r = cond_problem(filename)
         return r > self._condmin and r < self._condmax
 
+def list_from_file(filename):
+    with open(filename, 'r') as f:
+        return f.read().lstrip().rstrip().split('\n')
+
 def subsample_problems(filenames, proba, maxp, cond):
+
     def addext(f):
         if f.endswith('.hdf5'):
             return f
@@ -93,7 +106,9 @@ def subsample_problems(filenames, proba, maxp, cond):
         __r = _filenames
 
     if maxp is not None:
-        _r = random.sample(__r, maxp)
+        _r = random.sample(__r, min(maxp, len(__r)))
+        print _r
+
     else:
         _r = __r
 
@@ -101,6 +116,11 @@ def subsample_problems(filenames, proba, maxp, cond):
         r = filter(WithCriterium(cond[0], cond[1]), _r)
     else:
         r = _r
+
+    # overwrite!
+    with open('problems.txt','w') as problems_txt:
+        problems_txt.write('{0}\n'.format('\n'.join(r)))
+
     return r
 
 def extern_guess(problem_filename, solver_name, iteration, h5file):
@@ -177,7 +197,7 @@ def usage():
   print "   enable verbose mode equal to 1 for Siconos Numerics"
   print " --no-collect "   
   print "   leave the result into separate file that are named according the solver and the name of the problem"
-  print " --just--collect"
+  print " --just-collect"
   print "   collect all the result into comp.hdf5"
   print " --timeout=n"  
   print "   set the maximum time of computation for each problem to n seconds (default",utimeout,"s)"
@@ -198,6 +218,9 @@ def usage():
   print "   use exact names of solvers in s separated by comma for filtering solvers"
   print " --with_mumps= 0 or 1"
   print "   use mumps as linear system solver"
+  print " --max-problems=<max>"
+  print "   Randomly select <max> problems in current directory." 
+  print "   The problems list is written in problems.txt file"
 
   print " Other options have to be documented" 
   print " "
@@ -221,7 +244,7 @@ try:
                                     'keep-files', 'new', 'errors',
                                     'velocities', 'reactions', 'measure=',
                                     'just-collect', 'cond-nc=', 'display-distrib=',
-                                    'no-collect', 'domain=', 'replace-solver=',
+                                    'no-collect', 'no-compute', 'domain=', 'replace-solver=',
                                     'gnuplot-profile','gnuplot-distrib', 'logscale', 'gnuplot-separate-keys',
                                     'output-dat', 'with_mumps=', 'file-filter='])
 
@@ -253,8 +276,12 @@ for o, a in opts:
     elif o == '--measure':
         measure_name = a
     elif o == '--random-sample':
+        if os.path.exists('problems.txt'):
+            os.remove('problems.txt')
         random_sample_proba = float(a)
     elif o == '--max-problems':
+        if os.path.exists('problems.txt'):
+            os.remove('problems.txt')
         max_problems = int(a)
     elif o == '--keep-files':
         keep_files = True
@@ -272,6 +299,8 @@ for o, a in opts:
         ask_compute = False
     elif o == '--no-collect':
         ask_collect = False
+    elif o == '--no-compute':
+        ask_compute = False
     elif o == '--cond-nc':
         cond_nc = [float (x) for x in split(a,':')]
     elif o == '--display-distrib':
@@ -1377,12 +1406,16 @@ velocities = array([0.,0.,0.])
 measure = dict()
 solver_r = dict()
 
+if not os.path.exists('problems.txt'):
+    with open('problems.txt', 'w') as problems_txt:
+        for f in glob('*.hdf5'):
+            problems_txt.write('{0}\n'.format(f))
 
 if user_filenames == []:
-    if file_filter==None:
-        all_filenames = glob('*.hdf5')
+    if file_filter == None:
+        all_filenames = list_from_file('problems.txt')
     else:
-        all_filenames = filter(lambda f: any(uf in f for uf in file_filter), glob('*.hdf5'))
+        all_filenames = filter(lambda f: any(uf in f for uf in file_filter), list_from_file('problems.txt'))
    
 else:
     
