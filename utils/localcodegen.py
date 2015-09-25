@@ -10,6 +10,7 @@ from sympy.printing.ccode import ccode, CCodePrinter
 from sympy.printing.precedence import precedence
 from sympy.printing.str import StrPrinter
 
+
 def append(d,k,v):
     if k in d:
         if not v in d[k]:
@@ -19,6 +20,14 @@ def append(d,k,v):
         d[k].append(v)
 
 
+def assert_is_not_zero(a): 
+
+    return '/*@ assert {0} != 0.;*/'.format(a)
+
+
+def assert_is_positive(a): 
+
+    return '/*@ assert {0} >= 0.;*/'.format(a)
 
 class Is():
     """
@@ -112,6 +121,51 @@ class LocalCCodePrinter(CCodePrinter):
         self._inside_condition = 0
 
 
+    def _preconditions(self, expr):
+
+        sa = []
+
+        for subexpr in postorder_traversal(expr):
+
+            if Is(subexpr).Pow:
+
+                sestr = self.parenthesize(subexpr.base, precedence(
+                    subexpr.base))
+
+                if abs(float(subexpr.exp) - int(subexpr.exp)) > 0:
+                    sa.append(assert_is_positive(sestr))
+
+                if subexpr.exp < 0:
+                    sa.append(assert_is_not_zero(sestr))
+
+        return sa
+
+    def _postconditions(self, lhs, rhs):
+
+        sa = []
+
+        sestr = '({0})'.format(self._print(lhs))
+
+        if not(Is(rhs).Relational):
+
+            if Is(rhs).positive:
+                sa.append(assert_is_positive(sestr))
+                sa.append(assert_is_not_zero(sestr))
+
+            else:
+                if Is(rhs).negative is not None and not Is(rhs).negative:    
+                    sa.append(assert_is_positive(sestr))
+
+                else:
+                    if Is(rhs).negative:    
+                        sa.append(assert_is_positive(self.parenthesize(rhs, precedence(
+                            - rhs))))
+                    else:
+                        if Is(rhs).nonzero:    
+                            sa.append(assert_is_not_zero(sestr))
+
+        return sa
+
     def _print_MatrixElement(self, expr):
         if self._array_format == 'C':
             return "{0}[{1}]".format(expr.parent, expr.j +
@@ -187,7 +241,12 @@ class LocalCCodePrinter(CCodePrinter):
 
         for var, _ in sorted([(s, self._varid[s]) for s in l], key=lambda t: t[1]):
             if var in self._decls and not var in self._affcts:
+                for sa in self._preconditions(self._decls[var]):
+                    affcts.append(sa)
                 affcts.append('{0}={1};'.format(var, super(LocalCCodePrinter, self)._print(self._decls[var])))
+                for sa in self._postconditions(var, self._decls[var]):
+                    affcts.append(sa)
+                                        
 
             if self._inside_condition == 0:
                 self._affcts[var] = True
@@ -252,7 +311,6 @@ class LocalCCodePrinter(CCodePrinter):
         # cse is meaningful only if assignment is specified
         if self._do_cse and assign_to is not None:
 
-
             (assignments, substitued_expr) = cse(expr, self._some_vars)
 
             subs = []
@@ -262,6 +320,8 @@ class LocalCCodePrinter(CCodePrinter):
                 self._varid[var] = i
 
                 self._decls[var] = val
+
+                var._assumptions = val._assumptions
 
                 if val in self._assignments_values:
                     subs += (var, self._assignments_values[val])
@@ -353,6 +413,9 @@ class LocalCCodePrinter(CCodePrinter):
 
             comment = '\n/* Assignment {0}={1} */\n'.format(expr.lhs, expr.rhs)
 
+            for sa in self._preconditions(expr.rhs):
+                comment += '{0}\n'.format(sa)
+
             expr_rhs = piecewise_fold(expr.rhs)
 
             if expr_rhs.is_Piecewise:
@@ -363,16 +426,17 @@ class LocalCCodePrinter(CCodePrinter):
                     self._print_declarations(conditions) +\
                     self._print_affectations(conditions) +\
                     self._print_declarations(expressions) + '\n' +\
-                    super(LocalCCodePrinter, self)._print_Assignment(expr)
+                    super(LocalCCodePrinter, self)._print_Assignment(expr) + '\n' +\
+                                         '\n'.join(self._postconditions(expr.lhs, expr.rhs))
             else:
                 expressions = [expr]
 
                 return comment + \
                     self._print_declarations(expressions) +\
                     self._print_affectations(expressions) + '\n' +\
-                    super(LocalCCodePrinter, self)._print_Assignment(expr)
+                    super(LocalCCodePrinter, self)._print_Assignment(expr) + '\n' +\
+                                         '\n'.join(self._postconditions(expr.lhs, expr.rhs))
 
-            
 
 
 
@@ -390,10 +454,10 @@ class LocalCCodePrinter(CCodePrinter):
         PREC = precedence(expr)
 
         if expr.exp == -1:
-            return '1.0/(assert(IS_NOT_ZERO({0})), {0})'.format(self.parenthesize(expr.base, PREC))
+            return '1.0/{0}'.format(self.parenthesize(expr.base, PREC))
 
         elif expr.exp == 0.5:
-            return '(assert(IS_POSITIVE({0})), sqrt({0}))'.format(self._print(expr.base))
+            return 'sqrt({0})'.format(self._print(expr.base))
 
         elif expr.exp == 2:
 
@@ -404,7 +468,7 @@ class LocalCCodePrinter(CCodePrinter):
 
         elif expr.exp < 1 and expr.exp > -1:
 
-            return '(assert(IS_POSITIVE({0})), pow({0}, {1}))'.format(self._print(expr.base),
+            return 'pow({0}, {1})'.format(self._print(expr.base),
                                           self._print(expr.exp))
 
         else:
@@ -455,12 +519,12 @@ class LocalCCodePrinter(CCodePrinter):
             return sign + '*'.join(a_str)
 
         elif len(b) == 1:
-            assert_p = '(assert(IS_NOT_ZERO({0})), '.format(b_str[0])
+            assert_p = ''.format(b_str[0])
 
-            return assert_p + sign + '*'.join(a_str) + "/" + b_str[0] + ")"
+            return assert_p + sign + '*'.join(a_str) + "/" + b_str[0] + ''
         else:
-            assert_p = '(assert(IS_NOT_ZERO({0})),'.format('*'.join(b_str))
-            return assert_p + sign + '*'.join(a_str) + "/(%s)" % '*'.join(b_str) + ")"
+            assert_p = ''.format('*'.join(b_str))
+            return assert_p + sign + '*'.join(a_str) + "/(%s)" % '*'.join(b_str) + ''
 
     def _print_Piecewise(self, expr):
 
