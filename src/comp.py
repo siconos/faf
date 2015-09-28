@@ -583,7 +583,9 @@ class Caller():
 
                 digest = hashlib.sha256(open(filename, 'rb').read()).digest()
                 data = output.create_group('data')
-                comp_data = data.create_group('comp')
+                comp_data = data.create_group('comp',precision)
+                comp_data.attrs.create('precision',precision)
+                comp_data.attrs.create('timeout',utimeout)
                 solver_data = comp_data.create_group(solver.name())
                 solver_problem_data = solver_data.create_group(pfilename)
                 attrs = solver_problem_data.attrs
@@ -630,6 +632,9 @@ class Caller():
 
             data = output.create_group('data')
             comp_data = data.create_group('comp')
+            comp_data.attrs.create('precision',precision)
+            comp_data.attrs.create('timeout',utimeout)
+
             solver_data = comp_data.create_group(solver.name())
 
             solver_problem_data = solver_data.create_group(pfilename)
@@ -1029,6 +1034,32 @@ nsgs_pli = SiconosSolver(name="NSGS-PLI",
 nsgs_pli.SolverOptions().solverId = N.SICONOS_FRICTION_3D_ProjectionOnConeWithLocalIteration
 
 
+
+local_tol_values = [1e-2,1e-4,1e-6,1e-8,1e-10,1e-12,1e-16]
+nsgs_series=[]
+for local_tol in local_tol_values:
+    str1 = "{0:1.0e}".format(local_tol).replace("1e","10\^{")+"}"
+    nsgs_solver = SiconosSolver(name="NSGS-AC-"+str(local_tol),
+                                gnuplot_name="NSGS-AC \$tol\_{local}="+str1+"\$",
+                                API=N.frictionContact3D_nsgs,
+                                TAG=N.SICONOS_FRICTION_3D_NSGS,
+                                iparam_iter=7,
+                                dparam_err=1,
+                                maxiter=maxiter, precision=precision)
+    nsgs_solver.SolverOptions().internalSolvers.dparam[0] = local_tol
+    nsgs_series.append(nsgs_solver)
+    nsgs_solver = SiconosSolver(name="NSGS-PLI-"+str(local_tol),
+                                gnuplot_name="NSGS-PLI \$tol\_{local}="+str1+"\$",
+                                API=N.frictionContact3D_nsgs,
+                                TAG=N.SICONOS_FRICTION_3D_NSGS,
+                                iparam_iter=7,
+                                dparam_err=1,
+                                maxiter=maxiter, precision=precision)
+    nsgs_pli.SolverOptions().solverId = N.SICONOS_FRICTION_3D_ProjectionOnConeWithLocalIteration
+    nsgs_solver.SolverOptions().internalSolvers.dparam[0] = local_tol
+    nsgs_series.append(nsgs_solver)
+    
+
  
 # only dense
 nsgsv = SiconosSolver(name="NSGS-Velocity",
@@ -1361,6 +1392,7 @@ all_solvers.extend(all_solver_unstable)
 #all_solvers.extend(prox_series)
 all_solvers.remove(quartic)
 
+all_solvers=nsgs_series
 
 
 solvers=[]
@@ -1472,8 +1504,39 @@ def collect(tpl):
 
     pfilename = os.path.basename(os.path.splitext(filename)[0])
     results_filename = '{0}-{1}.hdf5'.format(solver.name(),pfilename)
+    #print "file=", results_filename
+    if os.path.exists('comp.hdf5'):
+        with h5py.File('comp.hdf5', 'r+') as comp_file:
+            comp_precision=comp_file['data']['comp'].attrs.get('precision')
+            comp_utimeout=comp_file['data']['comp'].attrs.get('timeout')
+            #print "comp_precision",comp_precision
+            if comp_precision == None :
+                with h5py.File( results_filename, 'r') as result_file:
+                    result_precision=result_file['data']['comp'].attrs.get('precision')
+                print "Warning. precision information was missing in existing comp.hdf5 file. we add it from the first result file :", result_precision
+                comp_file['data']['comp'].attrs.create('precision',result_precision)
+                comp_precision = result_precision
+            if comp_utimeout == None :
+                with h5py.File( results_filename, 'r') as result_file:
+                    result_utimeout=result_file['data']['comp'].attrs.get('timeout')
+                    #print "result_utimeout = ", result_utimeout
+                print "Warning. timeout information was missing in existing comp.hdf5 file. we add it from the first result file",result_utimeout
+                comp_file['data']['comp'].attrs.create('timeout',result_utimeout)
+                comp_utimeout = result_utimeout
+                
+    
     if os.path.exists(results_filename) and not os.stat(results_filename).st_size == 0:
         try:
+            if os.path.exists('comp.hdf5'):
+                with h5py.File( results_filename, 'r') as result_file:
+                    result_precision=result_file['data']['comp'].attrs.get('precision')
+                    result_utimeout=result_file['data']['comp'].attrs.get('timeout')
+                    #print "result_precision = ", result_precision
+                    if comp_precision != result_precision:
+                        raise RuntimeError ("Precision of the result in comp.hdf5 ({0}) are not consistent result with the new computed result ({1}) \nWe dot not collect it\nCreate a new comp.hdf5 file".format(comp_precision,result_precision))
+                    if comp_utimeout != result_utimeout:
+                        raise RuntimeError ("Timeout of the result in comp.hdf5 ({0}) are not consistent result with the new computed result ({1}) \nWe dot not collect it\nCreate a new comp.hdf5 file".format(comp_utimeout,result_utimeout))
+                           
             check_call(['h5copy','-p','-i', results_filename,
                         '-ocomp.hdf5','-s/data/comp/{0}/{1}'.format(solver.name(),pfilename),
                         '-d/data/comp/{0}/{1}'.format(solver.name(),pfilename)])
