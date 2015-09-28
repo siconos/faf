@@ -221,6 +221,15 @@ def usage():
   print " --max-problems=<max>"
   print "   Randomly select <max> problems in current directory." 
   print "   The problems list is written in problems.txt file"
+  print " --gnuplot-profile"
+  print "   output gnuplot command file profile.gp for plotting profiles woth gnuplot" 
+  print " --gnuplot-distrib"
+  print "   output gnuplot command file distrib.gp for plotting distribution woth gnuplot" 
+  print " --gnuplot-separate-keys"
+  print "   output keys anf legend for gnuplot in a separate file."
+  
+  
+  
 
   print " Other options have to be documented" 
   print " "
@@ -323,7 +332,7 @@ for o, a in opts:
         logscale=True
     elif o == '--gnuplot-distrib':
         gnuplot_distrib=True
-    elif o == 'gnuplot-separate-keys':
+    elif o == '--gnuplot-separate-keys':
         gnuplot_separate_keys = True
     elif o == '--output-dat':
         output_dat=True
@@ -1633,7 +1642,6 @@ if __name__ == '__main__':
 
                     #gp.write('set title \'{0}\'\n'.format(filename.partition('-')[0]));
                     gp.write('plot ')
-                    gnuplot_separate_keys =True
                     if gnuplot_separate_keys:
                         if (gnuplot_with_color):
                             gp.write(
