@@ -59,6 +59,8 @@
 *** Smoothing and BFGS work of Chen and Tseng
   +  [[/Users/acary/Publi/Optimisation/SOCCP/Chen.Tseng_MP2005.pdf]]
   + retrieve L-BFGS of Nocedal  ?  Use of M1QN3 ?
+*** SOCLCP
+
 ** Existing software
 *** SOCP: Software for Second-Order Cone Programming
 	 M. Lobo, L. Vandenberghe, and S. Boyd
@@ -181,6 +183,27 @@ IUSEM, A. N., and SVAITER, B. F., A Variant of Korpeleûich’s Method for Vari
 ** Augmented Lagrangian formulation
 + Discuss with Paul Armand
    
+** I.N. Doudoumis, E.N. Mitsopoulou, G.N. Nikolaidis
+A comparative numerical study on the unilateral contact problem with friction
+Proceedings of the 1st National Congress of Computational Mechanics, Athens (1992)
+
+@article{
+year={1975},
+issn={0020-1154},
+journal={Ingenieur-Archiv},
+volume={44},
+number={6},
+doi={10.1007/BF00534623},
+title={A nonlinear programming approach to the unilateral contact-, and friction-boundary value problem in the theory of elasticity},
+url={http://dx.doi.org/10.1007/BF00534623},
+publisher={Springer-Verlag},
+author={Panagiotopoulos, P.D.},
+pages={421-432},
+language={English}
+}
+
+
+
 * Paper contact-friction 					  :ABC:PAPER:
 ** Objectives
    + Simple iteratives  methods
