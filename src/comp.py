@@ -583,7 +583,7 @@ class Caller():
 
                 digest = hashlib.sha256(open(filename, 'rb').read()).digest()
                 data = output.create_group('data')
-                comp_data = data.create_group('comp',precision)
+                comp_data = data.create_group('comp')
                 comp_data.attrs.create('precision',precision)
                 comp_data.attrs.create('timeout',utimeout)
                 solver_data = comp_data.create_group(solver.name())
@@ -1036,6 +1036,7 @@ nsgs_pli.SolverOptions().solverId = N.SICONOS_FRICTION_3D_ProjectionOnConeWithLo
 
 
 local_tol_values = [1e-2,1e-4,1e-6,1e-8,1e-10,1e-12,1e-16]
+local_tol_values = [1e-2,1e-6,1e-10,1e-16]
 nsgs_series=[]
 for local_tol in local_tol_values:
     str1 = "{0:1.0e}".format(local_tol).replace("1e","10\^{")+"}"
@@ -1048,6 +1049,9 @@ for local_tol in local_tol_values:
                                 maxiter=maxiter, precision=precision)
     nsgs_solver.SolverOptions().internalSolvers.dparam[0] = local_tol
     nsgs_series.append(nsgs_solver)
+
+for local_tol in local_tol_values:
+    str1 = "{0:1.0e}".format(local_tol).replace("1e","10\^{")+"}"
     nsgs_solver = SiconosSolver(name="NSGS-PLI-"+str(local_tol),
                                 gnuplot_name="NSGS-PLI \$tol\_{local}="+str1+"\$",
                                 API=N.frictionContact3D_nsgs,
@@ -1392,7 +1396,7 @@ all_solvers.extend(all_solver_unstable)
 #all_solvers.extend(prox_series)
 all_solvers.remove(quartic)
 
-all_solvers=nsgs_series
+#all_solvers=nsgs_series
 
 
 solvers=[]
