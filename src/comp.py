@@ -91,13 +91,15 @@ def list_from_file(filename):
     with open(filename, 'r') as f:
         return f.read().lstrip().rstrip().split('\n')
 
-def subsample_problems(filenames, proba, maxp, cond):
+def subsample_problems(filenames, proba, maxp, cond, overwrite=True):
+
 
     def addext(f):
         if f.endswith('.hdf5'):
             return f
         else:
             return '{0}.hdf5'.format(f)
+        
     _filenames = [addext(f) for f in filenames]
 
     if proba is not None:
@@ -117,9 +119,10 @@ def subsample_problems(filenames, proba, maxp, cond):
     else:
         r = _r
 
-    # overwrite!
-    with open('problems.txt','w') as problems_txt:
-        problems_txt.write('{0}\n'.format('\n'.join(r)))
+    # overwrite
+    if overwrite:
+        with open('problems.txt','w') as problems_txt:
+            problems_txt.write('{0}\n'.format('\n'.join(r)))
 
     return r
 
@@ -210,6 +213,8 @@ def usage():
   print "   select the value  as the measure for the perfomance profile. Possible values are time, iter, flpops"
   print " --display"
   print "   perform the computation of performance profile and display it in matplotlib"
+  print " --display-distrib='from-files' or "
+  print "   perform the computation of distribution and display it in matplotlib"
   print " --new"
   print "   remove comp.hdf5 file"
   print " --solvers=string"
@@ -227,7 +232,7 @@ def usage():
   print "   output gnuplot command file distrib.gp for plotting distribution woth gnuplot" 
   print " --gnuplot-separate-keys"
   print "   output keys anf legend for gnuplot in a separate file."
-  
+  print " --display-distrib='from-files' "
   
   
 
@@ -1396,7 +1401,7 @@ all_solvers.extend(all_solver_unstable)
 #all_solvers.extend(prox_series)
 all_solvers.remove(quartic)
 
-#all_solvers=nsgs_series
+all_solvers=nsgs_series
 
 
 solvers=[]
@@ -1532,10 +1537,18 @@ def collect(tpl):
     if os.path.exists(results_filename) and not os.stat(results_filename).st_size == 0:
         try:
             if os.path.exists('comp.hdf5'):
-                with h5py.File( results_filename, 'r') as result_file:
+                with h5py.File( results_filename, 'r+') as result_file:
                     result_precision=result_file['data']['comp'].attrs.get('precision')
                     result_utimeout=result_file['data']['comp'].attrs.get('timeout')
                     #print "result_precision = ", result_precision
+                    if result_precision==None:
+                        print "Warning. precision information was missing in the result file",results_filename," we add it from the comp file :", comp_precision
+                        result_file['data']['comp'].attrs.create('precision',comp_precision)
+                        result_precision=comp_precision
+                    if result_utimeout==None:
+                        print "Warning. timeout information was missing in the result file",results_filename," we add it from the comp file :", comp_utimeout
+                        result_file['data']['comp'].attrs.create('timeout',comp_utimeout)
+                        result_utimeout=comp_utimeout
                     if comp_precision != result_precision:
                         raise RuntimeError ("Precision of the result in comp.hdf5 ({0}) are not consistent result with the new computed result ({1}) \nWe dot not collect it\nCreate a new comp.hdf5 file".format(comp_precision,result_precision))
                     if comp_utimeout != result_utimeout:
@@ -1766,7 +1779,7 @@ if __name__ == '__main__':
                     legend(loc=4)
                 grid()
 
-
+                
     if display_convergence:
         from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure
         with h5py.File('comp.hdf5', 'r') as comp_file:
@@ -1803,7 +1816,6 @@ if __name__ == '__main__':
             nc = []
             nds = []
             cond_nc = []
-
             for problem_filename in problem_filenames:
 
                 try:
@@ -1818,18 +1830,69 @@ if __name__ == '__main__':
                     cond_nc.append(cond_problem(problem_filename))
                 except:
                     pass
+            
+            # compute other quantities
+            nc_avg = sum(nc)/float(len(nc))
+            #print "nc_avg", nc_avg
+            with h5py.File('comp.hdf5', 'r') as comp_file:
+                data = comp_file['data']
+                comp_data = data['comp']
+                for solver in solvers:
+                    solver_name=solver.name()
 
+                    
+                    if solver_name in comp_data :
+                        filenames = subsample_problems(comp_data[solver_name],
+                                                       random_sample_proba,
+                                                       max_problems, None, overwrite=False)
+                        assert len(filenames) <= n_problems
+                        measure[solver_name] = np.inf * np.ones(n_problems)
+                        solver_r[solver_name] = np.inf * np.ones(n_problems)
+
+                        ip = 0
+
+                        for filename in filenames:
+                            if filename not in min_measure:
+                                min_measure[filename] = np.inf
+                            try:
+                                pfilename = os.path.splitext(filename)[0]
+                                if comp_data[solver_name][pfilename].attrs['info'] == 0:
+                                    measure[solver_name][ip] =  comp_data[solver_name][pfilename].attrs[measure_name]
+                                    min_measure[filename] = min(min_measure[filename], measure[solver_name][ip])
+                                else:
+                                    measure[solver_name][ip] = np.inf
+                            except:
+                                measure[solver_name][ip] = np.nan
+                            ip += 1
+
+
+                avg_min_measure=0.0
+                for k,v in min_measure.items():
+                    avg_min_measure +=v
+                    
+                avg_min_measure = avg_min_measure/float(len(min_measure))
+                #print         "avg_min_measure",avg_min_measure
+                print         "Average min resolution measure by contact = {0:12.8e}".format(avg_min_measure/nc_avg)
+
+
+
+
+                
             figure()
             subplot(311)
             hist(nc, 100, label='nc', histtype='stepfilled')
             grid()
             legend()
             subplot(312)
-            hist(nds, 100, label='nds', histtype='stepfilled')
+            import math
+            if not math.isnan(min(nds)):
+                hist(nds, 100, label='nds', histtype='stepfilled')
             grid()
             legend()
             subplot(313)
-            hist(cond_nc, 100, label='cond_nc', histtype='stepfilled')
+            
+            if not math.isnan(min(cond_nc)):
+                hist(cond_nc, 100, label='cond_nc', histtype='stepfilled')
             grid()
             legend()
             if gnuplot_distrib :
