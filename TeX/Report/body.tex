@@ -2458,9 +2458,6 @@ To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$
   \caption{Influence of the tolerance of the local solver $tol_{local}$ in NSGS algorithms ($tol = 10^{-8}$). Capsules tests. $timeout=10s$}
   \label{fig:profile-Capsules-NSGS-1_3--tol-local-time}
 \end{figure}
-In figure~\ref{fig:profile-Capsules-NSGS-1_3--tol-local-time}, the tolerance of the local solver is varied and its effect on the global convergence of the solver is reported. For the ``Capsules'' set of examples, an increase of the tolerance of the local solver yields a increase of the computational effort. In fact the number of iteration of the NSGS algorithm does not change but the local solver is more demanding. There is no interest to ask for a higher accuracy of the local solver. Surprisingly, the algorithm is also able to reach the global accuracy of $tol = 10^{-8}$ with a suite low accuracy of the local solver. This mainly due to the fact that at least one iteration of the local solver is always done and the set of examples are not so difficult to solve. {\tt XXX can we give an numerical argument for this claim ?}
-
-Let us have a look to more difficult examples in Figure~\ref{fig:profile-LMGC_Bridge_PR-NSGS-1_3--tol-local-time}.
 \begin{figure}
   \centering
   \includegraphics[width=0.8\textwidth]{../figure/profile-LMGC_Bridge_PR-NSGS-1_3-tol-local-time.pdf}
@@ -2468,8 +2465,39 @@ Let us have a look to more difficult examples in Figure~\ref{fig:profile-LMGC_Br
   \caption{Influence of the tolerance of the local solver $tol_{local}$ in NSGS algorithms ($tol = 10^{-5}$). LMGC\_Bridge\_PR tests. $timeout=50s$}
   \label{fig:profile-LMGC_Bridge_PR-NSGS-1_3--tol-local-time}
 \end{figure}
+\begin{figure}
+  \centering
+  \includegraphics[width=0.8\textwidth]{../figure/profile-Cubes_H8_20-NSGS-1_10-tol-local-time.pdf}
+  \includegraphics[width=0.8\textwidth]{../figure/profile-Cubes_H8_20-NSGS-1_10_legend-tol-local-time.pdf}
+  \caption{Influence of the tolerance of the local solver $tol_{local}$ in NSGS algorithms ($tol = 10^{-4}$). LMGC\_Cubes\_H20 tests. $timeout=50s$}
+  \label{fig:profile-Cubes_H8_20-NSGS-1_3--tol-local-time}
+\end{figure}
+
+
+\begin{table}[htbp]
+  \centering
+  \begin{tabular}{|c|c|c|}
+    \hline
+    Test set & required accuracy &  average performance \\
+    \hline
+    \hline
+    Capsules & $10^{-08}$ & $ 1.072 \cdot 10^{-03} s$ \\
+    LMGC\_Bridge\_PR & $10^{-05}$&$1.581 \cdot 10^{-02} s $ \\
+    LMGC\_Cubes\_H20 &$10^{-04}$ &$6.271 \cdot 10^{-02} s $\\
+    \hline
+  \end{tabular}
+  \caption{The average performance of resolution by contacts for the best solver to reach a given accuracy.}
+  \label{tab:hardness}
+\end{table}
+
+
+
+In this section, the tolerance of the local solver is varied and its effect on the global convergence of the solver is reported. For the ``Capsules'' set of examples in figure~\ref{fig:profile-Capsules-NSGS-1_3--tol-local-time}, the tolerance of the local solver $tol_{local}$ has almost no effect on the performance of the global solver. Surprisingly, the algorithm is also able to reach the global accuracy of $tol = 10^{-8}$ with a quite low accuracy of the local solver ($10^{02}$ for instance). This mainly due to the fact that at least one iteration of the local solver is always done and the set of examples are not so difficult to solve (see the average performance in Table~\ref{tab:hardness}). 
+Let us have a look to more difficult examples in Figures~\ref{fig:profile-LMGC_Bridge_PR-NSGS-1_3--tol-local-time} and  \ref{fig:profile-Cubes_H8_20-NSGS-1_3--tol-local-time}. Although the required accuracy is lower, the solver with a low local tolerance fails to solve the problems efficiently. In the most difficult test set, it is even required to have a local tolerance $tol_{local}$ at a very low level with respect to the tolerance $tol$ to improve the rate of convergence and even to ensure the success of the solver. 
+
 \begin{ndrva}
-  \item redo this comparison on a set of mixed examples 
+  \item redo this comparison with the flop measure.
+  \item The Capsules test seems very easy to solve
 \end{ndrva}      
 \subsection{Comparison of PPA-NSN-AC algorithm with respect to  the step-size parameter $\sigma$, $\mu$}
 
