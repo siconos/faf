@@ -481,7 +481,7 @@ def _numberOfDegreeofFreedom(f):
             r = fclib_file['fclib_local']['info'].attrs['numberOfDegreeOfFreedom'][0]
         except:
             r = np.nan
-
+    #print "r=",r
     return r
 
 
@@ -501,26 +501,29 @@ def _dimension(f):
             r = np.nan
     return r
 
-def _numberOfContacts(f):
+def _numberOfDegreeofFreedomContacts(f):
     with h5py.File(f, 'r') as fclib_file:
         try:
             r = fclib_file['fclib_local']['W']['m'][0]
         except:
             r = np.nan
+    #print "r=",r
     return r
 
 def _cond_problem(filename):
     problem = read_fclib_format(filename)[1]
-    return float(problem.numberOfContacts * 3) / float(numberOfDegreeofFreedom(filename) * 6)
+    return float(problem.numberOfContacts * 3) / float(numberOfDegreeofFreedom(filename))
 
 
 read_fclib_format = Memoize(_read_fclib_format)
 
 numberOfDegreeofFreedom = Memoize(_numberOfDegreeofFreedom)
 
-numberOfContacts = Memoize(_numberOfContacts)
+numberOfDegreeofFreedomContacts = Memoize(_numberOfDegreeofFreedomContacts)
+print "numberOfDegreeofFreedomContacts", numberOfDegreeofFreedomContacts
 
 dimension = Memoize(_dimension)
+
 
 cond_problem = Memoize(_cond_problem)
 
@@ -619,7 +622,7 @@ class Caller():
                 mflops = np.nan
 
                 attrs.create('filename', filename)
-                attrs.create('nc', numberOfContacts(filename))
+                attrs.create('nc',  numberOfDegreeofFreedomContacts(filename))
                 attrs.create('nds', numberOfDegreeofFreedom(filename))
                 attrs.create('cond_nc', cond_problem(filename))
                 attrs.create('digest', digest)
@@ -632,7 +635,7 @@ class Caller():
                 attrs.create('flpops', flpops)
                 attrs.create('mflops', mflops)
 
-                print(filename, numberOfContacts(filename), numberOfDegreeofFreedom(filename), cond_problem(filename), solver.name(), info, iter, err,
+                print(filename, numberOfDegreeofFreedomContacts(filename), numberOfDegreeofFreedom(filename), cond_problem(filename), solver.name(), info, iter, err,
                       time_s, real_time, proc_time,
                       flpops, mflops)
 
@@ -660,7 +663,7 @@ class Caller():
             solver_problem_data = solver_data.create_group(pfilename)
             attrs = solver_problem_data.attrs
 
-            psize = dimension(filename) * numberOfContacts(filename)
+            psize = numberOfDegreeofFreedomContacts(filename)
 
             info = None
             iter = None
@@ -778,7 +781,7 @@ class Caller():
                 mflops = np.nan
 
             attrs.create('filename', filename)
-            attrs.create('nc', numberOfContacts(filename))
+            attrs.create('nc', numberOfDegreeofFreedomContacts(filename))
             attrs.create('nds', numberOfDegreeofFreedom(filename))
             attrs.create('cond_nc', cond_problem(filename))
             attrs.create('digest', digest)
@@ -792,7 +795,7 @@ class Caller():
             attrs.create('mflops', mflops)
 
             # filename, solver name, revision svn, parameters, nb iter, err
-            print(filename, numberOfContacts(filename), numberOfDegreeofFreedom(filename), cond_problem(filename), solver.name(), info, iter, err,
+            print(filename, numberOfDegreeofFreedomContacts(filename), numberOfDegreeofFreedom(filename), cond_problem(filename), solver.name(), info, iter, err,
                   time_s, real_time, proc_time,
                   flpops, mflops)
 
@@ -866,7 +869,7 @@ class SiconosSolver():
         problem = read_fclib_format(filename)[1]
 
         with h5py.File(filename, 'r') as f:
-            psize = problem.dimension * problem.numberOfContacts
+            psize = numberOfDegreeofFreedomContacts(filename)
             if with_guess and 'guesses' in f:
                 number_of_guesses = f['guesses']['number_of_guesses'][0]
                 velocities = f['guesses']['1']['u'][:]
@@ -1834,7 +1837,7 @@ if __name__ == '__main__':
             for problem_filename in problem_filenames:
 
                 try:
-                    nc.append(read_fclib_format(problem_filename)[1].numberOfContacts)
+                    nc.append(numberOfDegreeofFreedomContacts(problem_filename)/3)
                 except:
                     pass
                 try:
@@ -1847,6 +1850,7 @@ if __name__ == '__main__':
                     pass
             
             # compute other quantities
+            print nc
             nc_avg = sum(nc)/float(len(nc))
             #print "nc_avg", nc_avg
             with h5py.File('comp.hdf5', 'r') as comp_file:
@@ -1888,7 +1892,6 @@ if __name__ == '__main__':
                 avg_min_measure = avg_min_measure/float(len(min_measure))
                 #print         "avg_min_measure",avg_min_measure
                 print         "Average min resolution measure by contact = {0:12.8e}".format(avg_min_measure/nc_avg)
-
 
 
 
