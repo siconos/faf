@@ -190,6 +190,7 @@ with_guess = True
 with_mumps = 0
 file_filter=None
 gnuplot_separate_keys = False
+list_contents=False
 def usage():
   print "\n \n"
   print 'Usage: '+sys.argv[0]+'[option]'
@@ -233,7 +234,9 @@ def usage():
   print " --gnuplot-separate-keys"
   print "   output keys anf legend for gnuplot in a separate file."
   print " --display-distrib='from-files' "
-  
+  print " --list-contents"
+  print "   list contents of comp.hdf5 file"
+ 
   
 
   print " Other options have to be documented" 
@@ -260,7 +263,8 @@ try:
                                     'just-collect', 'cond-nc=', 'display-distrib=',
                                     'no-collect', 'no-compute', 'domain=', 'replace-solver=',
                                     'gnuplot-profile','gnuplot-distrib', 'logscale', 'gnuplot-separate-keys',
-                                    'output-dat', 'with_mumps=', 'file-filter='])
+                                    'output-dat', 'with_mumps=', 'file-filter=',
+                                    'list-contents'])
 
 
 except getopt.GetoptError, err:
@@ -283,6 +287,9 @@ for o, a in opts:
         clean = True
     elif o == '--display':
         display = True
+        compute = False
+    elif o == '--list-contents':
+        list_contents = True
         compute = False
     elif o == '--display-convergence':
         display_convergence = True
@@ -520,7 +527,7 @@ read_fclib_format = Memoize(_read_fclib_format)
 numberOfDegreeofFreedom = Memoize(_numberOfDegreeofFreedom)
 
 numberOfDegreeofFreedomContacts = Memoize(_numberOfDegreeofFreedomContacts)
-print "numberOfDegreeofFreedomContacts", numberOfDegreeofFreedomContacts
+
 
 dimension = Memoize(_dimension)
 
@@ -634,15 +641,19 @@ class Caller():
                 attrs.create('proc_time', proc_time)
                 attrs.create('flpops', flpops)
                 attrs.create('mflops', mflops)
+                attrs.create('precision', precision)
+                attrs.create('timeout', utimeout)
 
                 print(filename, numberOfDegreeofFreedomContacts(filename), numberOfDegreeofFreedom(filename), cond_problem(filename), solver.name(), info, iter, err,
                       time_s, real_time, proc_time,
-                      flpops, mflops)
+                      flpops, mflops,
+                      precision, utimeout)
 
                 with open('report.txt', "a") as report_file:
                     print   >> report_file , (filename, solver.name(), info, iter, err,
                                               time_s, real_time, proc_time,
-                                              flpops, mflops)
+                                              flpops, mflops,
+                                              precision, utimeout)
 
 
 
@@ -793,11 +804,12 @@ class Caller():
             attrs.create('proc_time', proc_time)
             attrs.create('flpops', flpops)
             attrs.create('mflops', mflops)
-
+            attrs.create('precision', precision)
+            attrs.create('timeout', utimeout)
             # filename, solver name, revision svn, parameters, nb iter, err
             print(filename, numberOfDegreeofFreedomContacts(filename), numberOfDegreeofFreedom(filename), cond_problem(filename), solver.name(), info, iter, err,
                   time_s, real_time, proc_time,
-                  flpops, mflops)
+                  flpops, mflops, precision, utimeout)
 
                     # if info == 1:
                     #     measure_v = np.inf
@@ -1590,7 +1602,7 @@ class Results():
         problem_filename = os.path.splitext(tpl[1])[0]
         try:
             r = self._result_file['data']['comp'][solver.name()][problem_filename]
-            print (r.attrs['filename'], cond_problem(r.attrs['filename']), solver.name(), r.attrs['info'], r.attrs['iter'], r.attrs['err'], r.attrs['time'], r.attrs['real_time'], r.attrs['proc_time'], r.attrs['flpops'], r.attrs['mflops'])
+            print (r.attrs['filename'], cond_problem(r.attrs['filename']), solver.name(), r.attrs['info'], r.attrs['iter'], r.attrs['err'], r.attrs['time'], r.attrs['real_time'], r.attrs['proc_time'], r.attrs['flpops'], r.attrs['mflops'],r.attrs.get('precision'),r.attrs.get('timeout'))
             return False
         except:
             return True
@@ -1612,7 +1624,25 @@ if __name__ == '__main__':
 
         if ask_collect:
             map(collect, tasks)
+    if list_contents:
+        with h5py.File('comp.hdf5', 'r') as comp_file:
 
+            data = comp_file['data']
+            comp_data = data['comp']
+            for item in comp_data.attrs.keys():
+                print "comp_data attrs: ", item + ":", comp_data.attrs[item]
+            print "Solvers :"
+            for solvername in comp_data:
+                print "  ",solvername
+                print "  Filenames"
+                
+                for filename in comp_data[solvername]:
+                    list_keys= comp_data[solvername][filename].attrs.keys()
+                    list_keys.remove(u'digest')
+                    print "  ",solvername,   [comp_data[solvername][filename].attrs[item] for item in list_keys]
+
+                    
+            
     if display:
         with h5py.File('comp.hdf5', 'r') as comp_file:
 
