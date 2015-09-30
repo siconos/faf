@@ -32,7 +32,7 @@ relax = 1. #0.25
 solver='nlgs                          '
 solver_output=3
 
-SiconosNumerics_SetParameters(solver,tol,10,itermax,relax,0,solver_output)
+SiconosNumerics_SetParameters(solver,tol,10,itermax,relax,0,solver_output,1)
 
 freq_visu = 1
 ref_radius = 0.1

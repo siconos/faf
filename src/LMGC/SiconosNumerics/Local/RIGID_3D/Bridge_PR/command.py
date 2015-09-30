@@ -36,7 +36,7 @@ tol = 1.e-5
 relax = 1. #0.25 
 solver='nlgs                          '
 solver_output=3
-SiconosNumerics_SetParameters(solver,tol,10,itermax,relax,1,solver_output,10)
+SiconosNumerics_SetParameters(solver,tol,10,itermax,relax,0,solver_output,10)
 #############################
 SetDimension(3)
 
