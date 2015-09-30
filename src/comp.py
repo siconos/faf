@@ -469,14 +469,29 @@ def _read_fclib_format(filename):
     numerics_problem =  N.from_fclib_local(fclib_problem)
     return fclib_problem, numerics_problem
 
-
-def _numberOfInvolvedDS(f):
+def _numberOfDegreeofFreedom(f):
     with h5py.File(f, 'r') as fclib_file:
+        
         try:
-            r = fclib_file['fclib_local']['info'].attrs['numberOfInvolvedDS']
+            r = 6*fclib_file['fclib_local']['info'].attrs['numberOfInvolvedDS']
         except:
             r = np.nan
+            
+        try:
+            r = fclib_file['fclib_local']['info'].attrs['numberOfDegreeOfFreedom'][0]
+        except:
+            r = np.nan
+
     return r
+
+
+# def _numberOfInvolvedDS(f):
+#     with h5py.File(f, 'r') as fclib_file:
+#         try:
+#             r = fclib_file['fclib_local']['info'].attrs['numberOfInvolvedDS']
+#         except:
+#             r = np.nan
+#     return r
 
 def _dimension(f):
     with h5py.File(f, 'r') as fclib_file:
@@ -496,12 +511,12 @@ def _numberOfContacts(f):
 
 def _cond_problem(filename):
     problem = read_fclib_format(filename)[1]
-    return float(problem.numberOfContacts * 3) / float(numberOfInvolvedDS(filename) * 6)
+    return float(problem.numberOfContacts * 3) / float(numberOfDegreeofFreedom(filename) * 6)
 
 
 read_fclib_format = Memoize(_read_fclib_format)
 
-numberOfInvolvedDS = Memoize(_numberOfInvolvedDS)
+numberOfDegreeofFreedom = Memoize(_numberOfDegreeofFreedom)
 
 numberOfContacts = Memoize(_numberOfContacts)
 
@@ -605,7 +620,7 @@ class Caller():
 
                 attrs.create('filename', filename)
                 attrs.create('nc', numberOfContacts(filename))
-                attrs.create('nds', numberOfInvolvedDS(filename))
+                attrs.create('nds', numberOfDegreeofFreedom(filename))
                 attrs.create('cond_nc', cond_problem(filename))
                 attrs.create('digest', digest)
                 attrs.create('info', info)
@@ -617,7 +632,7 @@ class Caller():
                 attrs.create('flpops', flpops)
                 attrs.create('mflops', mflops)
 
-                print(filename, numberOfContacts(filename), numberOfInvolvedDS(filename), cond_problem(filename), solver.name(), info, iter, err,
+                print(filename, numberOfContacts(filename), numberOfDegreeofFreedom(filename), cond_problem(filename), solver.name(), info, iter, err,
                       time_s, real_time, proc_time,
                       flpops, mflops)
 
@@ -764,7 +779,7 @@ class Caller():
 
             attrs.create('filename', filename)
             attrs.create('nc', numberOfContacts(filename))
-            attrs.create('nds', numberOfInvolvedDS(filename))
+            attrs.create('nds', numberOfDegreeofFreedom(filename))
             attrs.create('cond_nc', cond_problem(filename))
             attrs.create('digest', digest)
             attrs.create('info', info)
@@ -777,7 +792,7 @@ class Caller():
             attrs.create('mflops', mflops)
 
             # filename, solver name, revision svn, parameters, nb iter, err
-            print(filename, numberOfContacts(filename), numberOfInvolvedDS(filename), cond_problem(filename), solver.name(), info, iter, err,
+            print(filename, numberOfContacts(filename), numberOfDegreeofFreedom(filename), cond_problem(filename), solver.name(), info, iter, err,
                   time_s, real_time, proc_time,
                   flpops, mflops)
 
@@ -1823,7 +1838,7 @@ if __name__ == '__main__':
                 except:
                     pass
                 try:
-                    nds.append(6*numberOfInvolvedDS(problem_filename))
+                    nds.append(numberOfDegreeofFreedom(problem_filename))
                 except:
                     pass
                 try:
