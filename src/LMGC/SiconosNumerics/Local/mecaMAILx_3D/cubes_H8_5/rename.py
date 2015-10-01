@@ -2,6 +2,7 @@ import os
 import shutil as shutil
 from glob import glob 
 base = 'Cubes_H8_5'
+os.mkdir(base)
 counter =0
 for filename in glob('*.hdf5'):
     print( filename)
@@ -9,7 +10,7 @@ for filename in glob('*.hdf5'):
     #print statinfo.st_size,  statinfo_previous.st_size
     new_filename = filename.replace('FC3D',base)
     if counter%4==0 :
-        print "copy", filename, "in ", os.path.join("./rename/", new_filename) 
-        shutil.copy(filename, os.path.join("./rename/", new_filename))
+        print "copy", filename, "in ", os.path.join(base, new_filename) 
+        shutil.copy(filename, os.path.join(base, new_filename))
     counter =counter +1
 
