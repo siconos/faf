@@ -264,7 +264,8 @@ try:
                                     'no-collect', 'no-compute', 'domain=', 'replace-solver=',
                                     'gnuplot-profile','gnuplot-distrib', 'logscale', 'gnuplot-separate-keys',
                                     'output-dat', 'with_mumps=', 'file-filter=',
-                                    'list-contents'])
+                                    'list-contents',
+                                    'add-precision-in-comp-file','add-timeout-in-comp-file'])
 
 
 except getopt.GetoptError, err:
@@ -372,6 +373,14 @@ for o, a in opts:
         
     elif o == '--no-guess':
         with_guess = False
+    elif o == '--add-precision-in-comp-file':
+        with h5py.File('comp.hdf5','r+') as comp_file:
+            create_attrs_precision_in_comp_file(comp_file,float(a))
+    elif o == '--add-timeout-in-comp-file':
+        with h5py.File('comp.hdf5','r+') as comp_file:
+            create_attrs_timeout_in_comp_file(comp_file,float(a))
+    
+    
 
 from ctypes import cdll, c_float, c_longlong, byref
 try:
@@ -612,10 +621,10 @@ class Caller():
             with h5py.File(output_filename, 'w') as output:
 
                 digest = hashlib.sha256(open(filename, 'rb').read()).digest()
-                data = output.create_group('data')
-                comp_data = data.create_group('comp')
-                comp_data.attrs.create('precision',precision)
-                comp_data.attrs.create('timeout',utimeout)
+
+                create_attrs_in_comp_file(output,precision,utimeout,measure_name)
+                
+                comp_data=output['data']['comp']
                 solver_data = comp_data.create_group(solver.name())
                 solver_problem_data = solver_data.create_group(pfilename)
                 attrs = solver_problem_data.attrs
@@ -663,12 +672,10 @@ class Caller():
 
         with h5py.File(output_filename, 'w') as output:
 
-
-            data = output.create_group('data')
-            comp_data = data.create_group('comp')
-            comp_data.attrs.create('precision',precision)
-            comp_data.attrs.create('timeout',utimeout)
-
+            create_attrs_in_comp_file(output,precision,utimeout,measure_name)
+                
+            comp_data=output['data']['comp']
+            
             solver_data = comp_data.create_group(solver.name())
 
             solver_problem_data = solver_data.create_group(pfilename)
@@ -1537,6 +1544,31 @@ caller = Caller()
 
 #pool = MyPool(processes=8)
 
+
+def create_attrs_precision_in_comp_file(comp_file,precision_val):
+    data = comp_file.get('data')
+    if data == None :
+        data = comp_file.create_group('data')
+    comp_data = data.get('comp')
+    if comp_data == None: 
+        comp_data = data.create_group('comp')
+    comp_data.attrs.create('precision',precision_val)
+
+def create_attrs_timeout_in_comp_file(comp_file,utimeout_val):
+    data = comp_file.get('data')
+    if data == None :
+        data = comp_file.create_group('data')
+    comp_data = data.get('comp')
+    if comp_data == None: 
+        comp_data = data.create_group('comp')
+    comp_data.attrs.create('timeout',utimeout_val)
+
+
+
+def create_attrs_in_comp_file(comp_file,precision_val,utimeout_val,measure_name_val):
+    create_attrs_precision_in_comp_file(comp_file,precision_val)
+    create_attrs_timeout_in_comp_file(comp_file,utimeout_val)
+
 def collect(tpl):
 
     solver, filename = tpl
@@ -1545,40 +1577,29 @@ def collect(tpl):
     results_filename = '{0}-{1}.hdf5'.format(solver.name(),pfilename)
     #print "file=", results_filename
     if os.path.exists('comp.hdf5'):
-        with h5py.File('comp.hdf5', 'r+') as comp_file:
+        with h5py.File('comp.hdf5', 'r') as comp_file:
             comp_precision=comp_file['data']['comp'].attrs.get('precision')
             comp_utimeout=comp_file['data']['comp'].attrs.get('timeout')
+            comp_measure_name=comp_file['data']['comp'].attrs.get('mesaure_name')
             #print "comp_precision",comp_precision
             if comp_precision == None :
-                with h5py.File( results_filename, 'r') as result_file:
-                    result_precision=result_file['data']['comp'].attrs.get('precision')
-                print "Warning. precision information was missing in existing comp.hdf5 file. we add it from the first result file :", result_precision
-                comp_file['data']['comp'].attrs.create('precision',result_precision)
-                comp_precision = result_precision
+                raise RuntimeError ("Warning. precision information is missing in existing comp.hdf5 file (old version)\n      you must add it with --add-precision-in-comp-file=<val> ")
             if comp_utimeout == None :
-                with h5py.File( results_filename, 'r') as result_file:
-                    result_utimeout=result_file['data']['comp'].attrs.get('timeout')
-                    #print "result_utimeout = ", result_utimeout
-                print "Warning. timeout information was missing in existing comp.hdf5 file. we add it from the first result file",result_utimeout
-                comp_file['data']['comp'].attrs.create('timeout',result_utimeout)
-                comp_utimeout = result_utimeout
-                
-    
+                raise RuntimeError ("Warning. timeout information is missing in existing comp.hdf5 file (old version)\n      you must add it with --add-timeout-in-comp-file=<val> ")
+    else:
+        with h5py.File('comp.hdf5', 'w') as comp_file:
+            create_attrs_in_comp_file(comp_file,precision,utimeout,measure_name)
+            comp_precision=comp_file['data']['comp'].attrs.get('precision')
+            comp_utimeout=comp_file['data']['comp'].attrs.get('timeout')
+            comp_measure_name=comp_file['data']['comp'].attrs.get('mesaure_name')
+            
     if os.path.exists(results_filename) and not os.stat(results_filename).st_size == 0:
         try:
-            if os.path.exists('comp.hdf5'):
+            if os.path.exists('comp.hdf5'):                
                 with h5py.File( results_filename, 'r+') as result_file:
                     result_precision=result_file['data']['comp'].attrs.get('precision')
                     result_utimeout=result_file['data']['comp'].attrs.get('timeout')
-                    #print "result_precision = ", result_precision
-                    if result_precision==None:
-                        print "Warning. precision information was missing in the result file",results_filename," we add it from the comp file :", comp_precision
-                        result_file['data']['comp'].attrs.create('precision',comp_precision)
-                        result_precision=comp_precision
-                    if result_utimeout==None:
-                        print "Warning. timeout information was missing in the result file",results_filename," we add it from the comp file :", comp_utimeout
-                        result_file['data']['comp'].attrs.create('timeout',comp_utimeout)
-                        result_utimeout=comp_utimeout
+                    result_measure_name=result_file['data']['comp'].attrs.get('measure_name')                                    
                     if comp_precision != result_precision:
                         raise RuntimeError ("Precision of the result in comp.hdf5 ({0}) are not consistent result with the new computed result ({1}) \nWe dot not collect it\nCreate a new comp.hdf5 file".format(comp_precision,result_precision))
                     if comp_utimeout != result_utimeout:
@@ -1602,7 +1623,13 @@ class Results():
         problem_filename = os.path.splitext(tpl[1])[0]
         try:
             r = self._result_file['data']['comp'][solver.name()][problem_filename]
-            print (r.attrs['filename'], cond_problem(r.attrs['filename']), solver.name(), r.attrs['info'], r.attrs['iter'], r.attrs['err'], r.attrs['time'], r.attrs['real_time'], r.attrs['proc_time'], r.attrs['flpops'], r.attrs['mflops'],r.attrs.get('precision'),r.attrs.get('timeout'))
+            # if abs(r.attrs.get('precision') -  precision) >= 1e-16 :
+            #     raise RuntimeError()
+            # if abs(r.attrs.get('timeout') -  utimeout) >= 1e-16 :
+            #    raise RuntimeError()
+            print "Already in comp file : ", (r.attrs['filename'], cond_problem(r.attrs['filename']), solver.name(), r.attrs['info'],
+                                              r.attrs['iter'], r.attrs['err'], r.attrs['time'], r.attrs['real_time'], r.attrs['proc_time'],
+                                              r.attrs['flpops'], r.attrs['mflops'],r.attrs.get('precision'),r.attrs.get('timeout'))
             return False
         except:
             return True
@@ -1613,8 +1640,8 @@ if __name__ == '__main__':
         all_tasks = [t for t in product(solvers, problem_filenames)]
 
         if os.path.exists('comp.hdf5'):
-            with h5py.File('comp.hdf5', 'r') as result_file:
-                tasks = filter(Results(result_file), all_tasks)
+            with h5py.File('comp.hdf5', 'r') as comp_file:
+                tasks = filter(Results(comp_file), all_tasks)
 
         else:
             tasks = all_tasks
@@ -1624,6 +1651,7 @@ if __name__ == '__main__':
 
         if ask_collect:
             map(collect, tasks)
+            
     if list_contents:
         with h5py.File('comp.hdf5', 'r') as comp_file:
 
@@ -1634,8 +1662,6 @@ if __name__ == '__main__':
             print "Solvers :"
             for solvername in comp_data:
                 print "  ",solvername
-                print "  Filenames"
-                
                 for filename in comp_data[solvername]:
                     list_keys= comp_data[solvername][filename].attrs.keys()
                     list_keys.remove(u'digest')
