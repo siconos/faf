@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
 # parallel usage :
-# ls *.hdf5 | parallel comp.py --timeout=100 --no-collect '--file={}'
+# ls *.hdf5 | parallel comp.py --timeout=100 --no-collect '--files={}'
 
 #
 # comp.py --max-problems=10 --no-compute --no-collect # output problems.txt
-# cat problems.txt | parallel comp.py --timeout=100 --no-collect '--file={}'
+# cat problems.txt | parallel comp.py --timeout=100 --no-collect '--files={}'
 #
 #
 
@@ -21,7 +21,10 @@ import Siconos.FCLib as FCL
 
 from numpy.linalg import matrix_rank,svd
 
-from scipy.linalg.interpolative import estimate_rank
+try:
+    from scipy.linalg.interpolative import estimate_rank
+except:
+    pass
 
 from scipy.sparse import csr_matrix
 
@@ -402,7 +405,11 @@ except:
         with_papi = True
         papi=cdll.LoadLibrary('/usr/lib/x86_64-linux-gnu/libpapi.so.5.3.0.0')
     except:
-        with_papi = False
+        try:
+            with_papi = True
+            papi=cdll.LoadLibrary('/home/bremond/faf/install/lib/libpapi.so')
+        except:
+            with_papi = False
 
 
 def init_flop():
