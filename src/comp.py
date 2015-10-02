@@ -19,6 +19,10 @@ import Siconos.Numerics as N
 N.setNumericsVerbose(0)
 import Siconos.FCLib as FCL
 
+from numpy.linalg import matrix_rank,svd
+
+from scipy.linalg.interpolative import estimate_rank
+
 from scipy.sparse import csr_matrix
 
 try:
@@ -134,16 +138,6 @@ def extern_guess(problem_filename, solver_name, iteration, h5file):
     velocity = comp_data[solver_name][problem_filename]['velocities'][iteration]
     return reaction, velocity
 
-# estimate of condition number and norm from lsmr
-# http://www.stanford.edu/group/SOL/software/lsmr/LSMR-SISC-2011.pdf
-def _norm_cond(problem_filename):
-    problem = read_fclib_format(problem_filename)[1]
-    A = csr_matrix(N.SBMtoSparse(problem.M)[1])
-    r = lsmr(A, np.ones([A.shape[0], 1]))  # solve Ax = 1
-    svd = svds(A)[1]
-    return r[5], r[6], max(svd), min(svd), max(svd)/min(svd)
-
-norm_cond = Memoize(_norm_cond)
 
 def split(s, sep, maxsplit=-1):
 
@@ -191,6 +185,9 @@ with_mumps = 0
 file_filter=None
 gnuplot_separate_keys = False
 list_contents=False
+compute_hardness = False
+compute_cond_rank = False
+adhoc= False
 def usage():
   print "\n \n"
   print 'Usage: '+sys.argv[0]+'[option]'
@@ -236,7 +233,11 @@ def usage():
   print " --display-distrib='from-files' "
   print " --list-contents"
   print "   list contents of comp.hdf5 file"
- 
+  print " --compute-cond-rank"
+  print "   compute the rank (vairous numerical methods) and condition number of W and store it in the problem file"
+  print " --compute-hardness"
+  print "   compute the average performance of the best solver on a set of problem divided by the average number of contact"
+  
   
 
   print " Other options have to be documented" 
@@ -265,7 +266,8 @@ try:
                                     'gnuplot-profile','gnuplot-distrib', 'logscale', 'gnuplot-separate-keys',
                                     'output-dat', 'with_mumps=', 'file-filter=',
                                     'list-contents',
-                                    'add-precision-in-comp-file','add-timeout-in-comp-file'])
+                                    'add-precision-in-comp-file','add-timeout-in-comp-file',
+                                    'compute-cond-rank','adhoc'])
 
 
 except getopt.GetoptError, err:
@@ -329,6 +331,7 @@ for o, a in opts:
         display_distrib = True
         compute = False
         display_distrib_var = a
+
     elif o == '--domain':
         urange = [float (x) for x in split(a,':')]
         domain = np.arange(urange[0], urange[2], urange[1])
@@ -379,7 +382,15 @@ for o, a in opts:
     elif o == '--add-timeout-in-comp-file':
         with h5py.File('comp.hdf5','r+') as comp_file:
             create_attrs_timeout_in_comp_file(comp_file,float(a))
-    
+    elif o == '--compute--hardness':
+        compute_hardness = True
+        compute = False
+    elif o == '--compute-cond-rank':
+        compute_cond_rank = True
+        compute = False
+    elif o == '--adhoc':
+        adhoc = True
+        compute = False
     
 
 from ctypes import cdll, c_float, c_longlong, byref
@@ -469,6 +480,96 @@ def timeout(seconds, force_kill=True):
             return inner
         return wrapper
 
+@timeout(5)
+def dense_matrix_rank(M):
+    return matrix_rank(M)
+
+
+
+# estimate of condition number and norm from lsmr
+# http://www.stanford.edu/group/SOL/software/lsmr/LSMR-SISC-2011.pdf
+#@timeout(20)
+def _norm_cond(problem_filename):
+    problem = read_fclib_format(problem_filename)[1]
+    A = csr_matrix(N.SBMtoSparse(problem.M)[1])
+    #print "A=", A
+    print "A.shape", A.shape
+
+    r = lsmr(A, np.ones([A.shape[0], 1]))  # solve Ax = 1
+    norm_lsmr=r[5]
+    cond_lsmr=r[6]
+    #print "r=", r
+    try:
+        _svd = svds(A,1)[1]
+        eps = sys.float_info.epsilon
+        tol = _svd.max() * max(A.shape) * eps
+    except Exception as e :
+        print "-->   svds failed to compute the maximum singular value"
+        print "-->" ,  e
+        _svd = [1.0]
+        eps = sys.float_info.epsilon
+        tol = max(A.shape) * eps
+    #print tol
+    #print "============"
+    # from scipy.sparse.linalg import LinearOperator
+    # def mv(v):
+    #     return A.dot(v)
+    # A_LO = LinearOperator( A.shape, matvec=mv )
+    # print isinstance(A_LO, LinearOperator)
+    rank_estimate = np.nan
+    try:
+        rank_estimate=estimate_rank(A.todense(), tol)
+        print "rank_estimate", rank_estimate
+    except Exception as e :
+        print e
+    
+    #print "svd dense method", svd(A.todense())[1]
+
+    rank_dense = np.nan
+    try:
+        rank_dense = dense_matrix_rank(A.todense())
+    except Exception as e :
+        print "--> dense_matrix_rank", e
+    print "rank_dense", rank_dense
+    
+    k=min(rank_estimate,A.shape[0]-1)
+    try:
+        _svd = svds(A,k)[1]
+        #print "_svd",_svd
+    # except Warning as w:
+    #     print "-->   svds warnig in computing ",k," singular values"
+    #     print "-->" ,  w
+    except Exception as e :
+        print "-->   svds failed to compute ",k," singular values"
+        print "-->" ,  e
+
+        _svd =[]
+    # compute rank with http://docs.scipy.org/doc/numpy-dev/reference/generated/numpy.linalg.matrix_rank.html
+    rank_svd=np.nan
+    nonzero_sv=[]
+    import math
+    for sv in _svd:
+        #print sv,tol
+        if (sv >=tol and (not math.isnan(sv))):
+            nonzero_sv.append(sv)
+    nonzero_sv.sort(reverse=True)
+    #print(nonzero_sv)
+    rank_svd = len(nonzero_sv)
+    print "rank_svd", len(nonzero_sv)
+
+    if not math.isnan(rank_dense):
+        rank=rank_dense
+    else:
+        if not math.isnan(rank_svd):
+            rank=rank_svd
+        else :
+            rank=rank_estimate
+            
+    nonzero_sv = nonzero_sv[0:rank]
+    # http://personales.unican.es/beltranc/archivos/CNmatricesF.pdf
+    return norm_lsmr, cond_lsmr, max(nonzero_sv), min(nonzero_sv), max(nonzero_sv)/min(nonzero_sv), rank, rank_dense, rank_svd, rank_estimate
+
+norm_cond = Memoize(_norm_cond)
 
 def _read_fclib_format(filename):
     #fc_problem = FCL.fclib_read_local(f)
@@ -491,13 +592,11 @@ def _numberOfDegreeofFreedom(f):
         try:
             r = 6*fclib_file['fclib_local']['info'].attrs['numberOfInvolvedDS']
         except:
-            r = np.nan
-            
-        try:
-            r = fclib_file['fclib_local']['info'].attrs['numberOfDegreeOfFreedom'][0]
-        except:
-            r = np.nan
-    #print "r=",r
+            try:
+                r = fclib_file['fclib_local']['info'].attrs['numberOfDegreeOfFreedom'][0]
+            except:
+                r = np.nan
+            #print "r=",r
     return r
 
 
@@ -530,6 +629,23 @@ def _cond_problem(filename):
     problem = read_fclib_format(filename)[1]
     return float(problem.numberOfContacts * 3) / float(numberOfDegreeofFreedom(filename))
 
+def _cond(f):
+    with h5py.File(f, 'r') as fclib_file:
+        try:
+            r = fclib_file['fclib_local']['W'].attrs['cond']
+        except:
+            r = np.nan
+    #print "r=",r
+    return r
+
+def _rank_dense(f):
+    with h5py.File(f, 'r') as fclib_file:
+        try:
+            r = fclib_file['fclib_local']['W'].attrs['rank_dense']
+        except:
+            r = np.nan
+    #print "r=",r
+    return r
 
 read_fclib_format = Memoize(_read_fclib_format)
 
@@ -537,11 +653,15 @@ numberOfDegreeofFreedom = Memoize(_numberOfDegreeofFreedom)
 
 numberOfDegreeofFreedomContacts = Memoize(_numberOfDegreeofFreedomContacts)
 
-
 dimension = Memoize(_dimension)
 
-
 cond_problem = Memoize(_cond_problem)
+
+cond = Memoize(_cond)
+
+rank_dense = Memoize(_rank_dense)
+
+
 
 class SolverCallback:
     def __init__(self, h5file, data):
@@ -1454,7 +1574,6 @@ if solvers == []:
     solvers= all_solvers
 
 #solvers = [ProxFB]
-print "Operations will be run for solvers :", [ s._name for s in solvers]
     
 def is_fclib_file(filename):
     r = False
@@ -1637,6 +1756,11 @@ class Results():
 if __name__ == '__main__':
 
     if compute:
+        print "Tasks will be run for solvers :", [ s._name for s in solvers]
+        print " on files ",problem_filenames
+        
+
+        
         all_tasks = [t for t in product(solvers, problem_filenames)]
 
         if os.path.exists('comp.hdf5'):
@@ -1670,6 +1794,8 @@ if __name__ == '__main__':
                     
             
     if display:
+        print "Tasks will be run for solvers :", [ s._name for s in solvers]
+        
         with h5py.File('comp.hdf5', 'r') as comp_file:
 
             data = comp_file['data']
@@ -1882,14 +2008,140 @@ if __name__ == '__main__':
                         grid()
                     except:
                         pass
+    if compute_cond_rank:
+        print "Tasks will be run for", problem_filenames
+        for problem_filename in problem_filenames:
+            print "compute for", problem_filename,"...."
+            try:
+                [norm_lsmr, cond_lsmr, max_nz_sv, min_nz_sv, cond, rank, rank_dense, rank_svd, rank_estimate] = norm_cond(problem_filename)
+                print ( problem_filename, norm_lsmr, cond_lsmr, max_nz_sv, min_nz_sv, cond,  rank_dense, rank_svd, rank_estimate)
+            except Exception as e :
+                print e
+            with h5py.File(problem_filename, 'r+') as fclib_file:
+                try:
+                    fclib_file['fclib_local']['W'].attrs.create('rank', rank)
+                    fclib_file['fclib_local']['W'].attrs.create('rank_dense', rank_dense)
+                    fclib_file['fclib_local']['W'].attrs.create('rank_svd', rank_svd)
+                    fclib_file['fclib_local']['W'].attrs.create('rank_estimate', rank_estimate)
+                    fclib_file['fclib_local']['W'].attrs.create('cond', cond)
+                    fclib_file['fclib_local']['W'].attrs.create('max_nz_sv', max_nz_sv)
+                    fclib_file['fclib_local']['W'].attrs.create('min_nz_sv', min_nz_sv)
+                    fclib_file['fclib_local']['W'].attrs.create('norm_lsmr', norm_lsmr)
+                    fclib_file['fclib_local']['W'].attrs.create('cond_lsmr', cond_lsmr)
+                    
+                except:
+                    raise RuntimeError("fclib_file['fclib_local']['W'] in trouble")
+                
+    if adhoc:
+        print "script adhoc (convenient moulinette)"
+        for problem_filename in problem_filenames:
+            print "treatment", problem_filename
+            with h5py.File(problem_filename, 'r+') as fclib_file:
+                try:
+                    import math
+                    rank =fclib_file['fclib_local']['W'].attrs.get('rank')
+                    if True :      #if rank == None:
+                        rank_dense=fclib_file['fclib_local']['W'].attrs.get('rank_dense') 
+                        if rank_dense != None and not math.isnan(rank_dense):
+                            print "rank := rank_dense"
+                            fclib_file['fclib_local']['W'].attrs.create('rank', rank_dense)
+                        rank_svd=fclib_file['fclib_local']['W'].attrs.get('rank_svd')   
+                        if rank_svd != None and not math.isnan(rank_svd):
+                            print "rank := rank_svd"
+                            fclib_file['fclib_local']['W'].attrs.create('rank', rank_svd)
+                        
+                    else:
+                        print "rank already present"
 
+                    r1 =fclib_file['fclib_local']['W'].attrs.get('r1')
+                    r2 =fclib_file['fclib_local']['W'].attrs.get('r2')
+                    if r1 != None:
+                        print "r1 --> norm_lsmr"
+                        fclib_file['fclib_local']['W'].attrs.create('norm_lsmr',r1)
+                        fclib_file['fclib_local']['W'].attrs.__delitem__('r1')
+                    if r2 != None:
+                        print "r2 --> cond_lsmr"
+                        fclib_file['fclib_local']['W'].attrs.create('cond_lsmr',r2)
+                        fclib_file['fclib_local']['W'].attrs.__delitem__('r2')
+                    
+                except Exception as e :
+                    print e
+                    pass
+
+    if compute_hardness:
+        nc = []
+        nds = []
+        cond_nc = []
+        for problem_filename in problem_filenames:
+
+            try:
+                nc.append(numberOfDegreeofFreedomContacts(problem_filename)/3)
+            except:
+                pass
+            try:
+                nds.append(numberOfDegreeofFreedom(problem_filename))
+            except:
+                pass
+            try:
+                cond_nc.append(cond_problem(problem_filename))
+            except:
+                pass
+        # compute other quantities
+        print nc
+        nc_avg = sum(nc)/float(len(nc))
+        #print "nc_avg", nc_avg
+        with h5py.File('comp.hdf5', 'r') as comp_file:
+            data = comp_file['data']
+            comp_data = data['comp']
+            for solver in solvers:
+                solver_name=solver.name()
+
+
+                if solver_name in comp_data :
+                    filenames = subsample_problems(comp_data[solver_name],
+                                                   random_sample_proba,
+                                                   max_problems, None, overwrite=False)
+                    assert len(filenames) <= n_problems
+                    measure[solver_name] = np.inf * np.ones(n_problems)
+                    solver_r[solver_name] = np.inf * np.ones(n_problems)
+
+                    ip = 0
+
+                    for filename in filenames:
+                        if filename not in min_measure:
+                            min_measure[filename] = np.inf
+                        try:
+                            pfilename = os.path.splitext(filename)[0]
+                            if comp_data[solver_name][pfilename].attrs['info'] == 0:
+                                measure[solver_name][ip] =  comp_data[solver_name][pfilename].attrs[measure_name]
+                                min_measure[filename] = min(min_measure[filename], measure[solver_name][ip])
+                            else:
+                                measure[solver_name][ip] = np.inf
+                        except:
+                            measure[solver_name][ip] = np.nan
+                        ip += 1
+
+
+            avg_min_measure=0.0
+            for k,v in min_measure.items():
+                avg_min_measure +=v
+
+            avg_min_measure = avg_min_measure/float(len(min_measure))
+            #print         "avg_min_measure",avg_min_measure
+            print         "Average min resolution measure by contact = {0:12.8e}".format(avg_min_measure/nc_avg)
+
+               
+                    
     if display_distrib:
-        from matplotlib.pyplot import title, subplot, grid, show, legend, figure, hist
+        from matplotlib.pyplot import title, subplot, grid, show, legend, figure, hist, xlim, ylim, xscale
         if display_distrib_var == 'from-files':
 
             nc = []
             nds = []
             cond_nc = []
+            cond_W = []
+            rank_dense_W=[]
+            rank_ratio =[]
             for problem_filename in problem_filenames:
 
                 try:
@@ -1904,52 +2156,22 @@ if __name__ == '__main__':
                     cond_nc.append(cond_problem(problem_filename))
                 except:
                     pass
-            
-            # compute other quantities
-            print nc
-            nc_avg = sum(nc)/float(len(nc))
-            #print "nc_avg", nc_avg
-            with h5py.File('comp.hdf5', 'r') as comp_file:
-                data = comp_file['data']
-                comp_data = data['comp']
-                for solver in solvers:
-                    solver_name=solver.name()
-
-                    
-                    if solver_name in comp_data :
-                        filenames = subsample_problems(comp_data[solver_name],
-                                                       random_sample_proba,
-                                                       max_problems, None, overwrite=False)
-                        assert len(filenames) <= n_problems
-                        measure[solver_name] = np.inf * np.ones(n_problems)
-                        solver_r[solver_name] = np.inf * np.ones(n_problems)
-
-                        ip = 0
-
-                        for filename in filenames:
-                            if filename not in min_measure:
-                                min_measure[filename] = np.inf
-                            try:
-                                pfilename = os.path.splitext(filename)[0]
-                                if comp_data[solver_name][pfilename].attrs['info'] == 0:
-                                    measure[solver_name][ip] =  comp_data[solver_name][pfilename].attrs[measure_name]
-                                    min_measure[filename] = min(min_measure[filename], measure[solver_name][ip])
-                                else:
-                                    measure[solver_name][ip] = np.inf
-                            except:
-                                measure[solver_name][ip] = np.nan
-                            ip += 1
-
-
-                avg_min_measure=0.0
-                for k,v in min_measure.items():
-                    avg_min_measure +=v
-                    
-                avg_min_measure = avg_min_measure/float(len(min_measure))
-                #print         "avg_min_measure",avg_min_measure
-                print         "Average min resolution measure by contact = {0:12.8e}".format(avg_min_measure/nc_avg)
-
-
+                try:
+                    cond_W.append(cond(problem_filename))
+                except:
+                    pass
+                try:
+                    rank_dense_W.append(rank_dense(problem_filename))
+                except:
+                    pass
+                try:
+                    rank_ratio.append(numberOfDegreeofFreedomContacts(problem_filename)/float(rank_dense(problem_filename)))
+                except:
+                    pass
+            print "nds", nds
+            print "rank_dense_W",  rank_dense_W
+            print "cond_nc", cond_nc
+            print "cond_W", cond_W
 
                 
             figure()
@@ -1969,6 +2191,30 @@ if __name__ == '__main__':
                 hist(cond_nc, 100, label='cond_nc', histtype='stepfilled')
             grid()
             legend()
+
+            figure()
+            subplot(311)
+            if not math.isnan(min(cond_W)):
+                hist(cond_W, 100, label='cond(W)', histtype='stepfilled')
+            grid()
+            legend()
+            subplot(312)
+            if not math.isnan(min(rank_dense_W)):
+                hist(rank_dense_W, 100, label='rank(W)', histtype='stepfilled')
+            grid()
+            legend()
+            subplot(313)
+            
+            if not math.isnan(min(rank_ratio)):
+                hist(rank_ratio, 100, label='rank_ratio(W)', histtype='stepfilled')
+            grid()
+            legend()
+
+            
+
+
+
+            
             if gnuplot_distrib :
 
                 with open('distrib.gp','w') as gp:
