@@ -693,7 +693,7 @@ class SolverCallback:
         if output_errors:
                 self._errors.resize(self._offset, 0)
                 self._errors[self._offset - 1, :] = error
-
+        print "in get_step"
 
 class Caller():
 
@@ -1179,12 +1179,23 @@ hlocalac = SiconosHybridSolver(name = "HLocalAlartCurnier",
                                maxiter=maxiter, precision=precision)
 hlocalac.SolverOptions().iparam[3] = 10000000
 
+
+
+
 nsgs = SiconosSolver(name="NSGS-AC",
                      API=N.frictionContact3D_nsgs,
                      TAG=N.SICONOS_FRICTION_3D_NSGS,
                      iparam_iter=7,
                      dparam_err=1,
                      maxiter=maxiter, precision=precision)
+
+nsgs_acd = SiconosSolver(name="NSGS-ACD",
+                     API=N.frictionContact3D_nsgs,
+                     TAG=N.SICONOS_FRICTION_3D_NSGS,
+                     iparam_iter=7,
+                     dparam_err=1,
+                     maxiter=maxiter, precision=precision)
+nsgs_acd.SolverOptions().solverId = N.SICONOS_FRICTION_3D_DampedAlartCurnierNewton
 
 snsgs = SiconosSolver(name="NSGS-AC-Shuffled",
                      API=N.frictionContact3D_nsgs,
@@ -1194,6 +1205,14 @@ snsgs = SiconosSolver(name="NSGS-AC-Shuffled",
                      maxiter=maxiter, precision=precision)
 snsgs.SolverOptions().iparam[9] = 1
 
+nsgs_sfull = SiconosSolver(name="NSGS-AC-Shuffled-full",
+                     API=N.frictionContact3D_nsgs,
+                     TAG=N.SICONOS_FRICTION_3D_NSGS,
+                     iparam_iter=7,
+                     dparam_err=1,
+                     maxiter=maxiter, precision=precision)
+snsgs.SolverOptions().iparam[9] = 2
+
 nsgs_pli = SiconosSolver(name="NSGS-PLI",
                      API=N.frictionContact3D_nsgs,
                      TAG=N.SICONOS_FRICTION_3D_NSGS,
@@ -1201,6 +1220,31 @@ nsgs_pli = SiconosSolver(name="NSGS-PLI",
                      dparam_err=1,
                      maxiter=maxiter, precision=precision)
 nsgs_pli.SolverOptions().solverId = N.SICONOS_FRICTION_3D_ProjectionOnConeWithLocalIteration
+
+nsgs_p = SiconosSolver(name="NSGS-P",
+                     API=N.frictionContact3D_nsgs,
+                     TAG=N.SICONOS_FRICTION_3D_NSGS,
+                     iparam_iter=7,
+                     dparam_err=1,
+                     maxiter=maxiter, precision=precision)
+nsgs_p.SolverOptions().solverId = N.SICONOS_FRICTION_3D_ProjectionOnCone
+
+nsgs_pd = SiconosSolver(name="NSGS-PD",
+                     API=N.frictionContact3D_nsgs,
+                     TAG=N.SICONOS_FRICTION_3D_NSGS,
+                     iparam_iter=7,
+                     dparam_err=1,
+                     maxiter=maxiter, precision=precision)
+nsgs_pd.SolverOptions().solverId = N.SICONOS_FRICTION_3D_ProjectionOnConeWithDiagonalization
+
+nsgs_pr = SiconosSolver(name="NSGS-PR",
+                     API=N.frictionContact3D_nsgs,
+                     TAG=N.SICONOS_FRICTION_3D_NSGS,
+                     iparam_iter=7,
+                     dparam_err=1,
+                     maxiter=maxiter, precision=precision)
+nsgs_pr.SolverOptions().solverId = N.SICONOS_FRICTION_3D_projectionOnConeWithRegularization 
+
 
 
 
@@ -1231,7 +1275,19 @@ for local_tol in local_tol_values:
     nsgs_pli.SolverOptions().solverId = N.SICONOS_FRICTION_3D_ProjectionOnConeWithLocalIteration
     nsgs_solver.SolverOptions().internalSolvers.dparam[0] = local_tol
     nsgs_series.append(nsgs_solver)
-    
+
+
+snsgs_series=[]
+for i in range(10):
+    snsgs_solver = SiconosSolver(name="NSGS-AC-Shuffled-"+str(i),
+                          API=N.frictionContact3D_nsgs,
+                          TAG=N.SICONOS_FRICTION_3D_NSGS,
+                          iparam_iter=7,
+                          dparam_err=1,
+                          maxiter=maxiter, precision=precision)
+    snsgs_solver.SolverOptions().iparam[9] = 1
+    snsgs_series.append(snsgs_solver)
+
 
  
 # only dense
@@ -1546,25 +1602,34 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 #               FixedPointProjection, VIFixedPointProjection, ExtraGrad, VIExtraGrad]
 #all_solvers = [nsgs, snsgs, quartic, TrescaFixedPoint, ACLMFixedPoint, DeSaxceFixedPoint, VIFixedPointProjection, VIFixedPointProjection1, VIFixedPointProjection2, VIFixedPointProjection3, VIExtraGrad, SOCLCP, Prox, Prox2, Prox3, Prox4, Prox5, localACSTD, localACSTDGenerated,  localacr, localACJeanMoreau, localACJeanMoreauGenerated, localfb_gp, localfb_fblsa]
 
-all_solvers = [nsgs, nsgs_pli, snsgs, quartic, psor,
-               TrescaFixedPoint, DeSaxceFixedPoint,
-               VIFixedPointProjection, VIExtraGrad,VIExtraGrad1,
-               SOCLCP,
-               localACSTD,localACSTDGenerated,  localacr, localACJeanMoreau, localACJeanMoreauGenerated,
-               Prox,  ProxFB,
-               ACLMFixedPoint, localfb_gp]
+nsgs_solvers = [nsgs, nsgs_acd, snsgs, nsgs_sfull, nsgs_pli, nsgs_p,nsgs_pd,nsgs_pr, quartic]
+nsgs_solvers.remove(quartic)
+all_solvers = list(nsgs_solvers)
+all_solvers.extend( [ psor,
+                      TrescaFixedPoint, DeSaxceFixedPoint,
+                      VIFixedPointProjection, VIExtraGrad,VIExtraGrad1,
+                      SOCLCP,
+                      localACSTD,localACSTDGenerated,  localacr, localACJeanMoreau, localACJeanMoreauGenerated,
+                      Prox,  ProxFB,
+                      ACLMFixedPoint, localfb_gp])
+
+
 
 all_solver_unstable = [localfb_fblsa, ProxFB_fblsa]
-
 all_solvers.extend(all_solver_unstable)
 
+###
 # specific studies of solvers.
+
 #all_solvers.extend(VIFixedPointProjection_series)
 #all_solvers.extend(VIExtraGrad_series)
 #all_solvers.extend(psor_series)
 #all_solvers.extend(prox_series)
-#all_solvers.remove(quartic)
-#all_solvers=nsgs_series
+
+#all_solvers = list(nsgs_series)
+#all_solvers.extend(nsgs_solvers)
+all_solvers=list(snsgs_series)
+
 
 
 solvers=[]
@@ -1794,7 +1859,8 @@ if __name__ == '__main__':
                 print "  ",solvername
                 for filename in comp_data[solvername]:
                     list_keys= comp_data[solvername][filename].attrs.keys()
-                    list_keys.remove(u'digest')
+                    if u'digest' in list_keys:
+                        list_keys.remove(u'digest')
                     print "  ",solvername,   [comp_data[solvername][filename].attrs[item] for item in list_keys]
 
                     
