@@ -98,7 +98,7 @@ def list_from_file(filename):
     with open(filename, 'r') as f:
         return f.read().lstrip().rstrip().split('\n')
 
-def subsample_problems(filenames, proba, maxp, cond, overwrite=True):
+def subsample_problems(filenames, proba, maxp, cond, overwrite=False):
 
 
     def addext(f):
@@ -1563,9 +1563,8 @@ all_solvers.extend(all_solver_unstable)
 #all_solvers.extend(VIExtraGrad_series)
 #all_solvers.extend(psor_series)
 #all_solvers.extend(prox_series)
-all_solvers.remove(quartic)
-
-all_solvers=nsgs_series
+#all_solvers.remove(quartic)
+#all_solvers=nsgs_series
 
 
 solvers=[]
@@ -1636,16 +1635,16 @@ else:
    
 #all_filenames=['BoxesStack1-i9841-33.hdf5']
 #ask_collect = False
-    
-__problem_filenames = subsample_problems(all_filenames,
-                                         random_sample_proba,
-                                         max_problems, None)
 
 _problem_filenames = filter(is_fclib_file,
-                           __problem_filenames)
+                            all_filenames)
+    
+__problem_filenames = subsample_problems(_problem_filenames,
+                                         random_sample_proba,
+                                         max_problems, None, overwrite = (not ask_compute and not ask_collect))
 
 
-problem_filenames = subsample_problems(_problem_filenames,
+problem_filenames = subsample_problems(__problem_filenames,
                                        None,
                                        None, cond_nc)
 
