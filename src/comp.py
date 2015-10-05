@@ -1203,7 +1203,7 @@ snsgs = SiconosSolver(name="NSGS-AC-Shuffled",
                      iparam_iter=7,
                      dparam_err=1,
                      maxiter=maxiter, precision=precision)
-snsgs.SolverOptions().iparam[9] = 1
+snsgs.SolverOptions().iparam[5] = 1
 
 nsgs_sfull = SiconosSolver(name="NSGS-AC-Shuffled-full",
                      API=N.frictionContact3D_nsgs,
@@ -1211,7 +1211,7 @@ nsgs_sfull = SiconosSolver(name="NSGS-AC-Shuffled-full",
                      iparam_iter=7,
                      dparam_err=1,
                      maxiter=maxiter, precision=precision)
-snsgs.SolverOptions().iparam[9] = 2
+snsgs.SolverOptions().iparam[5] = 2
 
 nsgs_pli = SiconosSolver(name="NSGS-PLI",
                      API=N.frictionContact3D_nsgs,
@@ -1277,7 +1277,7 @@ for local_tol in local_tol_values:
     nsgs_series.append(nsgs_solver)
 
 
-snsgs_series=[]
+snsgs_series=[nsgs_sfull]
 for i in range(10):
     snsgs_solver = SiconosSolver(name="NSGS-AC-Shuffled-"+str(i),
                           API=N.frictionContact3D_nsgs,
@@ -1285,8 +1285,11 @@ for i in range(10):
                           iparam_iter=7,
                           dparam_err=1,
                           maxiter=maxiter, precision=precision)
-    snsgs_solver.SolverOptions().iparam[9] = 1
+    snsgs_solver.SolverOptions().iparam[5] = 1
+    snsgs_solver.SolverOptions().iparam[6] = i
+    print snsgs_solver.SolverOptions().iparam[6]
     snsgs_series.append(snsgs_solver)
+
 
 
  
@@ -1307,7 +1310,7 @@ psor = SiconosSolver(name="PSOR-AC",
                      iparam_iter=7,
                      dparam_err=1,
                      maxiter=maxiter, precision=precision)
-psor.SolverOptions().iparam[8] = 1
+psor.SolverOptions().iparam[4] = 1
 psor.SolverOptions().dparam[8] = omega
 
 omega_values = [0.5, 0.8, 1.0, 1.1, 1.3, 1.5, 1.8]
@@ -1320,7 +1323,7 @@ for omega in omega_values:
                                 iparam_iter=7,
                                 dparam_err=1,
                                 maxiter=maxiter, precision=precision)
-    psor_solver.SolverOptions().iparam[8] = 1
+    psor_solver.SolverOptions().iparam[4] = 1
     psor_solver.SolverOptions().dparam[8] = omega
     psor_series.append(psor_solver)
 
@@ -1602,7 +1605,7 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 #               FixedPointProjection, VIFixedPointProjection, ExtraGrad, VIExtraGrad]
 #all_solvers = [nsgs, snsgs, quartic, TrescaFixedPoint, ACLMFixedPoint, DeSaxceFixedPoint, VIFixedPointProjection, VIFixedPointProjection1, VIFixedPointProjection2, VIFixedPointProjection3, VIExtraGrad, SOCLCP, Prox, Prox2, Prox3, Prox4, Prox5, localACSTD, localACSTDGenerated,  localacr, localACJeanMoreau, localACJeanMoreauGenerated, localfb_gp, localfb_fblsa]
 
-nsgs_solvers = [nsgs, nsgs_acd, snsgs, nsgs_sfull, nsgs_pli, nsgs_p,nsgs_pd,nsgs_pr, quartic]
+nsgs_solvers = [nsgs, nsgs_acd, nsgs_sfull, nsgs_pli, nsgs_p,nsgs_pd,nsgs_pr, quartic]
 nsgs_solvers.remove(quartic)
 all_solvers = list(nsgs_solvers)
 all_solvers.extend( [ psor,
@@ -1628,7 +1631,8 @@ all_solvers.extend(all_solver_unstable)
 
 #all_solvers = list(nsgs_series)
 #all_solvers.extend(nsgs_solvers)
-all_solvers=list(snsgs_series)
+#all_solvers=list(snsgs_series)
+
 
 
 
