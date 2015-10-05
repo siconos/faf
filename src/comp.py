@@ -222,7 +222,7 @@ def usage():
   print "   use keyworks in s separated by comma for filtering solvers"
   print " --solvers-exact=string"
   print "   use exact names of solvers in s separated by comma for filtering solvers"
-  print " --with_mumps= 0 or 1"
+  print " --with_mumps"
   print "   use mumps as linear system solver"
   print " --max-problems=<max>"
   print "   Randomly select <max> problems in current directory." 
@@ -267,7 +267,7 @@ try:
                                     'just-collect', 'cond-nc=', 'display-distrib=',
                                     'no-collect', 'no-compute', 'domain=', 'replace-solver=',
                                     'gnuplot-profile','gnuplot-distrib', 'logscale', 'gnuplot-separate-keys',
-                                    'output-dat', 'with_mumps=', 'file-filter=',
+                                    'output-dat', 'with_mumps', 'file-filter=',
                                     'list-contents',
                                     'add-precision-in-comp-file','add-timeout-in-comp-file',
                                     'compute-cond-rank','adhoc'])
@@ -1130,7 +1130,19 @@ localACJeanMoreauGenerated.SolverOptions().iparam[12] = 10;
 localACJeanMoreauGenerated.SolverOptions().iparam[13] = with_mumps;
 localACJeanMoreauGenerated.SolverOptions().iparam[3] = 10000000
 
+localACJeanMoreauGenerated_nls = SiconosSolver(name="NSN-JeanMoreau-Generated-NLS",
+                                               gnuplot_name="NSN-JM-Generated-NLS",
+                                               API=N.frictionContact3D_localAlartCurnier,
+                                               TAG=N.SICONOS_FRICTION_3D_LOCALAC,
+                                               iparam_iter=1,
+                                               dparam_err=1,
+                                               maxiter=maxiter, precision=precision)
 
+localACJeanMoreauGenerated_nls.SolverOptions().iparam[10] = 3;
+localACJeanMoreauGenerated_nls.SolverOptions().iparam[11] = -1;
+localACJeanMoreauGenerated_nls.SolverOptions().iparam[12] = 10;
+localACJeanMoreauGenerated_nls.SolverOptions().iparam[13] = with_mumps;
+localACJeanMoreauGenerated_nls.SolverOptions().iparam[3] = 10000000
 
 localfb_gp = SiconosSolver(name="NSN-FischerBurmeister-GP",
                            gnuplot_name="NSN-FB-GP",
@@ -1158,12 +1170,13 @@ localfb_fblsa.SolverOptions().iparam[11] = 1
 localfb_fblsa.SolverOptions().iparam[12] = 10
 localfb_fblsa.SolverOptions().iparam[13] = with_mumps
 
-localfb_nls = SiconosSolver(name="LocalFischerBurmeisterNLS",
-                              API=N.frictionContact3D_localFischerBurmeister,
-                              TAG=N.SICONOS_FRICTION_3D_LOCALFB,
-                              iparam_iter=1,
-                              dparam_err=1,
-                              maxiter=maxiter, precision=precision)
+localfb_nls = SiconosSolver(name="NSN-FischerBurmeister-NLS",
+                            gnuplot_name="NSN-FB-NLS",
+                            API=N.frictionContact3D_localFischerBurmeister,
+                            TAG=N.SICONOS_FRICTION_3D_LOCALFB,
+                            iparam_iter=1,
+                            dparam_err=1,
+                            maxiter=maxiter, precision=precision)
 
 localfb_nls.SolverOptions().iparam[3] = 1000000
 localfb_nls.SolverOptions().iparam[11] = -1
@@ -1612,11 +1625,9 @@ all_solvers.extend( [ psor,
                       TrescaFixedPoint, DeSaxceFixedPoint,
                       VIFixedPointProjection, VIExtraGrad,VIExtraGrad1,
                       SOCLCP,
-                      localACSTD,localACSTDGenerated,  localacr, localACJeanMoreau, localACJeanMoreauGenerated,
+                      localACSTD,localACSTDGenerated,  localacr, localACJeanMoreau, localACJeanMoreauGenerated, localACJeanMoreauGenerated_nls,
                       Prox,  ProxFB,
-                      ACLMFixedPoint, localfb_gp])
-
-
+                      ACLMFixedPoint, localfb_gp, localfb_nls])
 
 all_solver_unstable = [localfb_fblsa, ProxFB_fblsa]
 all_solvers.extend(all_solver_unstable)
