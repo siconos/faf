@@ -5,9 +5,10 @@ drwxr-xr-x@ 1161 acary  bipop  39474 Oct  1 21:26 BoxesStack/
 drwxr-xr-x    52 acary  bipop   1768 Oct  1 21:26 Bridge_PR/
 drwxr-xr-x@ 1708 acary  bipop  58072 Oct  1 21:26 Capsules/
 drwxr-xr-x@ 1516 acary  bipop  51544 Oct  1 21:26 Chain/
+drwxr-xr-x     3 acary  bipop    102 Oct  5 12:45 Global/
 drwxr-xr-x@  203 acary  bipop   6902 Oct  1 21:26 KaplasTower/
 drwxr-xr-x   117 acary  bipop   3978 Oct  1 21:26 cubes_H8/
--rw-r--r--     1 acary  bipop      0 Oct  2 08:54 ls-Rl.txt
+-rw-r--r--     1 acary  bipop      0 Oct  5 12:47 ls-Rl.txt
 
 ./100_PR_PerioBox:
 total 198424
@@ -4563,6 +4564,63 @@ total 97048
 -rw-r--r--@ 1 acary  bipop  35132 Oct  1 21:23 Chain-i997-1430.hdf5
 -rw-r--r--@ 1 acary  bipop  31496 Oct  1 21:23 Chain-i9976-597.hdf5
 -rw-r--r--@ 1 acary  bipop  32360 Oct  1 21:23 Chain-i999-271.hdf5
+
+./Global:
+total 0
+drwxr-xr-x  52 acary  bipop  1768 Oct  5 12:46 cubes_H8/
+
+./Global/cubes_H8:
+total 6824
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-3-00024.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-3-00036.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-3-00040.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-3-00064.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-3-00072.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-3-00096.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-3-00100.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-3-00104.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-3-00116.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-3-00120.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-3-00128.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-3-00136.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-3-00164.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-3-00168.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-3-00172.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-3-00176.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-3-00180.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-3-00184.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-3-00188.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-3-00196.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-4-00008.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-4-00020.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-4-00028.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-4-00032.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-4-00044.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-4-00048.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-4-00052.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-4-00056.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-4-00060.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-4-00068.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-4-00076.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-4-00080.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-4-00084.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-4-00088.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-4-00092.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-4-00108.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-4-00112.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-4-00124.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-4-00132.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-4-00140.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-4-00144.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-4-00148.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-4-00152.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-4-00160.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-4-00192.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-5-00016.hdf5
+-rw-r--r--  1 acary  bipop  68944 Oct  5 12:45 LMGC_Cubes_H8-i00001-5-00156.hdf5
+-rw-r--r--  1 acary  bipop  71756 Oct  5 12:45 LMGC_Cubes_H8-i00001-9-00000.hdf5
+-rw-r--r--  1 acary  bipop  71756 Oct  5 12:45 LMGC_Cubes_H8-i00001-9-00004.hdf5
+-rw-r--r--  1 acary  bipop  71756 Oct  5 12:45 LMGC_Cubes_H8-i00001-9-00012.hdf5
 
 ./KaplasTower:
 total 667888
