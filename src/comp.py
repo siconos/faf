@@ -265,7 +265,8 @@ try:
                                     'keep-files', 'new', 'errors',
                                     'velocities', 'reactions', 'measure=',
                                     'just-collect', 'cond-nc=', 'display-distrib=',
-                                    'no-collect', 'no-compute', 'domain=', 'replace-solver=',
+                                    'no-collect', 'no-compute', 'domain=',
+                                    'replace-solvers-exact=','replace-solvers=',
                                     'gnuplot-profile','gnuplot-distrib', 'logscale', 'gnuplot-separate-keys',
                                     'output-dat', 'with-mumps', 'file-filter=',
                                     'list-contents',
@@ -318,10 +319,6 @@ for o, a in opts:
         output_velocities = True
     elif o == '--reactions':
         output_reactions = True
-    elif o == '--solvers':
-        user_solvers = split(a, ',')
-    elif o == '--solvers-exact':
-        user_solvers_exact = split(a, ',')
     elif o == '--just-collect':
         ask_compute = False
     elif o == '--no-collect':
@@ -334,15 +331,36 @@ for o, a in opts:
         display_distrib = True
         compute = False
         display_distrib_var = a
-
     elif o == '--domain':
         urange = [float (x) for x in split(a,':')]
         domain = np.arange(urange[0], urange[2], urange[1])
-    elif o == '--replace-solver':
+    elif o == '--solvers':
+        user_solvers = split(a, ',')
+    elif o == '--solvers-exact':
+        user_solvers_exact = split(a, ',')
+    elif o == '--replace-solvers-exact':
+        replace_solvers = split(a, ',')
         try:
             with h5py.File('comp.hdf5','r+') as comp_file:
-                print list(comp_file['data'])
-                del comp_file['data']['comp'][a]
+                solver_in_compfile =  list(comp_file['data']['comp'])
+                #print "list(comp_file['data']['comp'])",  solver_in_compfile
+                replace_solver_in_compfile = filter(lambda s: any(us == s for us in replace_solvers), solver_in_compfile)
+                print "replace solver in comp file", replace_solver_in_compfile
+                for s in replace_solver_in_compfile:
+                    del comp_file['data']['comp'][s]
+        except Exception as e:
+            print e
+    elif o == '--replace-solvers':
+        replace_solvers = split(a, ',')
+        #print "replace_solvers",  replace_solvers
+        try:
+            with h5py.File('comp.hdf5','r+') as comp_file:
+                solver_in_compfile =  list(comp_file['data']['comp'])
+                #print "list(comp_file['data']['comp'])",  solver_in_compfile
+                replace_solver_in_compfile = filter(lambda s: any(us in s for us in replace_solvers), solver_in_compfile)
+                print "replace solver in comp file", replace_solver_in_compfile
+                for s in replace_solver_in_compfile:
+                    del comp_file['data']['comp'][s]
         except Exception as e:
             print e
     elif o == '--gnuplot-profile':
@@ -1267,62 +1285,98 @@ nsgs = SiconosSolver(name="NSGS-AC",
                      iparam_iter=7,
                      dparam_err=1,
                      maxiter=maxiter, precision=precision)
+nsgs.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_AlartCurnierNewton
+nsgs.SolverOptions().internalSolvers.iparam[10]=0
 
-nsgs_acd = SiconosSolver(name="NSGS-ACD",
+
+nsgs_ac_gp = SiconosSolver(name="NSGS-AC-GP",
                      API=N.frictionContact3D_nsgs,
                      TAG=N.SICONOS_FRICTION_3D_NSGS,
                      iparam_iter=7,
                      dparam_err=1,
                      maxiter=maxiter, precision=precision)
-nsgs_acd.SolverOptions().solverId = N.SICONOS_FRICTION_3D_DampedAlartCurnierNewton
+nsgs_ac_gp.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_DampedAlartCurnierNewton
+nsgs_ac_gp.SolverOptions().internalSolvers.iparam[10]=0
 
-snsgs = SiconosSolver(name="NSGS-AC-Shuffled",
+nsgs_jm = SiconosSolver(name="NSGS-JM",
                      API=N.frictionContact3D_nsgs,
                      TAG=N.SICONOS_FRICTION_3D_NSGS,
                      iparam_iter=7,
                      dparam_err=1,
                      maxiter=maxiter, precision=precision)
+nsgs_jm.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_AlartCurnierNewton
+nsgs_jm.SolverOptions().internalSolvers.iparam[10]=1
+
+
+nsgs_jm_gp = SiconosSolver(name="NSGS-JM-GP",
+                     API=N.frictionContact3D_nsgs,
+                     TAG=N.SICONOS_FRICTION_3D_NSGS,
+                     iparam_iter=7,
+                     dparam_err=1,
+                     maxiter=maxiter, precision=precision)
+nsgs_jm_gp.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_DampedAlartCurnierNewton
+nsgs_jm_gp.SolverOptions().internalSolvers.iparam[10]=1
+
+
+snsgs = SiconosSolver(name="NSGS-AC-GP-Shuffled",
+                      gnuplot_name="NSGS-AC-GP Shuffled",
+                      API=N.frictionContact3D_nsgs,
+                      TAG=N.SICONOS_FRICTION_3D_NSGS,
+                      iparam_iter=7,
+                      dparam_err=1,
+                      maxiter=maxiter, precision=precision)
 snsgs.SolverOptions().iparam[5] = 1
+#print snsgs.SolverOptions().iparam[6]
 
-nsgs_sfull = SiconosSolver(name="NSGS-AC-Shuffled-full",
-                     API=N.frictionContact3D_nsgs,
-                     TAG=N.SICONOS_FRICTION_3D_NSGS,
-                     iparam_iter=7,
-                     dparam_err=1,
-                     maxiter=maxiter, precision=precision)
-snsgs.SolverOptions().iparam[5] = 2
+nsgs_sfull = SiconosSolver(name="NSGS-AC-GP-Shuffled-full",
+                           gnuplot_name="NSGS-AC-GP Fully shuffled",
+                           API=N.frictionContact3D_nsgs,
+                           TAG=N.SICONOS_FRICTION_3D_NSGS,
+                           iparam_iter=7,
+                           dparam_err=1,
+                           maxiter=maxiter, precision=precision)
+nsgs_sfull.SolverOptions().iparam[5] = 2
+#nsgs_sfull.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ProjectionOnConeWithLocalIteration
+#N.printSolverOptions(nsgs_sfull.SolverOptions())
+
 
 nsgs_pli = SiconosSolver(name="NSGS-PLI",
-                     API=N.frictionContact3D_nsgs,
-                     TAG=N.SICONOS_FRICTION_3D_NSGS,
-                     iparam_iter=7,
-                     dparam_err=1,
-                     maxiter=maxiter, precision=precision)
-nsgs_pli.SolverOptions().solverId = N.SICONOS_FRICTION_3D_ProjectionOnConeWithLocalIteration
+                         gnuplot_name="NSGS-FP-VI-UPK",
+                         API=N.frictionContact3D_nsgs,
+                         TAG=N.SICONOS_FRICTION_3D_NSGS,
+                         iparam_iter=7,
+                         dparam_err=1,
+                         maxiter=maxiter, precision=precision)
+nsgs_pli.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ProjectionOnConeWithLocalIteration
+nsgs_pli.SolverOptions().internalSolvers.iparam[0] = 100
+#nsgs_pli.SolverOptions().internalSolvers.iparam[2] = 1
 
 nsgs_p = SiconosSolver(name="NSGS-P",
-                     API=N.frictionContact3D_nsgs,
-                     TAG=N.SICONOS_FRICTION_3D_NSGS,
-                     iparam_iter=7,
-                     dparam_err=1,
-                     maxiter=maxiter, precision=precision)
-nsgs_p.SolverOptions().solverId = N.SICONOS_FRICTION_3D_ProjectionOnCone
+                       gnuplot_name="NSGS-FP-DS-One",
+                       API=N.frictionContact3D_nsgs,
+                       TAG=N.SICONOS_FRICTION_3D_NSGS,
+                       iparam_iter=7,
+                       dparam_err=1,
+                       maxiter=maxiter, precision=precision)
+nsgs_p.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ProjectionOnCone
 
 nsgs_pd = SiconosSolver(name="NSGS-PD",
-                     API=N.frictionContact3D_nsgs,
-                     TAG=N.SICONOS_FRICTION_3D_NSGS,
-                     iparam_iter=7,
-                     dparam_err=1,
-                     maxiter=maxiter, precision=precision)
-nsgs_pd.SolverOptions().solverId = N.SICONOS_FRICTION_3D_ProjectionOnConeWithDiagonalization
+                        gnuplot_name="NSGS-FP-DS-One  D",
+                        API=N.frictionContact3D_nsgs,
+                        TAG=N.SICONOS_FRICTION_3D_NSGS,
+                        iparam_iter=7,
+                        dparam_err=1,
+                        maxiter=maxiter, precision=precision)
+nsgs_pd.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ProjectionOnConeWithDiagonalization
 
 nsgs_pr = SiconosSolver(name="NSGS-PR",
-                     API=N.frictionContact3D_nsgs,
-                     TAG=N.SICONOS_FRICTION_3D_NSGS,
-                     iparam_iter=7,
-                     dparam_err=1,
-                     maxiter=maxiter, precision=precision)
-nsgs_pr.SolverOptions().solverId = N.SICONOS_FRICTION_3D_projectionOnConeWithRegularization 
+                        gnuplot_name="NSGS-FP-DS-One  R",
+                        API=N.frictionContact3D_nsgs,
+                        TAG=N.SICONOS_FRICTION_3D_NSGS,
+                        iparam_iter=7,
+                        dparam_err=1,
+                        maxiter=maxiter, precision=precision)
+nsgs_pr.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_projectionOnConeWithRegularization
 
 
 
@@ -1351,22 +1405,24 @@ for local_tol in local_tol_values:
                                 iparam_iter=7,
                                 dparam_err=1,
                                 maxiter=maxiter, precision=precision)
-    nsgs_pli.SolverOptions().solverId = N.SICONOS_FRICTION_3D_ProjectionOnConeWithLocalIteration
+    nsgs_pli.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ProjectionOnConeWithLocalIteration
     nsgs_solver.SolverOptions().internalSolvers.dparam[0] = local_tol
+    nsgs_solver.SolverOptions().internalSolvers.iparam[0] = 100
     nsgs_series.append(nsgs_solver)
 
 
-snsgs_series=[nsgs_sfull]
+snsgs_series=[]
 for i in range(10):
     snsgs_solver = SiconosSolver(name="NSGS-AC-Shuffled-"+str(i),
-                          API=N.frictionContact3D_nsgs,
-                          TAG=N.SICONOS_FRICTION_3D_NSGS,
-                          iparam_iter=7,
-                          dparam_err=1,
-                          maxiter=maxiter, precision=precision)
+                                 gnuplot_name="NSGS-AC-GP Shuffled "+str(i),
+                                 API=N.frictionContact3D_nsgs,
+                                 TAG=N.SICONOS_FRICTION_3D_NSGS,
+                                 iparam_iter=7,
+                                 dparam_err=1,
+                                 maxiter=maxiter, precision=precision)
     snsgs_solver.SolverOptions().iparam[5] = 1
-    snsgs_solver.SolverOptions().iparam[6] = i
-    print snsgs_solver.SolverOptions().iparam[6]
+    snsgs_solver.SolverOptions().iparam[6] = (1237*i)*(1237*i)
+    #print snsgs_solver.SolverOptions().iparam[6]
     snsgs_series.append(snsgs_solver)
 
 
@@ -1685,18 +1741,27 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 #               FixedPointProjection, VIFixedPointProjection, ExtraGrad, VIExtraGrad]
 #all_solvers = [nsgs, snsgs, quartic, TrescaFixedPoint, ACLMFixedPoint, DeSaxceFixedPoint, VIFixedPointProjection, VIFixedPointProjection1, VIFixedPointProjection2, VIFixedPointProjection3, VIExtraGrad, SOCLCP, Prox, Prox2, Prox3, Prox4, Prox5, localACSTD, localACSTDGenerated,  localacr, localACJeanMoreau, localACJeanMoreauGenerated, localfb_gp, localfb_fblsa]
 
-nsgs_solvers = [nsgs, nsgs_acd, nsgs_sfull, nsgs_pli, nsgs_p,nsgs_pd,nsgs_pr, quartic]
+nsgs_solvers = [nsgs, nsgs_ac_gp, nsgs_jm, nsgs_jm_gp, nsgs_sfull, snsgs, nsgs_pli,nsgs_p,nsgs_pd,nsgs_pr , quartic]
+# remove very nasty solver
+#nsgs_solvers.remove(nsgs_p)
+nsgs_solvers.remove(nsgs_pd)
+nsgs_solvers.remove(nsgs_pr)
 nsgs_solvers.remove(quartic)
+
+nsn_solvers =  [localACSTD,localACSTDGenerated,  localacr, localACJeanMoreau, localACJeanMoreauGenerated, localACJeanMoreauGenerated_lusol,
+                localACJeanMoreauGenerated_nls, localACJeanMoreauGenerated_nls_lusol,
+                localfb_gp, localfb_gp_lusol, localfb_nls, localfb_nls_lusol]
+
 all_solvers = list(nsgs_solvers)
+all_solvers.extend(nsn_solvers)
 all_solvers.extend( [ psor,
                       TrescaFixedPoint, DeSaxceFixedPoint,
                       VIFixedPointProjection, VIExtraGrad,VIExtraGrad1,
                       SOCLCP,
-                      localACSTD,localACSTDGenerated,  localacr, localACJeanMoreau, localACJeanMoreauGenerated, localACJeanMoreauGenerated_lusol, localACJeanMoreauGenerated_nls, localACJeanMoreauGenerated_nls_lusol,
                       Prox,  ProxFB,
-                      ACLMFixedPoint, localfb_gp, localfb_gp_lusol, localfb_nls, localfb_nls_lusol])
+                      ACLMFixedPoint])
 
-all_solver_unstable = [localfb_fblsa, ProxFB_fblsa]
+all_solver_unstable = [ ProxFB_fblsa]
 all_solvers.extend(all_solver_unstable)
 
 all_solvers = filter(lambda s : s is not None, all_solvers)
@@ -1709,9 +1774,15 @@ all_solvers = filter(lambda s : s is not None, all_solvers)
 #all_solvers.extend(psor_series)
 #all_solvers.extend(prox_series)
 
-#all_solvers = list(nsgs_series)
-#all_solvers.extend(nsgs_solvers)
-#all_solvers=list(snsgs_series)
+# all_solvers = list(nsgs_series)
+# all_solvers.extend(nsgs_solvers)
+# all_solvers.extend(snsgs_series)
+
+# all_solvers=list(nsgs_solvers)
+
+# #all_solvers=list(nsn_solvers)
+# #all_solvers=list(snsgs_series)
+# #all_solvers.extend([nsgs,nsgs_sfull])
 
 
 
