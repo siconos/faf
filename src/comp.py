@@ -1150,7 +1150,6 @@ if with_mumps:
     localACJeanMoreauGenerated_lusol.SolverOptions().iparam[3] = 10000000
 
 
-
 localACJeanMoreauGenerated_nls = SiconosSolver(name="NSN-JeanMoreau-Generated-NLS",
                                                gnuplot_name="NSN-JM-Generated-NLS",
                                                API=N.frictionContact3D_localAlartCurnier,
@@ -1164,6 +1163,22 @@ localACJeanMoreauGenerated_nls.SolverOptions().iparam[11] = -1;
 localACJeanMoreauGenerated_nls.SolverOptions().iparam[12] = 10;
 localACJeanMoreauGenerated_nls.SolverOptions().iparam[13] = with_mumps;
 localACJeanMoreauGenerated_nls.SolverOptions().iparam[3] = 10000000
+
+localACJeanMoreauGenerated_nls_lusol=None
+if with_mumps:
+    localACJeanMoreauGenerated_nls_lusol = SiconosSolver(name="NSN-JeanMoreau-Generated-NLS-lusol",
+                                                         gnuplot_name="NSN-JM-Generated-NLS-LUSOL",
+                                                         API=N.frictionContact3D_localAlartCurnier,
+                                                         TAG=N.SICONOS_FRICTION_3D_LOCALAC,
+                                                         iparam_iter=1,
+                                                         dparam_err=1,
+                                                         maxiter=maxiter, precision=precision)
+
+    localACJeanMoreauGenerated_nls_lusol.SolverOptions().iparam[10] = 3;
+    localACJeanMoreauGenerated_nls_lusol.SolverOptions().iparam[11] = -1;
+    localACJeanMoreauGenerated_nls_lusol.SolverOptions().iparam[12] = 10;
+    localACJeanMoreauGenerated_nls_lusol.SolverOptions().iparam[13] = 0;
+    localACJeanMoreauGenerated_nls_lusol.SolverOptions().iparam[3] = 10000000
 
 localfb_gp = SiconosSolver(name="NSN-FischerBurmeister-GP",
                            gnuplot_name="NSN-FB-GP",
@@ -1216,8 +1231,23 @@ localfb_nls = SiconosSolver(name="NSN-FischerBurmeister-NLS",
 
 localfb_nls.SolverOptions().iparam[3] = 1000000
 localfb_nls.SolverOptions().iparam[11] = -1
-localfb_nls.SolverOptions().iparam[12] = 10
+localfb_nls.SolverOptions().iparam[12] = 0
 localfb_nls.SolverOptions().iparam[13] = with_mumps
+
+localfb_nls_lusol = None
+if with_mumps:
+    localfb_nls_lusol = SiconosSolver(name="NSN-FischerBurmeister-NLS-lusol",
+                                      gnuplot_name="NSN-FB-NLS-LUSOL",
+                                      API=N.frictionContact3D_localFischerBurmeister,
+                                      TAG=N.SICONOS_FRICTION_3D_LOCALFB,
+                                      iparam_iter=1,
+                                      dparam_err=1,
+                                      maxiter=maxiter, precision=precision)
+
+    localfb_nls_lusol.SolverOptions().iparam[3] = 1000000
+    localfb_nls_lusol.SolverOptions().iparam[11] = -1
+    localfb_nls_lusol.SolverOptions().iparam[12] = 0
+    localfb_nls_lusol.SolverOptions().iparam[13] = 0
 
 
 hlocalac = SiconosHybridSolver(name = "HLocalAlartCurnier",
@@ -1541,8 +1571,8 @@ ProxFB.SolverOptions().dparam[5]=1.0 # nu
 localfb_gp_inprox = N.SolverOptions(N.SICONOS_FRICTION_3D_LOCALFB)
 localfb_gp_inprox.iparam[3] = 1000000
 localfb_gp_inprox.iparam[11] = 0
-
 localfb_gp_inprox.iparam[12] = 6
+localfb_gp_inprox.iparam[13] = with_mumps
 
 ProxFB.SolverOptions().internalSolvers = localfb_gp_inprox
 ProxFB.SolverOptions().internalSolvers.iparam[3] = 1000000
@@ -1558,6 +1588,7 @@ localfb_fblsa_inprox = N.SolverOptions(N.SICONOS_FRICTION_3D_LOCALFB)
 localfb_fblsa_inprox.iparam[3] = 1000000
 localfb_fblsa_inprox.iparam[11] = 1
 localfb_fblsa_inprox.iparam[12] = 6
+localfb_fblsa_inprox.iparam[12] = with_mumps
 ProxFB_fblsa.SolverOptions().internalSolvers = localfb_fblsa_inprox
 ProxFB_fblsa.SolverOptions().internalSolvers.iparam[3] = 1000000
 
@@ -1661,9 +1692,9 @@ all_solvers.extend( [ psor,
                       TrescaFixedPoint, DeSaxceFixedPoint,
                       VIFixedPointProjection, VIExtraGrad,VIExtraGrad1,
                       SOCLCP,
-                      localACSTD,localACSTDGenerated,  localacr, localACJeanMoreau, localACJeanMoreauGenerated, localACJeanMoreauGenerated_lusol, localACJeanMoreauGenerated_nls,
+                      localACSTD,localACSTDGenerated,  localacr, localACJeanMoreau, localACJeanMoreauGenerated, localACJeanMoreauGenerated_lusol, localACJeanMoreauGenerated_nls, localACJeanMoreauGenerated_nls_lusol,
                       Prox,  ProxFB,
-                      ACLMFixedPoint, localfb_gp, localfb_gp_lusol, localfb_nls])
+                      ACLMFixedPoint, localfb_gp, localfb_gp_lusol, localfb_nls, localfb_nls_lusol])
 
 all_solver_unstable = [localfb_fblsa, ProxFB_fblsa]
 all_solvers.extend(all_solver_unstable)
@@ -1766,7 +1797,7 @@ _problem_filenames = filter(is_fclib_file,
     
 __problem_filenames = subsample_problems(_problem_filenames,
                                          random_sample_proba,
-                                         max_problems, None, overwrite = (not ask_compute and not ask_collect))
+                                         max_problems, None, overwrite = (not display and not ask_compute and not ask_collect))
 
 
 problem_filenames = subsample_problems(__problem_filenames,
