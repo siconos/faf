@@ -222,7 +222,7 @@ def usage():
   print "   use keyworks in s separated by comma for filtering solvers"
   print " --solvers-exact=string"
   print "   use exact names of solvers in s separated by comma for filtering solvers"
-  print " --with_mumps"
+  print " --with-mumps"
   print "   use mumps as linear system solver"
   print " --max-problems=<max>"
   print "   Randomly select <max> problems in current directory." 
@@ -267,7 +267,7 @@ try:
                                     'just-collect', 'cond-nc=', 'display-distrib=',
                                     'no-collect', 'no-compute', 'domain=', 'replace-solver=',
                                     'gnuplot-profile','gnuplot-distrib', 'logscale', 'gnuplot-separate-keys',
-                                    'output-dat', 'with_mumps', 'file-filter=',
+                                    'output-dat', 'with-mumps', 'file-filter=',
                                     'list-contents',
                                     'add-precision-in-comp-file','add-timeout-in-comp-file',
                                     'compute-cond-rank','adhoc'])
@@ -355,7 +355,7 @@ for o, a in opts:
         gnuplot_separate_keys = True
     elif o == '--output-dat':
         output_dat=True
-    elif o == '--with_mumps':
+    elif o == '--with-mumps':
         with_mumps=1
     elif o == '--new':
         try:
@@ -1130,6 +1130,27 @@ localACJeanMoreauGenerated.SolverOptions().iparam[12] = 10;
 localACJeanMoreauGenerated.SolverOptions().iparam[13] = with_mumps;
 localACJeanMoreauGenerated.SolverOptions().iparam[3] = 10000000
 
+
+localACJeanMoreauGenerated_lusol = None
+if with_mumps:
+    # reference
+    localACJeanMoreauGenerated_lusol = SiconosSolver(name="NSN-JeanMoreau-Generated-lusol",
+                                                     gnuplot_name="NSN-JM-Generated-LUSOL",
+                                                     API=N.frictionContact3D_localAlartCurnier,
+                                                     TAG=N.SICONOS_FRICTION_3D_LOCALAC,
+                                                     iparam_iter=1,
+                                                     dparam_err=1,
+                                                     maxiter=maxiter, precision=precision)
+
+
+    localACJeanMoreauGenerated_lusol.SolverOptions().iparam[10] = 3;
+    localACJeanMoreauGenerated_lusol.SolverOptions().iparam[11] = 0;
+    localACJeanMoreauGenerated_lusol.SolverOptions().iparam[12] = 10;
+    localACJeanMoreauGenerated_lusol.SolverOptions().iparam[13] = 0;
+    localACJeanMoreauGenerated_lusol.SolverOptions().iparam[3] = 10000000
+
+
+
 localACJeanMoreauGenerated_nls = SiconosSolver(name="NSN-JeanMoreau-Generated-NLS",
                                                gnuplot_name="NSN-JM-Generated-NLS",
                                                API=N.frictionContact3D_localAlartCurnier,
@@ -1156,6 +1177,21 @@ localfb_gp.SolverOptions().iparam[3] = 1000000
 localfb_gp.SolverOptions().iparam[11] = 0
 localfb_gp.SolverOptions().iparam[12] = 500
 localfb_gp.SolverOptions().iparam[13] = with_mumps
+
+localfb_gp_lusol = None
+if with_mumps:
+    localfb_gp_lusol = SiconosSolver(name="NSN-FischerBurmeister-GP-lusol",
+                                     gnuplot_name="NSN-FB-GP-LUSOL",
+                                     API=N.frictionContact3D_localFischerBurmeister,
+                                     TAG=N.SICONOS_FRICTION_3D_LOCALFB,
+                                     iparam_iter=1,
+                                     dparam_err=1,
+                                     maxiter=maxiter, precision=precision)
+
+    localfb_gp_lusol.SolverOptions().iparam[3] = 1000000
+    localfb_gp_lusol.SolverOptions().iparam[11] = 0
+    localfb_gp_lusol.SolverOptions().iparam[12] = 500
+    localfb_gp_lusol.SolverOptions().iparam[13] = 0
 
 localfb_fblsa = SiconosSolver(name="NSN-FischerBurmeister-FBLSA",
                               gnuplot_name="NSN-FB-FBLSA",
@@ -1625,12 +1661,14 @@ all_solvers.extend( [ psor,
                       TrescaFixedPoint, DeSaxceFixedPoint,
                       VIFixedPointProjection, VIExtraGrad,VIExtraGrad1,
                       SOCLCP,
-                      localACSTD,localACSTDGenerated,  localacr, localACJeanMoreau, localACJeanMoreauGenerated, localACJeanMoreauGenerated_nls,
+                      localACSTD,localACSTDGenerated,  localacr, localACJeanMoreau, localACJeanMoreauGenerated, localACJeanMoreauGenerated_lusol, localACJeanMoreauGenerated_nls,
                       Prox,  ProxFB,
-                      ACLMFixedPoint, localfb_gp, localfb_nls])
+                      ACLMFixedPoint, localfb_gp, localfb_gp_lusol, localfb_nls])
 
 all_solver_unstable = [localfb_fblsa, ProxFB_fblsa]
 all_solvers.extend(all_solver_unstable)
+
+all_solvers = filter(lambda s : s is not None, all_solvers)
 
 ###
 # specific studies of solvers.
@@ -1652,12 +1690,19 @@ if user_solvers != []:
     #print "user_solvers", user_solvers
     solvers.extend( filter(lambda s: any(us in s._name for us in user_solvers), all_solvers))
 
-if user_solvers_exact != []:
+    if solvers == []:
+        raise RuntimeError ("Cannot find any matching solver")
+
+elif user_solvers_exact != []:
     #print "user_solvers_exact", user_solvers_exact
     solvers.extend(filter(lambda s: any(us ==  s._name  for us in user_solvers_exact), all_solvers))
 
-if solvers == []:
+    if solvers == []:
+        raise RuntimeError("Cannot find any solvers in specified list")
+    
+else:
     solvers= all_solvers
+
 
 #solvers = [ProxFB]
     
