@@ -160,7 +160,52 @@ with $y = x / \|x_\t\|$. A simple verification shows that the previous computati
 
 
 
-\section{Computation of components of subgradient of $F_{\vitwo}^\nat$}
+
+
+\section{Computation of Generalized Jacobians for Nonsmooth Newton methods}
+\subsection{Computation of components of subgradient of $F_{\vitwo}^\nat$}
+
+
+
+ Let us introduce the following notation for an element of the sub--differential
+\begin{equation}
+  \label{eq:Phi-natural-typeII}
+  \Phi(u, r)  = \left[
+  \begin{array}{cc}
+    \rho  I  &   - \rho W \\
+     \Phi_{r u}(u,r) &   \Phi_{r r}(u,r)
+  \end{array}\right] \in \partial F_{\vitwo}^\nat(u,r)
+\end{equation}
+where $ \Phi_{x y}(u,r) \in \partial_{x}[F_{\vitwo}^\nat]_{y}(u,r)$. Since $\Phi_{u u}(u,r) = I $, a reduction of the system is performed in practise and Algorithm~\ref{Algo:NSN} is applied or $z =r$ with
+\begin{equation}
+  \label{eq:phiphi}
+  \begin{cases}
+    G(z) = [F_{\vitwo}^\nat]_{r}(Wr+q,r) \\
+    \Phi(z) = \Phi_{rr}(r,Wr+q) + \Phi_{ru}(r,Wr+q) W
+  \end{cases}
+\end{equation}
+\begin{ndrva}
+  to be checked carefully. compare with \cite{Hayashi.ea_SIOPT2005}
+\end{ndrva}
+
+ Let us introduce the following notation for an element of the sub--differential with a obvious simplification
+\begin{equation}
+  \label{eq:Phi-natural-typeI}
+  \Phi(v,  r)  = \left[
+  \begin{array}{ccc}
+   \rho M &  - \rho H  \\
+   -\rho H^\top &  \rho I &   0  \\
+   0  &   \Phi_{r u}(v,u,r) &   \Phi_{r r}(v,u,r)
+ \end{array}\right] \in \partial F_{\vitwo}^\nat(u,r)
+\end{equation}
+where $ \Phi_{x y}(v,u,r) \in \partial_{x}[F_{\vione}^\nat]_{y}(v,u,r)$. A possible computation of  $\Phi_{r u}(v,u,r)$ and $\Phi_{r r}(v,u,r) $ is directly given by~(\ref{eq:Phi-natural-typeII-ru}) and (\ref{eq:Phi-natural-typeII-rr}). In this case, the variable $u$ can be also substituted.
+
+
+
+
+
+
+
 \label{Sec:Phi-natural-typeII}
  For one contact, a possible computation of the remaining parts in $\Phi(u, r)$  is given by
 \begin{equation}
@@ -203,6 +248,155 @@ with $y = x / \|x_\t\|$. A simple verification shows that the previous computati
     \end{array}\right.
 \end{equation}
 The computation of an element of $\partial P_K$ is given in Appendix~\ref{Sec:Ann:ConvexAnalysis}.
+
+
+\subsection{Alart--Curnier function and its variants}
+\label{Sec:Phi-AC-II}
+
+For one contact, a possible computation of the remaining parts in $\Phi(u, r)$  is given by
+
+\begin{equation}
+  \label{eq:Phi-AC-II-rnun}
+   \Phi_{r_\n u_\n}(u,r) =  \left\{
+   \begin{array}{ll}
+     \rho_{\n} & \text{ if }  r_{\n} - \rho_{\n} u_{\n} > 0 \\
+     0  & \text{ otherwise }
+    \end{array}\right.
+\end{equation}
+\begin{equation}
+  \label{eq:Phi-AC-II-rnrn}
+  \Phi_{r_\n r_\n}(u,r) =
+  \left\{
+    \begin{array}{ll}
+      0 & \text{ if }  r_{\n} - \rho_{\n} u_{\n} > 0 \\
+      1  & \text{ otherwise }
+    \end{array}\right.
+\end{equation}
+
+\begin{equation}
+  \label{eq:Phi-AC-II-rtun}
+  \Phi_{r_\t u_\n}(u,r) =
+  \left\{
+    \begin{array}{ll}
+      0 & \text{ if }  \|r_{\t}  - \rho_{\t} u_{\t}\| \leq  \mu \max (0 ,r_{\n} - \rho_{\n} u_\n )  \\
+      0 & \text{ if }
+      \begin{cases}
+        \|r_{\t}  - \rho_{\t} u_{\t}\| >  \mu \max (0 ,r_{\n} - \rho_{\n} u_\n )  \\
+        r_{\n} - \rho_{\n} u_n\leq 0
+      \end{cases} \\
+     \mu \rho_{\n}  \Frac{r_{\t} - \rho_{\t} u_{\t} }{ \| r_{\t} - \rho_{\t} u_{\t}\| }   &  \text{ if }
+      \begin{cases}
+        \|r_{\t}  - \rho_{\t} u_{\t}\| >  \mu \max (0 ,r_{\n} - \rho_{\n} u_\n )  \\
+        r_{\n} - \rho_{\n} u_n > 0
+      \end{cases} \\
+    \end{array}\right.
+\end{equation}
+\begin{equation}
+  \label{eq:Phi-AC-II-rtut}
+  \Phi_{r_\t u_\t}(u,r) =
+  \left\{
+    \begin{array}{ll}
+      \rho_{\t} & \text{ if }  \|r_{\t}  - \rho_{\t} u_{\t}\| \leq  \mu \max (0 ,r_{\n} - \rho_{\n} u_\n )  \\
+     \mu\rho_{\t}(r_{\n} - \rho_{\n} u_\n )_+ \Gamma(r_{\t} - \rho_{\t} u_{\t})
+      &  \text{ if }
+      \begin{cases}
+        \|r_{\t}  - \rho_{\t} u_{\t}\| >  \mu \max (0 ,r_{\n} - \rho_{\n} u_\n )  \\
+        r_{\n} - \rho_{\n} u_n > 0
+      \end{cases} \\
+    \end{array}\right.
+\end{equation}
+\begin{equation}
+  \label{eq:Phi-AC-II-rtrn}
+  \Phi_{r_\t r_\n}(u,r) =
+  \left\{
+    \begin{array}{ll}
+      0 & \text{ if }  \|r_{\t}  - \rho_{\t} u_{\t}\| \leq  \mu \max (0 ,r_{\n} - \rho_{\n} u_\n )  \\
+      0 & \text{ if }
+      \begin{cases}
+        \|r_{\t}  - \rho_{\t} u_{\t}\| >  \mu \max (0 ,r_{\n} - \rho_{\n} u_\n )  \\
+        r_{\n} - \rho_{\n} u_n\leq 0
+      \end{cases} \\
+       -\mu  \Frac{r_{\t} - \rho_{\t} u_{\t} }{ \| r_{\t} - \rho_{\t} u_{\t}\| }  &  \text{ if }
+      \begin{cases}
+        \|r_{\t}  - \rho_{\t} u_{\t}\| >  \mu \max (0 ,r_{\n} - \rho_{\n} u_\n )  \\
+         r_{\n} - \rho_{\n} u_n > 0
+      \end{cases} \\
+    \end{array}\right.
+\end{equation}
+\begin{equation}
+  \label{eq:Phi-AC-II-rtrt}
+  \Phi_{r_\t r_\t}(u,r) =
+  \left\{
+    \begin{array}{ll}
+      0 & \text{ if }  \|r_{\t}  - \rho_{\t} u_{\t}\| \leq  \mu \max (0 ,r_{\n} - \rho_{\n} u_\n )  \\
+      I_2-\mu(r_{\n} - \rho_{\n}u_\n )_+ \Gamma(r_{\t} - \rho_{\t} u_{\t})    &  \text{ if }
+      \begin{cases}
+        \|r_{\t}  - \rho_{\t} u_{\t}\| >  \mu \max (0 ,r_{\n} - \rho_{\n} u_\n )  \\
+        r_{\n} - \rho_{\n} u_n > 0
+      \end{cases} \\
+    \end{array}\right.
+\end{equation}
+with
+ the function $\Gamma(\cdot)$  defined by
+\begin{equation}
+  \label{eq:AC-L12}
+  \Gamma(x) = \Frac{I_{2\times 2}}{\|x\|} - \Frac{x\,x^\top}{\|x\|^3}
+\end{equation}
+
+If the variant~(\ref{eq:Moreau--Jean-1}) is chosen, the computation of $\Phi_{r_\t \bullet}$  simplify in
+\begin{equation}
+  \label{eq:Phi-CKPS-II-rtun}
+  \Phi_{r_\t u_\n}(u,r) =   0
+\end{equation}
+\begin{equation}
+  \label{eq:Phi-CKPS-II-rtut}
+  \Phi_{r_\t u_\t}(u,r) =
+  \left\{
+    \begin{array}{ll}
+      \rho_{\t} & \text{ if }  \|r_{\t}  - \rho_{\t} u_{\t}\| \leq  \mu r_\n  \\
+      -\mu\rho_\t r_{n,+} \Gamma(r_\t-\rho_\t u_\t) & \text{ if }
+      \|r_{\t}  - \rho_{\t} u_{\t}\| >  \mu r_\n  \\
+    \end{array}\right.
+\end{equation}
+\begin{equation}
+  \label{eq:Phi-CKPS-II-rtrn}
+  \Phi_{r_\t r_\n}(u,r) =
+  \left\{
+    \begin{array}{ll}
+      0 & \text{ if }  \|r_{\t}  - \rho_{\t} u_{\t}\| \leq  \mu r_{\n}  \\
+      0 & \text{ if }
+      \begin{cases}
+        \|r_{\t}  - \rho_{\t} u_{\t}\| >  \mu r_n  \\
+        r_{\n} \leq 0
+      \end{cases} \\
+       -\mu  \Frac{r_{\t} - \rho_{\t} u_{\t} }{ \| r_{\t} - \rho_{\t} u_{\t}\| }  &  \text{ if }
+      \begin{cases}
+        \|r_{\t}  - \rho_{\t} u_{\t}\| >  \mu r_n  \\
+        r_{\n}  > 0
+      \end{cases} \\
+    \end{array}\right.
+\end{equation}
+
+\begin{equation}
+  \label{eq:Phi-CKPS-II-rtrt}
+  \Phi_{r_\t r_\t}(u,r) =
+  \left\{
+    \begin{array}{ll}
+      0 & \text{ if }  \|r_{\t}  - \rho_{\t} u_{\t}\| \leq  \mu r_{\n}\\
+      I_2-\mu (r_{\n})_+ \Gamma(r_{\t} - \rho_{\t} u_{\t})    &  \text{ if }
+        \|r_{\t}  - \rho_{\t} u_{\t}\| >  \mu r_{\n}  \\
+    \end{array}\right.
+\end{equation}
+
+\begin{ndrva}
+  \begin{list}{*}{}
+  \item     Is    there    a    difference    with    the    computation    of    Florent    in    his    thesis?
+  \item
+  \end{list}
+\end{ndrva}
+
+
+\subsection{Fischer-Burmeister function}
 
 
 %%% Local Variables: 
