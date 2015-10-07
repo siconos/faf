@@ -177,6 +177,7 @@ measure_name = 'flpops'
 ask_compute = True
 ask_collect = True
 maxiter = 1000000
+maxiterls = 10
 precision = 1e-8
 domain = np.arange(1, 100, .1)
 ref_solver_name = 'NonsmoothGaussSeidel'
@@ -206,7 +207,9 @@ def usage():
   print " --timeout=n"  
   print "   set the maximum time of computation for each problem to n seconds (default",utimeout,"s)"
   print " --maxiter=n"  
-  print "   set the maximum time of iteration for each problem to n iterations (default",maxiter,")"
+  print "   set the maximum number of iterations for each problem to n (default",maxiter,")"
+  print " --maxiterls=n"  
+  print "   set the maximum number of iterations for each problem to n (default",maxiterls,")"
   print " --domain='a:d:b'"
   print "   restrict the domain of the performance profile to the interval [a,b] with a step of d (default",domain[0],":",domain[1]-domain[0],":",domain[-1]+domain[1]-domain[0],")"
   print "   or a perfomance profile a should be greater or equal 1"
@@ -261,7 +264,7 @@ try:
                                     'clean', 'display', 'display-convergence',
                                     'files=', 'solvers-exact=', 'solvers=',
                                     'random-sample=', 'max-problems=',
-                                    'timeout=', 'maxiter=', 'precision=',
+                                    'timeout=', 'maxiter=', 'maxiterls=', 'precision=',
                                     'keep-files', 'new', 'errors',
                                     'velocities', 'reactions', 'measure=',
                                     'just-collect', 'cond-nc=', 'display-distrib=',
@@ -288,6 +291,8 @@ for o, a in opts:
         utimeout = float(a)
     elif o == '--maxiter':
         maxiter = int(a)
+    elif o == '--maxiterls':
+        maxiterls = int(a)
     elif o == '--precision':
         precision = float(a)
     elif o == '--clean':
@@ -1101,7 +1106,7 @@ localACSTD = SiconosSolver(name="NSN-AlartCurnier",
 
 localACSTD.SolverOptions().iparam[10] = 0;
 localACSTD.SolverOptions().iparam[11] = 0;
-localACSTD.SolverOptions().iparam[12] = 10;
+localACSTD.SolverOptions().iparam[12] = maxiterls;
 localACSTD.SolverOptions().iparam[13] = with_mumps;
 localACSTD.SolverOptions().iparam[3] = 10000000
 
@@ -1116,7 +1121,7 @@ localACJeanMoreau = SiconosSolver(name="NSN-JeanMoreau",
 
 localACJeanMoreau.SolverOptions().iparam[10] = 1;
 localACJeanMoreau.SolverOptions().iparam[11] = 0;
-localACJeanMoreau.SolverOptions().iparam[12] = 10;
+localACJeanMoreau.SolverOptions().iparam[12] = maxiterls;
 localACJeanMoreau.SolverOptions().iparam[13] = with_mumps;
 localACJeanMoreau.SolverOptions().iparam[3] = 10000000
 
@@ -1130,7 +1135,7 @@ localACSTDGenerated = SiconosSolver(name="NSN-AlartCurnier-Generated",
 
 localACSTDGenerated.SolverOptions().iparam[10] = 2;
 localACSTDGenerated.SolverOptions().iparam[11] = 0;
-localACSTDGenerated.SolverOptions().iparam[12] = 10;
+localACSTDGenerated.SolverOptions().iparam[12] = maxiterls;
 localACSTDGenerated.SolverOptions().iparam[13] = with_mumps;
 localACSTDGenerated.SolverOptions().iparam[3] = 10000000
 
@@ -1144,7 +1149,7 @@ localACJeanMoreauGenerated = SiconosSolver(name="NSN-JeanMoreau-Generated",
 
 localACJeanMoreauGenerated.SolverOptions().iparam[10] = 3;
 localACJeanMoreauGenerated.SolverOptions().iparam[11] = 0;
-localACJeanMoreauGenerated.SolverOptions().iparam[12] = 10;
+localACJeanMoreauGenerated.SolverOptions().iparam[12] = maxiterls;
 localACJeanMoreauGenerated.SolverOptions().iparam[13] = with_mumps;
 localACJeanMoreauGenerated.SolverOptions().iparam[3] = 10000000
 
@@ -1163,7 +1168,7 @@ if with_mumps:
 
     localACJeanMoreauGenerated_lusol.SolverOptions().iparam[10] = 3;
     localACJeanMoreauGenerated_lusol.SolverOptions().iparam[11] = 0;
-    localACJeanMoreauGenerated_lusol.SolverOptions().iparam[12] = 10;
+    localACJeanMoreauGenerated_lusol.SolverOptions().iparam[12] = maxiterls;
     localACJeanMoreauGenerated_lusol.SolverOptions().iparam[13] = 0;
     localACJeanMoreauGenerated_lusol.SolverOptions().iparam[3] = 10000000
 
@@ -1178,7 +1183,7 @@ localACJeanMoreauGenerated_nls = SiconosSolver(name="NSN-JeanMoreau-Generated-NL
 
 localACJeanMoreauGenerated_nls.SolverOptions().iparam[10] = 3;
 localACJeanMoreauGenerated_nls.SolverOptions().iparam[11] = -1;
-localACJeanMoreauGenerated_nls.SolverOptions().iparam[12] = 10;
+localACJeanMoreauGenerated_nls.SolverOptions().iparam[12] = maxiterls;
 localACJeanMoreauGenerated_nls.SolverOptions().iparam[13] = with_mumps;
 localACJeanMoreauGenerated_nls.SolverOptions().iparam[3] = 10000000
 
@@ -1194,7 +1199,7 @@ if with_mumps:
 
     localACJeanMoreauGenerated_nls_lusol.SolverOptions().iparam[10] = 3;
     localACJeanMoreauGenerated_nls_lusol.SolverOptions().iparam[11] = -1;
-    localACJeanMoreauGenerated_nls_lusol.SolverOptions().iparam[12] = 10;
+    localACJeanMoreauGenerated_nls_lusol.SolverOptions().iparam[12] = maxiterls;
     localACJeanMoreauGenerated_nls_lusol.SolverOptions().iparam[13] = 0;
     localACJeanMoreauGenerated_nls_lusol.SolverOptions().iparam[3] = 10000000
 
@@ -1208,7 +1213,7 @@ localfb_gp = SiconosSolver(name="NSN-FischerBurmeister-GP",
 
 localfb_gp.SolverOptions().iparam[3] = 1000000
 localfb_gp.SolverOptions().iparam[11] = 0
-localfb_gp.SolverOptions().iparam[12] = 500
+localfb_gp.SolverOptions().iparam[12] = maxiterls
 localfb_gp.SolverOptions().iparam[13] = with_mumps
 
 localfb_gp_lusol = None
@@ -1223,7 +1228,7 @@ if with_mumps:
 
     localfb_gp_lusol.SolverOptions().iparam[3] = 1000000
     localfb_gp_lusol.SolverOptions().iparam[11] = 0
-    localfb_gp_lusol.SolverOptions().iparam[12] = 500
+    localfb_gp_lusol.SolverOptions().iparam[12] = maxiterls
     localfb_gp_lusol.SolverOptions().iparam[13] = 0
 
 localfb_fblsa = SiconosSolver(name="NSN-FischerBurmeister-FBLSA",
@@ -1236,7 +1241,7 @@ localfb_fblsa = SiconosSolver(name="NSN-FischerBurmeister-FBLSA",
 
 localfb_fblsa.SolverOptions().iparam[3] = 1000000
 localfb_fblsa.SolverOptions().iparam[11] = 1
-localfb_fblsa.SolverOptions().iparam[12] = 10
+localfb_fblsa.SolverOptions().iparam[12] = maxiterls
 localfb_fblsa.SolverOptions().iparam[13] = with_mumps
 
 localfb_nls = SiconosSolver(name="NSN-FischerBurmeister-NLS",
@@ -1627,7 +1632,7 @@ ProxFB.SolverOptions().dparam[5]=1.0 # nu
 localfb_gp_inprox = N.SolverOptions(N.SICONOS_FRICTION_3D_LOCALFB)
 localfb_gp_inprox.iparam[3] = 1000000
 localfb_gp_inprox.iparam[11] = 0
-localfb_gp_inprox.iparam[12] = 6
+localfb_gp_inprox.iparam[12] = 6 #maxiterls
 localfb_gp_inprox.iparam[13] = with_mumps
 
 ProxFB.SolverOptions().internalSolvers = localfb_gp_inprox
@@ -1643,8 +1648,8 @@ ProxFB_fblsa = SiconosSolver(name="PROX-NSN-FB-FBLSA",
 localfb_fblsa_inprox = N.SolverOptions(N.SICONOS_FRICTION_3D_LOCALFB)
 localfb_fblsa_inprox.iparam[3] = 1000000
 localfb_fblsa_inprox.iparam[11] = 1
-localfb_fblsa_inprox.iparam[12] = 6
-localfb_fblsa_inprox.iparam[12] = with_mumps
+localfb_fblsa_inprox.iparam[12] = 6 #maxiterls
+localfb_fblsa_inprox.iparam[13] = with_mumps
 ProxFB_fblsa.SolverOptions().internalSolvers = localfb_fblsa_inprox
 ProxFB_fblsa.SolverOptions().internalSolvers.iparam[3] = 1000000
 
