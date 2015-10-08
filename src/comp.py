@@ -1346,7 +1346,7 @@ nsgs_sfull.SolverOptions().iparam[5] = 2
 
 
 nsgs_pli = SiconosSolver(name="NSGS-PLI",
-                         gnuplot_name="NSGS-FP-VI-UPK",
+                         gnuplot_name="NSGS-FP-VI-UPK iter=100",
                          API=N.frictionContact3D_nsgs,
                          TAG=N.SICONOS_FRICTION_3D_NSGS,
                          iparam_iter=7,
@@ -1354,7 +1354,17 @@ nsgs_pli = SiconosSolver(name="NSGS-PLI",
                          maxiter=maxiter, precision=precision)
 nsgs_pli.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ProjectionOnConeWithLocalIteration
 nsgs_pli.SolverOptions().internalSolvers.iparam[0] = 100
-#nsgs_pli.SolverOptions().internalSolvers.iparam[2] = 1
+
+nsgs_pli_10 = SiconosSolver(name="NSGS-PLI-10",
+                            gnuplot_name="NSGS-FP-VI-UPK iter=10",
+                            API=N.frictionContact3D_nsgs,
+                            TAG=N.SICONOS_FRICTION_3D_NSGS,
+                            iparam_iter=7,
+                            dparam_err=1,
+                            maxiter=maxiter, precision=precision)
+nsgs_pli_10.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ProjectionOnConeWithLocalIteration
+nsgs_pli_10.SolverOptions().internalSolvers.iparam[0] = 10
+
 
 nsgs_p = SiconosSolver(name="NSGS-P",
                        gnuplot_name="NSGS-FP-DS-One",
@@ -1391,8 +1401,8 @@ local_tol_values = [1e-2,1e-6,1e-10,1e-16]
 nsgs_series=[]
 for local_tol in local_tol_values:
     str1 = "{0:1.0e}".format(local_tol).replace("1e","10\^{")+"}"
-    nsgs_solver = SiconosSolver(name="NSGS-AC-"+str(local_tol),
-                                gnuplot_name="NSGS-AC \$tol\_{local}="+str1+"\$",
+    nsgs_solver = SiconosSolver(name="NSGS-AC-GP-"+str(local_tol),
+                                gnuplot_name="NSGS-AC-GP \$tol\_{local}="+str1+"\$",
                                 API=N.frictionContact3D_nsgs,
                                 TAG=N.SICONOS_FRICTION_3D_NSGS,
                                 iparam_iter=7,
@@ -1404,7 +1414,7 @@ for local_tol in local_tol_values:
 for local_tol in local_tol_values:
     str1 = "{0:1.0e}".format(local_tol).replace("1e","10\^{")+"}"
     nsgs_solver = SiconosSolver(name="NSGS-PLI-"+str(local_tol),
-                                gnuplot_name="NSGS-PLI \$tol\_{local}="+str1+"\$",
+                                gnuplot_name="NSGS-FP-VI-UPK \$tol\_{local}="+str1+"\$",
                                 API=N.frictionContact3D_nsgs,
                                 TAG=N.SICONOS_FRICTION_3D_NSGS,
                                 iparam_iter=7,
@@ -1574,7 +1584,8 @@ VIFixedPointProjection = SiconosSolver(name="FixedPoint-VI",
                                        maxiter=maxiter, precision=precision)
 
 iparam1_values = [0,1,2]
-iparam2_values = [0,1]
+iparam1_values = [0,1]
+iparam2_values = [0]
 iparam3_values = [0,1]
 iparam3_values = [0]
 VIFixedPointProjection_series=[]
@@ -1592,6 +1603,8 @@ for i1 in iparam1_values:
                 g_name = g_name + " True" 
             elif i2 == 1:
                 g_name = g_name + " False"
+            elif i2 == 2:
+                g_name = g_name + " semi False"
                 
             if i3 == 0:
                 g_name = g_name 
@@ -1746,7 +1759,7 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 #               FixedPointProjection, VIFixedPointProjection, ExtraGrad, VIExtraGrad]
 #all_solvers = [nsgs, snsgs, quartic, TrescaFixedPoint, ACLMFixedPoint, DeSaxceFixedPoint, VIFixedPointProjection, VIFixedPointProjection1, VIFixedPointProjection2, VIFixedPointProjection3, VIExtraGrad, SOCLCP, Prox, Prox2, Prox3, Prox4, Prox5, localACSTD, localACSTDGenerated,  localacr, localACJeanMoreau, localACJeanMoreauGenerated, localfb_gp, localfb_fblsa]
 
-nsgs_solvers = [nsgs, nsgs_ac_gp, nsgs_jm, nsgs_jm_gp, nsgs_sfull, snsgs, nsgs_pli,nsgs_p,nsgs_pd,nsgs_pr , quartic]
+nsgs_solvers = [nsgs, nsgs_ac_gp, nsgs_jm, nsgs_jm_gp, nsgs_sfull, snsgs, nsgs_pli, nsgs_pli_10, nsgs_p,nsgs_pd,nsgs_pr , quartic]
 # remove very nasty solver
 #nsgs_solvers.remove(nsgs_p)
 nsgs_solvers.remove(nsgs_pd)
@@ -1774,20 +1787,21 @@ all_solvers = filter(lambda s : s is not None, all_solvers)
 ###
 # specific studies of solvers.
 
-#all_solvers.extend(VIFixedPointProjection_series)
-#all_solvers.extend(VIExtraGrad_series)
-#all_solvers.extend(psor_series)
-#all_solvers.extend(prox_series)
+all_solvers.extend(VIFixedPointProjection_series)
+all_solvers.extend(VIExtraGrad_series)
+all_solvers.extend(psor_series)
+all_solvers.extend(prox_series)
 
-# all_solvers = list(nsgs_series)
-# all_solvers.extend(nsgs_solvers)
-# all_solvers.extend(snsgs_series)
+all_solvers = list(nsgs_series)
+#all_solvers.extend(nsgs_solvers)
+#all_solvers.extend(snsgs_series)
 
-# all_solvers=list(nsgs_solvers)
-
-# #all_solvers=list(nsn_solvers)
-# #all_solvers=list(snsgs_series)
-# #all_solvers.extend([nsgs,nsgs_sfull])
+#all_solvers=list(nsgs_solvers)
+#all_solvers.remove(nsgs_sfull)
+#all_solvers.remove(snsgs)
+#all_solvers=list(nsn_solvers)
+#all_solvers=list(snsgs_series)
+#all_solvers.extend([nsgs,nsgs_sfull])
 
 
 
@@ -2273,39 +2287,50 @@ if __name__ == '__main__':
                 
     if adhoc:
         print "script adhoc (convenient moulinette)"
-        for problem_filename in problem_filenames:
-            print "treatment", problem_filename
-            with h5py.File(problem_filename, 'r+') as fclib_file:
-                try:
-                    import math
-                    rank =fclib_file['fclib_local']['W'].attrs.get('rank')
-                    if True :      #if rank == None:
-                        rank_dense=fclib_file['fclib_local']['W'].attrs.get('rank_dense') 
-                        if rank_dense != None and not math.isnan(rank_dense):
-                            print "rank := rank_dense"
-                            fclib_file['fclib_local']['W'].attrs.create('rank', rank_dense)
-                        rank_svd=fclib_file['fclib_local']['W'].attrs.get('rank_svd')   
-                        if rank_svd != None and not math.isnan(rank_svd):
-                            print "rank := rank_svd"
-                            fclib_file['fclib_local']['W'].attrs.create('rank', rank_svd)
+        # for problem_filename in problem_filenames:
+        #     print "treatment", problem_filename
+        #     with h5py.File(problem_filename, 'r+') as fclib_file:
+        #         try:
+        #             import math
+        #             rank =fclib_file['fclib_local']['W'].attrs.get('rank')
+        #             if True :      #if rank == None:
+        #                 rank_dense=fclib_file['fclib_local']['W'].attrs.get('rank_dense')
+        #                 if rank_dense != None and not math.isnan(rank_dense):
+        #                     print "rank := rank_dense"
+        #                     fclib_file['fclib_local']['W'].attrs.create('rank', rank_dense)
+        #                 rank_svd=fclib_file['fclib_local']['W'].attrs.get('rank_svd')
+        #                 if rank_svd != None and not math.isnan(rank_svd):
+        #                     print "rank := rank_svd"
+        #                     fclib_file['fclib_local']['W'].attrs.create('rank', rank_svd)
                         
-                    else:
-                        print "rank already present"
+        #             else:
+        #                 print "rank already present"
 
-                    r1 =fclib_file['fclib_local']['W'].attrs.get('r1')
-                    r2 =fclib_file['fclib_local']['W'].attrs.get('r2')
-                    if r1 != None:
-                        print "r1 --> norm_lsmr"
-                        fclib_file['fclib_local']['W'].attrs.create('norm_lsmr',r1)
-                        fclib_file['fclib_local']['W'].attrs.__delitem__('r1')
-                    if r2 != None:
-                        print "r2 --> cond_lsmr"
-                        fclib_file['fclib_local']['W'].attrs.create('cond_lsmr',r2)
-                        fclib_file['fclib_local']['W'].attrs.__delitem__('r2')
+        #             r1 =fclib_file['fclib_local']['W'].attrs.get('r1')
+        #             r2 =fclib_file['fclib_local']['W'].attrs.get('r2')
+        #             if r1 != None:
+        #                 print "r1 --> norm_lsmr"
+        #                 fclib_file['fclib_local']['W'].attrs.create('norm_lsmr',r1)
+        #                 fclib_file['fclib_local']['W'].attrs.__delitem__('r1')
+        #             if r2 != None:
+        #                 print "r2 --> cond_lsmr"
+        #                 fclib_file['fclib_local']['W'].attrs.create('cond_lsmr',r2)
+        #                 fclib_file['fclib_local']['W'].attrs.__delitem__('r2')
                     
-                except Exception as e :
-                    print e
-                    pass
+        #         except Exception as e :
+        #             print e
+        #             pass
+        with h5py.File('comp.hdf5', 'r+') as comp_file:
+            data = comp_file['data']
+            comp_data = data['comp']
+            for solver in comp_data:
+                if ( 'NSGS-AC-' in solver):
+                    print "solver", solver
+                    if ('NSGS-AC-GP' not in solver):
+                        print "solver to be renamed", solver
+                        new_solver= solver.replace("AC-","AC-GP-")
+                        print "rename", solver, "in ",new_solver
+                        data['comp'].move(solver,new_solver)
 
     if compute_hardness:
         nc = []
