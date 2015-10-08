@@ -2273,6 +2273,7 @@ Other studies.
 
 \paragraph{Evaluation of the influence of the self--adaptive procedure for step length}
 \label{Sec:Comparison,VI,step-length}
+
 \begin{figure}
   \centering
   \includegraphics[width=0.8\textwidth]{../figure/profile-Capsules-reduced-FixedPoint-VI-1_10-time.pdf}
@@ -2286,48 +2287,82 @@ In Figure~\ref{fig:profile-Capsules-reduced--FixedPoint-VI-1_10-time}, we study 
 
 
 
-\subsection{Comparison of PSOR algorithm with respect to  the relaxation parameter $\omega$}
-
-\begin{figure}
-  \centering
-  \includegraphics[width=0.8\textwidth]{../figure/profile-Capsules-PSOR-1_15-time.pdf}
-  \caption{Effect of relation coefficient $\omega$ in PSOR-AC algorithm( $tol = 10^{-8}, tol_{local} = 10^{-16}$). Capsules tests. $timeout=10s$}
-  \label{fig:profile-Capsules-PSOR-1_15-time}
-\end{figure}
-
-In Figure~\ref{fig:profile-Capsules-PSOR-1_15-time}, we study the effect of the relaxation parameter $\omega$ ranging from $[0.5,1.5]$ on the computational time.  Two conclusions can be drawn a) with increasing values of $\omega$, the PSOR algorithm increases its convergence rate as we van observe for $\tau=1$ but b) the robustness of the algorithm is weaken. Indeed, $\tau=15$, we observe that the performance profile is flat and the number of problems solved is higher for valued of $\omega$ around $1$.
-
-To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$. If it accelerates drastically the rate of convergence of the algorithm for some problems it deteriorates the convergence for other. Further studies would be needed to design self--adaptive schemes for the choice of $\omega$.
+\subsection{Splitting based algorithms}
 
 \begin{ndrva}
-  \item redo this comparison on a set of mixed examples 
-  \item add some results with $\omega =1.8$ to show that higher values will destroy the convergence.
-  \item is it possible to find sizing rule in the literature ?
+TODO list
+\begin{itemize}
+\item Effect and influence of the local solver
+\item Influence of the tolerance of the local solver $tol_{local}$
+\item Influence of the contacts order
+\item Comparison of PSOR algorithm with respect to the relaxation parameter $\omega$
+\end{itemize}
 \end{ndrva}
 
+\paragraph{Effect and influence of the local solver in NSGS algorithms}
 
-\subsection{Influence of the tolerance of the local solver $tol_{local}$ in NSGS algorithms}
+
+
+
+\def\widthfigure{0.6}
+\begin{figure}
+  \centering
+  \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalSolver/time/profile-Capsules.pdf}
+  \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalSolver/time/profile-Capsules_legend.pdf}
+  \caption{Influence of the local solver in NSGS algorithms ($tol = 10^{-8}$). Capsules tests. $timeout=50s$}
+  \label{fig:NSGS/LocalSolver/time/profile-Capsules}
+\end{figure}
+
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.8\textwidth]{../figure/profile-Capsules-NSGS-1_3-tol-local-time.pdf}
-  \includegraphics[width=0.8\textwidth]{../figure/profile-Capsules-NSGS-1_3_legend-tol-local-time.pdf}
+  \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalSolver/time/profile-KaplasTower.pdf}
+  \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalSolver/time/profile-KaplasTower_legend.pdf}
+  \caption{Influence of the local solver in NSGS algorithms ($tol = 10^{-8}$). KaplasTower tests. $timeout=50s$}
+  \label{fig:NSGS/LocalSolver/time/profile-KaplasTower}
+\end{figure}
+\begin{figure}
+  \centering
+  \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalSolver/time/profile-Cubes_H8_20.pdf}
+  \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalSolver/time/profile-Cubes_H8_20_legend.pdf}
+  \caption{Influence of the local solver in NSGS algorithms ($tol = 10^{-4}$). LMGC\_Cubes\_H20 tests. $timeout=50s$}
+  \label{fig:NSGS/LocalSolver/time/profile-Cubes_H8_20}
+\end{figure}
+
+
+\paragraph{Influence of the tolerance of the local solver $tol_{local}$ in NSGS algorithms}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalTol/time/profile-Capsules.pdf}
+  \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalTol/time/profile-Capsules_legend.pdf}
   \caption{Influence of the tolerance of the local solver $tol_{local}$ in NSGS algorithms ($tol = 10^{-8}$). Capsules tests. $timeout=10s$}
-  \label{fig:profile-Capsules-NSGS-1_3--tol-local-time}
+  \label{fig:NSGS/LocalTol/time/profile-Capsules}
 \end{figure}
+
 \begin{figure}
   \centering
-  \includegraphics[width=0.8\textwidth]{../figure/profile-LMGC_Bridge_PR-NSGS-1_3-tol-local-time.pdf}
-  \includegraphics[width=0.8\textwidth]{../figure/profile-LMGC_Bridge_PR-NSGS-1_3_legend-tol-local-time.pdf}
+  \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalTol/time/profile-KaplasTower.pdf}
+  \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalTol/time/profile-KaplasTower_legend.pdf}
+  \caption{Influence of the tolerance of the local solver $tol_{local}$ in NSGS algorithms ($tol = 10^{-8}$). KaplasTower tests. $timeout=50s$}
+  \label{fig:NSGS/LocalTol/time/profile-KaplasTower}
+\end{figure}
+
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Bridge_PR-NSGS-1_3-tol-local-time.pdf}
+  \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Bridge_PR-NSGS-1_3_legend-tol-local-time.pdf}
   \caption{Influence of the tolerance of the local solver $tol_{local}$ in NSGS algorithms ($tol = 10^{-5}$). LMGC\_Bridge\_PR tests. $timeout=50s$}
-  \label{fig:profile-LMGC_Bridge_PR-NSGS-1_3--tol-local-time}
+  \label{fig:NSGS/LocalTol/time/profile-LMGC_Bridge_PR}
 \end{figure}
+
 \begin{figure}
   \centering
-  \includegraphics[width=0.8\textwidth]{../figure/profile-Cubes_H8_20-NSGS-1_10-tol-local-time.pdf}
-  \includegraphics[width=0.8\textwidth]{../figure/profile-Cubes_H8_20-NSGS-1_10_legend-tol-local-time.pdf}
+  \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalTol/time/profile-LMGC_Cubes_H8_20.pdf}
+  \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalTol/time/profile-LMGC_Cubes_H8_20_legend.pdf}
   \caption{Influence of the tolerance of the local solver $tol_{local}$ in NSGS algorithms ($tol = 10^{-4}$). LMGC\_Cubes\_H20 tests. $timeout=50s$}
-  \label{fig:profile-Cubes_H8_20-NSGS-1_3--tol-local-time}
+  \label{fig:NSGS/LocalTol/time/profile-Cubes_H8_20}
 \end{figure}
 
 
@@ -2349,37 +2384,76 @@ To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$
 
 
 
-In this section, the tolerance of the local solver is varied and its effect on the global convergence of the solver is reported. For the ``Capsules'' set of examples in figure~\ref{fig:profile-Capsules-NSGS-1_3--tol-local-time}, the tolerance of the local solver $tol_{local}$ has almost no effect on the performance of the global solver. Surprisingly, the algorithm is also able to reach the global accuracy of $tol = 10^{-8}$ with a quite low accuracy of the local solver ($10^{02}$ for instance). This mainly due to the fact that at least one iteration of the local solver is always done and the set of examples are not so difficult to solve (see the average performance in Table~\ref{tab:hardness}). 
-Let us have a look to more difficult examples in Figures~\ref{fig:profile-LMGC_Bridge_PR-NSGS-1_3--tol-local-time} and  \ref{fig:profile-Cubes_H8_20-NSGS-1_3--tol-local-time}. Although the required accuracy is lower, the solver with a low local tolerance fails to solve the problems efficiently. In the most difficult test set, it is even required to have a local tolerance $tol_{local}$ at a very low level with respect to the tolerance $tol$ to improve the rate of convergence and even to ensure the success of the solver. 
+In this section, the tolerance of the local solver is varied and its effect on the global convergence of the solver is reported. For the ``Capsules'' set of examples in figure~\ref{fig:NSGS/LocalTol/time/profile-Capsules}, the tolerance of the local solver $tol_{local}$ has almost no effect on the performance of the global solver. Surprisingly, the algorithm is also able to reach the global accuracy of $tol = 10^{-8}$ with a quite low accuracy of the local solver ($10^{02}$ for instance). This mainly due to the fact that at least one iteration of the local solver is always done and the set of examples are not so difficult to solve (see the average performance in Table~\ref{tab:hardness}).
+Let us have a look to more difficult examples in Figures~\ref{fig:NSGS/LocalTol/time/profile-LMGC_Bridge_PR} and  \ref{fig:NSGS/LocalTol/time/profile-Cubes_H8_20}. Although the required accuracy is lower, the solver with a low local tolerance fails to solve the problems efficiently. In the most difficult test set, it is even required to have a local tolerance $tol_{local}$ at a very low level with respect to the tolerance $tol$ to improve the rate of convergence and even to ensure the success of the solver.
 
 \begin{ndrva}
   \item redo this comparison with the flop measure.
   \item The Capsules test seems very easy to solve
 \end{ndrva}
-\subsection{Influence of the tolerance of the local solver $tol_{local}$ in NSGS algorithms}
 
-In this section, we study the influence of the contacts order in the list of contact that is iterated by the NSGS-AC solver. We reproduce in Figure~\ref{fig:profile-Capsules-NSGS-1_3--shuffled-time} the result of the solvers with the original contact list of the problem (NSGS-AC), with the 10 lists of contacts that are randomly shuffled (NSGS-AC-Shuffles-x) and with a list of contact that is shuffled in each loop ot the solver.
+\paragraph{Influence of the contacts order  in NSGS algorithms}
+
+In this section, we study thein the list of contact that is iterated by the NSGS-AC solver. We reproduce in Figure~\ref{fig:NSGS/Shuffled/time/profile-Capsules} the result of the solvers with the original contact list of the problem (NSGS-AC), with the 10 lists of contacts that are randomly shuffled (NSGS-AC-Shuffles-x) and with a list of contact that is shuffled in each loop ot the solver(NSGS-AC-Shuffled-full). We can observe that the contact order change slightly the behavior of the algorithm and most surprisingly the randomization in each loop of the NSGS algorithm deteriorates its convergence. In Figure~\ref{fig:NSGS/Shuffled/time/profile-KaplasTower}, we restrict our attention to three solvers without noting major difference with the respect of the result of each solvers. In Figure~\ref{fig:NSGS/Shuffled/time/profile-Cubes_H8_20}, the result change drastically with the Cubes\_H8\_20 examples. For each problem, the randomization  in each loop improves the performance by a factor between $20$ and $60$. Note the scale of the axis. In view of this result, the question of the contact order seems to be an important question for improving the performance of the NSGS solvers. It remains nevertheless an open question since it is difficult to guess a priori what the optimal order.
+
+
+\def\widthfigure{0.6}
+\begin{figure}
+  \centering
+  \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/Shuffled/time/profile-Capsules.pdf}
+  \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/Shuffled/time/profile-Capsules_legend.pdf}
+  \caption{Influence of the contacts order in NSGS algorithms ($tol = 10^{-8}$). Capsules tests. $timeout=10s$}
+  \label{fig:NSGS/Shuffled/time/profile-Capsules}
+\end{figure}
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.8\textwidth]{../figure/profile-Capsules-NSGS-1_3-shuffled-time.pdf}
-  \includegraphics[width=0.8\textwidth]{../figure/profile-Capsules-NSGS-1_3_legend-shuffled-time.pdf}
-  \caption{Influence of the contacts order in NSGS algorithms ($tol = 10^{-8}$). Capsules tests. $timeout=10s$}
-  \label{fig:profile-Capsules-NSGS-1_3--shuffled-time}
+  \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/Shuffled/time/profile-KaplasTower.pdf}
+  \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/Shuffled/time/profile-KaplasTower_legend.pdf}
+  \caption{Influence of the contacts order in NSGS algorithms ($tol = 10^{-4}$). KaplasTower tests. $timeout=50s$}
+  \label{fig:NSGS/Shuffled/time/profile-KaplasTower}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/Shuffled/time/profile-Cubes_H8_20.pdf}
+  \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/Shuffled/time/profile-Cubes_H8_20_legend.pdf}
+  \caption{Influence of the contacts order in NSGS algorithms ($tol = 10^{-4}$). LMGC\_Cubes\_H20 tests. $timeout=50s$}
+  \label{fig:NSGS/Shuffled/time/profile-Cubes_H8_20}
 \end{figure}
 
 
 \begin{ndrva}
-  \item Not so great interest of this section
+  \item Not so great interest of this section because it is difficult to conclude something
 \end{ndrva}
+
+\paragraph{Comparison of PSOR algorithm with respect to  the relaxation parameter $\omega$}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\widthfigure\textwidth]{../figure/profile-Capsules-PSOR-1_15-time.pdf}
+  \caption{Effect of relation coefficient $\omega$ in PSOR-AC algorithm( $tol = 10^{-8}, tol_{local} = 10^{-16}$). Capsules tests. $timeout=10s$}
+  \label{fig:profile-Capsules-PSOR-1_15-time}
+\end{figure}
+
+In Figure~\ref{fig:profile-Capsules-PSOR-1_15-time}, we study the effect of the relaxation parameter $\omega$ ranging from $[0.5,1.5]$ on the computational time.  Two conclusions can be drawn a) with increasing values of $\omega$, the PSOR algorithm increases its convergence rate as we van observe for $\tau=1$ but b) the robustness of the algorithm is weaken. Indeed, $\tau=15$, we observe that the performance profile is flat and the number of problems solved is higher for valued of $\omega$ around $1$.
+
+To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$. If it accelerates drastically the rate of convergence of the algorithm for some problems it deteriorates the convergence for other. Further studies would be needed to design self--adaptive schemes for the choice of $\omega$.
+
+\begin{ndrva}
+  \item redo this comparison on a set of mixed examples
+  \item add some results with $\omega =1.8$ to show that higher values will destroy the convergence.
+  \item is it possible to find sizing rule in the literature ?
+\end{ndrva}
+
 
 
 \subsection{Comparison of PPA-NSN-AC algorithm with respect to  the step-size parameter $\sigma$, $\mu$}
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.8\textwidth]{../figure/profile-Capsules-reduced-PPA-NSN-AC-1_10-time.pdf}
-  \includegraphics[width=0.8\textwidth]{../figure/profile-Capsules-reduced-PPA-NSN-AC-1_10-time-bis.pdf}
+  \includegraphics[width=\widthfigure\textwidth]{../figure/profile-Capsules-reduced-PPA-NSN-AC-1_10-time.pdf}
+  \includegraphics[width=\widthfigure\textwidth]{../figure/profile-Capsules-reduced-PPA-NSN-AC-1_10-time-bis.pdf}
    \caption{Effect of the step-size parameter $\sigma$, $\mu$ in PPA-NSN-AC algorithm( $tol = 10^{-8}$). Capsules tests. $timeout=10s$}
   \label{fig:profile-Capsules-reduced-PPA-NSN-AC-1_10-time}
 \end{figure}
@@ -2396,8 +2470,8 @@ In this section, we study the influence of the contacts order in the list of con
 \subsection{Rigid bodies applications}
 \begin{figure}
   \centering
-  \includegraphics[width=0.8\textwidth]{../figure/profile-LMGC_Bridge_PR-time_0_100.pdf}
-  \includegraphics[width=0.8\textwidth]{../figure/profile-LMGC_Bridge_PR_legend-time_0_100.pdf}
+  \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Bridge_PR-time_0_100.pdf}
+  \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Bridge_PR_legend-time_0_100.pdf}
   \caption{Bridge\_PR tests. $timeout=50s, tol = 10^{[-4} $ performance (time). }
   \label{fig:profile-LMGC_Bridge_PR-time}
 \end{figure}
@@ -2408,17 +2482,17 @@ In this section, we study the influence of the contacts order in the list of con
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.8\textwidth]{../figure/profile-LMGC_Cubes_H8_5-time_0_100.pdf}
-  \includegraphics[width=0.8\textwidth]{../figure/profile-LMGC_Cubes_H8_5-time_0_5000.pdf}
-  \includegraphics[width=0.8\textwidth]{../figure/profile-LMGC_Cubes_H8_5_legend-time.pdf}
+  \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Cubes_H8_5-time_0_100.pdf}
+  \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Cubes_H8_5-time_0_5000.pdf}
+  \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Cubes_H8_5_legend-time.pdf}
   \caption{Cubes H8\_5 tests. $timeout=50s $ performance (time). }
   \label{fig:profile-LMGC_Cubes_H8_5-time}
 \end{figure}
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.8\textwidth]{../figure/profile-LMGC_Cubes_H8_20-time_0_100.pdf}
-  \includegraphics[width=0.8\textwidth]{../figure/profile-LMGC_Cubes_H8_20_legend-time.pdf}
+  \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Cubes_H8_20-time_0_100.pdf}
+  \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Cubes_H8_20_legend-time.pdf}
   \caption{Cubes H8\_20 tests. $timeout=50s $ performance (time). }
   \label{fig:profile-LMGC_Cubes_H8_20-time}
 \end{figure}
