@@ -1110,6 +1110,19 @@ localACSTD.SolverOptions().iparam[12] = maxiterls;
 localACSTD.SolverOptions().iparam[13] = with_mumps;
 localACSTD.SolverOptions().iparam[3] = 10000000
 
+localACSTD_nls = SiconosSolver(name="NSN-AlartCurnier-NLS",
+                               gnuplot_name="NSN-AC-NLS",
+                               API=N.frictionContact3D_localAlartCurnier,
+                               TAG=N.SICONOS_FRICTION_3D_LOCALAC,
+                               iparam_iter=1,
+                               dparam_err=1,
+                               maxiter=maxiter, precision=precision)
+
+localACSTD_nls.SolverOptions().iparam[10] = 0;
+localACSTD_nls.SolverOptions().iparam[11] = -1;
+localACSTD_nls.SolverOptions().iparam[12] = 0;
+localACSTD_nls.SolverOptions().iparam[13] = with_mumps;
+localACSTD_nls.SolverOptions().iparam[3] = 10000000
 
 localACJeanMoreau = SiconosSolver(name="NSN-JeanMoreau",
                                   gnuplot_name="NSN-JM",
@@ -1125,6 +1138,20 @@ localACJeanMoreau.SolverOptions().iparam[12] = maxiterls;
 localACJeanMoreau.SolverOptions().iparam[13] = with_mumps;
 localACJeanMoreau.SolverOptions().iparam[3] = 10000000
 
+localACJeanMoreau_nls = SiconosSolver(name="NSN-JeanMoreau-NLS",
+                                      gnuplot_name="NSN-JM-NLS",
+                                      API=N.frictionContact3D_localAlartCurnier,
+                                      TAG=N.SICONOS_FRICTION_3D_LOCALAC,
+                                      iparam_iter=1,
+                                      dparam_err=1,
+                                      maxiter=maxiter, precision=precision)
+
+localACJeanMoreau_nls.SolverOptions().iparam[10] = 1;
+localACJeanMoreau_nls.SolverOptions().iparam[11] = -1;
+localACJeanMoreau_nls.SolverOptions().iparam[12] = 0;
+localACJeanMoreau_nls.SolverOptions().iparam[13] = with_mumps;
+localACJeanMoreau_nls.SolverOptions().iparam[3] = 10000000
+
 localACSTDGenerated = SiconosSolver(name="NSN-AlartCurnier-Generated",
                                     gnuplot_name="NSN-AC-Generated",
                                     API=N.frictionContact3D_localAlartCurnier,
@@ -1138,6 +1165,20 @@ localACSTDGenerated.SolverOptions().iparam[11] = 0;
 localACSTDGenerated.SolverOptions().iparam[12] = maxiterls;
 localACSTDGenerated.SolverOptions().iparam[13] = with_mumps;
 localACSTDGenerated.SolverOptions().iparam[3] = 10000000
+
+localACSTDGenerated_nls = SiconosSolver(name="NSN-AlartCurnier-Generated-NLS",
+                                        gnuplot_name="NSN-AC-Generated-NLS",
+                                        API=N.frictionContact3D_localAlartCurnier,
+                                        TAG=N.SICONOS_FRICTION_3D_LOCALAC,
+                                        iparam_iter=1,
+                                        dparam_err=1,
+                                        maxiter=maxiter, precision=precision)
+
+localACSTDGenerated_nls.SolverOptions().iparam[10] = 2;
+localACSTDGenerated_nls.SolverOptions().iparam[11] = -1;
+localACSTDGenerated_nls.SolverOptions().iparam[12] = 0;
+localACSTDGenerated_nls.SolverOptions().iparam[13] = with_mumps;
+localACSTDGenerated_nls.SolverOptions().iparam[3] = 10000000
 
 localACJeanMoreauGenerated = SiconosSolver(name="NSN-JeanMoreau-Generated",
                                            gnuplot_name="NSN-JM-Generated",
