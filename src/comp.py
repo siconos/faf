@@ -274,7 +274,7 @@ try:
                                     'output-dat', 'with-mumps', 'file-filter=',
                                     'list-contents',
                                     'add-precision-in-comp-file','add-timeout-in-comp-file',
-                                    'compute-cond-rank','adhoc'])
+                                    'compute-cond-rank','compute-hardness','adhoc'])
 
 
 except getopt.GetoptError, err:
@@ -408,7 +408,7 @@ for o, a in opts:
     elif o == '--add-timeout-in-comp-file':
         with h5py.File('comp.hdf5','r+') as comp_file:
             create_attrs_timeout_in_comp_file(comp_file,float(a))
-    elif o == '--compute--hardness':
+    elif o == '--compute-hardness':
         compute_hardness = True
         compute = False
     elif o == '--compute-cond-rank':
@@ -1566,23 +1566,17 @@ VIExtraGrad = SiconosSolver(name="ExtraGradient-VI",
                             iparam_iter=7,
                             dparam_err=1,
                             maxiter=maxiter, precision=precision)
-VIExtraGrad1 = SiconosSolver(name="ExtraGradient-VI1s",
-                            API=N.frictionContact3D_VI_ExtraGradient,
-                            TAG=N.SICONOS_FRICTION_3D_VI_EG,
-                            iparam_iter=7,
-                            dparam_err=1,
-                            maxiter=maxiter, precision=precision)
-VIExtraGrad1.SolverOptions().dparam[4]=0.6
-VIExtraGrad1.SolverOptions().dparam[5]=1/0.7
-VIExtraGrad1.SolverOptions().dparam[6]=0.9
-VIExtraGrad1.SolverOptions().dparam[7]=0.3
+# VIExtraGrad.SolverOptions().dparam[4]=0.6
+# VIExtraGrad.SolverOptions().dparam[5]=1/0.7
+# VIExtraGrad.SolverOptions().dparam[6]=0.9
+# VIExtraGrad.SolverOptions().dparam[7]=0.3
 
+iparam1_values = [0,1]
 
-
-iparam1_values = [0,1,2]
 iparam2_values = [0,1]
-iparam3_values = [0,1]
+
 iparam3_values = [0]
+
 VIExtraGrad_series=[]
 for i1 in iparam1_values:
     for i2 in iparam2_values:
@@ -1595,9 +1589,9 @@ for i1 in iparam1_values:
                 g_name="EG-VI-UPHS"
 
             if i2 == 0:
-                g_name = g_name + " True" 
-            elif i2 == 1:
                 g_name = g_name + " False"
+            elif i2 == 1:
+                g_name = g_name + " True"
                 
             if i3 == 0:
                 g_name = g_name 
@@ -1626,7 +1620,11 @@ VIFixedPointProjection = SiconosSolver(name="FixedPoint-VI",
 
 iparam1_values = [0,1,2]
 iparam1_values = [0,1]
+
 iparam2_values = [0]
+iparam2_values = [0,1 ]
+
+
 iparam3_values = [0,1]
 iparam3_values = [0]
 VIFixedPointProjection_series=[]
@@ -1641,9 +1639,9 @@ for i1 in iparam1_values:
                 g_name="FP-VI-UPHS"
 
             if i2 == 0:
-                g_name = g_name + " True" 
-            elif i2 == 1:
                 g_name = g_name + " False"
+            elif i2 == 1:
+                g_name = g_name + " True"
             elif i2 == 2:
                 g_name = g_name + " semi False"
                 
@@ -1815,7 +1813,7 @@ all_solvers = list(nsgs_solvers)
 all_solvers.extend(nsn_solvers)
 all_solvers.extend( [ psor,
                       TrescaFixedPoint, DeSaxceFixedPoint,
-                      VIFixedPointProjection, VIExtraGrad,VIExtraGrad1,
+                      VIFixedPointProjection, VIExtraGrad,
                       SOCLCP,
                       Prox,  ProxFB,
                       ACLMFixedPoint])
@@ -2394,7 +2392,7 @@ if __name__ == '__main__':
         # compute other quantities
         print nc
         nc_avg = sum(nc)/float(len(nc))
-        #print "nc_avg", nc_avg
+        print "nc_avg", nc_avg
         with h5py.File('comp.hdf5', 'r') as comp_file:
             data = comp_file['data']
             comp_data = data['comp']
@@ -2426,7 +2424,7 @@ if __name__ == '__main__':
                             measure[solver_name][ip] = np.nan
                         ip += 1
 
-
+            print "min_measure", min_measure
             avg_min_measure=0.0
             for k,v in min_measure.items():
                 avg_min_measure +=v
