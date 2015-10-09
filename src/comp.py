@@ -524,7 +524,7 @@ def _norm_cond(problem_filename):
     A = csr_matrix(N.SBMtoSparse(problem.M)[1])
     #print "A=", A
     print "A.shape", A.shape
-
+    print "computev lsmr ..."
     r = lsmr(A, np.ones([A.shape[0], 1]))  # solve Ax = 1
     norm_lsmr=r[5]
     cond_lsmr=r[6]
@@ -532,6 +532,7 @@ def _norm_cond(problem_filename):
     print "cond_lsr=", cond_lsmr
     #print "r=", r
     try:
+        print "computev svds(A,1) ..."
         _svd = svds(A,1)[1]
         eps = sys.float_info.epsilon
         tol = _svd.max() * max(A.shape) * eps
@@ -550,6 +551,7 @@ def _norm_cond(problem_filename):
     # print isinstance(A_LO, LinearOperator)
     rank_estimate = np.nan
     try:
+        print "Compute rank estimate ..."
         rank_estimate=estimate_rank(A.todense(), tol)
         print "rank_estimate", rank_estimate
     except Exception as e :
@@ -559,6 +561,7 @@ def _norm_cond(problem_filename):
 
     rank_dense = np.nan
     try:
+        print "Compute rank dense ..."
         rank_dense = dense_matrix_rank(A.todense())
     except Exception as e :
         print "--> dense_matrix_rank", e
@@ -566,6 +569,7 @@ def _norm_cond(problem_filename):
     
     k=min(rank_estimate,A.shape[0]-1)
     try:
+        print "Compute svds(A,k)  ..."
         _svd = svds(A,k)[1]
         #print "_svd",_svd
     # except Warning as w:
