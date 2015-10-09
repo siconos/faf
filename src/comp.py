@@ -1807,7 +1807,7 @@ nsgs_solvers.remove(nsgs_pd)
 nsgs_solvers.remove(nsgs_pr)
 nsgs_solvers.remove(quartic)
 
-nsn_solvers =  [localACSTD,localACSTDGenerated,  localacr, localACJeanMoreau, localACJeanMoreauGenerated, localACJeanMoreauGenerated_lusol,
+nsn_solvers =  [localACSTD, localACSTD_nls, localACSTDGenerated, localACSTDGenerated_nls,  localacr, localACJeanMoreau, localACJeanMoreau_nls, localACJeanMoreauGenerated, localACJeanMoreauGenerated_lusol,
                 localACJeanMoreauGenerated_nls, localACJeanMoreauGenerated_nls_lusol,
                 localfb_gp, localfb_gp_lusol, localfb_nls, localfb_nls_lusol]
 
@@ -1833,7 +1833,7 @@ all_solvers.extend(VIExtraGrad_series)
 all_solvers.extend(psor_series)
 all_solvers.extend(prox_series)
 
-all_solvers = list(nsgs_series)
+#all_solvers = list(nsgs_series)
 #all_solvers.extend(nsgs_solvers)
 #all_solvers.extend(snsgs_series)
 
