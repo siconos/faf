@@ -1818,7 +1818,7 @@ all_solvers.extend( [ psor,
                       Prox,  ProxFB,
                       ACLMFixedPoint])
 
-all_solver_unstable = [ ProxFB_fblsa]
+all_solver_unstable = [ProxFB_fblsa]
 all_solvers.extend(all_solver_unstable)
 
 all_solvers = filter(lambda s : s is not None, all_solvers)
@@ -1831,19 +1831,15 @@ all_solvers.extend(VIExtraGrad_series)
 all_solvers.extend(psor_series)
 all_solvers.extend(prox_series)
 
-#all_solvers = list(nsgs_series)
-#all_solvers.extend(nsgs_solvers)
-#all_solvers.extend(snsgs_series)
 
-#all_solvers=list(nsgs_solvers)
-#all_solvers.remove(nsgs_sfull)
-#all_solvers.remove(snsgs)
-#all_solvers=list(nsn_solvers)
-#all_solvers=list(snsgs_series)
-#all_solvers.extend([nsgs,nsgs_sfull])
+if (os.path.isfile(os.path.join( os.path.dirname(__file__),'adhoc_solverlist.py'))):
+    execfile(os.path.join( os.path.dirname(__file__),'adhoc_solverlist.py'))
+    #print "execfile(",os.path.join( os.path.dirname(__file__),'adhoc_solverlist.py'), ")"
+if (os.path.isfile('adhoc_solverlist.py')):
+    execfile('adhoc_solverlist.py')
+    #print "execfile(adhoc_solverlist.py)"
 
-
-
+    
 
 solvers=[]
 if user_solvers != []:
