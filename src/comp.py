@@ -2329,9 +2329,6 @@ if __name__ == '__main__':
                 try:
                     [norm_lsmr, cond_lsmr, max_nz_sv, min_nz_sv, cond, rank, rank_dense, rank_svd, rank_estimate] = norm_cond(problem_filename)
                     print ( problem_filename, norm_lsmr, cond_lsmr, max_nz_sv, min_nz_sv, cond,  rank_dense, rank_svd, rank_estimate)
-                except Exception as e :
-                    print e
-                try:
                     with h5py.File(problem_filename, 'r+') as fclib_file:
                         fclib_file['fclib_local']['W'].attrs.create('rank', rank)
                         fclib_file['fclib_local']['W'].attrs.create('rank_dense', rank_dense)
@@ -2342,8 +2339,8 @@ if __name__ == '__main__':
                         fclib_file['fclib_local']['W'].attrs.create('min_nz_sv', min_nz_sv)
                         fclib_file['fclib_local']['W'].attrs.create('norm_lsmr', norm_lsmr)
                         fclib_file['fclib_local']['W'].attrs.create('cond_lsmr', cond_lsmr)
-                except:
-                    raise RuntimeError("fclib_file['fclib_local']['W'] in trouble")
+                except Exception as e :
+                    print "-->", e
                         
     if adhoc:
         print "script adhoc (convenient moulinette)"
