@@ -528,6 +528,8 @@ def _norm_cond(problem_filename):
     r = lsmr(A, np.ones([A.shape[0], 1]))  # solve Ax = 1
     norm_lsmr=r[5]
     cond_lsmr=r[6]
+    print "norm_lsr=", norm_lsmr
+    print "cond_lsr=", cond_lsmr
     #print "r=", r
     try:
         _svd = svds(A,1)[1]
@@ -2095,9 +2097,15 @@ if __name__ == '__main__':
             for solver in solvers:
                 solver_name=solver.name()
                 if solver_name in comp_data :
-                    filenames = subsample_problems(comp_data[solver_name],
+                    if file_filter == None:
+                        all_filenames = comp_data[solver_name]
+                    else:
+                        all_filenames = filter(lambda f: any(uf in f for uf in file_filter), comp_data[solver_name])
+
+                    filenames = subsample_problems(all_filenames,
                                                    random_sample_proba,
                                                    max_problems, cond_nc)
+
                     n_problems = max(n_problems, len(filenames))
 
             # 2 measures & min_measure
@@ -2105,11 +2113,16 @@ if __name__ == '__main__':
             for solver in solvers:
                 solver_name=solver.name()
                 if solver_name in comp_data :
+                    if file_filter == None:
+                        all_filenames = comp_data[solver_name]
+                    else:
+                        all_filenames = filter(lambda f: any(uf in f for uf in file_filter), comp_data[solver_name])
 
-                    filenames = subsample_problems(comp_data[solver_name],
+                    filenames = subsample_problems(all_filenames,
                                                    random_sample_proba,
                                                    max_problems, cond_nc)
 
+                    
                     assert len(filenames) <= n_problems
 
                     measure[solver_name] = np.inf * np.ones(n_problems)
@@ -2136,7 +2149,12 @@ if __name__ == '__main__':
             for solver in solvers:
                 solver_name=solver.name()
                 if solver_name in comp_data :
-                    filenames = subsample_problems(comp_data[solver_name],
+                    if file_filter == None:
+                        all_filenames = comp_data[solver_name]
+                    else:
+                        all_filenames = filter(lambda f: any(uf in f for uf in file_filter), comp_data[solver_name])
+
+                    filenames = subsample_problems(all_filenames,
                                                    random_sample_proba,
                                                    max_problems, cond_nc)
 
@@ -2300,26 +2318,30 @@ if __name__ == '__main__':
         print "Tasks will be run for", problem_filenames
         for problem_filename in problem_filenames:
             print "compute for", problem_filename,"...."
-            try:
-                [norm_lsmr, cond_lsmr, max_nz_sv, min_nz_sv, cond, rank, rank_dense, rank_svd, rank_estimate] = norm_cond(problem_filename)
-                print ( problem_filename, norm_lsmr, cond_lsmr, max_nz_sv, min_nz_sv, cond,  rank_dense, rank_svd, rank_estimate)
-            except Exception as e :
-                print e
             with h5py.File(problem_filename, 'r+') as fclib_file:
-                try:
-                    fclib_file['fclib_local']['W'].attrs.create('rank', rank)
-                    fclib_file['fclib_local']['W'].attrs.create('rank_dense', rank_dense)
-                    fclib_file['fclib_local']['W'].attrs.create('rank_svd', rank_svd)
-                    fclib_file['fclib_local']['W'].attrs.create('rank_estimate', rank_estimate)
-                    fclib_file['fclib_local']['W'].attrs.create('cond', cond)
-                    fclib_file['fclib_local']['W'].attrs.create('max_nz_sv', max_nz_sv)
-                    fclib_file['fclib_local']['W'].attrs.create('min_nz_sv', min_nz_sv)
-                    fclib_file['fclib_local']['W'].attrs.create('norm_lsmr', norm_lsmr)
-                    fclib_file['fclib_local']['W'].attrs.create('cond_lsmr', cond_lsmr)
-                    
-                except:
-                    raise RuntimeError("fclib_file['fclib_local']['W'] in trouble")
-                
+                if (fclib_file['fclib_local']['W'].attrs.get('rank') == None) :
+                    try:
+                        pass
+                        [norm_lsmr, cond_lsmr, max_nz_sv, min_nz_sv, cond, rank, rank_dense, rank_svd, rank_estimate] = norm_cond(problem_filename)
+                        print ( problem_filename, norm_lsmr, cond_lsmr, max_nz_sv, min_nz_sv, cond,  rank_dense, rank_svd, rank_estimate)
+                    except Exception as e :
+                        print e
+                    with h5py.File(problem_filename, 'r+') as fclib_file:
+                        try:
+                            fclib_file['fclib_local']['W'].attrs.create('rank', rank)
+                            fclib_file['fclib_local']['W'].attrs.create('rank_dense', rank_dense)
+                            fclib_file['fclib_local']['W'].attrs.create('rank_svd', rank_svd)
+                            fclib_file['fclib_local']['W'].attrs.create('rank_estimate', rank_estimate)
+                            fclib_file['fclib_local']['W'].attrs.create('cond', cond)
+                            fclib_file['fclib_local']['W'].attrs.create('max_nz_sv', max_nz_sv)
+                            fclib_file['fclib_local']['W'].attrs.create('min_nz_sv', min_nz_sv)
+                            fclib_file['fclib_local']['W'].attrs.create('norm_lsmr', norm_lsmr)
+                            fclib_file['fclib_local']['W'].attrs.create('cond_lsmr', cond_lsmr)
+                        except:
+                            raise RuntimeError("fclib_file['fclib_local']['W'] in trouble")
+                else:
+                    print "Rank info already in", problem_filename
+                        
     if adhoc:
         print "script adhoc (convenient moulinette)"
         # for problem_filename in problem_filenames:
