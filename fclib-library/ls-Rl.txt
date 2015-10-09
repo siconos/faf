@@ -1,5 +1,6 @@
 total 0
 drwxr-xr-x   101 acary  bipop   3434 Oct  1 21:26 100_PR_PerioBox/
+drwxr-xr-x    62 acary  bipop   2108 Oct  9 10:13 945_SP_Box_PL/
 drwxr-xr-x    13 acary  bipop    442 Oct  2 08:51 Aqueduct_PR/
 drwxr-xr-x@ 1161 acary  bipop  39474 Oct  1 21:26 BoxesStack/
 drwxr-xr-x    52 acary  bipop   1768 Oct  1 21:26 Bridge_PR/
@@ -8,7 +9,7 @@ drwxr-xr-x@ 1516 acary  bipop  51544 Oct  1 21:26 Chain/
 drwxr-xr-x     3 acary  bipop    102 Oct  5 12:45 Global/
 drwxr-xr-x@  203 acary  bipop   6902 Oct  1 21:26 KaplasTower/
 drwxr-xr-x   117 acary  bipop   3978 Oct  1 21:26 cubes_H8/
--rw-r--r--     1 acary  bipop      0 Oct  5 12:47 ls-Rl.txt
+-rw-r--r--     1 acary  bipop      0 Oct  9 14:34 ls-Rl.txt
 
 ./100_PR_PerioBox:
 total 198424
@@ -111,6 +112,69 @@ total 198424
 -rw-r--r--  1 acary  bipop  1265476 Oct  1 21:22 LMGC_100_PR_PerioBox-i05000-452-26500.hdf5
 -rw-r--r--  1 acary  bipop   104472 Oct  1 21:22 LMGC_100_PR_PerioBox-i05000-48-02000.hdf5
 -rw-r--r--  1 acary  bipop  1475204 Oct  1 21:22 LMGC_100_PR_PerioBox-i05000-523-29000.hdf5
+
+./945_SP_Box_PL:
+total 2152576
+-rw-r--r--  1 acary  bipop   3658028 Oct  9 10:13 LMGC_945_SP_Box_PL-i00014-2322-00012.hdf5
+-rw-r--r--  1 acary  bipop   3713820 Oct  9 10:13 LMGC_945_SP_Box_PL-i00017-2348-00003.hdf5
+-rw-r--r--  1 acary  bipop   4075620 Oct  9 10:13 LMGC_945_SP_Box_PL-i00043-2375-00016.hdf5
+-rw-r--r--  1 acary  bipop   5689660 Oct  9 10:13 LMGC_945_SP_Box_PL-i00068-2539-00027.hdf5
+-rw-r--r--  1 acary  bipop   8028092 Oct  9 10:13 LMGC_945_SP_Box_PL-i00147-3045-00044.hdf5
+-rw-r--r--  1 acary  bipop   9585684 Oct  9 10:13 LMGC_945_SP_Box_PL-i00286-3389-00052.hdf5
+-rw-r--r--  1 acary  bipop  17148340 Oct  9 10:13 LMGC_945_SP_Box_PL-i00494-4711-00092.hdf5
+-rw-r--r--  1 acary  bipop  17273820 Oct  9 10:13 LMGC_945_SP_Box_PL-i00583-4718-00094.hdf5
+-rw-r--r--  1 acary  bipop  14326980 Oct  9 10:13 LMGC_945_SP_Box_PL-i00714-4319-00072.hdf5
+-rw-r--r--  1 acary  bipop  17723516 Oct  9 10:13 LMGC_945_SP_Box_PL-i00819-4752-00102.hdf5
+-rw-r--r--  1 acary  bipop  21160684 Oct  9 10:13 LMGC_945_SP_Box_PL-i00891-5026-00477.hdf5
+-rw-r--r--  1 acary  bipop  18063316 Oct  9 10:13 LMGC_945_SP_Box_PL-i00930-4792-00111.hdf5
+-rw-r--r--  1 acary  bipop  21161484 Oct  9 10:13 LMGC_945_SP_Box_PL-i00963-5027-00489.hdf5
+-rw-r--r--  1 acary  bipop  21183708 Oct  9 10:13 LMGC_945_SP_Box_PL-i00981-5024-00453.hdf5
+-rw-r--r--  1 acary  bipop  18449980 Oct  9 10:13 LMGC_945_SP_Box_PL-i01027-4822-00118.hdf5
+-rw-r--r--  1 acary  bipop  21140876 Oct  9 10:13 LMGC_945_SP_Box_PL-i01051-5025-00447.hdf5
+-rw-r--r--  1 acary  bipop  21126532 Oct  9 10:13 LMGC_945_SP_Box_PL-i01084-5023-00451.hdf5
+-rw-r--r--  1 acary  bipop  18010516 Oct  9 10:13 LMGC_945_SP_Box_PL-i01137-4780-00110.hdf5
+-rw-r--r--  1 acary  bipop  21159652 Oct  9 10:13 LMGC_945_SP_Box_PL-i01154-5032-00414.hdf5
+-rw-r--r--  1 acary  bipop  19176052 Oct  9 10:13 LMGC_945_SP_Box_PL-i01192-4915-00134.hdf5
+-rw-r--r--  1 acary  bipop  21222380 Oct  9 10:13 LMGC_945_SP_Box_PL-i01259-5034-00438.hdf5
+-rw-r--r--  1 acary  bipop  18751868 Oct  9 10:13 LMGC_945_SP_Box_PL-i01293-4857-00126.hdf5
+-rw-r--r--  1 acary  bipop  20830676 Oct  9 10:13 LMGC_945_SP_Box_PL-i01318-5022-00265.hdf5
+-rw-r--r--  1 acary  bipop  21196756 Oct  9 10:13 LMGC_945_SP_Box_PL-i01356-5026-00445.hdf5
+-rw-r--r--  1 acary  bipop  20833268 Oct  9 10:13 LMGC_945_SP_Box_PL-i01399-5022-00266.hdf5
+-rw-r--r--  1 acary  bipop  21162116 Oct  9 10:13 LMGC_945_SP_Box_PL-i01425-5034-00374.hdf5
+-rw-r--r--  1 acary  bipop  21148116 Oct  9 10:13 LMGC_945_SP_Box_PL-i01467-5030-00425.hdf5
+-rw-r--r--  1 acary  bipop  20932044 Oct  9 10:13 LMGC_945_SP_Box_PL-i01519-5021-00280.hdf5
+-rw-r--r--  1 acary  bipop  21045508 Oct  9 10:13 LMGC_945_SP_Box_PL-i01560-5020-00302.hdf5
+-rw-r--r--  1 acary  bipop  20996500 Oct  9 10:13 LMGC_945_SP_Box_PL-i01608-5023-00319.hdf5
+-rw-r--r--  1 acary  bipop  21108916 Oct  9 10:13 LMGC_945_SP_Box_PL-i01639-5035-00356.hdf5
+-rw-r--r--  1 acary  bipop  21190996 Oct  9 10:13 LMGC_945_SP_Box_PL-i01714-5035-00395.hdf5
+-rw-r--r--  1 acary  bipop  21078908 Oct  9 10:13 LMGC_945_SP_Box_PL-i01744-5028-00341.hdf5
+-rw-r--r--  1 acary  bipop  21077916 Oct  9 10:13 LMGC_945_SP_Box_PL-i01808-5030-00336.hdf5
+-rw-r--r--  1 acary  bipop  19442468 Oct  9 10:13 LMGC_945_SP_Box_PL-i01868-4917-00145.hdf5
+-rw-r--r--  1 acary  bipop  21111876 Oct  9 10:13 LMGC_945_SP_Box_PL-i01929-5036-00358.hdf5
+-rw-r--r--  1 acary  bipop  21056356 Oct  9 10:13 LMGC_945_SP_Box_PL-i01984-5026-00331.hdf5
+-rw-r--r--  1 acary  bipop  20992244 Oct  9 10:13 LMGC_945_SP_Box_PL-i02012-5022-00318.hdf5
+-rw-r--r--  1 acary  bipop  20451780 Oct  9 10:13 LMGC_945_SP_Box_PL-i02078-5009-00207.hdf5
+-rw-r--r--  1 acary  bipop  21102956 Oct  9 10:13 LMGC_945_SP_Box_PL-i02173-5037-00364.hdf5
+-rw-r--r--  1 acary  bipop  20213884 Oct  9 10:13 LMGC_945_SP_Box_PL-i02254-4990-00195.hdf5
+-rw-r--r--  1 acary  bipop  20807540 Oct  9 10:13 LMGC_945_SP_Box_PL-i02336-5019-00249.hdf5
+-rw-r--r--  1 acary  bipop  20106772 Oct  9 10:13 LMGC_945_SP_Box_PL-i02404-4993-00179.hdf5
+-rw-r--r--  1 acary  bipop  20285516 Oct  9 10:13 LMGC_945_SP_Box_PL-i02509-4998-00199.hdf5
+-rw-r--r--  1 acary  bipop  21045508 Oct  9 10:13 LMGC_945_SP_Box_PL-i02667-5020-00301.hdf5
+-rw-r--r--  1 acary  bipop  20084908 Oct  9 10:13 LMGC_945_SP_Box_PL-i02847-4987-00188.hdf5
+-rw-r--r--  1 acary  bipop  20768204 Oct  9 10:13 LMGC_945_SP_Box_PL-i03109-5016-00231.hdf5
+-rw-r--r--  1 acary  bipop  20347836 Oct  9 10:13 LMGC_945_SP_Box_PL-i03442-5003-00204.hdf5
+-rw-r--r--  1 acary  bipop  20512412 Oct  9 10:13 LMGC_945_SP_Box_PL-i03851-5010-00209.hdf5
+-rw-r--r--  1 acary  bipop   8337340 Oct  9 10:13 LMGC_945_SP_Box_PL-i05000-3154-00046.hdf5
+-rw-r--r--  1 acary  bipop  13335268 Oct  9 10:13 LMGC_945_SP_Box_PL-i05000-4168-00067.hdf5
+-rw-r--r--  1 acary  bipop  17693380 Oct  9 10:13 LMGC_945_SP_Box_PL-i05000-4747-00101.hdf5
+-rw-r--r--  1 acary  bipop  17982716 Oct  9 10:13 LMGC_945_SP_Box_PL-i05000-4779-00109.hdf5
+-rw-r--r--  1 acary  bipop  18493972 Oct  9 10:13 LMGC_945_SP_Box_PL-i05000-4813-00115.hdf5
+-rw-r--r--  1 acary  bipop  20176860 Oct  9 10:13 LMGC_945_SP_Box_PL-i05000-4988-00191.hdf5
+-rw-r--r--  1 acary  bipop  20283724 Oct  9 10:13 LMGC_945_SP_Box_PL-i05000-4999-00200.hdf5
+-rw-r--r--  1 acary  bipop  20664820 Oct  9 10:13 LMGC_945_SP_Box_PL-i05000-5008-00214.hdf5
+-rw-r--r--  1 acary  bipop  20759692 Oct  9 10:13 LMGC_945_SP_Box_PL-i05000-5014-00228.hdf5
+-rw-r--r--  1 acary  bipop  20713772 Oct  9 10:13 LMGC_945_SP_Box_PL-i05000-5016-00221.hdf5
+-rw-r--r--  1 acary  bipop  20775700 Oct  9 10:13 LMGC_945_SP_Box_PL-i05000-5017-00230.hdf5
 
 ./Aqueduct_PR:
 total 534832
