@@ -2271,16 +2271,20 @@ Other studies.
 
 \subsection{Numerical methods for VI}
 
+
+\def\widthfigure{0.6}
 \paragraph{Evaluation of the influence of the self--adaptive procedure for step length}
 \label{Sec:Comparison,VI,step-length}
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.8\textwidth]{../figure/profile-Capsules-reduced-FixedPoint-VI-1_10-time.pdf}
-  \caption{Evaluation of the influence of the self--adaptive procedure for step length. Capsules tests (reduced).}
-  \label{fig:profile-Capsules-reduced--FixedPoint-VI-1_10-time}
+  \subfigure[Capsules tests (reduced) $tol = 10^{-8},timeout=50s$]{\includegraphics[width=\widthfigure\textwidth]{../figure/VI/UpdateRule/time/profile-Capsules.pdf}\hspace{-3cm}\includegraphics[width=\widthfigure\textwidth]{../figure/VI/UpdateRule/time/profile-Capsules_legend.pdf}}
+  \subfigure[LMGC\_Bridge\_PR $tol = 10^{-5}, timeout=50s$]{\includegraphics[width=\widthfigure\textwidth]{../figure/VI/UpdateRule/time/profile-LMGC_Bridge_PR.pdf}\hspace{-3cm}\includegraphics[width=\widthfigure\textwidth]{../figure/VI/UpdateRule/time/profile-LMGC_Bridge_PR_legend.pdf}}
+  \subfigure[LMGC\_Cubes\_H8\_20 $tol = 10^{-5}, timeout=50s$]{\includegraphics[width=\widthfigure\textwidth]{../figure/VI/UpdateRule/time/profile-LMGC_Cubes_H8_20.pdf}\hspace{-3cm}\includegraphics[width=\widthfigure\textwidth]{../figure/VI/UpdateRule/time/profile-LMGC_Cubes_H8_20_legend.pdf}}
+  \caption{Evaluation of the influence of the self--adaptive procedure for step length.}
+  \label{fig:VI/UpdateRule/time/profile-Capsules}
 \end{figure}
-In Figure~\ref{fig:profile-Capsules-reduced--FixedPoint-VI-1_10-time}, we study the effect of the self--adaptive procedure in Algorithm~\ref{Algo:Up1} on the convergence of the of the fixed point method in Algorithm~\ref{Algo:FP-vi}.
+In Figure~\ref{fig:VI/UpdateRule/time/profile-Capsules}, we study the effect of the self--adaptive procedure in Algorithm~\ref{Algo:Up1} on the convergence of the of the fixed point method in Algorithm~\ref{Algo:FP-vi}.
 
 
 \paragraph{Comparison between fixed point, extragradient and projection--contraction method.}
@@ -2303,31 +2307,39 @@ TODO list
 
 
 
-
 \def\widthfigure{0.6}
 \begin{figure}
   \centering
-  \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalSolver/time/profile-Capsules.pdf}
-  \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalSolver/time/profile-Capsules_legend.pdf}
-  \caption{Influence of the local solver in NSGS algorithms ($tol = 10^{-8}$). Capsules tests. $timeout=50s$}
-  \label{fig:NSGS/LocalSolver/time/profile-Capsules}
+  \vspace{-1cm}
+  \subfigure[Capsules tests (reduced) $tol = 10^{-8},timeout=50s$]{\label{fig:NSGS/LocalSolver/time/profile-Capsules}\includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalSolver/time/profile-Capsules.pdf}
+    \hspace{-2cm}\includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalSolver/time/profile-Capsules_legend.pdf}}\vspace{-0.5cm}
+  \subfigure[KaplasTower $tol = 10^{-8}, timeout=50s$]{\label{fig:NSGS/LocalSolver/time/profile-KaplasTower}\includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalSolver/time/profile-KaplasTower.pdf}
+    \hspace{-2cm}\includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalSolver/time/profile-KaplasTower_legend.pdf}}\vspace{-0.5cm}
+  \subfigure[LMGC\_Bridge\_PR $tol = 10^{-5}, timeout=50s$]{\label{fig:NSGS/LocalSolver/time/profile-LMGC_Bridge_PR}\includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalSolver/time/profile-LMGC_Bridge_PR.pdf}
+    \hspace{-2cm}\includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalSolver/time/profile-LMGC_Bridge_PR_legend.pdf}}\vspace{-0.5cm}
+  \subfigure[LMGC\_Cubes\_H20 tests. $tol = 10^{-4},timeout=50s$]{\label{fig:NSGS/LocalSolver/time/profile-Cubes_H8_20}\includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalSolver/time/profile-Cubes_H8_20.pdf}
+    \hspace{-2cm}\includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalSolver/time/profile-Cubes_H8_20_legend.pdf}}\vspace{-0.5cm}
+  \caption{Influence of the local solver in NSGS algorithms.}
+  \label{fig:NSGS/LocalSolver/time}
 \end{figure}
 
 
-\begin{figure}
-  \centering
-  \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalSolver/time/profile-KaplasTower.pdf}
-  \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalSolver/time/profile-KaplasTower_legend.pdf}
-  \caption{Influence of the local solver in NSGS algorithms ($tol = 10^{-8}$). KaplasTower tests. $timeout=50s$}
-  \label{fig:NSGS/LocalSolver/time/profile-KaplasTower}
-\end{figure}
-\begin{figure}
-  \centering
-  \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalSolver/time/profile-Cubes_H8_20.pdf}
-  \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalSolver/time/profile-Cubes_H8_20_legend.pdf}
-  \caption{Influence of the local solver in NSGS algorithms ($tol = 10^{-4}$). LMGC\_Cubes\_H20 tests. $timeout=50s$}
-  \label{fig:NSGS/LocalSolver/time/profile-Cubes_H8_20}
-\end{figure}
+% \begin{figure}
+%   \centering
+%   \caption{Influence of the local solver in NSGS algorithms ($tol = 10^{-8}$). KaplasTower tests. $timeout=50s$}
+%   \label{fig:NSGS/LocalSolver/time/profile-KaplasTower}
+% \end{figure}
+
+% \begin{figure}
+%   \centering
+%   \caption{Influence of the local solver in NSGS algorithms ($tol = 10^{-5}$). LMGC\_Bridge\_PR tests. $timeout=50s$}
+%   \label{fig:NSGS/LocalSolver/time/profile-LMGC_Bridge_PR}
+% \end{figure}
+% \begin{figure}
+%   \centering
+%   \caption{Influence of the local solver in NSGS algorithms ($tol = 10^{-4}$). LMGC\_Cubes\_H20 tests. $timeout=50s$}
+%   \label{fig:NSGS/LocalSolver/time/profile-Cubes_H8_20}
+% \end{figure}
 
 
 \paragraph{Influence of the tolerance of the local solver $tol_{local}$ in NSGS algorithms}
@@ -2351,8 +2363,8 @@ TODO list
 
 \begin{figure}
   \centering
-  \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Bridge_PR-NSGS-1_3-tol-local-time.pdf}
-  \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Bridge_PR-NSGS-1_3_legend-tol-local-time.pdf}
+  \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalTol/time/profile-LMGC_Bridge_PR.pdf}
+  \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalTol/time/profile-LMGC_Bridge_PR_legend.pdf}
   \caption{Influence of the tolerance of the local solver $tol_{local}$ in NSGS algorithms ($tol = 10^{-5}$). LMGC\_Bridge\_PR tests. $timeout=50s$}
   \label{fig:NSGS/LocalTol/time/profile-LMGC_Bridge_PR}
 \end{figure}
@@ -2361,7 +2373,7 @@ TODO list
   \centering
   \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalTol/time/profile-LMGC_Cubes_H8_20.pdf}
   \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalTol/time/profile-LMGC_Cubes_H8_20_legend.pdf}
-  \caption{Influence of the tolerance of the local solver $tol_{local}$ in NSGS algorithms ($tol = 10^{-4}$). LMGC\_Cubes\_H20 tests. $timeout=50s$}
+  \caption{Influence of the tolerance of the local solver $tol_{local}$ in NSGS algorithms}
   \label{fig:NSGS/LocalTol/time/profile-Cubes_H8_20}
 \end{figure}
 
@@ -2374,6 +2386,7 @@ TODO list
     \hline
     \hline
     Capsules & $10^{-08}$ & $ 1.072 \cdot 10^{-03} s$ \\
+    KaplasTower & $10^{-08}$ &  $1.024 \cdot 10^{-03} s$ \\
     LMGC\_Bridge\_PR & $10^{-05}$&$1.581 \cdot 10^{-02} s $ \\
     LMGC\_Cubes\_H20 &$10^{-04}$ &$6.271 \cdot 10^{-02} s $\\
     \hline

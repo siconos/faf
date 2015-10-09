@@ -11,7 +11,7 @@ nb_steps = 500
 
 theta = 0.5
 
-freq_display = 10
+freq_display = 100
 ref_radius   = 0.01
 
 RBDY3_NewRotationScheme()
@@ -33,8 +33,8 @@ relax = 1. #0.25
 #       123456789012345678901234567890
 solver='nlgs                          '
 solver_output=3
-freq_output=10
-SiconosNumerics_SetParameters(solver,tol,10,itermax,relax,1,solver_output,10)
+freq_output=1
+SiconosNumerics_SetParameters(solver,tol,10,itermax,relax,1,solver_output,freq_output)
 
 
 
