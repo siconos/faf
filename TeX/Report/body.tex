@@ -2376,21 +2376,26 @@ In this section, we study thein the list of contact that is iterated by the NSGS
 
 \def\widthfigure{0.6}
 \begin{figure}
-  \centering
+  \centering\vspace{-0.5cm}
   \subfigure[Capsules tests (reduced) $tol = 10^{-8},timeout=10s$]{%
     \label{fig:NSGS/Shuffled/time/profile-Capsules}%
     \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/Shuffled/time/profile-Capsules.pdf}
-    \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/Shuffled/time/profile-Capsules_legend.pdf}
-  }
+   \hspace{-1cm} \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/Shuffled/time/profile-Capsules_legend.pdf}
+  }\vspace{-0.5cm}
   \subfigure[KaplasTower $tol = 10^{-8}, timeout=50s$]{%
     \label{fig:NSGS/Shuffled/time/profile-KaplasTower}%
     \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/Shuffled/time/profile-KaplasTower.pdf}
-    \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/Shuffled/time/profile-KaplasTower_legend.pdf}
-  }
+   \hspace{-1cm} \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/Shuffled/time/profile-KaplasTower_legend.pdf}
+  }\vspace{-0.5cm}
+  \subfigure[LMGC\_Bridge\_PR tests. $tol = 10^{-5},timeout=50s$]{%
+    \label{fig:NSGS/Shuffled/time/profile-LMGC_Bridge_PR}%
+    \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/Shuffled/time/profile-LMGC_Bridge_PR.pdf}
+   \hspace{-1cm} \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/Shuffled/time/profile-LMGC_Bridge_PR_legend.pdf}
+  }\vspace{-0.5cm}
   \subfigure[LMGC\_Cubes\_H20 tests. $tol = 10^{-4},timeout=50s$]{%
     \label{fig:NSGS/Shuffled/time/profile-Cubes_H8_20}%
     \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/Shuffled/time/profile-Cubes_H8_20.pdf}
-    \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/Shuffled/time/profile-Cubes_H8_20_legend.pdf}
+   \hspace{-1cm} \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/Shuffled/time/profile-Cubes_H8_20_legend.pdf}
   }
   \caption{Influence of the contacts order in NSGS algorithms.}
 \end{figure}
