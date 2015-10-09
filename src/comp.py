@@ -2319,28 +2319,31 @@ if __name__ == '__main__':
         for problem_filename in problem_filenames:
             print "compute for", problem_filename,"...."
             with h5py.File(problem_filename, 'r+') as fclib_file:
+                no_rank_info=True
                 if (fclib_file['fclib_local']['W'].attrs.get('rank') == None) :
-                    try:
-                        pass
-                        [norm_lsmr, cond_lsmr, max_nz_sv, min_nz_sv, cond, rank, rank_dense, rank_svd, rank_estimate] = norm_cond(problem_filename)
-                        print ( problem_filename, norm_lsmr, cond_lsmr, max_nz_sv, min_nz_sv, cond,  rank_dense, rank_svd, rank_estimate)
-                    except Exception as e :
-                        print e
-                    with h5py.File(problem_filename, 'r+') as fclib_file:
-                        try:
-                            fclib_file['fclib_local']['W'].attrs.create('rank', rank)
-                            fclib_file['fclib_local']['W'].attrs.create('rank_dense', rank_dense)
-                            fclib_file['fclib_local']['W'].attrs.create('rank_svd', rank_svd)
-                            fclib_file['fclib_local']['W'].attrs.create('rank_estimate', rank_estimate)
-                            fclib_file['fclib_local']['W'].attrs.create('cond', cond)
-                            fclib_file['fclib_local']['W'].attrs.create('max_nz_sv', max_nz_sv)
-                            fclib_file['fclib_local']['W'].attrs.create('min_nz_sv', min_nz_sv)
-                            fclib_file['fclib_local']['W'].attrs.create('norm_lsmr', norm_lsmr)
-                            fclib_file['fclib_local']['W'].attrs.create('cond_lsmr', cond_lsmr)
-                        except:
-                            raise RuntimeError("fclib_file['fclib_local']['W'] in trouble")
+                    print "Rank info already not  in", problem_filename
                 else:
                     print "Rank info already in", problem_filename
+                    no_rank_info=False
+            if no_rank_info:
+                try:
+                    [norm_lsmr, cond_lsmr, max_nz_sv, min_nz_sv, cond, rank, rank_dense, rank_svd, rank_estimate] = norm_cond(problem_filename)
+                    print ( problem_filename, norm_lsmr, cond_lsmr, max_nz_sv, min_nz_sv, cond,  rank_dense, rank_svd, rank_estimate)
+                except Exception as e :
+                    print e
+                try:
+                    with h5py.File(problem_filename, 'r+') as fclib_file:
+                        fclib_file['fclib_local']['W'].attrs.create('rank', rank)
+                        fclib_file['fclib_local']['W'].attrs.create('rank_dense', rank_dense)
+                        fclib_file['fclib_local']['W'].attrs.create('rank_svd', rank_svd)
+                        fclib_file['fclib_local']['W'].attrs.create('rank_estimate', rank_estimate)
+                        fclib_file['fclib_local']['W'].attrs.create('cond', cond)
+                        fclib_file['fclib_local']['W'].attrs.create('max_nz_sv', max_nz_sv)
+                        fclib_file['fclib_local']['W'].attrs.create('min_nz_sv', min_nz_sv)
+                        fclib_file['fclib_local']['W'].attrs.create('norm_lsmr', norm_lsmr)
+                        fclib_file['fclib_local']['W'].attrs.create('cond_lsmr', cond_lsmr)
+                except:
+                    raise RuntimeError("fclib_file['fclib_local']['W'] in trouble")
                         
     if adhoc:
         print "script adhoc (convenient moulinette)"
