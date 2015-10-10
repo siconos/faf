@@ -160,6 +160,7 @@ display = False
 display_convergence = False
 display_distrib = False
 display_distrib_var = False
+no_matplot=False
 gnuplot_profile = False
 logscale=False
 gnuplot_distrib = False
@@ -261,7 +262,7 @@ def usage():
 try:
     opts, args = getopt.gnu_getopt(sys.argv[1:], '',
                                    ['help', 'flop', 'iter', 'time', 'verbose=','no-guess',
-                                    'clean', 'display', 'display-convergence',
+                                    'clean', 'display', 'display-convergence','no-matplot',
                                     'files=', 'solvers-exact=', 'solvers=',
                                     'random-sample=', 'max-problems=',
                                     'timeout=', 'maxiter=', 'maxiterls=', 'precision=',
@@ -339,6 +340,8 @@ for o, a in opts:
     elif o == '--domain':
         urange = [float (x) for x in split(a,':')]
         domain = np.arange(urange[0], urange[2], urange[1])
+    elif o == '--no-matplot':
+        no_matplot=True
     elif o == '--solvers':
         user_solvers = split(a, ',')
     elif o == '--solvers-exact':
@@ -1443,8 +1446,8 @@ nsgs_pr.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_project
 
 
 
-local_tol_values = [1e-2,1e-4,1e-6,1e-8,1e-10,1e-12,1e-16]
-local_tol_values = [1e-2,1e-6,1e-10,1e-16]
+local_tol_values = [1e-2,1e-4,1e-6,1e-8,1e-10,1e-12,1e-14,1e-16]
+#local_tol_values = [1e-2,1e-6,1e-10,1e-16]
 nsgs_series=[]
 for local_tol in local_tol_values:
     str1 = "{0:1.0e}".format(local_tol).replace("1e","10\^{")+"}"
@@ -1836,6 +1839,7 @@ all_solvers.extend(VIFixedPointProjection_series)
 all_solvers.extend(VIExtraGrad_series)
 all_solvers.extend(psor_series)
 all_solvers.extend(prox_series)
+all_solvers.extend(nsgs_series)
 
 
 if (os.path.isfile(os.path.join( os.path.dirname(__file__),'adhoc_solverlist.py'))):
@@ -2272,22 +2276,22 @@ if __name__ == '__main__':
                 # all_rhos = [ rhos[solver_name] for solver_name in comp_data ]
                 # g.plot(*all_rhos)
 
+            if not no_matplot:
+                # 5 plot
+                from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure, xlim, ylim, xscale
 
-            # 5 plot
-            from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure, xlim, ylim, xscale
+                #for solver_name in comp_data:
+                for solver in solvers:
+                    solver_name=solver.name()
+                    if logscale:
+                        xscale('log')
 
-            #for solver_name in comp_data:
-            for solver in solvers:
-                solver_name=solver.name()
-                if logscale:
-                    xscale('log')
-
-                if solver_name in comp_data :
-                    plot(domain, rhos[solver_name], label=solver_name)
-                    ylim(0, 1.0001)
-                    xlim(domain[0], domain[-1])
-                    legend(loc=4)
-                grid()
+                    if solver_name in comp_data :
+                        plot(domain, rhos[solver_name], label=solver_name)
+                        ylim(0, 1.0001)
+                        xlim(domain[0], domain[-1])
+                        legend(loc=4)
+                    grid()
 
                 
     if display_convergence:
@@ -2661,4 +2665,5 @@ if __name__ == '__main__':
                 grid()
 
     if display or display_convergence or display_distrib:
-        show()
+        if not no_matplot:
+            show()
