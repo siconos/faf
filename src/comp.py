@@ -15,9 +15,9 @@ from glob import glob
 from itertools import product
 import numpy as np
 import random
-import Siconos.Numerics as N
+import siconos.numerics as N
 N.setNumericsVerbose(0)
-import Siconos.FCLib as FCL
+import siconos.fclib as FCL
 
 from numpy.linalg import matrix_rank,svd
 
