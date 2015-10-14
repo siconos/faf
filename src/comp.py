@@ -1672,13 +1672,23 @@ for i1 in iparam1_values:
             VIFixedPointProjection_series.append(VIFixedPointProjection_solver)
 
 Prox = SiconosSolver(name="PROX-NSN-AC",
-                     gnuplot_name="PPA-NSN-AC  \$ \\\mu=1, \\\sigma=5.0\$",
+                     gnuplot_name="PPA-NSN-AC-GP  \$ \\\mu=1, \\\sigma=5.0\$",
                      API=N.frictionContact3D_proximal,
                      TAG=N.SICONOS_FRICTION_3D_PROX,
                      iparam_iter=7,
                      dparam_err=1,
                      maxiter=maxiter, precision=precision)
 Prox.SolverOptions().internalSolvers.iparam[3] = 1000000
+
+
+Prox_nls = SiconosSolver(name="PROX-NSN-AC-NLS",
+                     gnuplot_name="PPA-NSN-AC  \$ \\\mu=1, \\\sigma=5.0\$",
+                     API=N.frictionContact3D_proximal,
+                     TAG=N.SICONOS_FRICTION_3D_PROX,
+                     iparam_iter=7,
+                     dparam_err=1,
+                     maxiter=maxiter, precision=precision)
+Prox_nls.SolverOptions().internalSolvers.iparam[11] = -1
 
 ProxFB = SiconosSolver(name="PROX-NSN-FB-GP",
                      gnuplot_name="PPA-NSN-FB-GP  \$ \\\mu=1, \\\sigma=5.0\$",
@@ -1699,6 +1709,8 @@ localfb_gp_inprox.iparam[13] = with_mumps
 ProxFB.SolverOptions().internalSolvers = localfb_gp_inprox
 ProxFB.SolverOptions().internalSolvers.iparam[3] = 1000000
 
+
+
 ProxFB_fblsa = SiconosSolver(name="PROX-NSN-FB-FBLSA",
                      gnuplot_name="PPA-NSN-FB-FBLSA  \$ \\\mu=1, \\\sigma=5.0\$",
                      API=N.frictionContact3D_proximal,
@@ -1714,6 +1726,34 @@ localfb_fblsa_inprox.iparam[13] = with_mumps
 ProxFB_fblsa.SolverOptions().internalSolvers = localfb_fblsa_inprox
 ProxFB_fblsa.SolverOptions().internalSolvers.iparam[3] = 1000000
 
+ProxFB_nls = SiconosSolver(name="PROX-NSN-FB-NLS",
+                     gnuplot_name="PPA-NSN-FB-NLS  \$ \\\mu=1, \\\sigma=5.0\$",
+                     API=N.frictionContact3D_proximal,
+                     TAG=N.SICONOS_FRICTION_3D_PROX,
+                     iparam_iter=7,
+                     dparam_err=1,
+                     maxiter=maxiter, precision=precision)
+localfb_nls_inprox = N.SolverOptions(N.SICONOS_FRICTION_3D_LOCALFB)
+localfb_nls_inprox.iparam[3] = 1000000
+localfb_nls_inprox.iparam[11] = -1
+localfb_nls_inprox.iparam[13] = with_mumps
+ProxFB_nls.SolverOptions().internalSolvers = localfb_nls_inprox
+ProxFB_nls.SolverOptions().internalSolvers.iparam[3] = 1000000
+
+ProxNSGS = SiconosSolver(name="PROX-NSGS-NSN-AC",
+                     gnuplot_name="PROX-NSGS-NSN-AC \$ \\\mu=1, \\\sigma=5.0\$",
+                     API=N.frictionContact3D_proximal,
+                     TAG=N.SICONOS_FRICTION_3D_PROX,
+                     iparam_iter=7,
+                     dparam_err=1,
+                     maxiter=maxiter, precision=precision)
+local_nsgs_inprox = N.SolverOptions(N.SICONOS_FRICTION_3D_NSGS)
+ProxNSGS.SolverOptions().internalSolvers = local_nsgs_inprox
+ProxNSGS.SolverOptions().internalSolvers.iparam[0] = 10000
+
+
+
+
 
 
 
@@ -1723,7 +1763,7 @@ prox_series =[]
 for mu in muvalues:
     for sigma in sigmavalues:
         prox_solver  = SiconosSolver(name="PROX-NSN-AC-nu"+str(mu)+"-sigma"+str(sigma),
-                                     gnuplot_name="PPA-NSN-AC  \$ \\\mu="+str(mu)+", \\\sigma="+str(sigma)+"\$",
+                                     gnuplot_name="PPA-NSN-AC-GP  \$ \\\mu="+str(mu)+", \\\sigma="+str(sigma)+"\$",
                                      API=N.frictionContact3D_proximal,
                                      TAG=N.SICONOS_FRICTION_3D_PROX,
                                      iparam_iter=7,
@@ -1824,7 +1864,7 @@ all_solvers.extend( [ psor,
                       TrescaFixedPoint, DeSaxceFixedPoint,
                       VIFixedPointProjection, VIExtraGrad,
                       SOCLCP,
-                      Prox,  ProxFB,
+                      Prox,  Prox_nls, ProxFB,  ProxFB_nls, ProxNSGS,
                       ACLMFixedPoint])
 
 all_solver_unstable = [ProxFB_fblsa]
