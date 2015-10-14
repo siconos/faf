@@ -2093,12 +2093,11 @@ if __name__ == '__main__':
             
     if display:
         print "Tasks will be run for solvers :", [ s._name for s in solvers]
-        
+        filename=None
         with h5py.File('comp.hdf5', 'r') as comp_file:
 
             data = comp_file['data']
             comp_data = data['comp']
-
             # 1 n_problems
             n_problems = 0
 
@@ -2192,7 +2191,7 @@ if __name__ == '__main__':
                         rhos[solver_name][itau] = float(len(np.where( solver_r[solver_name] <= domain[itau] )[0])) / float(n_problems)
 
 
-            if gnuplot_profile :
+            if (gnuplot_profile and (filename != None)) :
                 def write_report(r, filename):
                     with open(filename, "w") as input_file:
                         for k, v in r.items():
@@ -2276,6 +2275,11 @@ if __name__ == '__main__':
                 # all_rhos = [ rhos[solver_name] for solver_name in comp_data ]
                 # g.plot(*all_rhos)
 
+            if (gnuplot_profile and (filename == None)) :
+                print "Warning: no problem corresponding to the required solver"
+                if (os.path.isfile('profile.gp')):
+                    os.remove('profile.gp')
+                
             if not no_matplot:
                 # 5 plot
                 from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure, xlim, ylim, xscale
