@@ -1,42 +1,42 @@
 measure_name=time
-
+#test_name=LMGC_AqueducPR
 
 all: vi nsgs_localtol nsgs_localsolver nsgs_shuffled nsn_solvers prox_solvers opti_solvers comp_solvers
 
-test_name=LMGC_AqueducPR
 domain_value :
+ifeq ($(test_name),LMGC_AqueducPR)
 	echo "10" | cat > domain.txt ;
-	echo "4" | cat >> domain.txt
+	echo "4" | cat >> domain.txt ;
 	echo "5" | cat >> domain.txt
 	echo "3" | cat >> domain.txt
 	echo "100" | cat >> domain.txt
 	echo "100" | cat >> domain.txt
 	echo "5" | cat >> domain.txt
 	echo "5" | cat >> domain.txt
-#test_name=LMGC_Cubes_H8_5
-# domain_value :
-# 	echo "10" | cat > domain.txt ;
-# 	echo "4" | cat >> domain.txt
-# 	echo "5" | cat >> domain.txt
-# 	echo "3" | cat >> domain.txt
-# 	echo "100" | cat >> domain.txt
-# 	echo "100" | cat >> domain.txt
-# 	echo "5" | cat >> domain.txt
-# 	echo "5" | cat >> domain.txt
-
-
-
-#test_name=LMGC_945_SP_Box_PL
-# domain_value :
-# 	echo "10" | cat > domain.txt ;
-# 	echo "4" | cat >> domain.txt
-# 	echo "5" | cat >> domain.txt
-# 	echo "3" | cat >> domain.txt
-# 	echo "100" | cat >> domain.txt
-# 	echo "100" | cat >> domain.txt
-# 	echo "5" | cat >> domain.txt
-# 	echo "5" | cat >> domain.txt
-
+endif
+ifeq ($(test_name),LMGC_Cubes_H8_5)
+	echo "10" | cat > domain.txt ;
+	echo "4" | cat >> domain.txt ;
+	echo "5" | cat >> domain.txt
+	echo "3" | cat >> domain.txt
+	echo "100" | cat >> domain.txt
+	echo "100" | cat >> domain.txt
+	echo "5" | cat >> domain.txt
+	echo "5" | cat >> domain.txt
+endif
+ifeq ($(test_name),LMGC_945_SP_Box_PL)
+	echo "10" | cat > domain.txt ;
+	echo "4" | cat >> domain.txt ;
+	echo "5" | cat >> domain.txt
+	echo "3" | cat >> domain.txt
+	echo "100" | cat >> domain.txt
+	echo "100" | cat >> domain.txt
+	echo "5" | cat >> domain.txt
+	echo "5" | cat >> domain.txt
+endif
+ifeq ($(test_name),)
+echo "enter test_name=[name of the test]"
+endif
 
 #export list="10:4:3" 
 #export sep=":"
