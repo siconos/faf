@@ -1,14 +1,27 @@
-measure_name=time
+#measure_name=time
 #test_name=LMGC_AqueducPR
+#make -f ~/Work/faf/TeX/Makefile -k test_name=LMGC_945_SP_Box_PL measure_name=flpops
 
 all: vi nsgs_localtol nsgs_localsolver nsgs_shuffled nsn_solvers prox_solvers opti_solvers comp_solvers
 
 domain_value :
+ifeq ($(test_name),Capsules)
+	echo "10" | cat > domain.txt ;
+	echo "2" | cat >> domain.txt ;
+	echo "4" | cat >> domain.txt
+	echo "5" | cat >> domain.txt
+	echo "15" | cat >> domain.txt
+	echo "100" | cat >> domain.txt
+	echo "100" | cat >> domain.txt
+	echo "10" | cat >> domain.txt
+	echo "20" | cat >> domain.txt
+endif
 ifeq ($(test_name),LMGC_AqueducPR)
 	echo "10" | cat > domain.txt ;
 	echo "4" | cat >> domain.txt ;
 	echo "5" | cat >> domain.txt
 	echo "3" | cat >> domain.txt
+	echo "100" | cat >> domain.txt
 	echo "100" | cat >> domain.txt
 	echo "100" | cat >> domain.txt
 	echo "5" | cat >> domain.txt
@@ -21,6 +34,7 @@ ifeq ($(test_name),LMGC_Cubes_H8_5)
 	echo "3" | cat >> domain.txt
 	echo "100" | cat >> domain.txt
 	echo "100" | cat >> domain.txt
+	echo "100" | cat >> domain.txt
 	echo "5" | cat >> domain.txt
 	echo "5" | cat >> domain.txt
 endif
@@ -29,6 +43,7 @@ ifeq ($(test_name),LMGC_945_SP_Box_PL)
 	echo "4" | cat >> domain.txt ;
 	echo "5" | cat >> domain.txt
 	echo "3" | cat >> domain.txt
+	echo "100" | cat >> domain.txt
 	echo "100" | cat >> domain.txt
 	echo "100" | cat >> domain.txt
 	echo "5" | cat >> domain.txt
@@ -111,10 +126,22 @@ nsn_solvers: domain_value
 
 
 #PROX solvers
-prox_solvers: save_dir=figure/PROX/${measure_name}
+prox_solvers: save_dir=figure/PROX/InternalSolvers/${measure_name}
 prox_solvers: domain_max=$(shell sed '6q;d' domain.txt)
 prox_solvers: domain_value
-	comp.py --measure=${measure_name} --display --no-matplot --solvers=PROX,'NSN-AlartCurnier'  --domain=1.0:1.0:${domain_max}  --gnuplot-profile --gnuplot-separate-keys
+	comp.py --measure=${measure_name} --display --no-matplot --solvers-exact='NSN-AlartCurnier','NSN-AlartCurnier-NLS','NSN-AlartCurnier-Generated','NSN-AlartCurnier-Generated-NLS','PROX-NSN-AC','PROX-NSN-FB-GP','PROX-NSN-FB-FBLSA'  --domain=1.0:1.0:${domain_max}  --gnuplot-profile --gnuplot-separate-keys
+	gnuplot profile.gp ;
+	pdflatex -interaction=batchmode  profile-${test_name}.tex;
+	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;
+	mkdir -p ${save_dir}
+	mv  profile-${test_name}.pdf ${save_dir}
+	mv  profile-${test_name}_legend.pdf ${save_dir}
+
+#PROX series
+prox_series: save_dir=figure/PROX/Parameters/${measure_name}
+prox_series: domain_max=$(shell sed '6q;d' domain.txt)
+prox_series: domain_value
+	comp.py --measure=${measure_name} --display --no-matplot --solvers='PROX-NSN-AC-'  --domain=1.0:1.0:${domain_max}  --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-${test_name}.tex;
 	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;
@@ -129,7 +156,7 @@ prox_solvers: domain_value
 opti_solvers: save_dir=figure/OPTI/${measure_name}
 opti_solvers: domain_max=$(shell sed '7q;d' domain.txt)
 opti_solvers: domain_value
-	comp.py --measure=${measure_name} --display --no-matplot --solvers-exact='NSGS-PLI','TrescaFixedPoint-NSGS-PLI','SOCLCP-NSGS-PLI','ACLMFixedPoint-SOCLCP-NSGS-PLI' --domain=1.0:0.01:${domain_max} --gnuplot-profile --gnuplot-separate-keys
+	comp.py --measure=${measure_name} --display --no-matplot --solvers-exact='NSGS-PLI','NSGS-PLI-10','TrescaFixedPoint-NSGS-PLI','SOCLCP-NSGS-PLI','ACLMFixedPoint-SOCLCP-NSGS-PLI' --domain=1.0:0.01:${domain_max} --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-${test_name}.tex;
 	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;
@@ -144,7 +171,7 @@ comp_solvers: save_dir=figure/COMP/${measure_name}
 comp_solvers: domain_max=$(shell sed '8q;d' domain.txt)
 
 comp_solvers: domain_value
-	comp.py --measure=${measure_name} --display --no-matplot --solvers-exact='NSGS-AC','TrescaFixedPoint-NSGS-PLI','SOCLCP-NSGS-PLI','ACLMFixedPoint-SOCLCP-NSGS-PLI' --domain=1.0:0.01:${domain_max} --gnuplot-profile --gnuplot-separate-keys
+	comp.py --measure=${measure_name} --display --no-matplot --solvers-exact='NSGS-AC','NSN-AlartCurnier','NSN-AlartCurnier-NLS','PROX-NSN-AC','TrescaFixedPoint-NSGS-PLI','SOCLCP-NSGS-PLI','ACLMFixedPoint-SOCLCP-NSGS-PLI',FixedPoint-VI,ExtraGradient-VI --domain=1.0:0.01:${domain_max} --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-${test_name}.tex;
 	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;
