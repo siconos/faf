@@ -2408,9 +2408,14 @@ In this section, we study thein the list of contact that is iterated by the NSGS
 
 \begin{figure}
   \centering
-  \includegraphics[width=\widthfigure\textwidth]{../figure/profile-Capsules-PSOR-1_15-time.pdf}
-  \caption{Effect of relation coefficient $\omega$ in PSOR-AC algorithm( $tol = 10^{-8}, tol_{local} = 10^{-16}$). Capsules tests. $timeout=10s$}
-  \label{fig:profile-Capsules-PSOR-1_15-time}
+  \subfigure[Capsules tests (reduced) $tol = 10^{-8},timeout=100s$]{\includegraphics[width=\widthfigure\textwidth]{../figure/PSOR/flpops/profile-Capsules.pdf}\hspace{-3cm} 
+    \includegraphics[width=\widthfigure\textwidth]{../figure/PSOR/flpops//profile-Capsules_legend.pdf}
+  }
+ \subfigure[KaplasTower $tol = 10^{-8}, timeout=100s$]{\includegraphics[width=\widthfigure\textwidth]{../figure/PSOR/flpops/profile-KaplasTower.pdf}\hspace{-3cm} 
+    \includegraphics[width=\widthfigure\textwidth]{../figure/PSOR/flpops//profile-KaplasTower_legend.pdf}
+  }
+  \caption{Effect of relation coefficient $\omega$ in PSOR-AC algorithm($tol_{local} = 10^{-16}$).}
+  \label{fig:PSOR/flpops}
 \end{figure}
 
 In Figure~\ref{fig:profile-Capsules-PSOR-1_15-time}, we study the effect of the relaxation parameter $\omega$ ranging from $[0.5,1.5]$ on the computational time.  Two conclusions can be drawn a) with increasing values of $\omega$, the PSOR algorithm increases its convergence rate as we van observe for $\tau=1$ but b) the robustness of the algorithm is weaken. Indeed, $\tau=15$, we observe that the performance profile is flat and the number of problems solved is higher for valued of $\omega$ around $1$.
@@ -2429,9 +2434,13 @@ To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$
 
 \begin{figure}
   \centering
-  \includegraphics[width=\widthfigure\textwidth]{../figure/profile-Capsules-reduced-PPA-NSN-AC-1_10-time.pdf}
-  \includegraphics[width=\widthfigure\textwidth]{../figure/profile-Capsules-reduced-PPA-NSN-AC-1_10-time-bis.pdf}
-   \caption{Effect of the step-size parameter $\sigma$, $\mu$ in PPA-NSN-AC algorithm( $tol = 10^{-8}$). Capsules tests. $timeout=10s$}
+  \subfigure{\includegraphics[width=\widthfigure\textwidth]{../figure/PROX/Parameters/flpops//profile-Capsules.pdf} \hspace{-3cm} 
+    \includegraphics[width=\widthfigure\textwidth]{../figure/PROX/Parameters/flpops//profile-Capsules_legend.pdf}
+  }
+  \subfigure{\includegraphics[width=\widthfigure\textwidth]{../figure/PROX/Parameters/flpops/profile-KaplasTower.pdf} \hspace{-3cm} 
+    \includegraphics[width=\widthfigure\textwidth]{../figure/PROX/Parameters/flpops//profile-KaplasTower_legend.pdf}
+  }
+  \caption{Effect of the step-size parameter $\sigma$, $\mu$ in PPA-NSN-AC algorithm}
   \label{fig:profile-Capsules-reduced-PPA-NSN-AC-1_10-time}
 \end{figure}
 
@@ -2444,35 +2453,35 @@ To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$
 \section{Comparison of different families of solvers.}
 
 
-\subsection{Rigid bodies applications}
-\begin{figure}
-  \centering
-  \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Bridge_PR-time_0_100.pdf}
-  \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Bridge_PR_legend-time_0_100.pdf}
-  \caption{Bridge\_PR tests. $timeout=50s, tol = 10^{[-4} $ performance (time). }
-  \label{fig:profile-LMGC_Bridge_PR-time}
-\end{figure}
+% \subsection{Rigid bodies applications}
+% \begin{figure}
+%   \centering
+%   \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Bridge_PR-time_0_100.pdf}
+%   \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Bridge_PR_legend-time_0_100.pdf}
+%   \caption{Bridge\_PR tests. $timeout=50s, tol = 10^{[-4} $ performance (time). }
+%   \label{fig:profile-LMGC_Bridge_PR-time}
+% \end{figure}
 
 
 
-\subsection{Finite Element applications}
+% \subsection{Finite Element applications}
 
-\begin{figure}
-  \centering
-  \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Cubes_H8_5-time_0_100.pdf}
-  \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Cubes_H8_5-time_0_5000.pdf}
-  \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Cubes_H8_5_legend-time.pdf}
-  \caption{Cubes H8\_5 tests. $timeout=50s $ performance (time). }
-  \label{fig:profile-LMGC_Cubes_H8_5-time}
-\end{figure}
+% \begin{figure}
+%   \centering
+%   \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Cubes_H8_5-time_0_100.pdf}
+%   \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Cubes_H8_5-time_0_5000.pdf}
+%   \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Cubes_H8_5_legend-time.pdf}
+%   \caption{Cubes H8\_5 tests. $timeout=50s $ performance (time). }
+%   \label{fig:profile-LMGC_Cubes_H8_5-time}
+% \end{figure}
 
-\begin{figure}
-  \centering
-  \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Cubes_H8_20-time_0_100.pdf}
-  \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Cubes_H8_20_legend-time.pdf}
-  \caption{Cubes H8\_20 tests. $timeout=50s $ performance (time). }
-  \label{fig:profile-LMGC_Cubes_H8_20-time}
-\end{figure}
+% \begin{figure}
+%   \centering
+%   \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Cubes_H8_20-time_0_100.pdf}
+%   \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Cubes_H8_20_legend-time.pdf}
+%   \caption{Cubes H8\_20 tests. $timeout=50s $ performance (time). }
+%   \label{fig:profile-LMGC_Cubes_H8_20-time}
+% \end{figure}
 
 
 \subsection{CPU and memory efforts for a given tolerance}
