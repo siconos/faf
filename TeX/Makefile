@@ -41,6 +41,18 @@ ifeq ($(test_name),LMGC_AqueducPR)
 	echo "5" | cat >> domain.txt
 	echo "5" | cat >> domain.txt
 endif
+ifeq ($(test_name),LMGC_Bridge_PR)
+	echo "10" | cat > domain.txt ;
+	echo "4" | cat >> domain.txt ;
+	echo "5" | cat >> domain.txt
+	echo "3" | cat >> domain.txt
+	echo "5" | cat >> domain.txt
+	echo "100" | cat >> domain.txt
+	echo "100" | cat >> domain.txt
+	echo "100" | cat >> domain.txt
+	echo "5" | cat >> domain.txt
+	echo "5" | cat >> domain.txt
+endif
 ifeq ($(test_name),LMGC_Cubes_H8_5)
 	echo "10" | cat > domain.txt ;
 	echo "4" | cat >> domain.txt ;
