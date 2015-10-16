@@ -57,7 +57,7 @@ ifeq ($(test_name),LMGC_Bridge_PR)
 	echo "5" | cat >> domain.txt
 	echo "100" | cat >> domain.txt # comp large
 endif
-ifeq ($(test_name),LMGC_Cubes_H8_5)
+ifeq ($(test_name),LMGC_Cubes_H8)
 	echo "10" | cat > domain.txt ;
 	echo "4" | cat >> domain.txt ;
 	echo "5" | cat >> domain.txt

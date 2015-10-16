@@ -2241,6 +2241,22 @@ if __name__ == '__main__':
                 out_data=np.empty([len(domain),len(comp_data)+1])
                 write_report(rhos,'rhos.txt')
                 write_report(solver_r,'solver_r.txt')
+                def long_substr(data):
+                    substr = ''
+                    if len(data) > 1 and len(data[0]) > 0:
+                        for i in range(len(data[0])):
+                            for j in range(len(data[0])-i+1):
+                                if j > len(substr) and is_substr(data[0][i:i+j], data):
+                                    substr = data[0][i:i+j]
+                    return substr
+
+                def is_substr(find, data):
+                    if len(data) < 1 and len(find) < 1:
+                        return False
+                    for i in range(len(data)):
+                        if find not in data[i]:
+                            return False
+                    return True
 
 
                 with open('profile.gp','w') as gp:
@@ -2248,7 +2264,12 @@ if __name__ == '__main__':
                     all_rhos = [ domain ] + [ rhos[solver.name()] for solver in filter(lambda s: s._name in comp_data, solvers) ]
                     np.savetxt('profile.dat', np.matrix(all_rhos).transpose())
                     gp.write('resultfile = "profile.dat"\n')
-                    gp.write('basename="profile-{0}"\n'.format(filename.partition('-')[0]))
+                    test_name = long_substr(filenames).partition('-')[0]
+                    if test_name.endswith('_'):
+                        test_name  = test_name[:-1]
+                    gp.write('basename="profile-{0}"\n'.format(test_name))
+                    #print filename.partition('-')[0]
+                    print test_name
                     gp.write('\n')
                     gp.write('term_choice_tikz=1\n')
                     gp.write('if (term_choice_tikz == 1) \\\n')
@@ -2266,7 +2287,7 @@ if __name__ == '__main__':
                     gp.write('set ylabel \'$\\rho(\\tau)$ \' \n')
                     maxrows=len(solvers)/2+1
                     gp.write('set key below right vertical maxrows {0}\n'.format(maxrows))
-                    print filename.partition('-')[0]
+                   
                     if logscale:
                         gp.write('set logscale x\n')
                         gp.write('set xlabel \'$\\tau$ ({0}) (logscale)\' \n'.format(measure_name))
