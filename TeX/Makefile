@@ -2,7 +2,7 @@
 #test_name=LMGC_AqueducPR
 #make -f ~/Work/faf/TeX/Makefile -k test_name=LMGC_945_SP_Box_PL measure_name=flpops
 
-all: vi nsgs_localtol nsgs_localsolver nsgs_shuffled psor_solvers nsn_solvers prox_solvers prox_series opti_solvers comp_solvers
+all: vi nsgs_localtol nsgs_localsolver nsgs_shuffled psor_solvers nsn_solvers prox_solvers prox_series opti_solvers comp_solvers comp_solvers_large
 
 domain_value :
 ifeq ($(test_name),Capsules)
@@ -16,6 +16,7 @@ ifeq ($(test_name),Capsules)
 	echo "100" | cat >> domain.txt
 	echo "10" | cat >> domain.txt
 	echo "20" | cat >> domain.txt
+	echo "100" | cat >> domain.txt # comp large
 endif
 ifeq ($(test_name),KaplasTower)
 	echo "10" | cat > domain.txt ;
@@ -28,6 +29,7 @@ ifeq ($(test_name),KaplasTower)
 	echo "100" | cat >> domain.txt
 	echo "10" | cat >> domain.txt
 	echo "20" | cat >> domain.txt
+	echo "100" | cat >> domain.txt # comp large
 endif
 ifeq ($(test_name),LMGC_AqueducPR)
 	echo "10" | cat > domain.txt ;
@@ -40,6 +42,7 @@ ifeq ($(test_name),LMGC_AqueducPR)
 	echo "100" | cat >> domain.txt
 	echo "5" | cat >> domain.txt
 	echo "5" | cat >> domain.txt
+	echo "100" | cat >> domain.txt # comp large
 endif
 ifeq ($(test_name),LMGC_Bridge_PR)
 	echo "10" | cat > domain.txt ;
@@ -52,6 +55,7 @@ ifeq ($(test_name),LMGC_Bridge_PR)
 	echo "100" | cat >> domain.txt
 	echo "5" | cat >> domain.txt
 	echo "5" | cat >> domain.txt
+	echo "100" | cat >> domain.txt # comp large
 endif
 ifeq ($(test_name),LMGC_Cubes_H8_5)
 	echo "10" | cat > domain.txt ;
@@ -64,30 +68,33 @@ ifeq ($(test_name),LMGC_Cubes_H8_5)
 	echo "100" | cat >> domain.txt
 	echo "5" | cat >> domain.txt
 	echo "5" | cat >> domain.txt
+	echo "100" | cat >> domain.txt # comp large
 endif
 ifeq ($(test_name),LMGC_945_SP_Box_PL)
 	echo "10" | cat > domain.txt ;
 	echo "4" | cat >> domain.txt ;
-	echo "5" | cat >> domain.txt
+	echo "10" | cat >> domain.txt ; # NSGS Local Tol 5
 	echo "3" | cat >> domain.txt
-	echo "5" | cat >> domain.txt
+	echo "10" | cat >> domain.txt ; # PSOR
 	echo "100" | cat >> domain.txt
 	echo "100" | cat >> domain.txt
 	echo "100" | cat >> domain.txt
 	echo "5" | cat >> domain.txt
-	echo "5" | cat >> domain.txt
+	echo "15" | cat >> domain.txt # comp zoom
+	echo "100" | cat >> domain.txt # comp large
 endif
 ifeq ($(test_name),LMGC_100_PR_PerioBox)
-	echo "10" | cat > domain.txt ;
+	echo "4" | cat > domain.txt ;
 	echo "4" | cat >> domain.txt ;
 	echo "5" | cat >> domain.txt
 	echo "3" | cat >> domain.txt
+	echo "15" | cat >> domain.txt  # PSOR
+	echo "20" | cat >> domain.txt # NSN
+	echo "20" | cat >> domain.txt # PROX
+	echo "20" | cat >> domain.txt # PROX 
 	echo "5" | cat >> domain.txt
-	echo "100" | cat >> domain.txt
-	echo "100" | cat >> domain.txt
-	echo "100" | cat >> domain.txt
 	echo "5" | cat >> domain.txt
-	echo "5" | cat >> domain.txt
+	echo "100" | cat >> domain.txt # comp large
 endif
 
 ifeq ($(test_name),)
@@ -219,10 +226,21 @@ opti_solvers: domain_value
 
 #COMP_solvers (best solvers in each families)
 
-comp_solvers: save_dir=figure/COMP/${measure_name}
+comp_solvers: save_dir=figure/COMP/zoom/${measure_name}
 comp_solvers: domain_max=$(shell sed '10q;d' domain.txt)
 
 comp_solvers: domain_value
+	comp.py --measure=${measure_name} --display --no-matplot --solvers-exact='NSGS-AC','NSN-AlartCurnier','NSN-AlartCurnier-NLS','PROX-NSN-AC','TrescaFixedPoint-NSGS-PLI','SOCLCP-NSGS-PLI','ACLMFixedPoint-SOCLCP-NSGS-PLI',FixedPoint-VI,ExtraGradient-VI --domain=1.0:0.01:${domain_max} --gnuplot-profile --gnuplot-separate-keys
+	gnuplot profile.gp ;
+	pdflatex -interaction=batchmode  profile-${test_name}.tex;
+	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;
+	mkdir -p ${save_dir}
+	mv  profile-${test_name}.pdf ${save_dir}
+	mv  profile-${test_name}_legend.pdf ${save_dir}
+
+comp_solvers_large: save_dir=figure/COMP/large/${measure_name}
+comp_solvers_large: domain_max=$(shell sed '11q;d' domain.txt)
+comp_solvers_large: domain_value
 	comp.py --measure=${measure_name} --display --no-matplot --solvers-exact='NSGS-AC','NSN-AlartCurnier','NSN-AlartCurnier-NLS','PROX-NSN-AC','TrescaFixedPoint-NSGS-PLI','SOCLCP-NSGS-PLI','ACLMFixedPoint-SOCLCP-NSGS-PLI',FixedPoint-VI,ExtraGradient-VI --domain=1.0:0.01:${domain_max} --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-${test_name}.tex;
