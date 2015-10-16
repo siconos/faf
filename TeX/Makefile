@@ -77,6 +77,19 @@ ifeq ($(test_name),LMGC_945_SP_Box_PL)
 	echo "5" | cat >> domain.txt
 	echo "5" | cat >> domain.txt
 endif
+ifeq ($(test_name),LMGC_100_PR_PerioBox)
+	echo "10" | cat > domain.txt ;
+	echo "4" | cat >> domain.txt ;
+	echo "5" | cat >> domain.txt
+	echo "3" | cat >> domain.txt
+	echo "5" | cat >> domain.txt
+	echo "100" | cat >> domain.txt
+	echo "100" | cat >> domain.txt
+	echo "100" | cat >> domain.txt
+	echo "5" | cat >> domain.txt
+	echo "5" | cat >> domain.txt
+endif
+
 ifeq ($(test_name),)
 echo "enter test_name=[name of the test]"
 endif
