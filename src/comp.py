@@ -743,7 +743,6 @@ class Caller():
             sproblem = solver.read_fclib_format(filename)
             problem = read_fclib_format(filename)[1]
         else:
-
             problem = read_fclib_format(filename)[1]
             sproblem = problem
 
@@ -879,7 +878,7 @@ class Caller():
             # get first guess or set guess to zero
             reactions, velocities = solver.guess(filename)
 
-            _, guess_err = N.FrictionContact3D_compute_error(read_fclib_format(filename)[1],
+            _, guess_err = N.fc3d_compute_error(read_fclib_format(filename)[1],
                                                              reactions, velocities, precision, solver.SolverOptions())
 
 #            print "guess error:", guess_err
@@ -1107,7 +1106,7 @@ class SiconosWrappedSolver(SiconosSolver):
 #
 nsn_acSTD = SiconosSolver(name="NSN-AlartCurnier",
                            gnuplot_name="NSN-AC",
-                           API=N.frictionContact3D_nonsmooth_Newton_AlartCurnier,
+                           API=N.fc3d_nonsmooth_Newton_AlartCurnier,
                            TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                            iparam_iter=1,
                            dparam_err=1,
@@ -1121,7 +1120,7 @@ nsn_acSTD.SolverOptions().iparam[3] = 10000000
 
 nsn_acSTD_nls = SiconosSolver(name="NSN-AlartCurnier-NLS",
                                gnuplot_name="NSN-AC-NLS",
-                               API=N.frictionContact3D_nonsmooth_Newton_AlartCurnier,
+                               API=N.fc3d_nonsmooth_Newton_AlartCurnier,
                                TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                iparam_iter=1,
                                dparam_err=1,
@@ -1135,7 +1134,7 @@ nsn_acSTD_nls.SolverOptions().iparam[3] = 10000000
 
 nsn_acJeanMoreau = SiconosSolver(name="NSN-JeanMoreau",
                                   gnuplot_name="NSN-JM",
-                                  API=N.frictionContact3D_nonsmooth_Newton_AlartCurnier,
+                                  API=N.fc3d_nonsmooth_Newton_AlartCurnier,
                                   TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                   iparam_iter=1,
                                   dparam_err=1,
@@ -1149,7 +1148,7 @@ nsn_acJeanMoreau.SolverOptions().iparam[3] = 10000000
 
 nsn_acJeanMoreau_nls = SiconosSolver(name="NSN-JeanMoreau-NLS",
                                       gnuplot_name="NSN-JM-NLS",
-                                      API=N.frictionContact3D_nonsmooth_Newton_AlartCurnier,
+                                      API=N.fc3d_nonsmooth_Newton_AlartCurnier,
                                       TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                       iparam_iter=1,
                                       dparam_err=1,
@@ -1163,7 +1162,7 @@ nsn_acJeanMoreau_nls.SolverOptions().iparam[3] = 10000000
 
 nsn_acSTDGenerated = SiconosSolver(name="NSN-AlartCurnier-Generated",
                                     gnuplot_name="NSN-AC-Generated",
-                                    API=N.frictionContact3D_nonsmooth_Newton_AlartCurnier,
+                                    API=N.fc3d_nonsmooth_Newton_AlartCurnier,
                                     TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                     iparam_iter=1,
                                     dparam_err=1,
@@ -1177,7 +1176,7 @@ nsn_acSTDGenerated.SolverOptions().iparam[3] = 10000000
 
 nsn_acSTDGenerated_nls = SiconosSolver(name="NSN-AlartCurnier-Generated-NLS",
                                         gnuplot_name="NSN-AC-Generated-NLS",
-                                        API=N.frictionContact3D_nonsmooth_Newton_AlartCurnier,
+                                        API=N.fc3d_nonsmooth_Newton_AlartCurnier,
                                         TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                         iparam_iter=1,
                                         dparam_err=1,
@@ -1191,7 +1190,7 @@ nsn_acSTDGenerated_nls.SolverOptions().iparam[3] = 10000000
 
 nsn_acJeanMoreauGenerated = SiconosSolver(name="NSN-JeanMoreau-Generated",
                                            gnuplot_name="NSN-JM-Generated",
-                                           API=N.frictionContact3D_nonsmooth_Newton_AlartCurnier,
+                                           API=N.fc3d_nonsmooth_Newton_AlartCurnier,
                                            TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                            iparam_iter=1,
                                            dparam_err=1,
@@ -1209,7 +1208,7 @@ if with_mumps:
     # reference
     nsn_acJeanMoreauGenerated_lusol = SiconosSolver(name="NSN-JeanMoreau-Generated-lusol",
                                                      gnuplot_name="NSN-JM-Generated-LUSOL",
-                                                     API=N.frictionContact3D_nonsmooth_Newton_AlartCurnier,
+                                                     API=N.fc3d_nonsmooth_Newton_AlartCurnier,
                                                      TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                                      iparam_iter=1,
                                                      dparam_err=1,
@@ -1225,7 +1224,7 @@ if with_mumps:
 
 nsn_acJeanMoreauGenerated_nls = SiconosSolver(name="NSN-JeanMoreau-Generated-NLS",
                                                gnuplot_name="NSN-JM-Generated-NLS",
-                                               API=N.frictionContact3D_nonsmooth_Newton_AlartCurnier,
+                                               API=N.fc3d_nonsmooth_Newton_AlartCurnier,
                                                TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                                iparam_iter=1,
                                                dparam_err=1,
@@ -1241,7 +1240,7 @@ nsn_acJeanMoreauGenerated_nls_lusol=None
 if with_mumps:
     nsn_acJeanMoreauGenerated_nls_lusol = SiconosSolver(name="NSN-JeanMoreau-Generated-NLS-lusol",
                                                          gnuplot_name="NSN-JM-Generated-NLS-LUSOL",
-                                                         API=N.frictionContact3D_nonsmooth_Newton_AlartCurnier,
+                                                         API=N.fc3d_nonsmooth_Newton_AlartCurnier,
                                                          TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                                          iparam_iter=1,
                                                          dparam_err=1,
@@ -1255,7 +1254,7 @@ if with_mumps:
 
 nsn_fb_gp = SiconosSolver(name="NSN-FischerBurmeister-GP",
                            gnuplot_name="NSN-FB-GP",
-                           API=N.frictionContact3D_nonsmooth_Newton_FischerBurmeister,
+                           API=N.fc3d_nonsmooth_Newton_FischerBurmeister,
                            TAG=N.SICONOS_FRICTION_3D_NSN_FB,
                            iparam_iter=1,
                            dparam_err=1,
@@ -1270,7 +1269,7 @@ nsn_fb_gp_lusol = None
 if with_mumps:
     nsn_fb_gp_lusol = SiconosSolver(name="NSN-FischerBurmeister-GP-lusol",
                                      gnuplot_name="NSN-FB-GP-LUSOL",
-                                     API=N.frictionContact3D_nonsmooth_Newton_FischerBurmeister,
+                                     API=N.fc3d_nonsmooth_Newton_FischerBurmeister,
                                      TAG=N.SICONOS_FRICTION_3D_NSN_FB,
                                      iparam_iter=1,
                                      dparam_err=1,
@@ -1283,7 +1282,7 @@ if with_mumps:
 
 nsn_fb_fblsa = SiconosSolver(name="NSN-FischerBurmeister-FBLSA",
                               gnuplot_name="NSN-FB-FBLSA",
-                              API=N.frictionContact3D_nonsmooth_Newton_FischerBurmeister,
+                              API=N.fc3d_nonsmooth_Newton_FischerBurmeister,
                               TAG=N.SICONOS_FRICTION_3D_NSN_FB,
                               iparam_iter=1,
                               dparam_err=1,
@@ -1296,7 +1295,7 @@ nsn_fb_fblsa.SolverOptions().iparam[13] = with_mumps
 
 nsn_fb_nls = SiconosSolver(name="NSN-FischerBurmeister-NLS",
                             gnuplot_name="NSN-FB-NLS",
-                            API=N.frictionContact3D_nonsmooth_Newton_FischerBurmeister,
+                            API=N.fc3d_nonsmooth_Newton_FischerBurmeister,
                             TAG=N.SICONOS_FRICTION_3D_NSN_FB,
                             iparam_iter=1,
                             dparam_err=1,
@@ -1311,7 +1310,7 @@ nsn_fb_nls_lusol = None
 if with_mumps:
     nsn_fb_nls_lusol = SiconosSolver(name="NSN-FischerBurmeister-NLS-lusol",
                                       gnuplot_name="NSN-FB-NLS-LUSOL",
-                                      API=N.frictionContact3D_nonsmooth_Newton_FischerBurmeister,
+                                      API=N.fc3d_nonsmooth_Newton_FischerBurmeister,
                                       TAG=N.SICONOS_FRICTION_3D_NSN_FB,
                                       iparam_iter=1,
                                       dparam_err=1,
@@ -1324,7 +1323,7 @@ if with_mumps:
 
 
 hnsn_ac = SiconosHybridSolver(name = "HLocalAlartCurnier",
-                               API=N.frictionContact3D_nonsmooth_Newton_AlartCurnier,
+                               API=N.fc3d_nonsmooth_Newton_AlartCurnier,
                                TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                iparam_iter=1,
                                dparam_err=1,
@@ -1335,7 +1334,7 @@ hnsn_ac.SolverOptions().iparam[3] = 10000000
 
 
 nsgs = SiconosSolver(name="NSGS-AC",
-                     API=N.frictionContact3D_nsgs,
+                     API=N.fc3d_nsgs,
                      TAG=N.SICONOS_FRICTION_3D_NSGS,
                      iparam_iter=7,
                      dparam_err=1,
@@ -1345,7 +1344,7 @@ nsgs.SolverOptions().internalSolvers.iparam[10]=0
 
 
 nsgs_ac_gp = SiconosSolver(name="NSGS-AC-GP",
-                     API=N.frictionContact3D_nsgs,
+                     API=N.fc3d_nsgs,
                      TAG=N.SICONOS_FRICTION_3D_NSGS,
                      iparam_iter=7,
                      dparam_err=1,
@@ -1354,7 +1353,7 @@ nsgs_ac_gp.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_Damp
 nsgs_ac_gp.SolverOptions().internalSolvers.iparam[10]=0
 
 nsgs_jm = SiconosSolver(name="NSGS-JM",
-                     API=N.frictionContact3D_nsgs,
+                     API=N.fc3d_nsgs,
                      TAG=N.SICONOS_FRICTION_3D_NSGS,
                      iparam_iter=7,
                      dparam_err=1,
@@ -1364,7 +1363,7 @@ nsgs_jm.SolverOptions().internalSolvers.iparam[10]=1
 
 
 nsgs_jm_gp = SiconosSolver(name="NSGS-JM-GP",
-                     API=N.frictionContact3D_nsgs,
+                     API=N.fc3d_nsgs,
                      TAG=N.SICONOS_FRICTION_3D_NSGS,
                      iparam_iter=7,
                      dparam_err=1,
@@ -1375,7 +1374,7 @@ nsgs_jm_gp.SolverOptions().internalSolvers.iparam[10]=1
 
 snsgs = SiconosSolver(name="NSGS-AC-GP-Shuffled",
                       gnuplot_name="NSGS-AC-GP Shuffled",
-                      API=N.frictionContact3D_nsgs,
+                      API=N.fc3d_nsgs,
                       TAG=N.SICONOS_FRICTION_3D_NSGS,
                       iparam_iter=7,
                       dparam_err=1,
@@ -1385,7 +1384,7 @@ snsgs.SolverOptions().iparam[5] = 1
 
 nsgs_sfull = SiconosSolver(name="NSGS-AC-GP-Shuffled-full",
                            gnuplot_name="NSGS-AC-GP Fully shuffled",
-                           API=N.frictionContact3D_nsgs,
+                           API=N.fc3d_nsgs,
                            TAG=N.SICONOS_FRICTION_3D_NSGS,
                            iparam_iter=7,
                            dparam_err=1,
@@ -1397,7 +1396,7 @@ nsgs_sfull.SolverOptions().iparam[5] = 2
 
 nsgs_pli = SiconosSolver(name="NSGS-PLI",
                          gnuplot_name="NSGS-FP-VI-UPK iter=100",
-                         API=N.frictionContact3D_nsgs,
+                         API=N.fc3d_nsgs,
                          TAG=N.SICONOS_FRICTION_3D_NSGS,
                          iparam_iter=7,
                          dparam_err=1,
@@ -1407,7 +1406,7 @@ nsgs_pli.SolverOptions().internalSolvers.iparam[0] = 100
 
 nsgs_pli_10 = SiconosSolver(name="NSGS-PLI-10",
                             gnuplot_name="NSGS-FP-VI-UPK iter=10",
-                            API=N.frictionContact3D_nsgs,
+                            API=N.fc3d_nsgs,
                             TAG=N.SICONOS_FRICTION_3D_NSGS,
                             iparam_iter=7,
                             dparam_err=1,
@@ -1418,7 +1417,7 @@ nsgs_pli_10.SolverOptions().internalSolvers.iparam[0] = 10
 
 nsgs_p = SiconosSolver(name="NSGS-P",
                        gnuplot_name="NSGS-FP-DS-One",
-                       API=N.frictionContact3D_nsgs,
+                       API=N.fc3d_nsgs,
                        TAG=N.SICONOS_FRICTION_3D_NSGS,
                        iparam_iter=7,
                        dparam_err=1,
@@ -1427,7 +1426,7 @@ nsgs_p.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_Projecti
 
 nsgs_pd = SiconosSolver(name="NSGS-PD",
                         gnuplot_name="NSGS-FP-DS-One  D",
-                        API=N.frictionContact3D_nsgs,
+                        API=N.fc3d_nsgs,
                         TAG=N.SICONOS_FRICTION_3D_NSGS,
                         iparam_iter=7,
                         dparam_err=1,
@@ -1436,7 +1435,7 @@ nsgs_pd.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_Project
 
 nsgs_pr = SiconosSolver(name="NSGS-PR",
                         gnuplot_name="NSGS-FP-DS-One  R",
-                        API=N.frictionContact3D_nsgs,
+                        API=N.fc3d_nsgs,
                         TAG=N.SICONOS_FRICTION_3D_NSGS,
                         iparam_iter=7,
                         dparam_err=1,
@@ -1453,7 +1452,7 @@ for local_tol in local_tol_values:
     str1 = "{0:1.0e}".format(local_tol).replace("1e","10\^{")+"}"
     nsgs_solver = SiconosSolver(name="NSGS-AC-GP-"+str(local_tol),
                                 gnuplot_name="NSGS-AC-GP \$tol\_{local}="+str1+"\$",
-                                API=N.frictionContact3D_nsgs,
+                                API=N.fc3d_nsgs,
                                 TAG=N.SICONOS_FRICTION_3D_NSGS,
                                 iparam_iter=7,
                                 dparam_err=1,
@@ -1465,7 +1464,7 @@ for local_tol in local_tol_values:
     str1 = "{0:1.0e}".format(local_tol).replace("1e","10\^{")+"}"
     nsgs_solver = SiconosSolver(name="NSGS-PLI-"+str(local_tol),
                                 gnuplot_name="NSGS-FP-VI-UPK \$tol\_{local}="+str1+"\$",
-                                API=N.frictionContact3D_nsgs,
+                                API=N.fc3d_nsgs,
                                 TAG=N.SICONOS_FRICTION_3D_NSGS,
                                 iparam_iter=7,
                                 dparam_err=1,
@@ -1480,7 +1479,7 @@ snsgs_series=[]
 for i in range(10):
     snsgs_solver = SiconosSolver(name="NSGS-AC-Shuffled-"+str(i),
                                  gnuplot_name="NSGS-AC-GP Shuffled "+str(i),
-                                 API=N.frictionContact3D_nsgs,
+                                 API=N.fc3d_nsgs,
                                  TAG=N.SICONOS_FRICTION_3D_NSGS,
                                  iparam_iter=7,
                                  dparam_err=1,
@@ -1495,7 +1494,7 @@ for i in range(10):
  
 # only dense
 nsgsv = SiconosSolver(name="NSGS-Velocity",
-                      API=N.frictionContact3D_nsgs_velocity,
+                      API=N.fc3d_nsgs_velocity,
                       TAG=N.SICONOS_FRICTION_3D_NSGSV,
                       iparam_iter=7,
                       dparam_err=1,
@@ -1505,7 +1504,7 @@ nsgsv = SiconosSolver(name="NSGS-Velocity",
 omega=1.5
 psor = SiconosSolver(name="PSOR-AC",
                      gnuplot_name="PSOR-AC",
-                     API=N.frictionContact3D_nsgs,
+                     API=N.fc3d_nsgs,
                      TAG=N.SICONOS_FRICTION_3D_NSGS,
                      iparam_iter=7,
                      dparam_err=1,
@@ -1518,7 +1517,7 @@ psor_series=[]
 for omega in omega_values:
     psor_solver = SiconosSolver(name="PSOR-AC-"+str(omega),
                                 gnuplot_name="PSOR-AC \$\\\omega="+str(omega)+"\$",
-                                API=N.frictionContact3D_nsgs,
+                                API=N.fc3d_nsgs,
                                 TAG=N.SICONOS_FRICTION_3D_NSGS,
                                 iparam_iter=7,
                                 dparam_err=1,
@@ -1528,49 +1527,49 @@ for omega in omega_values:
     psor_series.append(psor_solver)
 
 TrescaFixedPoint = SiconosSolver(name="TrescaFixedPoint-NSGS-PLI",
-                                 API=N.frictionContact3D_TrescaFixedPoint,
+                                 API=N.fc3d_TrescaFixedPoint,
                                  TAG=N.SICONOS_FRICTION_3D_TFP,
                                  iparam_iter=7,
                                  dparam_err=1,
                                  maxiter=maxiter, precision=precision)
 
 ACLMFixedPoint = SiconosSolver(name="ACLMFixedPoint-SOCLCP-NSGS-PLI",
-                               API=N.frictionContact3D_ACLMFixedPoint,
+                               API=N.fc3d_ACLMFixedPoint,
                                TAG=N.SICONOS_FRICTION_3D_ACLMFP,
                                iparam_iter=7,
                                dparam_err=1,
                                maxiter=maxiter, precision=precision)
 
 SOCLCP = SiconosSolver(name="SOCLCP-NSGS-PLI",
-                       API=N.frictionContact3D_SOCLCP,
+                       API=N.fc3d_SOCLCP,
                        TAG=N.SICONOS_FRICTION_3D_SOCLCP,
                        iparam_iter=7,
                        dparam_err=1,
                        maxiter=maxiter, precision=precision)
 
 DeSaxceFixedPoint = SiconosSolver(name="FixedPoint-DeSaxce",
-                                  API=N.frictionContact3D_DeSaxceFixedPoint,
+                                  API=N.fc3d_DeSaxceFixedPoint,
                                   TAG=N.SICONOS_FRICTION_3D_DSFP,
                                   iparam_iter=7,
                                   dparam_err=1,
                                   maxiter=maxiter, precision=precision)
 
 ExtraGrad = SiconosSolver(name="ExtraGradient",
-                          API=N.frictionContact3D_ExtraGradient,
+                          API=N.fc3d_ExtraGradient,
                           TAG=N.SICONOS_FRICTION_3D_EG,
                           iparam_iter=7,
                           dparam_err=1,
                           maxiter=maxiter, precision=precision)
 
 FixedPointProjection = SiconosSolver(name="FixedPoint-Projection",
-                                     API=N.frictionContact3D_fixedPointProjection,
+                                     API=N.fc3d_fixedPointProjection,
                                      TAG=N.SICONOS_FRICTION_3D_FPP,
                                      iparam_iter=7,
                                      dparam_err=1,
                                      maxiter=maxiter, precision=precision)
 
 VIExtraGrad = SiconosSolver(name="ExtraGradient-VI",
-                            API=N.frictionContact3D_VI_ExtraGradient,
+                            API=N.fc3d_VI_ExtraGradient,
                             TAG=N.SICONOS_FRICTION_3D_VI_EG,
                             iparam_iter=7,
                             dparam_err=1,
@@ -1609,7 +1608,7 @@ for i1 in iparam1_values:
 
             VIExtraGrad_solver= SiconosSolver(name="ExtraGrad-VI-"+str(i1)+str(i2)+str(i3),
                                                          gnuplot_name=g_name,
-                                                         API=N.frictionContact3D_VI_ExtraGradient,
+                                                         API=N.fc3d_VI_ExtraGradient,
                                                          TAG=N.SICONOS_FRICTION_3D_VI_EG,
                                                          iparam_iter=7,
                                                          dparam_err=1,
@@ -1621,7 +1620,7 @@ for i1 in iparam1_values:
 
             
 VIFixedPointProjection = SiconosSolver(name="FixedPoint-VI",
-                                       API=N.frictionContact3D_VI_FixedPointProjection,
+                                       API=N.fc3d_VI_FixedPointProjection,
                                        TAG=N.SICONOS_FRICTION_3D_VI_FPP,
                                        iparam_iter=7,
                                        dparam_err=1,
@@ -1661,7 +1660,7 @@ for i1 in iparam1_values:
 
             VIFixedPointProjection_solver= SiconosSolver(name="FixedPoint-VI-"+str(i1)+str(i2)+str(i3),
                                                          gnuplot_name=g_name,
-                                                         API=N.frictionContact3D_VI_FixedPointProjection,
+                                                         API=N.fc3d_VI_FixedPointProjection,
                                                          TAG=N.SICONOS_FRICTION_3D_VI_FPP,
                                                          iparam_iter=7,
                                                          dparam_err=1,
@@ -1673,7 +1672,7 @@ for i1 in iparam1_values:
 
 Prox = SiconosSolver(name="PROX-NSN-AC",
                      gnuplot_name="PPA-NSN-AC-GP  \$ \\\mu=1, \\\sigma=5.0\$",
-                     API=N.frictionContact3D_proximal,
+                     API=N.fc3d_proximal,
                      TAG=N.SICONOS_FRICTION_3D_PROX,
                      iparam_iter=7,
                      dparam_err=1,
@@ -1683,7 +1682,7 @@ Prox.SolverOptions().internalSolvers.iparam[3] = 1000000
 
 Prox_nls = SiconosSolver(name="PROX-NSN-AC-NLS",
                      gnuplot_name="PPA-NSN-AC  \$ \\\mu=1, \\\sigma=5.0\$",
-                     API=N.frictionContact3D_proximal,
+                     API=N.fc3d_proximal,
                      TAG=N.SICONOS_FRICTION_3D_PROX,
                      iparam_iter=7,
                      dparam_err=1,
@@ -1692,7 +1691,7 @@ Prox_nls.SolverOptions().internalSolvers.iparam[11] = -1
 
 ProxFB = SiconosSolver(name="PROX-NSN-FB-GP",
                      gnuplot_name="PPA-NSN-FB-GP  \$ \\\mu=1, \\\sigma=5.0\$",
-                     API=N.frictionContact3D_proximal,
+                     API=N.fc3d_proximal,
                      TAG=N.SICONOS_FRICTION_3D_PROX,
                      iparam_iter=7,
                      dparam_err=1,
@@ -1713,7 +1712,7 @@ ProxFB.SolverOptions().internalSolvers.iparam[3] = 1000000
 
 ProxFB_fblsa = SiconosSolver(name="PROX-NSN-FB-FBLSA",
                      gnuplot_name="PPA-NSN-FB-FBLSA  \$ \\\mu=1, \\\sigma=5.0\$",
-                     API=N.frictionContact3D_proximal,
+                     API=N.fc3d_proximal,
                      TAG=N.SICONOS_FRICTION_3D_PROX,
                      iparam_iter=7,
                      dparam_err=1,
@@ -1728,7 +1727,7 @@ ProxFB_fblsa.SolverOptions().internalSolvers.iparam[3] = 1000000
 
 ProxFB_nls = SiconosSolver(name="PROX-NSN-FB-NLS",
                      gnuplot_name="PPA-NSN-FB-NLS  \$ \\\mu=1, \\\sigma=5.0\$",
-                     API=N.frictionContact3D_proximal,
+                     API=N.fc3d_proximal,
                      TAG=N.SICONOS_FRICTION_3D_PROX,
                      iparam_iter=7,
                      dparam_err=1,
@@ -1742,7 +1741,7 @@ ProxFB_nls.SolverOptions().internalSolvers.iparam[3] = 1000000
 
 ProxNSGS = SiconosSolver(name="PROX-NSGS-NSN-AC",
                      gnuplot_name="PROX-NSGS-NSN-AC \$ \\\mu=1, \\\sigma=5.0\$",
-                     API=N.frictionContact3D_proximal,
+                     API=N.fc3d_proximal,
                      TAG=N.SICONOS_FRICTION_3D_PROX,
                      iparam_iter=7,
                      dparam_err=1,
@@ -1764,7 +1763,7 @@ for mu in muvalues:
     for sigma in sigmavalues:
         prox_solver  = SiconosSolver(name="PROX-NSN-AC-nu"+str(mu)+"-sigma"+str(sigma),
                                      gnuplot_name="PPA-NSN-AC-GP  \$ \\\mu="+str(mu)+", \\\sigma="+str(sigma)+"\$",
-                                     API=N.frictionContact3D_proximal,
+                                     API=N.fc3d_proximal,
                                      TAG=N.SICONOS_FRICTION_3D_PROX,
                                      iparam_iter=7,
                                      dparam_err=1,
@@ -1775,7 +1774,7 @@ for mu in muvalues:
         prox_series.append(prox_solver)
 
 nsn_ac_wrapped = SiconosSolver(name="NSN-AlartCurnier-Wrapped",
-                                API=N.frictionContact3D_nonsmooth_Newton_AlartCurnier,
+                                API=N.fc3d_nonsmooth_Newton_AlartCurnier,
                                 TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                 iparam_iter=1,
                                 dparam_err=1,
@@ -1784,7 +1783,7 @@ nsn_ac_wrapped = SiconosSolver(name="NSN-AlartCurnier-Wrapped",
 def fc3d_nsn_ac_r(problem, reactions, velocities, _SO):
     SO = N.SolverOptions(N.SICONOS_FRICTION_3D_VI_FPP)
     SO.iparam[3] = 1000
-    N.frictionContact3D_VI_FixedPointProjection(problem, reactions, velocities, SO)
+    N.fc3d_VI_FixedPointProjection(problem, reactions, velocities, SO)
     #    print '->',SO.dparam[3]
     nsn_ac_wrapped.SolverOptions().dparam[3] = SO.dparam[3]
     return nsn_ac_wrapped(problem, reactions, velocities)
@@ -1799,7 +1798,7 @@ nsn_acr = SiconosWrappedSolver(name="NSN-AlartCurnier-R",
 
 #
 quartic = SiconosSolver(name="NSGS-Quartic",
-                        API=N.frictionContact3D_nsgs,
+                        API=N.fc3d_nsgs,
                         TAG=N.SICONOS_FRICTION_3D_NSGS,
                         iparam_iter=7,
                         dparam_err=1, maxiter=maxiter, precision=precision)
@@ -1810,7 +1809,7 @@ quartic.SolverOptions().internalSolvers = quartic3x3
 
 # 1 contact
 #AlartCurnierNewton = SiconosSolver(name="AlartCurnierNewton",
-#                                   API=frictionContact3D_AlartCurnierNewton,
+#                                   API=fc3d_AlartCurnierNewton,
 #                                   iparam_iter=1,
 #                                   iparam_iter=1)
 
@@ -1818,7 +1817,7 @@ quartic.SolverOptions().internalSolvers = quartic3x3
 Prox._SO.dparam[3] = 1000
 
 HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
-                                     API=N.frictionContact3D_HyperplaneProjection,
+                                     API=N.fc3d_HyperplaneProjection,
                                      TAG=N.SICONOS_FRICTION_3D_HP,
                                      iparam_iter=7,
                                      dparam_err=1,
@@ -1841,7 +1840,7 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 # http://code.google.com/p/mpi4py/
 #from mpi4py import MPI
 #rank = MPI.COMM_WORLD.rank
-#frictionContact3D_sparseGlobalAlartCurnierInit(nsn_ac.SolverOptions())
+#fc3d_sparseGlobalAlartCurnierInit(nsn_ac.SolverOptions())
 
 #all_solvers = [nsgs, snsgs, TrescaFixedPoint, nsn_ac, Prox, DeSaxceFixedPoint,
 #               FixedPointProjection, VIFixedPointProjection, ExtraGrad, VIExtraGrad]
