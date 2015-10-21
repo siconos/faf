@@ -1339,7 +1339,7 @@ nsgs = SiconosSolver(name="NSGS-AC",
                      iparam_iter=7,
                      dparam_err=1,
                      maxiter=maxiter, precision=precision)
-nsgs.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_AlartCurnierNewton
+nsgs.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_AC
 nsgs.SolverOptions().internalSolvers.iparam[10]=0
 
 
@@ -1349,7 +1349,7 @@ nsgs_ac_gp = SiconosSolver(name="NSGS-AC-GP",
                      iparam_iter=7,
                      dparam_err=1,
                      maxiter=maxiter, precision=precision)
-nsgs_ac_gp.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_DampedAlartCurnierNewton
+nsgs_ac_gp.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_AC_GP
 nsgs_ac_gp.SolverOptions().internalSolvers.iparam[10]=0
 
 nsgs_jm = SiconosSolver(name="NSGS-JM",
@@ -1358,7 +1358,7 @@ nsgs_jm = SiconosSolver(name="NSGS-JM",
                      iparam_iter=7,
                      dparam_err=1,
                      maxiter=maxiter, precision=precision)
-nsgs_jm.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_AlartCurnierNewton
+nsgs_jm.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_AC
 nsgs_jm.SolverOptions().internalSolvers.iparam[10]=1
 
 
@@ -1368,7 +1368,7 @@ nsgs_jm_gp = SiconosSolver(name="NSGS-JM-GP",
                      iparam_iter=7,
                      dparam_err=1,
                      maxiter=maxiter, precision=precision)
-nsgs_jm_gp.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_DampedAlartCurnierNewton
+nsgs_jm_gp.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_AC_GP
 nsgs_jm_gp.SolverOptions().internalSolvers.iparam[10]=1
 
 
@@ -1390,7 +1390,7 @@ nsgs_sfull = SiconosSolver(name="NSGS-AC-GP-Shuffled-full",
                            dparam_err=1,
                            maxiter=maxiter, precision=precision)
 nsgs_sfull.SolverOptions().iparam[5] = 2
-#nsgs_sfull.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ProjectionOnConeWithLocalIteration
+#nsgs_sfull.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithLocalIteration
 #N.printSolverOptions(nsgs_sfull.SolverOptions())
 
 
@@ -1401,7 +1401,7 @@ nsgs_pli = SiconosSolver(name="NSGS-PLI",
                          iparam_iter=7,
                          dparam_err=1,
                          maxiter=maxiter, precision=precision)
-nsgs_pli.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ProjectionOnConeWithLocalIteration
+nsgs_pli.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithLocalIteration
 nsgs_pli.SolverOptions().internalSolvers.iparam[0] = 100
 
 nsgs_pli_10 = SiconosSolver(name="NSGS-PLI-10",
@@ -1411,7 +1411,7 @@ nsgs_pli_10 = SiconosSolver(name="NSGS-PLI-10",
                             iparam_iter=7,
                             dparam_err=1,
                             maxiter=maxiter, precision=precision)
-nsgs_pli_10.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ProjectionOnConeWithLocalIteration
+nsgs_pli_10.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithLocalIteration
 nsgs_pli_10.SolverOptions().internalSolvers.iparam[0] = 10
 
 
@@ -1422,7 +1422,7 @@ nsgs_p = SiconosSolver(name="NSGS-P",
                        iparam_iter=7,
                        dparam_err=1,
                        maxiter=maxiter, precision=precision)
-nsgs_p.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ProjectionOnCone
+nsgs_p.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnCone
 
 nsgs_pd = SiconosSolver(name="NSGS-PD",
                         gnuplot_name="NSGS-FP-DS-One  D",
@@ -1431,7 +1431,7 @@ nsgs_pd = SiconosSolver(name="NSGS-PD",
                         iparam_iter=7,
                         dparam_err=1,
                         maxiter=maxiter, precision=precision)
-nsgs_pd.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ProjectionOnConeWithDiagonalization
+nsgs_pd.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithDiagonalization
 
 nsgs_pr = SiconosSolver(name="NSGS-PR",
                         gnuplot_name="NSGS-FP-DS-One  R",
@@ -1440,7 +1440,7 @@ nsgs_pr = SiconosSolver(name="NSGS-PR",
                         iparam_iter=7,
                         dparam_err=1,
                         maxiter=maxiter, precision=precision)
-nsgs_pr.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_projectionOnConeWithRegularization
+nsgs_pr.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithRegularization
 
 
 
@@ -1469,7 +1469,7 @@ for local_tol in local_tol_values:
                                 iparam_iter=7,
                                 dparam_err=1,
                                 maxiter=maxiter, precision=precision)
-    nsgs_pli.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ProjectionOnConeWithLocalIteration
+    nsgs_pli.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithLocalIteration
     nsgs_solver.SolverOptions().internalSolvers.dparam[0] = local_tol
     nsgs_solver.SolverOptions().internalSolvers.iparam[0] = 100
     nsgs_series.append(nsgs_solver)
@@ -1803,7 +1803,7 @@ quartic = SiconosSolver(name="NSGS-Quartic",
                         iparam_iter=7,
                         dparam_err=1, maxiter=maxiter, precision=precision)
 
-quartic3x3 = N.SolverOptions(N.SICONOS_FRICTION_3D_QUARTIC_NU)
+quartic3x3 = N.SolverOptions(N.SICONOS_FRICTION_3D_ONECONTACT_QUARTIC_NU)
 
 quartic.SolverOptions().internalSolvers = quartic3x3
 
