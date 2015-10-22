@@ -1680,6 +1680,49 @@ Prox = SiconosSolver(name="PROX-NSN-AC",
 Prox.SolverOptions().internalSolvers.iparam[3] = 1000000
 
 
+Proxfixed = SiconosSolver(name="PROX-NSN-AC-fixed",
+                     gnuplot_name="PPA-NSN-AC-GP  \$ \\\mu=1, \\\sigma=5.0\$ fixed",
+                     API=N.fc3d_proximal,
+                     TAG=N.SICONOS_FRICTION_3D_PROX,
+                     iparam_iter=7,
+                     dparam_err=1,
+                     maxiter=maxiter, precision=precision)
+Proxfixed.SolverOptions().dparam[3] = -1e4
+Proxfixed.SolverOptions().internalSolvers.iparam[3] = 1000000
+
+
+regul_value=1e05
+str1 = "{0:1.0e}".format(regul_value).replace("1e","10\^{")+"}"
+str2 = "{0:1.0e}".format(regul_value)
+Regul = SiconosSolver(name="PROX-NSN-AC-regul-"+str2,
+                     gnuplot_name="PPA-NSN-AC-GP  \$ \\\mu=1, \\\sigma=5.0\$ regul "+str1,
+                     API=N.fc3d_proximal,
+                     TAG=N.SICONOS_FRICTION_3D_PROX,
+                     iparam_iter=7,
+                     dparam_err=1,
+                     maxiter=maxiter, precision=precision)
+Regul.SolverOptions().dparam[3] =regul_value
+Regul.SolverOptions().iparam[9] = 1
+Regul.SolverOptions().internalSolvers.iparam[3] = 1000000
+
+
+regul_values= [ 1e4, 1e6, 1e8, 1e10]
+regul_series =[]
+for rr in regul_values:
+    str1 = "{0:1.0e}".format(rr).replace("1e","10\^{")+"}"
+    str2 = "{0:1.0e}".format(rr)
+    regul_solver  = SiconosSolver(name="PROX-NSN-AC-regul-"+str2,
+                                  gnuplot_name="PPA-NSN-AC-GP  \$ \\\mu="+str1+"\$",
+                                  API=N.fc3d_proximal,
+                                  TAG=N.SICONOS_FRICTION_3D_PROX,
+                                  iparam_iter=7,
+                                  dparam_err=1,
+                                  maxiter=maxiter, precision=precision)
+    regul_solver.SolverOptions().dparam[3] =rr
+    regul_solver.SolverOptions().iparam[9] = 1
+    regul_solver.SolverOptions().internalSolvers.iparam[3] = 1000000
+    regul_series.append(regul_solver)
+
 Prox_nls = SiconosSolver(name="PROX-NSN-AC-NLS",
                      gnuplot_name="PPA-NSN-AC  \$ \\\mu=1, \\\sigma=5.0\$",
                      API=N.fc3d_proximal,
@@ -1863,7 +1906,7 @@ all_solvers.extend( [ psor,
                       TrescaFixedPoint, DeSaxceFixedPoint,
                       VIFixedPointProjection, VIExtraGrad,
                       SOCLCP,
-                      Prox,  Prox_nls, ProxFB,  ProxFB_nls, ProxNSGS,
+                      Prox,  Prox_nls, ProxFB,  ProxFB_nls, ProxNSGS, Proxfixed, Regul,
                       ACLMFixedPoint])
 
 all_solver_unstable = [ProxFB_fblsa]
@@ -1878,6 +1921,7 @@ all_solvers.extend(VIFixedPointProjection_series)
 all_solvers.extend(VIExtraGrad_series)
 all_solvers.extend(psor_series)
 all_solvers.extend(prox_series)
+all_solvers.extend(regul_series)
 all_solvers.extend(nsgs_series)
 
 
