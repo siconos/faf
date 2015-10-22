@@ -18,6 +18,19 @@ ifeq ($(test_name),Capsules)
 	echo "20" | cat >> domain.txt
 	echo "100" | cat >> domain.txt # comp large
 endif
+ifeq ($(test_name),BoxesStack1)
+	echo "10" | cat > domain.txt ;
+	echo "2" | cat >> domain.txt ;
+	echo "4" | cat >> domain.txt
+	echo "5" | cat >> domain.txt
+	echo "5" | cat >> domain.txt
+	echo "15" | cat >> domain.txt
+	echo "100" | cat >> domain.txt
+	echo "100" | cat >> domain.txt
+	echo "10" | cat >> domain.txt
+	echo "20" | cat >> domain.txt
+	echo "100" | cat >> domain.txt # comp large
+endif
 ifeq ($(test_name),KaplasTower)
 	echo "10" | cat > domain.txt ;
 	echo "2" | cat >> domain.txt ;
@@ -58,12 +71,12 @@ ifeq ($(test_name),LMGC_Bridge_PR)
 	echo "100" | cat >> domain.txt # comp large
 endif
 ifeq ($(test_name),LMGC_Cubes_H8)
-	echo "10" | cat > domain.txt ;
-	echo "4" | cat >> domain.txt ;
+	echo "5" | cat > domain.txt ; # VI
+	echo "3" | cat >> domain.txt ;
 	echo "5" | cat >> domain.txt
-	echo "3" | cat >> domain.txt
-	echo "5" | cat >> domain.txt
-	echo "100" | cat >> domain.txt
+	echo "10" | cat >> domain.txt # shuffled
+	echo "20" | cat >> domain.txt  #psor
+	echo "50" | cat >> domain.txt # nsn
 	echo "100" | cat >> domain.txt
 	echo "100" | cat >> domain.txt
 	echo "5" | cat >> domain.txt
@@ -241,7 +254,7 @@ comp_solvers: domain_value
 comp_solvers_large: save_dir=figure/COMP/large/${measure_name}
 comp_solvers_large: domain_max=$(shell sed '11q;d' domain.txt)
 comp_solvers_large: domain_value
-	comp.py --measure=${measure_name} --display --no-matplot --solvers-exact='NSGS-AC','NSN-AlartCurnier','NSN-AlartCurnier-NLS','PROX-NSN-AC','TrescaFixedPoint-NSGS-PLI','SOCLCP-NSGS-PLI','ACLMFixedPoint-SOCLCP-NSGS-PLI',FixedPoint-VI,ExtraGradient-VI --domain=1.0:0.01:${domain_max} --gnuplot-profile --gnuplot-separate-keys
+	comp.py --measure=${measure_name} --display --no-matplot --solvers-exact='NSGS-AC','NSN-AlartCurnier','NSN-AlartCurnier-NLS','PROX-NSN-AC','TrescaFixedPoint-NSGS-PLI','SOCLCP-NSGS-PLI','ACLMFixedPoint-SOCLCP-NSGS-PLI',FixedPoint-VI,ExtraGradient-VI --domain=1.0:0.1:${domain_max} --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-${test_name}.tex;
 	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;
@@ -253,3 +266,5 @@ clean :
 	rm -rf ./figure
 	rm -f *.tex *.gp *.aux *.dat *.txt *.log
 
+publish:
+	cp -r figure ~/Work/faf/TeX
