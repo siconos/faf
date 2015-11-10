@@ -769,7 +769,7 @@ class Caller():
 
         except Exception as e:
 
-            print '--->',e
+            print 'Exception in internal call', e
 
             try:
                os.remove(output_filename)
@@ -1320,6 +1320,76 @@ if with_mumps:
     nsn_fb_nls_lusol.SolverOptions().iparam[11] = -1
     nsn_fb_nls_lusol.SolverOptions().iparam[12] = 0
     nsn_fb_nls_lusol.SolverOptions().iparam[13] = 0
+
+
+nsn_nm_gp = SiconosSolver(name="NSN-NaturalMap-GP",
+                           gnuplot_name="NSN-NM-GP",
+                           API=N.fc3d_nonsmooth_Newton_NaturalMap,
+                           TAG=N.SICONOS_FRICTION_3D_NSN_NM,
+                           iparam_iter=1,
+                           dparam_err=1,
+                           maxiter=maxiter, precision=precision)
+
+nsn_nm_gp.SolverOptions().iparam[3] = 1000000
+nsn_nm_gp.SolverOptions().iparam[11] = 0
+nsn_nm_gp.SolverOptions().iparam[12] = maxiterls
+nsn_nm_gp.SolverOptions().iparam[13] = with_mumps
+
+nsn_nm_gp_lusol = None
+if with_mumps:
+    nsn_nm_gp_lusol = SiconosSolver(name="NSN-NaturalMap-GP-lusol",
+                                     gnuplot_name="NSN-NM-GP-LUSOL",
+                                     API=N.fc3d_nonsmooth_Newton_NaturalMap,
+                                     TAG=N.SICONOS_FRICTION_3D_NSN_NM,
+                                     iparam_iter=1,
+                                     dparam_err=1,
+                                     maxiter=maxiter, precision=precision)
+
+    nsn_nm_gp_lusol.SolverOptions().iparam[3] = 1000000
+    nsn_nm_gp_lusol.SolverOptions().iparam[11] = 0
+    nsn_nm_gp_lusol.SolverOptions().iparam[12] = maxiterls
+    nsn_nm_gp_lusol.SolverOptions().iparam[13] = 0
+
+nsn_nm_fblsa = SiconosSolver(name="NSN-NaturalMap-FBLSA",
+                              gnuplot_name="NSN-NM-FBLSA",
+                              API=N.fc3d_nonsmooth_Newton_NaturalMap,
+                              TAG=N.SICONOS_FRICTION_3D_NSN_NM,
+                              iparam_iter=1,
+                              dparam_err=1,
+                              maxiter=maxiter, precision=precision)
+
+nsn_nm_fblsa.SolverOptions().iparam[3] = 1000000
+nsn_nm_fblsa.SolverOptions().iparam[11] = 1
+nsn_nm_fblsa.SolverOptions().iparam[12] = maxiterls
+nsn_nm_fblsa.SolverOptions().iparam[13] = with_mumps
+
+nsn_nm_nls = SiconosSolver(name="NSN-NaturalMap-NLS",
+                            gnuplot_name="NSN-NM-NLS",
+                            API=N.fc3d_nonsmooth_Newton_NaturalMap,
+                            TAG=N.SICONOS_FRICTION_3D_NSN_NM,
+                            iparam_iter=1,
+                            dparam_err=1,
+                            maxiter=maxiter, precision=precision)
+
+nsn_nm_nls.SolverOptions().iparam[3] = 1000000
+nsn_nm_nls.SolverOptions().iparam[11] = -1
+nsn_nm_nls.SolverOptions().iparam[12] = 0
+nsn_nm_nls.SolverOptions().iparam[13] = with_mumps
+
+nsn_nm_nls_lusol = None
+if with_mumps:
+    nsn_nm_nls_lusol = SiconosSolver(name="NSN-NaturalMap-NLS-lusol",
+                                      gnuplot_name="NSN-NM-NLS-LUSOL",
+                                      API=N.fc3d_nonsmooth_Newton_NaturalMap,
+                                      TAG=N.SICONOS_FRICTION_3D_NSN_NM,
+                                      iparam_iter=1,
+                                      dparam_err=1,
+                                      maxiter=maxiter, precision=precision)
+
+    nsn_nm_nls_lusol.SolverOptions().iparam[3] = 1000000
+    nsn_nm_nls_lusol.SolverOptions().iparam[11] = -1
+    nsn_nm_nls_lusol.SolverOptions().iparam[12] = 0
+    nsn_nm_nls_lusol.SolverOptions().iparam[13] = 0
 
 
 hnsn_ac = SiconosHybridSolver(name = "HLocalAlartCurnier",
@@ -1898,7 +1968,8 @@ nsgs_solvers.remove(quartic)
 
 nsn_solvers =  [nsn_acSTD, nsn_acSTD_nls, nsn_acSTDGenerated, nsn_acSTDGenerated_nls,  nsn_acr, nsn_acJeanMoreau, nsn_acJeanMoreau_nls, nsn_acJeanMoreauGenerated, nsn_acJeanMoreauGenerated_lusol,
                 nsn_acJeanMoreauGenerated_nls, nsn_acJeanMoreauGenerated_nls_lusol,
-                nsn_fb_gp, nsn_fb_gp_lusol, nsn_fb_nls, nsn_fb_nls_lusol]
+                nsn_fb_gp, nsn_fb_gp_lusol, nsn_fb_nls, nsn_fb_nls_lusol,
+                nsn_nm_gp, nsn_nm_gp_lusol, nsn_nm_nls, nsn_nm_nls_lusol]
 
 all_solvers = list(nsgs_solvers)
 all_solvers.extend(nsn_solvers)
