@@ -243,10 +243,9 @@ class LocalCCodePrinter(CCodePrinter):
             if var in self._decls and not var in self._affcts:
                 for sa in self._preconditions(self._decls[var]):
                     affcts.append(sa)
-                affcts.append('{0}={1};'.format(var, super(LocalCCodePrinter, self)._print(self._decls[var])))
+                affcts.append('{0}={1}; FIX({0});'.format(var, super(LocalCCodePrinter, self)._print(self._decls[var])))
                 for sa in self._postconditions(var, self._decls[var]):
                     affcts.append(sa)
-                                        
 
             if self._inside_condition == 0:
                 self._affcts[var] = True
@@ -478,7 +477,7 @@ class LocalCCodePrinter(CCodePrinter):
 
     def _print_Float(self, expr):
         # cf http://stackoverflow.com/questions/25222681/scientific-exponential-notation-with-sympy-in-an-ipython-notebook
-        return StrPrinter({'full_prec': False}).doprint(Float(expr, 20))
+        return StrPrinter({'full_prec': False}).doprint(Float(expr, 128))
 
     def _print_Mul(self, expr):
 
@@ -606,4 +605,4 @@ class LocalCCodePrinter(CCodePrinter):
 def localccode(expr, assign_to=None, tab='    ', level=0,
                array_format='C', **settings):
 
-    return (LocalCCodePrinter(tab=tab, level=level, array_format=array_format, settings=settings).doprint(expr, assign_to))
+    return (LocalCCodePrinter(tab=tab, level=level, array_format=array_format).doprint(expr, assign_to))

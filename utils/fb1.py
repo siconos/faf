@@ -16,8 +16,6 @@ from sage.all import maple
 
 init_printing()
 
-ZERO = Symbol('ZERO', real=True)
-
 mu = Symbol('mu', positive=True, real=True)
 rn = Symbol('rn', positive=True, real=True)
 rt1 = Symbol('rt1', real=True)
@@ -112,7 +110,6 @@ grad_theta_phi_fb = Matrix([[theta_phi_fb.diff(rn), theta_phi_fb.diff(rt1), thet
 with open('grad_theta_phi_fb', 'w') as grad_theta_phi_fb_file:
     pickle.dump(grad_theta_phi_fb, grad_theta_phi_fb_file)
 
-exit(0)
 # ut_norm == 0
 # xnxt_p_ynyt_norm == 0
 # x_norm == 0
@@ -170,7 +167,7 @@ def _mlimit(expr, var, lim, dir=None):
     if dir is None:
         dir = maple.right
 
-    maple.set('Digits', 36)
+    maple.set('Digits', 256)
 
     mexpr = maple_piecewise(expr)
 
@@ -259,33 +256,33 @@ def lambda_2_zero(e):
 
 A = Matrix(3, 3, lambda i, j:
            Piecewise(
-                     (uzero(A_[i, j]),  x_norm <= ZERO),
-                     (xnxt_p_ynyt_zero(A_[i, j]), xnxt_p_ynyt_norm<=ZERO),
-                     (lambda_1_zero(A_[i, j]), Abs(lambda_1)<=ZERO),
-                     (lambda_2_zero(A_[i, j]), Abs(lambda_2)<=ZERO),
-                     (utzero(A_[i, j]), ut.norm()<=ZERO),
-                     (A_[i, j], And(ut.norm()>ZERO, x_norm>ZERO, xnxt_p_ynyt_norm>ZERO, Abs(lambda_1)>ZERO, Abs(lambda_2)>ZERO))))
+                     (uzero(A_[i, j]),  x_norm <= 0),
+                     (xnxt_p_ynyt_zero(A_[i, j]), xnxt_p_ynyt_norm<=0),
+                     (lambda_1_zero(A_[i, j]), Abs(lambda_1)<=0),
+                     (lambda_2_zero(A_[i, j]), Abs(lambda_2)<=0),
+                     (utzero(A_[i, j]), ut.norm()<=0),
+                     (A_[i, j], And(ut.norm()>0, x_norm>0, xnxt_p_ynyt_norm>0, Abs(lambda_1)>0, Abs(lambda_2)>0))))
 
 
 B = Matrix(3, 3, lambda i, j:
-           Piecewise((rzero(B_[i, j]),  y_norm<=ZERO),
-                     (xnxt_p_ynyt_zero(B_[i, j]), xnxt_p_ynyt_norm<=ZERO),
-                     (lambda_1_zero(B_[i, j]), Abs(lambda_1)<=ZERO),
-                     (lambda_2_zero(B_[i, j]), Abs(lambda_2)<=ZERO),
-                     (B_[i, j], And(y_norm>ZERO, xnxt_p_ynyt_norm>ZERO, Abs(lambda_1)>ZERO, Abs(lambda_2)>ZERO))))
+           Piecewise((rzero(B_[i, j]),  y_norm<=0),
+                     (xnxt_p_ynyt_zero(B_[i, j]), xnxt_p_ynyt_norm<=0),
+                     (lambda_1_zero(B_[i, j]), Abs(lambda_1)<=0),
+                     (lambda_2_zero(B_[i, j]), Abs(lambda_2)<=0),
+                     (B_[i, j], And(y_norm>0, xnxt_p_ynyt_norm>0, Abs(lambda_1)>0, Abs(lambda_2)>0))))
 
 
-with open('A', 'w') as A_file:
+with open('FB_A', 'w') as A_file:
     pickle.dump(A, A_file)
 
-with open('B', 'w') as B_file:
+with open('FB_B', 'w') as B_file:
     pickle.dump(B, B_file)
 
-with open('FAC', 'w') as FAC_file:
+with open('FB', 'w') as FAC_file:
     pickle.dump(FAC, FAC_file)
 
 Rnow = FAC.row_join(A).row_join(B)
 
-with open('Rnow', 'w') as Rnow_file:
+with open('FB_AB', 'w') as Rnow_file:
     pickle.dump(Rnow, Rnow_file)
 

@@ -8,7 +8,7 @@
 # Usage ./fb.py [--latex] [--ccode] [--ccodefac] [--ccodeAB]
 #
 
-
+import JordanAlgebra
 from sympy import *
 from sympy.core.numbers import  NaN
 from localcodegen import localccode
@@ -29,17 +29,61 @@ parser.add_option("--wrapper", action="store_true")
 parser.add_option("--merit", action="store_true")
 (options, args) = parser.parse_args()
 
+mu = Symbol('mu', positive=True, real=True)
+rn = Symbol('rn', nonnegative=True, real=True)
+rt1 = Symbol('rt1', real=True)
+rt2 = Symbol('rt2', real=True)
+
+un = Symbol('un', real=True)
+ut1 = Symbol('ut1', real=True)
+ut2 = Symbol('ut2', real=True)
+
+xn =  un + mu * sqrt(ut1**2 + ut2**2)
+xt1 = mu * ut1
+xt2 = mu * ut2
+
+yn = mu * rn
+yt1 = rt1
+yt2 = rt2
+
+u = Matrix([un, ut1, ut2])
+r = Matrix([rn, rt1, rt2])
+
+x = Matrix([xn, xt1, xt2])
+y = Matrix([yn, yt1, yt2])
+
+ut = Matrix([ut1, ut2])
+
+Fnat = y - JordanAlgebra.projection(y - x)
+A_ = Fnat.jacobian(u)
+B_ = Fnat.jacobian(r)
+
 def load(v):
 
     with open(v) as r_file:
         return pickle.load(r_file)
 
-A = load('A')
-B = load('B')
+A = load('Fnat_A')
+B = load('Fnat_B')
 Fnat = load('Fnat')
-Rnow = load('Rnow')
-theta_phi_fb = load('theta_phi_fb')
-grad_theta_phi_fb = load('grad_theta_phi_fb')
+Rnow = load('Fnat_Rnow')
+#theta_phi_fb = load('theta_phi_fb')
+#grad_theta_phi_fb = load('grad_theta_phi_fb')
+
+def isnan(x):
+    return isinstance(x, NaN)
+
+for i in range(3):
+    for j in range(3):
+        print i, j
+        assert not isnan(A[i,j].subs('ut1', 0).subs('ut2', 0))
+        assert not isnan(A[i,j].subs('rt1', 0).subs('rt2', 0))
+        assert not isnan(A[i,j].subs('ut1', 0).subs('ut2', 0).subs('rt1', 0).subs('rt2', 0))
+        assert not isnan(A[i,j].subs('ut1', 'rt1/mu').subs('ut2', 'rt2/mu'))
+        assert not isnan(B[i,j].subs('ut1', 0).subs('ut2', 0))
+        assert not isnan(B[i,j].subs('rt1', 0).subs('rt2', 0))
+        assert not isnan(B[i,j].subs('ut1', 0).subs('ut2', 0).subs('rt1', 0).subs('rt2', 0))
+        assert not isnan(B[i,j].subs('ut1', 'rt1/mu').subs('ut2', 'rt2/mu'))
 
 def def_fun(name):
     print("void " + name + r"""(
@@ -60,251 +104,8 @@ def end_fun():
     print(r"}")
 
 
-#
-# Toward Latex
-#
+ac_name = "fc3d_NaturalMap"
 
-
-phi_2 = Symbol(r'\phi_2')
-phi_31 = Symbol(r'\phi_{3,T1}')
-phi_32 = Symbol(r'\phi_{3,T2}')
-
-
-def map_matrix(fun,M):
-    m=M.shape[0]
-    n=M.shape[1]
-    return Matrix(m,n, lambda i,j: fun(M[i,j]))
-
-
-def with_latex_symbols(expr):
-    return expr
-
-
-def print_latex_value(name,value):
-    if (hasattr(name,'args')):
-        lname = latex(name)
-    else:
-        lname = name
-    print latex(r'\subsubsection{$' + lname + r'$}')
-    print latex(r'\begin{align*}')
-    print latex(with_latex_symbols(value))
-    print latex(r'\end{align*}')
-    print r'\paragraph{}'
-
-
-def resultFnat(i,j):
-    if (j==0):
-        if(i==0):
-            return r"\phi_2"
-        if(i==1):
-            return r"\phi_{3,T1}"
-        if(i==2):
-            return r"\phi_{3,T2}"
-    if (j>=1 and j<=3):
-            return r"A[{0},{1}]={2}".format(i,j-1,latex(textA[i,j-1]))
-    if (j>3):
-            return r"B[{0},{1}]={2}".format(i,j-4,latex(textB[i,j-4]))
-
-def dump_latex():
-
-    print (r"""% this file has been generated
-\documentclass[10pt]{article}
-\usepackage{amssymb,amsmath}
-\begin{document}""")
-    print(r"""
-\title{Fischer - Burmeister function}""")
-    print(r"""
-\date{\today}
-\maketitle
-""")
-
-    print latex(r'\section{Symbols}')
-
-    print r'\begin{itemize}'
-    print r'\item ' + latex(R_N, mode='inline') + r': \text{normal reaction}'
-    print r'\item ' + latex(R_T1, mode='inline') + r': \text{first tangential reaction}'
-    print r'\item ' + latex(R_T2, mode='inline') + r': \text{second tangential reaction}'
-
-    print r'\item ' + latex(U_N, mode='inline') + r': \text{normal velocity}'
-    print r'\item ' + latex(U_T1, mode='inline') + r': \text{first tangential velocity}'
-    print r'\item ' + latex(U_T2, mode='inline') + r': \text{second tangential velocity}'
-
-    print r'\item ' + latex(rho_N, mode='inline') + r': \text{normal component of} $\rho$'
-    print r'\item ' + latex(rho_T1, mode='inline') + r': \text{first tangential component of} $\rho$'
-    print r'\item ' + latex(rho_T2, mode='inline') + r': \text{second tangential component of} $\rho$'
-    print r'\end{itemize}'
-
-    print r'\paragraph{basic relations}'
-
-    print r'\begin{align*}'
-    print latex(D_N) + '&=' + latex(R_N-U_N*rho_N) +r'\\'
-    print latex(D_T1) + '&=' + latex(R_T1-U_T1*rho_T1) +r'\\'
-    print latex(D_T2) + '&=' + latex(R_T2-U_T2*rho_T2) +r'\\'
-    print r'\end{align*}'
-
-
-
-    print(r'\section{$\phi_2,\phi_{3,T1},\phi_{3,T2}$,A,B by values}')
-
-
-    print latex(r'\subsection{$\phi$}')
-    print_latex_value(phi_2,phi2)
-    print_latex_value(phi_31,Fnat[1])
-    print_latex_value(phi_32,Fnat[2])
-
-    print latex(r'\subsection{A}')
-
-    for i in range(0,3):
-        for j in range(0,3):
-            print_latex_value("A[{0},{1}]={2}".format(i,j,latex(textA[i,j])),A[i,j])
-
-    print latex('\subsection{B}')
-
-    for i in range(0,3):
-        for j in range(0,3):
-            print_latex_value("B[{0},{1}]={2}".format(i,j,latex(textB[i,j])),B[i,j])
-
-    R = Fnat.row_join(A).row_join(B)
-
-    print(r'\section{$\phi_2,\phi_{3,T1},\phi_{3,T2}$,A,B by conditions}')
-
-    print_latex_by_conditions(Matrix(with_latex_symbols(R)),resultFnat)
-
-    print(r"\end{document}")
-
-
-if options.latex:
-    dump_latex()
-
-ac_name = "fc3D_NaturalMap"
-
-def change_var():
-    pass
-
-
-#
-# Toward Latex
-#
-
-
-phi_2 = Symbol(r'\phi_2')
-phi_31 = Symbol(r'\phi_{3,T1}')
-phi_32 = Symbol(r'\phi_{3,T2}') 
-
-
-def map_matrix(fun,M):
-    m=M.shape[0]
-    n=M.shape[1]
-    return Matrix(m,n, lambda i,j: fun(M[i,j]))
-
-
-def with_latex_symbols(expr):
-    return expr
-
-
-def print_latex_value(name,value):
-    if (hasattr(name,'args')):
-        lname = latex(name)
-    else:
-        lname = name
-    print latex(r'\subsubsection{$' + lname + r'$}')
-    print latex(r'\begin{align*}')
-    print latex(with_latex_symbols(value))
-    print latex(r'\end{align*}')
-    print r'\paragraph{}'
-
-
-def resultFnat(i,j):
-    if (j==0):
-        if(i==0):
-            return r"\phi_2"
-        if(i==1):
-            return r"\phi_{3,T1}"
-        if(i==2):
-            return r"\phi_{3,T2}"
-    if (j>=1 and j<=3):
-            return r"A[{0},{1}]={2}".format(i,j-1,latex(textA[i,j-1]))
-    if (j>3):
-            return r"B[{0},{1}]={2}".format(i,j-4,latex(textB[i,j-4]))
-
-def dump_latex():
-
-    print (r"""% this file has been generated
-\documentclass[10pt]{article}
-\usepackage{amssymb,amsmath}
-\begin{document}""")
-    print(r"""
-\title{Fischer - Burmeister function}""")
-    print(r"""
-\date{\today}
-\maketitle
-""")
-
-    print latex(r'\section{Symbols}')
-
-    print r'\begin{itemize}'
-    print r'\item ' + latex(R_N, mode='inline') + r': \text{normal reaction}'
-    print r'\item ' + latex(R_T1, mode='inline') + r': \text{first tangential reaction}'
-    print r'\item ' + latex(R_T2, mode='inline') + r': \text{second tangential reaction}'
-
-    print r'\item ' + latex(U_N, mode='inline') + r': \text{normal velocity}'
-    print r'\item ' + latex(U_T1, mode='inline') + r': \text{first tangential velocity}'
-    print r'\item ' + latex(U_T2, mode='inline') + r': \text{second tangential velocity}'
-
-    print r'\item ' + latex(rho_N, mode='inline') + r': \text{normal component of} $\rho$'
-    print r'\item ' + latex(rho_T1, mode='inline') + r': \text{first tangential component of} $\rho$'
-    print r'\item ' + latex(rho_T2, mode='inline') + r': \text{second tangential component of} $\rho$'
-    print r'\end{itemize}'
-
-    print r'\paragraph{basic relations}'
-
-    print r'\begin{align*}'
-    print latex(D_N) + '&=' + latex(R_N-U_N*rho_N) +r'\\'
-    print latex(D_T1) + '&=' + latex(R_T1-U_T1*rho_T1) +r'\\'
-    print latex(D_T2) + '&=' + latex(R_T2-U_T2*rho_T2) +r'\\'
-    print r'\end{align*}'
-
-
-
-    print(r'\section{$\phi_2,\phi_{3,T1},\phi_{3,T2}$,A,B by values}')
-
-
-    print latex(r'\subsection{$\phi$}')
-    print_latex_value(phi_2,phi2)
-    print_latex_value(phi_31,Fnat[1])
-    print_latex_value(phi_32,Fnat[2])
-
-    print latex(r'\subsection{A}')
-
-    for i in range(0,3):
-        for j in range(0,3):
-            print_latex_value("A[{0},{1}]={2}".format(i,j,latex(textA[i,j])),A[i,j])
-
-    print latex('\subsection{B}')
-
-    for i in range(0,3):
-        for j in range(0,3):
-            print_latex_value("B[{0},{1}]={2}".format(i,j,latex(textB[i,j])),B[i,j])
-
-    R = Fnat.row_join(A).row_join(B)
-
-    print(r'\section{$\phi_2,\phi_{3,T1},\phi_{3,T2}$,A,B by conditions}')
-
-    print_latex_by_conditions(Matrix(with_latex_symbols(R)),resultFnat)
-
-    print(r"\end{document}")
-
-
-
-
-
-if options.latex:
-    dump_latex()
-
-ac_name = "fc3D_NaturalMap"
-
-def change_var():
-    pass
 
 if options.ccode:
     def_fun(ac_name + "FABGenerated")
@@ -340,13 +141,13 @@ if options.merit:
 
     def_fun(ac_name + "FMeritGenerated")
 
-    print localccode(theta_phi_fb, assign_to='result', array_format='Fortran')
+#    print localccode(theta_phi_fb, assign_to='result', array_format='Fortran')
 
     end_fun()
 
     def_fun(ac_name + "GradFMeritGenerated")
 
-    print localccode(grad_theta_phi_fb, assign_to='result', array_format='Fortran')
+#    print localccode(grad_theta_phi_fb, assign_to='result', array_format='Fortran')
 
     end_fun()
 
