@@ -2,7 +2,7 @@
 #test_name=LMGC_AqueducPR
 #make -f ~/Work/faf/TeX/Makefile -k test_name=LMGC_945_SP_Box_PL measure_name=flpops
 
-all: vi nsgs_localtol nsgs_localsolver nsgs_shuffled psor_solvers nsn_solvers prox_solvers prox_series opti_solvers comp_solvers comp_solvers_large
+all: vi nsgs_localtol nsgs_localsolver nsgs_shuffled psor_solvers nsn_solvers prox_solvers prox_series regul_series opti_solvers comp_solvers comp_solvers_large
 
 domain_value :
 ifeq ($(test_name),Capsules)
@@ -214,6 +214,18 @@ prox_series: save_dir=figure/PROX/Parameters/${measure_name}
 prox_series: domain_max=$(shell sed '8q;d' domain.txt)
 prox_series: domain_value
 	comp.py --measure=${measure_name} --display --no-matplot --solvers='PROX-NSN-AC-'  --domain=1.0:1.0:${domain_max}  --gnuplot-profile --gnuplot-separate-keys
+	gnuplot profile.gp ;
+	pdflatex -interaction=batchmode  profile-${test_name}.tex;
+	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;
+	mkdir -p ${save_dir}
+	mv  profile-${test_name}.pdf ${save_dir}
+	mv  profile-${test_name}_legend.pdf ${save_dir}
+
+#Regul series
+regul_series: save_dir=figure/REGUL/${measure_name}
+regul_series: domain_max=$(shell sed '8q;d' domain.txt)
+regul_series: domain_value
+	comp.py --measure=${measure_name} --display --no-matplot --solvers-exact='PROX-NSN-AC-regulVar-1e+03','PROX-NSN-AC-regul-1e+04','PROX-NSN-AC-regul-1e+04','PROX-NSN-AC-regul-1e+06','PROX-NSN-AC-regul-1e+08','PROX-NSN-AC-regul-1e+10','PROX-NSN-AC-NLS'  --domain=1.0:1.0:1000 --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-${test_name}.tex;
 	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;

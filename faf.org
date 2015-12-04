@@ -217,12 +217,10 @@ language={English}
      + Fischer--bursmeister for SOCCP (smoothing hayashima fukushima)
      + Newton
        + line search (GP, Armijo, Non-monotone watch dogs)
-
    + Optimisation-based methods
      + Successive approximations (Haslinger, ...) QP et SOC (Kucera)
      + ACLM (Fixed point, Newton, Quasi-Newton, ....)
      + SOCLCP (Kanno, et al.)
-
    + Optional approach
      + SOCP (Optimization approach)
      + Interior point
@@ -287,31 +285,32 @@ v%     \end{array}\right]
      + Hertz 3D FEM
      + masonry
 
-** TODO Complete the introduction
-   DEADLINE: <2014-12-27 Sam>
-   + Add a list of approach not discussed in the paper. leave it as future work.
-** TODO Complete Section 3
-   DEADLINE: <2014-12-27 Sam>
-   + Understand the continuity argument of Alart
-   + Find references for alternating projection N and after T
-** TODO Complete Section 4
-   DEADLINE: <2014-12-27 Sam>
-  + Section 4.1 
-    \begin{itemize}
-    \item situate the work of \cite{DeSaxce.Feng90,DeSaxce.Feng1998} and  \cite{Simo.Laursen1992,Laursen.Simo1993b}.
-    \item implement the work of Simo just to laugh
-    \item Have a careful look to the work of Krause.  
-    \end{itemize}
-  + Section 4.2
-    \begin{itemize}
-    \item Rule and efficient Choice of $\rho$.
-    \item Should we remove hyperplane projection ?
-    \item Acceleration techniques and Nesterov Method ? FISTA and Nesterov work. INPPA
-    \end{itemize}
-  + Section 4.3
-    What can be retained from\cite{Heyn_PhD2013} ?
-    Krylov techniques 
+** TODO Redaction article ABH
+   DEADLINE: <2015-11-08 Sun>
+   + Complete the introduction
+     + Add a list of approach not discussed in the paper. leave it as future work.
+   + Complete Section 3
+     + Understand the continuity argument of Alart
+     + Find references for alternating projection N and after T
+   + Complete Section 4
+     + Section 4.1
+       \begin{itemize}
+       \item situate the work of \cite{DeSaxce.Feng90,DeSaxce.Feng1998}
+           and  \cite{Simo.Laursen1992,Laursen.Simo1993b}.
+       \item implement the work of Simo just to laugh
+       \item Have a careful look to the work of Krause.
+       \end{itemize}
+     + Section 4.2
+       \begin{itemize}
+       \item Rule and efficient Choice of $\rho$.
+       \item Should we remove hyperplane projection ?
+       \item Acceleration techniques and Nesterov Method ? FISTA and Nesterov work. INPPA
+       \end{itemize}
+     + Section 4.3
+       What can be retained from\cite{Heyn_PhD2013} ?
+       Krylov techniques
   
+
 
 
 * Comparison tools
