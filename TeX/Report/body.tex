@@ -386,7 +386,7 @@ and the vector $q$ as
 
 \paragraph{Comments} The variable $\hat u$ does not explicitly appear as a variable of the problem since the mapping $u \mapsto u+g(u)$ is a one--to--one mapping.
 
-\tb{Even if the matrix $M$ is invertible, the problem $\mathrm{FC/I}(M,H,f,w,\mu)$ and $\mathrm{FC/II}(W,q,\mu)$ are different from the point of view if their structure. The problem $\mathrm{FC/I}(M,H,f,w,\mu)$ enjoys good properties of sparsity in most of the applications. Either if $M$ comes from multi--body rigid systems or finite--element applications, it is sparse. It is also the same for $H$ since a contact relation involves at best two bodies. When we compute $W$, this sparsity may be lost for instance for systems that comes from finite--element applications, but the system is smaller in terms of number of unknowns. In~$\mathrm{FC/II}(W,q,\mu)$, the structure of $q$ has to be remarked from~(\ref{eq:qq}). Again, if $w=0$ or $w \in \mathrm{im}(H^\top)$, $q$ belongs to the range of $H^\top$ and we will see that it has some consequence on the existence of solutions in the sequel.}
+\tb{Even if the matrix $M$ is invertible, the problem $\mathrm{FC/I}(M,H,f,w,\mu)$ and $\mathrm{FC/II}(W,q,\mu)$ are different from the point of view of their structure. The problem $\mathrm{FC/I}(M,H,f,w,\mu)$ enjoys good properties of sparsity in most of the applications. Either if $M$ comes from multi--body rigid systems or finite--element applications, it is sparse. It is also the same for $H$ since a contact relation involves at best two bodies. When we compute $W$, this sparsity may be lost for instance for systems that comes from finite--element applications, but the system is smaller in terms of number of unknowns. In~$\mathrm{FC/II}(W,q,\mu)$, the structure of $q$ has to be remarked from~(\ref{eq:qq}). Again, if $w=0$ or $w \in \mathrm{im}(H^\top)$, $q$ belongs to the range of $H^\top$ and we will see that it has some consequence on the existence of solutions in the sequel.}
 
 \tb{}
 
@@ -394,7 +394,7 @@ and the vector $q$ as
 \subsection{Existence of solutions}
 \label{sec:existence}
 
-The question of the existence of solution for problem~\ref{prob:I} and~\ref{prob:II} have been studied in~\cite{Klarbring.Pang1998} and~\cite{Acary.ea_ZAMM2011} with different analysis techniques. The key assumption for existence of solutions is both papers is as follows
+The question of the existence of solution for problem~\ref{prob:I} and~\ref{prob:II} have been studied in~\cite{Klarbring.Pang1998} and~\cite{Acary.ea_ZAMM2011} with different analysis techniques. The key assumption for existence of solutions in both papers is as follows
 \begin{equation}\label{ass}
    \exists v\in \RR^m \,:\: H^\top v + w \in \mathrm{int}\, K^\star,
 \end{equation}
@@ -589,7 +589,7 @@ A well-known result states that the solution of the VI are  the zeroes of the na
   x \text{ solves } \mathrm{VI}(X,F) \Longleftrightarrow x= P_X(z) \text{ for some } z \text{ such that } F^\nor(z)=0.
 \end{array}
 \end{equation}
-Note that the if $x$ solves  $\mathrm{VI}(X,F)$, it solves also  $\mathrm{VI}(X,\rho F)$ for $\rho > 0$. Therefore, we can define some parametric normal and natural maps by
+Note that if $x$ solves  $\mathrm{VI}(X,F)$, it solves also  $\mathrm{VI}(X,\rho F)$ for $\rho > 0$. Therefore, we can define some parametric normal and natural maps by
 \begin{equation}
   \label{eq:parametrized-naturalnormalmap}
   \begin{array}{l}
@@ -620,7 +620,7 @@ and  for Problem~\ref{prob:II} under the VI form (\ref{eq:vi-II}),
 \end{equation}
 The normal map based formulation are also obtained in the same way. 
 
-In the seminal work of~\cite{Sibony1970}, iterative methods for solving monotone VIs are based the natural map and fixed point iterations. The role of $\rho$ is recognized to be very important for the rate of convergence. To improve the methods, \citet{Sibony1970} proposes to use ``skewed'' projector based on a non-Euclidean metric. Given a positive definite matrix $D\in R^{n\times n}$, a skewed projector $P_{X,D}$ onto $X$ can be defined. For a vector $x\in \RR^n$, the skew projected vector $\bar x  = P_{X,D}(x)$ is the unique solution of the convex program
+In the seminal work of~\cite{Sibony1970}, iterative methods for solving monotone VIs are based on the natural map and fixed point iterations. The role of $\rho$ is recognized to be very important for the rate of convergence. To improve the methods, \citet{Sibony1970} proposes to use ``skewed'' projector based on a non-Euclidean metric. Given a positive definite matrix $D\in R^{n\times n}$, a skewed projector $P_{X,D}$ onto $X$ can be defined. For a vector $x\in \RR^n$, the skew projected vector $\bar x  = P_{X,D}(x)$ is the unique solution of the convex program
 \begin{equation}
   \label{eq:opt-proj-skew}
   \begin{cases}
@@ -677,7 +677,7 @@ Using the alternative inclusions formulations~(\ref{eq:signo-inclusion-velo})--(
   \label{eq:diskR-prod}
   D(\mu,(r_{n})_+) = \prod_{\alpha=1\ldots n_c} D(\mu^{\alpha} (r_{\n}^\alpha)_+).
 \end{equation}
-defines the Cartesian product of the Coulomb disks for each contact. The notation $x_+$ stands for $x_+ = \max(0,x)$. Using this procedure, \citet{Jean.Moreau1987} propose the following nonsmooth equation formulation of the frictional contact condition
+defines the Cartesian product of the Coulomb disks for each contact. The notation $x_+$ stands for $x_+ = \max(0,x)$. Using this procedure, \citet{Jean.Moreau1987} proposes the following nonsmooth equation formulation of the frictional contact condition
 \begin{equation}
   \label{eq:Moreau--Jean-1}
     \begin{cases}
@@ -930,7 +930,7 @@ A direct complementarity formulation over the positive orthant can also be writt
 Together with the linear discretized dynamics, the whole problem can be formulated as an NCP (or MCP) as it is defined in~\cite{Dirkse.Ferris1995}. This formulation enables therefore the use of MCP solvers as the PATH solver for the frictional contact problem. Unfortunately, the fact that the functions involved in the formulation of the MCP are themselves nonsmooth due to the norm prevents a robust application of such solvers. In~\cite{Glocker1999}, another MCP formulation is provided. The attempt to use it in a numerical framework was a success due the redundancy of constraints in the formulation.
 
 
-In~\cite{Kanno.ea2006},  a alternative second--order cone formulation is proposed by introducing a slack variable $\lambda_\n\in\RR$ for each contact. The disjunctive formulation of the Coulomb contact law is then formulated as
+In~\cite{Kanno.ea2006},  an alternative second--order cone formulation is proposed by introducing a slack variable $\lambda_\n\in\RR$ for each contact. The disjunctive formulation of the Coulomb contact law is then formulated as
 \begin{equation}
   \label{eq:kanno}
     \RR_+\times K_1 \ni
@@ -943,7 +943,7 @@ In~\cite{Kanno.ea2006},  a alternative second--order cone formulation is propose
     \end{bmatrix}
     \in \RR_+ \times K_1
 \end{equation}
-where $K_1 =\{x | \mid  \|x_\t\| \leq x_\n  \}$. In the special that $H$ is the identity matrix (which implies that $n=m$), the linear relations given in Problem~\ref{prob:I} between $u$ and $r$ reduce to $Mv = r +f$ and $u = v+w $. We obtain the following Second Order Cone Linear Complementarity problem (SOCLCP)
+where $K_1 =\{x | \mid  \|x_\t\| \leq x_\n  \}$. In the special case that $H$ is the identity matrix (which implies that $n=m$), the linear relations given in Problem~\ref{prob:I} between $u$ and $r$ reduce to $Mv = r +f$ and $u = v+w $. We obtain the following Second Order Cone Linear Complementarity problem (SOCLCP)
 \begin{equation}
   \label{eq:kanno1}
   \begin{cases}
@@ -1024,7 +1024,7 @@ Starting from Problem~\ref{prob:II}, a direct substitution of $u = Wr +q$ yields
 \end{equation}
 which is an nonlinear optimization problem with a nonsmooth and nonconvex cost function.  From the numerical point of view this problem may be very difficult and we have to ensure that the cost function have to be zero at the solution which is not guaranteed of some local minima are reached in the minimization process.
 
-Other optimization-based formulations have been proposed in the literature. They are not direct optimization formulation but they try to identify a optimization sub-problem which is well-posed and for which efficient numerical methods are available. Three approaches can be listed in three categories : a)  the \textit{alternating optimization} problems, b) the \textit{successive approximation} method and c)  the \textit{convex SOCP} approach.
+Other optimization-based formulations have been proposed in the literature. They are not direct optimization formulation but they try to identify an optimization sub-problem which is well-posed and for which efficient numerical methods are available. Three approaches can be listed in three categories : a)  the \textit{alternating optimization} problems, b) the \textit{successive approximation} method and c)  the \textit{convex SOCP} approach.
 
 
 \paragraph{The alternating optimization problems} aims at solving the frictional contact problem by alternatively solving the Signorini condition for a known fixed values of the tangential reaction $r_\t$ and solving the Coulomb friction model for a known fixed values of the normal reaction $r_\n$. 
