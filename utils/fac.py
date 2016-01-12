@@ -7,7 +7,7 @@
 #
 # Usage ./fac.py [--JeanMoreau] [--latex] [--ccode] [--ccodefac] [--ccodeAB]
 #
-
+EPSILON = 1.5e-10
 
 from sympy import *
 from sympy.core.numbers import  NaN
@@ -109,17 +109,25 @@ u = Matrix([[un],[ut1],[ut2]])
 
 r = Matrix([[rn],[rt1],[rt2]])
 
-FAC = Matrix([[phi2],
+FAC_ = Matrix([[phi2],
               [phi31],
               [phi32]])
 
-A = Matrix([[diff(phi2,un), diff(phi2,ut1), diff(phi2, ut2)],
-            [diff(phi31,un), diff(phi31,ut1), diff(phi31, ut2)],
-            [diff(phi32,un), diff(phi32,ut1), diff(phi32, ut2)]])
+FAC = Matrix(FAC_.shape[0], FAC_.shape[1],
+             lambda i, j: Piecewise((FAC_[i, j], Radius > EPSILON),
+                                    (FAC_[i, j].subs(Radius, 0), Radius <= EPSILON)))
 
-B = Matrix([[diff(phi2,rn), diff(phi2,rt1), diff(phi2, rt2)],
-            [diff(phi31,rn), diff(phi31,rt1), diff(phi31, rt2)],
-            [diff(phi32,rn), diff(phi32,rt1), diff(phi32, rt2)]])
+
+A = FAC.jacobian(u)
+B = FAC.jacobian(r)
+
+#A = Matrix([[diff(phi2,un), diff(phi2,ut1), diff(phi2, ut2)],
+#            [diff(phi31,un), diff(phi31,ut1), diff(phi31, ut2)],
+#            [diff(phi32,un), diff(phi32,ut1), diff(phi32, ut2)]])
+
+#B = Matrix([[diff(phi2,rn), diff(phi2,rt1), diff(phi2, rt2)],
+#            [diff(phi31,rn), diff(phi31,rt1), diff(phi31, rt2)],
+#            [diff(phi32,rn), diff(phi32,rt1), diff(phi32, rt2)]])
 
 
 #
@@ -263,7 +271,8 @@ if options.ccode:
     def_fun(ac_name + "FABGenerated")
     Rnow = FAC.row_join(A).row_join(B)
 
-    print localccode(Rnow, assign_to='result', array_format='Fortran')
+    print localccode(Rnow, assign_to='result', array_format='Fortran',
+                     epsilon_inf=EPSILON, statement_contract=False)
     end_fun()
 
 if options.ccodefac:

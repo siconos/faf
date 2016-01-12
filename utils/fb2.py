@@ -41,6 +41,7 @@ Rnow = load('FB_AB')
 theta_phi_fb = load('theta_phi_fb')
 grad_theta_phi_fb = load('grad_theta_phi_fb')
 
+
 def def_fun(name):
     print("void " + name + r"""(
   double rn,

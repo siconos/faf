@@ -11,7 +11,7 @@
 import JordanAlgebra
 from sympy import *
 from sympy.core.numbers import  NaN
-from localcodegen import localccode
+from codegen import localccode
 from locallatex import print_latex_by_conditions
 import pickle
 import sys
@@ -75,7 +75,6 @@ def isnan(x):
 
 for i in range(3):
     for j in range(3):
-        print i, j
         assert not isnan(A[i,j].subs('ut1', 0).subs('ut2', 0))
         assert not isnan(A[i,j].subs('rt1', 0).subs('rt2', 0))
         assert not isnan(A[i,j].subs('ut1', 0).subs('ut2', 0).subs('rt1', 0).subs('rt2', 0))
@@ -118,7 +117,7 @@ if options.ccode:
 #            print localccode(Rnow[i, j], assign_to='result[{0}]'.format(i+j*nrows), level=1)
 #            print '}'
 
-    print localccode(Rnow, assign_to='result', array_format='Fortran')
+    print localccode(Rnow, assign_to='result', array_format='Fortran', epsilon_inf=1e-10)
 
     end_fun()
 
@@ -217,6 +216,4 @@ void {0}FunctionGenerated(
   }}
 }}
         """.format(ac_name))
-
-
 

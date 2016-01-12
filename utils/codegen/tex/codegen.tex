@@ -1,0 +1,63 @@
+\documentclass[a4paper]{article}
+
+\usepackage{RR}
+\usepackage{hyperref}
+\usepackage{a4wide}
+\RRdate{\today}
+\RRauthor{Maurice Br\'emond {\tt maurice.bremond@inria.fr}}
+\authorhead{}
+\RRtitle{A code generation procedure with verifications for generalized jacobians}
+\RRetitle{}
+\titlehead{}
+\RRresume{}
+\RRabstract{}
+\RRmotcle{}
+\RRkeyword{}
+\RRprojet{Bipop}
+\URRhoneAlpes
+\RCGrenoble
+
+\PassOptionsToPackage{dvipsnames,svgnames}{xcolor}   
+\renewcommand{\baselinestretch}{1.5}
+\usepackage{natbib}
+%%
+\begin{document}
+%%
+\RRNo{123456789}
+%%\makeRR   % cas d'un rapport de recherche
+\makeRT % cas d'un rapport technique.
+%% a partir d'ici, chacun fait comme il le souhaite
+
+\newpage
+\tableofcontents
+\newpage
+
+The method:
+
+1. Express nonsmooth function in a computer algebra system (Maple, Sagemath, Sympy)
+
+2. Compute the jacobian on differentiable points.
+
+3. Express generalized jacobian as a piecewise function : continuous : ``normal jacobian'',  non differentiable point : a limit
+
+4. perform common subexpression elimination up to functions sqrt, Abs, Max, Heaviside, etc.
+
+5. produce c code with static assertions (value analysis fails without them)
+
+6. static verification with frama-c:
+
+output a proof of: limited domain (physically admissible domain) for inputs ==> is_finite(result)
+
+Examples OK:
+
+2D norm function
+Alart Curnier function
+Jean Moreau function
+
+\end{document}
+\endinput
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
