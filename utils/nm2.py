@@ -117,7 +117,7 @@ if options.ccode:
 #            print localccode(Rnow[i, j], assign_to='result[{0}]'.format(i+j*nrows), level=1)
 #            print '}'
 
-    print localccode(Rnow, assign_to='result', array_format='Fortran', epsilon_inf=1e-10)
+    print localccode(Rnow, assign_to='result', array_format='Fortran', epsilon_inf=1e-10, assertions=True)
 
     end_fun()
 

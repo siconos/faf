@@ -28,6 +28,7 @@ void f(
     def test_2(self):
         x = Symbol('x', real=True)
         expr = sqrt(x)
+        print '[{0}]'.format(funcodegen('f', expr))
         assert funcodegen('f', expr) == \
 """\
 void f(

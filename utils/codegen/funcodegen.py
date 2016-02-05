@@ -11,7 +11,20 @@ from sympy.printing.precedence import precedence
 from sympy.printing.str import StrPrinter
 
 # dummy sqrt for cse and to avoid sympy transforms on Pow(_x, Rational(1, 2))
-fsqrt = Function('fsqrt')
+class fsqrt(Function):
+    def _eval_is_negative(self):
+        return False
+
+    def _eval_is_positive(self):
+        return self._args[0].is_positive
+
+# dummy mul function to avoid x*x*x*x* ... *x -> Pow(x, n)
+class fmul(Function):
+
+    def _eval_is_negative(self):
+        return Mul(self._args[0], self._args[1]).is_negative
+
+
 
 def print_float(x):
     return StrPrinter({'full_prec': False}).doprint(Float(x, 3))
@@ -131,7 +144,7 @@ class LocalCCodePrinter(CCodePrinter):
     def __init__(self, settings={}, tab='    ', level=0, array_format='C',
                  epsilon_nan=0, epsilon_inf=0, assertions=False,
                  contracts=False,
-                 postcheck_hooks=False):
+                 postcheck_hooks=False, do_cse=True):
         CCodePrinter.__init__(self, settings)
         self._some_vars = SomeVars()
         self._value_type = 'double'
@@ -144,7 +157,7 @@ class LocalCCodePrinter(CCodePrinter):
         self._cond_affcts = dict()
         self._tab = tab
         self._level = level
-        self._do_cse = True
+        self._do_cse = do_cse
         self._array_format = array_format
         self._epsilon_nan = epsilon_nan
         self._epsilon_inf = epsilon_inf
@@ -152,7 +165,29 @@ class LocalCCodePrinter(CCodePrinter):
         self._contracts = contracts
         self._postcheck_hooks = postcheck_hooks
         self._current_condition = None
+        self._sign = dict()
 
+    def recurs_mul(self, expr, nn):
+
+        def raw_mul(_expr, _nn):
+            def irm(x, n, ac):
+
+                if n == 1:
+                    return ac
+                else:
+                    return irm(x, n-1, fmul(x, ac, evaluate=False))
+
+            if nn > 0:
+                return irm(_expr, _nn, _expr)
+            elif nn == 0.:
+                return 1.
+            else:
+                return irm(1./_expr, -_nn, 1./_expr)
+
+
+        result = raw_mul(expr, nn)
+
+        return result
 
     def _preconditions(self, var, expr):
 
@@ -313,6 +348,7 @@ class LocalCCodePrinter(CCodePrinter):
 
         l = set()
         y = Wild('y')
+        p = Wild('p')
 
         exprs = set()
 
@@ -335,13 +371,30 @@ class LocalCCodePrinter(CCodePrinter):
                  replace(Pow(y, Rational(1, 2)),
                          lambda y: fsqrt(y)).\
                  replace(Pow(y, -Rational(1, 2)),
-                         lambda y: 1./fsqrt(y))
+                         lambda y: 1./fsqrt(y))#.\
+#                 replace(lambda expr: expr.is_Pow and expr.args[1].is_Integer and expr.args[1]>2,
+#                         lambda z: self.recurs_mul(z.args[0], z.args[1])).\
+#                 replace(lambda expr: expr.is_Pow and expr.args[1].is_Integer and expr.args[1]<-2,
+#                         lambda z: 1./(self.recurs_mul(z.args[0], -z.args[1])))
 
         for subexpr in postorder_traversal(expr_n):
+
+# AC & JM failure                             
+#            if Is(subexpr).Piecewise:
+#                for (e, c) in subexpr.args:
+#                    exprs.add(e)
+#                    exprs.add(c)
+
             if Is(subexpr).Function and not subexpr.is_Piecewise:
                 exprs.add(subexpr)
             elif Is(subexpr).Pow:
                 exprs.add(subexpr)
+#                exprs.add(subexpr.args[0])
+
+# AC & JM failure                 
+#            if Is(subexpr).Mul or Is(subexpr).Add:
+#                for e in subexpr.args:
+#                    exprs.add(e)
 
         return cse([expr_n] + list(exprs), self._some_vars)
 
@@ -492,20 +545,32 @@ class LocalCCodePrinter(CCodePrinter):
 
 
         # cse is meaningful only if assignment is specified
-        if self._do_cse and assign_to is not None:
+        if assign_to is not None:
 
-            (assignments, substitued_expr) = self._cse(expr)
+            if self._do_cse:
+                (assignments, substitued_expr) = self._cse(expr)
+            else:
+                (assignments, substitued_expr) = ([], [expr])
+
 
             subs = []
             reworked_expr = substitued_expr[0]
 
             for (i, (var, val)) in enumerate(assignments):
 
+                # cse bug ?
+                # sympy 7.6
+                # cse([Matrix([[x**2 + 1.0/fsqrt(x**2 + y**2)]])])
+                # => ([], [Matrix([[x**2 + 1.0/fsqrt(x**2 + y**2)]])])
+                # cse(Matrix([[x**2 + 1.0/fsqrt(x**2 + y**2)]]))
+                # => ([(x0, x**2)], [Matrix([[x0 + 1.0/fsqrt(x0 + y**2)]])])
+                reworked_expr = reworked_expr.subs(val, var)
+                
                 self._varid[var] = i
 
                 self._decls[var] = val
 
-                var._assumptions = val._assumptions
+#                var._assumptions = val._assumptions
                 var._assumptions['real'] = True
 
                 if val in self._assignments_values:
@@ -571,7 +636,7 @@ class LocalCCodePrinter(CCodePrinter):
                 laffects_cond = len(affects_cond)
 
                 for c in affects_cond:
-                    lines.append('{0} ({1})'.format(if_s[if_s_index], c))
+                    lines.append('{0} ({1})'.format(if_s[if_s_index], self._print(c)))
                     if_s_index = 1
                     lines.append('{')
                     lines.append(self._print_affectations(clines[c], condition=c))
@@ -621,7 +686,7 @@ class LocalCCodePrinter(CCodePrinter):
 
 
     def _print_Function(self, expr):
-        return '{0}'.format(expr.__str__())
+        return '{0}({1})'.format(type(expr), ','.join((self._print(a) for a in expr.args)))
 
     def _print_Rational(self, expr):
         '''we only change the way rational are output: do not force long
@@ -634,6 +699,11 @@ class LocalCCodePrinter(CCodePrinter):
     def _print_fsqrt(self, expr):
 
         return self._print(sqrt(expr.args[0]))
+
+    def _print_fmul(self, expr):
+
+        return self._print(Mul(*expr.args))
+
 
     def _print_Pow(self, expr):
 
@@ -807,24 +877,32 @@ class LocalCCodePrinter(CCodePrinter):
 def localccode(expr, assign_to=None, tab='    ', level=0,
                array_format='C', epsilon_nan=0., epsilon_inf=0.,
                assertions=False,
-               contracts=False, postcheck_hooks=False, settings={}):
+               contracts=False, postcheck_hooks=False, do_cse=True,
+               settings={}):
 
     return (LocalCCodePrinter(
         settings=settings,
         tab=tab, level=level, array_format=array_format,
         epsilon_nan=epsilon_nan, epsilon_inf=epsilon_inf,
         assertions=assertions, contracts=contracts,
-        postcheck_hooks=postcheck_hooks).doprint(expr, assign_to))
+        postcheck_hooks=postcheck_hooks, do_cse=do_cse).doprint(
+            expr, assign_to))
 
 def funcodegen(name, expr, variables=None, intervals=None,
                maxval=1e6, result='result', float_type='double',
                tab='    ',
                level=0, array_format='C', epsilon_nan=0., epsilon_inf=0.,
                assertions=False, contracts=False,
-               postcheck_hooks=False, main_check=False, settings={}):
+               postcheck_hooks=False, main_check=False, do_cse=True, settings={}):
 
     if variables is None:
-        variables = sorted(expr.free_symbols, key=lambda s: s.__str__())
+        variables_str = dict()
+        variables = list()
+        for s in expr.free_symbols:
+            if not s.__str__() in variables_str:
+                variables.append(s)
+                variables_str[s.__str__()] = True
+        variables = sorted(variables, key=lambda s: s.__str__())
 
     if intervals is None:
         intervals = {v: Interval(-maxval, maxval) for v in variables}
@@ -849,13 +927,14 @@ def funcodegen(name, expr, variables=None, intervals=None,
                           contracts=contracts,
                           postcheck_hooks=postcheck_hooks,
                           main_check=main_check,
+                          do_cse=do_cse,
                           settings=settings)
 
 
 
     if main_check:
         include_check = \
-    '#ifdef FUNCODEGEN_CHECK\n' +\
+    '#ifdef __FRAMAC__\n' +\
     '#include "cgen.h"\n' +\
     '#endif\n\n'
         requires_check = \
@@ -863,7 +942,7 @@ def funcodegen(name, expr, variables=None, intervals=None,
     'requires ' + ' && '.join(('({0} <= {1} <= {2})'.format(print_float(intervals[v].inf), v.__str__(), print_float(intervals[v].sup)) for v in variables)) + ';\n' +\
     '*/\n'
         str_check = \
-    '#ifdef FUNCODEGEN_CHECK\n' +\
+    '#ifdef __FRAMAC__\n' +\
     'int main()\n{\n' +\
     '\n'.join(['{0}{1} {2} =  Frama_C_double_interval({3}, {4});'.format(
         tab, float_type, v.__str__(), print_float(intervals[v].inf), print_float(intervals[v].sup)) for v in variables]) +\
@@ -892,5 +971,5 @@ def funcodegen(name, expr, variables=None, intervals=None,
                    epsilon_inf=epsilon_inf,
                    assertions=assertions,
                    contracts=contracts,
-                   postcheck_hooks=postcheck_hooks, settings=settings) +\
+                   postcheck_hooks=postcheck_hooks, do_cse=do_cse, settings=settings) +\
         '\n}\n' + str_check

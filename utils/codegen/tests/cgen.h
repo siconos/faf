@@ -13,10 +13,6 @@
   axiom sqrt_1: \forall real x; x >= 0 <==> x == sqrt(x) * sqrt(x);
   axiom sqrt_2: \forall real x; x > 0 <==> sqrt(x) > 0;
   }
-  axiomatic Mul {
-  logic real mul(real x, real y);
-  axiom mul_1: \forall real x, real y; x>=0 && y>=0 ==> x * y >= 0;
-  }
   axiomatic Heaviside {
   logic real Heaviside(real x);
   axiom Heaviside_1: \forall real x; (x < 0 ==> Heaviside(x) == 0);
@@ -28,6 +24,7 @@
   axiom pow_1: \forall real x, real y; x >=0 ==> pow(x, y) >= 0;
   }
   axiomatic general {
+  axiom sq: \forall real x; x*x >= 0;
   axiom div: \forall real x; x != 0 ==> \is_finite((double) (1/x));
   }
 
@@ -106,6 +103,6 @@ extern double fmax(double x, double y);
  */
 extern double pow(double x, double y);
 
-#include <builtin.h>
+#include <__fc_builtin.h>
 double Frama_C_double_interval(double, double);
 

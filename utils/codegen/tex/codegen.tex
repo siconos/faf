@@ -1,16 +1,33 @@
 \documentclass[a4paper]{article}
 
+\usepackage{listing}
+\usepackage{caption}
+\usepackage{minted}
 \usepackage{RR}
 \usepackage{hyperref}
-\usepackage{a4wide}
+\usepackage{a4wide} 
+
 \RRdate{\today}
-\RRauthor{Maurice Br\'emond {\tt maurice.bremond@inria.fr}}
+\RRauthor{Maurice Br\'emond {\tt
+    maurice.bremond@inria.fr}}
 \authorhead{}
-\RRtitle{A code generation procedure with verifications for generalized jacobians}
+\RRtitle{A code generation
+  procedure with verifications for the computation of generalized jacobians}
 \RRetitle{}
 \titlehead{}
 \RRresume{}
-\RRabstract{}
+\RRabstract{Given the expression of a nonsmooth
+  function in Sympy, a Python computer algebra system, an element of its
+  generalized jacobian may be expressed as a piecewise function. This
+  piecewise function takes its values on the smooth domain, where it is the
+  smooth jacobian computed by the computer algebra system, and on the
+  nonsmooth domain where some values must be provided explicitely. With the
+  help of a small tool a C code is generated from this piecewise function. If
+  the expression of the generalized jacobian is correct, for inputs in a
+  bounded domain, the computation of the jacobian must gives finites
+  results. This may be proven with the help of added ACSL static assertions to
+  give hints to the frama-c value analysis tools and its subsequents proofs
+  obligations.}
 \RRmotcle{}
 \RRkeyword{}
 \RRprojet{Bipop}
@@ -20,17 +37,32 @@
 \PassOptionsToPackage{dvipsnames,svgnames}{xcolor}   
 \renewcommand{\baselinestretch}{1.5}
 \usepackage{natbib}
+
+\input{packages.tex}
+\input{macro.tex}
+
 %%
 \begin{document}
 %%
 \RRNo{123456789}
-%%\makeRR   % cas d'un rapport de recherche
-\makeRT % cas d'un rapport technique.
+%\makeRR   % cas d'un rapport de recherche
+%\makeRT % cas d'un rapport technique.
 %% a partir d'ici, chacun fait comme il le souhaite
 
 \newpage
 \tableofcontents
 \newpage
+
+\section{Introduction}
+The computation of numerical solutions of miscellaneous nonsmooth physical
+problems may need the expression and the computation of Clarke Generalized
+gradients \cite{Clarke1975}.  Code writing for such jacobians can be tedious
+and error prone. Errors in the computation may not be obvious to detect when
+the jacobian is used in nonsmooth Newton method.
+
+
+\section{The Method}
+
 
 The method:
 
@@ -46,13 +78,171 @@ The method:
 
 6. static verification with frama-c:
 
-output a proof of: limited domain (physically admissible domain) for inputs ==> is_finite(result)
+output a proof of: limited domain (physically admissible domain) for inputs ==> is\_finite(result)
 
-Examples OK:
+\section{Examples}
 
-2D norm function
+\subsection{two-norm function over $\RR^2$}
+
+\subsubsection{code generation from the mathematical definition}
+\begin{equation}
+  \begin{array}{ll}
+  \left [\begin{array}{c}
+    x\\
+    y
+    \end{array} \right] \mapsto \sqrt{x^2+y^2}
+  \end{array}
+\end{equation}
+
+\begin{equation}
+  \begin{array}{ll}
+    \left [
+      \begin{array}{c}
+        x\\
+        y
+      \end{array} \right]
+    \mapsto \left\{
+        \begin{array}{ll}
+          \left[
+            \begin{array}{c}
+            \frac{x}{\sqrt{x^2+y^2}}\\
+            \frac{y}{\sqrt{x^2+y^2}}
+          \end{array} \right] & \mbox{if } (x, y) \in \RR^{\star 2} \\
+        \{ v \in \RR^2, ||v|| = 1 \} & \mbox{if } (x, y) = (0, 0)
+        
+      \end{array}
+    \right.
+  \end{array}
+\end{equation}
+
+\begin{listing}[H] 
+  \begin{minted}[frame=single]{python}
+    from sympy import Symbol, Matrix, sqrt
+    x = Symbol('x', real=True)
+    y = Symbol('y', real=True)
+    norm = Matrix([sqrt(x*x + y*y)])
+  \end{minted}
+  \caption{The two-norm function over $\RR^2$ with Sympy}
+\end{listing}
+
+
+The smooth jacobian
+
+\begin{listing}[H] 
+  \begin{minted}[frame=single]{python}
+    v = Matrix([x, y])
+    J_ = f.jacobian(v)
+  \end{minted}
+  \caption{the smooth jacobian}
+\end{listing}
+
+In zero
+\begin{listing}[H] 
+  \begin{minted}[frame=single]{python}
+    from sympy import limit
+    def lim0(expr):
+        return limit(expr.subs(x,t).subs(y,t), t, 0)
+  \end{minted}
+  \caption{a limit}
+\end{listing}
+
+\begin{listing}[H] 
+  \begin{minted}[frame=single]{python}
+    from sympy import Piecewise
+    J = Matrix(J_.shape[0], J_.shape[1], 
+           lambda i, j: Piecewise(
+               (J_[i, j], v.norm() > 0.),
+               (lim0(J_[i, j]), v.norm() <= 0.)))
+  \end{minted}
+  \caption{a limit}
+\end{listing}
+
+
+\begin{equation}
+  \begin{array}{ll}
+    \left [
+      \begin{array}{c}
+        x\\
+        y
+      \end{array} \right]
+    \mapsto \left\{
+        \begin{array}{ll}
+          \left[
+            \begin{array}{c}
+            \frac{x}{\sqrt{x^2+y^2}}\\
+            \frac{y}{\sqrt{x^2+y^2}}
+          \end{array} \right] & \mbox{if } (x, y) \in \RR^{\star 2} \\
+        \left[
+          \begin{array}{c}
+            \frac{\sqrt{2}}{2}\\
+            \frac{\sqrt{2}}{2}
+          \end{array} \right] & \mbox{if } (x, y) = (0, 0)
+        
+      \end{array}
+    \right.
+  \end{array}
+\end{equation}
+
+
+\begin{listing}[H] 
+  \begin{minted}[frame=single]{c}
+void norm2d_jacobian(
+    double x,
+    double y,
+    double *result)
+{
+    double x1 = 0.;
+    int x4 = 0;
+    double x2 = 0.;
+    double x3 = 0.;
+    x1 = sqrt(x*x + y*y);
+    x4 = x1 > 0.;
+    int x5 = 0;
+    x5 = x1 <= 0.;
+    if (x4)
+    {
+        x2 = 1.0/x1;
+        x3 = 1.0*x2;
+    }
+    if (x4)
+    {
+        result[0] = x*x3;
+    }
+    else if (x5)
+    {
+        result[0] = 0.707106781186547524400844362104849039284835937688474;
+    }
+    if (x4)
+    {
+        result[1] = x3*y;
+    }
+    else if (x5)
+    {
+        result[1] = 0.707106781186547524400844362104849039284835937688474;
+    }
+}
+\end{minted}
+\caption{a limit}
+\end{listing}
+
+\subsubsection{this function may overflow}
+
+\subsubsection{a corrected jacobian}
+
 Alart Curnier function
 Jean Moreau function
+
+\section{Conclusion}
+
+Symbolic differentiation -> inefficient code
+
+A better approach Symbolic code generation for the function, Automatic
+differentiation of the smooth part + user provided values on nonsmooth part.
+
+
+
+\bibliographystyle{plainnat}
+\bibliography{biblio}
 
 \end{document}
 \endinput
@@ -60,4 +250,5 @@ Jean Moreau function
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: t
+%%% TeX-engine: default-shell-escape 
 %%% End: 

@@ -19,6 +19,8 @@ init_printing()
 maple = Maple(server="bizet.inria.fr")
 
 #ZERO = Symbol('ZERO', real=True)
+EPSILON = np.finfo(float).eps
+
 
 mu = Symbol('mu', positive=True, real=True)
 rn = Symbol('rn', real=True)
@@ -172,16 +174,16 @@ def utrtzero(e):
 
 A = Matrix(3, 3, lambda i, j:
            Piecewise(
-               (utrtzero(A_[i, j]), ut.norm() + rt.norm() <=0),
-               (utzero(A_[i, j]), ut.norm()<=0),
-               (A_[i, j], ut.norm()>0)))
+               (utrtzero(A_[i, j]), ut.norm() + rt.norm() <= EPSILON),
+               (utzero(A_[i, j]), ut.norm() <= EPSILON),
+               (A_[i, j], ut.norm() > EPSILON)))
 
 
 B = Matrix(3, 3, lambda i, j:
            Piecewise(
-               (utrtzero(B_[i, j]), ut.norm() + rt.norm() <=0), 
-               (projzero(B_[i, j]), (mu*ut1 - rt1)**2 + (mu*ut2 - rt2)**2 <=0),
-               (B_[i, j], (mu*ut1 - rt1)**2 + (mu*ut2 - rt2)**2 > 0)))
+               (utrtzero(B_[i, j]), ut.norm() + rt.norm() <= EPSILON), 
+               (projzero(B_[i, j]), (mu*ut1 - rt1)**2 + (mu*ut2 - rt2)**2 <= EPSILON),
+               (B_[i, j], (mu*ut1 - rt1)**2 + (mu*ut2 - rt2)**2 > EPSILON)))
 
 def isnan(x):
     return isinstance(x, NaN)

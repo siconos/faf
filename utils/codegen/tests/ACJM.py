@@ -88,13 +88,17 @@ FAC = Matrix(FAC_.shape[0], FAC_.shape[1],
 A = FAC.jacobian(u)
 B = FAC.jacobian(r)
 
+intervals = {mu : Interval(0, 1), rn : Interval(0, 1e6)}
+
 if sys.argv[1] == 1:
     print funcodegen('JeanMoreau', FAC.row_join(A).row_join(B),
+                     intervals=intervals,
                      array_format='Fortran',
                      epsilon_inf=EPSILON,
                      assertions=True, main_check=True)
 else:
     print funcodegen('AlartCurnier', FAC.row_join(A).row_join(B),
+                     intervals=intervals,
                      array_format='Fortran',
                      epsilon_inf=EPSILON,
                      assertions=True, main_check=True)
