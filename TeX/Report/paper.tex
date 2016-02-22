@@ -1,7 +1,30 @@
-\documentclass[10pt]{article}
+%\RequirePackage[l2tabu, orthodox]{nag}
+%\RequirePackage{nag}
+\documentclass[10pt,a4paper]{article}
+
+\def\mytrue{1}
+\def\fuckcolor{1}
 
 \input{packages.tex}
 \input{macro.tex}
+
+\hypersetup{%
+\ifx\fuckcolor\mytrue
+linkcolor=black,%
+citecolor=black,
+urlcolor=black,
+filecolor=black,
+\fi
+pdftitle = {Solving 3D frictional contact problems: Formulations and comparisons of numerical methods},
+pdfauthor = {Vincent Acary, Maurice Brémond, and Olivier Huber},
+pdfkeywords = { Multibody systems, nonsmooth Mechanics,  unilateral constraints, Coulomb friction, impact, numerical methods},
+pdfsubject = {FC3D review},
+colorlinks=true,
+%colorlinks,%
+%citecolor=black,%
+%filecolor=black,%
+%urlcolor=black
+}
 
 
 \fancyfoot[L]{}
@@ -9,10 +32,12 @@
 \fancyfoot[R]{\texttt{file paper.tex -- \isodayandtime}}
 \fancyhead[L]{\texttt{Solving 3D frictional contact problems. Acary \& Br\'emond \& Huber}}
 \fancyhead[C]{}
-\renewcommand{\headheight}{22pt}
-\renewcommand{\topmargin}{-1cm}
+\setlength{\headheight}{22pt}
+\setlength{\topmargin}{-1cm}
+\setlength{\footskip}{2.5cm}
 
 \fancyhead[R]{\texttt{\thepage/\pageref{LastPage}}}
+\pagestyle{fancy}
 
 
 \title{Solving 3D frictional contact problems: Formulations and comparisons of numerical methods.}
@@ -24,8 +49,6 @@
 
 
 \begin{document}
-\pagestyle{fancy}
-\thispagestyle{fancy}
 \maketitle
 \tableofcontents
 \clearpage
