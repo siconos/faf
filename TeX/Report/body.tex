@@ -307,9 +307,9 @@ For each contact $\alpha$, the reaction vector $r^\alpha\in \RR^3$ is also decom
   \end{array}\right].
 \end{equation}
 The Coulomb friction cone for a  contact $\alpha$ is defined by $K^{\alpha}  = \{r^\alpha, \|r^\alpha_\t \| \leq \mu^\alpha |r^\alpha_\n| \}$ and the set $K^{\alpha,\star}$ is its dual. 
-The set $K$ is the cartesian product of Coulomb's friction cone at each contact, that 
+The set $K$ is the cartesian product of Coulomb's friction cone at each contact, that is
 \begin{equation}
-  \label{eq:CC}
+  \label{eq:CC_bis}
   K = \prod_{\alpha=1\ldots n_c} K^{\alpha} 
 \end{equation}
 and $K^\star$ is dual.
@@ -1782,7 +1782,7 @@ Let us consider the natural map $F_{\vitwo}^\nat$ in~(\ref{eq:natural-II}) that 
 
 Let us consider the natural map $F_{\vione}^\nat$ in~(\ref{eq:natural-I}) that enables to write Problem~\ref{prob:I} in a nonsmooth equation.  Algorithm~\ref{Algo:NSN} may be also applied or $z =(v,r)$ with
 \begin{equation}
-  \label{eq:phiphi}
+  \label{eq:phiphi_bis}
   \begin{cases}
     \Phi(v,r) \in \partial_{v,r} F_{\vione}^\nat(r)
   \end{cases}
@@ -1954,7 +1954,7 @@ is split along each contact as follows
 \end{equation}
 where the matrices $W^{\alpha\beta}, \alpha \in 1\ldots n_c, \beta \in 1\ldots n_c $ are easily identified from~(\ref{eq:delassus-bis}).
  
-From~(\ref{eq:delassus-ter}), a projected Gauss--Seidel (PGS) method can be designed by using the following rule at the iterate $k$
+From~\eqref{eq:delassus-ter}, a projected Gauss--Seidel (PGS) method can be designed by using the following rule at the iterate $k$
 \begin{equation}
   \label{eq:pgs-1}
   u^{\alpha}_{k+1} = W^{\alpha\alpha} r^{\alpha}_{k+1} + \sum_{\beta < \alpha}W^{\alpha\beta} r^{\beta}_{k+1} + \sum_{\beta > \alpha}W^{\alpha\beta} r^{\beta}_{k} +  q^\alpha, \text{ for all } \alpha \in 1\ldots n_c,
@@ -2013,7 +2013,7 @@ The problem on each contact~(\ref{eq:psor-3}) has exactly the same structure as 
   \caption{PSOR algorithm for Problem~\ref{prob:II}}  \label{Algo:PSOR-II}
 \end{algorithm}
 
-In~\cite{Jourdan.Alart.ea98}, this method is developed in the Gauss-Seidel configuration ($\omega=1$) with a local Newton solver based on the Alart--Curnier formulation. If the local solver is only one iteration of the VI solver based on projection, we get a standard splitting techniques for VI. In Table~\ref{tab:PSOR-algos}, the methods based on PSOR used in the comparison are summarized.
+In~\cite{Jourdan.Alart.ea98}, this method is developed in the Gauss-Seidel configuration ($\omega=1$) with a local Newton solver based on the Alart--Curnier formulation. If the local solver is only one iteration of the VI solver based on projection, we get a standard splitting techniques for VI. In Table~\ref{tab:PSOR-PPA-algos}, the methods based on PSOR used in the comparison are summarized.
 
 \begin{ndrva}
   \begin{itemize}
@@ -2226,7 +2226,7 @@ methods of successive approximation successive approximations is a natural tool 
     \hline
   \end{tabular}
   \caption{Naming convention for the algorithms based on splitting and proximal algorithms}
-  \label{tab:PSOR-PPA-algos}
+  \label{tab:SPLIT-PROX-algos}
 \end{table}
 
 
@@ -2286,7 +2286,7 @@ Other studies.
   \caption{Evaluation of the influence of the self--adaptive procedure for step length.}
   \label{fig:VI/UpdateRule/profile-Capsules}
 \end{figure}
-In Figure~\ref{fig:VI/UpdateRule/time/profile-Capsules}, we study the effect of the self--adaptive procedure in Algorithm~\ref{Algo:Up1} on the convergence of the of the fixed point method in Algorithm~\ref{Algo:FP-vi}.
+In Figure~\ref{fig:VI/UpdateRule/profile-Capsules}, we study the effect of the self--adaptive procedure in Algorithm~\ref{Algo:Up1} on the convergence of the of the fixed point method in Algorithm~\ref{Algo:FP-vi}.
 
 
 \paragraph{Comparison between fixed point, extragradient and projection--contraction method.}
@@ -2334,7 +2334,7 @@ TODO list
      \hspace{-1cm}\includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalTol/\performance/profile-Capsules_legend.pdf}}\vspace{-0.5cm}
   \subfigure[KaplasTower $tol = 10^{-8}, timeout=50s$]{\label{fig:NSGS/LocalTol/\performance/profile-KaplasTower}\includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalTol/\performance/profile-KaplasTower.pdf}
      \hspace{-1cm}\includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalTol/\performance/profile-KaplasTower_legend.pdf}}\vspace{-0.5cm}
-  \subfigure[LMGC\_Bridge\_PR $tol = 10^{-5}, timeout=50s$]{ \label{fig:NSGS/LocalTol/\performance/profile-LMGC_Bridge_PR}  \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalTol/\performance/profile-LMGC_Bridge_PR.pdf}
+     \subfigure[LMGC\_Bridge\_PR $tol = 10^{-5}, timeout=50s$]{ \label{fig:NSGS/LocalTol/\performance/profile-LMGC_Bridge_PR}  \includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalTol/\performance/profile-LMGC_Bridge_PR.pdf}
    \hspace{-1cm}\includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalTol/\performance/profile-LMGC_Bridge_PR_legend.pdf}}\vspace{-0.5cm}
   \subfigure[LMGC\_Cubes\_H20 tests. $tol = 10^{-4},timeout=50s$]{  \label{fig:NSGS/LocalTol/\performance/profile-LMGC_Cubes_H8}\includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalTol/\performance/profile-LMGC_Cubes_H8.pdf}
      \hspace{-1cm}\includegraphics[width=\widthfigure\textwidth]{../figure/NSGS/LocalTol/\performance/profile-LMGC_Cubes_H8_legend.pdf}}
@@ -2362,8 +2362,8 @@ TODO list
 
 
 
-In this section, the tolerance of the local solver is varied and its effect on the global convergence of the solver is reported. For the ``Capsules'' set of examples in figure~\ref{fig:NSGS/LocalTol/time/profile-Capsules}, the tolerance of the local solver $tol_{local}$ has almost no effect on the performance of the global solver. Surprisingly, the algorithm is also able to reach the global accuracy of $tol = 10^{-8}$ with a quite low accuracy of the local solver ($10^{02}$ for instance). This mainly due to the fact that at least one iteration of the local solver is always done and the set of examples are not so difficult to solve (see the average performance in Table~\ref{tab:hardness}).
-Let us have a look to more difficult examples in Figures~\ref{fig:NSGS/LocalTol/time/profile-LMGC_Bridge_PR} and  \ref{fig:NSGS/LocalTol/time/profile-LMGC_Cubes_H8}. Although the required accuracy is lower, the solver with a low local tolerance fails to solve the problems efficiently. In the most difficult test set, it is even required to have a local tolerance $tol_{local}$ at a very low level with respect to the tolerance $tol$ to improve the rate of convergence and even to ensure the success of the solver.
+In this section, the tolerance of the local solver is varied and its effect on the global convergence of the solver is reported. For the ``Capsules'' set of examples in figure~\ref{fig:NSGS/LocalTol/\performance/profile-Capsules}, the tolerance of the local solver $tol_{local}$ has almost no effect on the performance of the global solver. Surprisingly, the algorithm is also able to reach the global accuracy of $tol = 10^{-8}$ with a quite low accuracy of the local solver ($10^{02}$ for instance). This mainly due to the fact that at least one iteration of the local solver is always done and the set of examples are not so difficult to solve (see the average performance in Table~\ref{tab:hardness}).
+Let us have a look to more difficult examples in Figures~\ref{fig:NSGS/LocalTol/\performance/profile-LMGC_Bridge_PR} and \ref{fig:NSGS/LocalTol/\performance/profile-LMGC_Cubes_H8}. Although the required accuracy is lower, the solver with a low local tolerance fails to solve the problems efficiently. In the most difficult test set, it is even required to have a local tolerance $tol_{local}$ at a very low level with respect to the tolerance $tol$ to improve the rate of convergence and even to ensure the success of the solver.
 
 \begin{ndrva}
   \item redo this comparison with the flop measure.
@@ -2419,7 +2419,7 @@ In this section, we study thein the list of contact that is iterated by the NSGS
   \label{fig:PSOR/flpops}
 \end{figure}
 
-In Figure~\ref{fig:profile-Capsules-PSOR-1_15-time}, we study the effect of the relaxation parameter $\omega$ ranging from $[0.5,1.5]$ on the computational time.  Two conclusions can be drawn a) with increasing values of $\omega$, the PSOR algorithm increases its convergence rate as we van observe for $\tau=1$ but b) the robustness of the algorithm is weaken. Indeed, $\tau=15$, we observe that the performance profile is flat and the number of problems solved is higher for valued of $\omega$ around $1$.
+In Figure~\ref{fig:PSOR/flpops}, we study the effect of the relaxation parameter $\omega$ ranging from $[0.5,1.5]$ on the computational time.  Two conclusions can be drawn a) with increasing values of $\omega$, the PSOR algorithm increases its convergence rate as we van observe for $\tau=1$ but b) the robustness of the algorithm is weaken. Indeed, $\tau=15$, we observe that the performance profile is flat and the number of problems solved is higher for valued of $\omega$ around $1$.
 
 To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$. If it accelerates drastically the rate of convergence of the algorithm for some problems it deteriorates the convergence for other. Further studies would be needed to design self--adaptive schemes for the choice of $\omega$.
 
