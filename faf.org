@@ -372,10 +372,13 @@ v%     \end{array}\right]
     + Validation of gradients: 
       - AlartCurnier, JeanMoreau OK
       - Natural map, Fischer Burmeister: stability problem
-    + Line search
+    + Line search does not seem that help at all
       - 
   + Hybrid
     + Predconditioning NSN by a VI solvers.
+
+  + Interior Point (IP)
+    + does not work that well -> remove?
 
 + Conclusion :
   + NSN.
@@ -385,15 +388,17 @@ v%     \end{array}\right]
     + NSGS supersedes. 
     + PROX may improve the situation. 
     + VI not so bad in view of parrelism
-  + KerH trivial (flexible)
+  + KerH trivial (flexible) (Cube_H8)
     + NSN supersedes
-    + Line search
-    + JM and AC works better 
-	
+    + Line search does not help much (nonmonotone version?)
+    + JM and AC work better -> analyse this maybe from an Augmented Lagrangian perspective
+    + 
+
 ** TODO List of actions 
   + Formulation of hybrid Solvers 
   + MB : Rerun computation  
   + VA : Clean Redaction Note from the paper 
+  + VA : investigate the best journal to submit (and format)
   + OH : Fclib. Thinking of howto bind with Matlab 
+  + OH : fixes + new parts in paper
   + MB : fclib and python
-    
