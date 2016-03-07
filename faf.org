@@ -343,8 +343,10 @@ v%     \end{array}\right]
        What can be retained from\cite{Heyn_PhD2013} ?
        Krylov techniques
  
+
+
 ** Meeting <2015-12-04 Fri>
-   OB, VA
+   MB, VA
 + Methods:
   + NSN : Technical report on Jacobians computation
   + NSN : regularization approach, computation of \rho
@@ -354,3 +356,44 @@ v%     \end{array}\right]
   + Rerun all the tests on Luke to get a full-test.pdf
   + Plan a meeting to discuss the conclusion to draw of the document (redo, check, conclude, ...)
 
+
+** Meeting <2016-03-07 Mon>
+   MB, VA, OH 
+
++ Journals
+  + CMAME http://www.journals.elsevier.com/computer-methods-in-applied-mechanics-and-engineering/
+  + IJNME [[http://onlinelibrary.wiley.com/journal/10.1002/(ISSN)1097-0207]]
+  + ACME Archives of Computational Methods in Engineering
+
++ Solvers
+  + VI : FixedPoint, ExtraGradient, Hyperplane
+    
+  + Nonsmooth Newton (NSN)
+    + Validation of gradients: 
+      - AlartCurnier, JeanMoreau OK
+      - Natural map, Fischer Burmeister: stability problem
+    + Line search
+      - 
+  + Hybrid
+    + Predconditioning NSN by a VI solvers.
+
++ Conclusion :
+  + NSN.
+    + Difficulty related to the computation of gradients for FB and Natural 
+  + Hyperstaticity : 
+    + All the NSN fails.
+    + NSGS supersedes. 
+    + PROX may improve the situation. 
+    + VI not so bad in view of parrelism
+  + KerH trivial (flexible)
+    + NSN supersedes
+    + Line search
+    + JM and AC works better 
+	
+** TODO List of actions 
+  + Formulation of hybrid Solvers 
+  + MB : Rerun computation  
+  + VA : Clean Redaction Note from the paper 
+  + OH : Fclib. Thinking of howto bind with Matlab 
+  + MB : fclib and python
+    
