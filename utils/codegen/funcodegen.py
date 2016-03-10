@@ -142,7 +142,7 @@ def flatten_piecewise(expr, upper_conds=None, conds=None, lconds=None):
 class LocalCCodePrinter(CCodePrinter):
 
     def __init__(self, settings={}, tab='    ', level=0, array_format='C',
-                 epsilon_nan=0, epsilon_inf=0, assertions=False,
+                 epsilon_nan=0, epsilon_inf=0, epsilon_power=1, assertions=False,
                  contracts=False,
                  postcheck_hooks=False, do_cse=True):
         CCodePrinter.__init__(self, settings)
@@ -161,6 +161,7 @@ class LocalCCodePrinter(CCodePrinter):
         self._array_format = array_format
         self._epsilon_nan = epsilon_nan
         self._epsilon_inf = epsilon_inf
+        self._epsilon_power = epsilon_power
         self._assertions = assertions
         self._contracts = contracts
         self._postcheck_hooks = postcheck_hooks
@@ -229,7 +230,8 @@ class LocalCCodePrinter(CCodePrinter):
                 requires.append(is_positive_or_zero(sestr, self._epsilon_nan))
 
             if expr.exp < 0:
-                requires.append(is_not_zero(sestr, self._epsilon_inf))
+                requires.append(is_not_zero(sestr, pow(self._epsilon_inf,
+                                                       self._epsilon_power)))
 
             if expr.exp.is_even:
                 ensures.append(is_positive_or_zero(var, self._epsilon_nan))
@@ -876,6 +878,7 @@ class LocalCCodePrinter(CCodePrinter):
 
 def localccode(expr, assign_to=None, tab='    ', level=0,
                array_format='C', epsilon_nan=0., epsilon_inf=0.,
+               epsilon_power=1.,
                assertions=False,
                contracts=False, postcheck_hooks=False, do_cse=True,
                settings={}):
@@ -884,6 +887,7 @@ def localccode(expr, assign_to=None, tab='    ', level=0,
         settings=settings,
         tab=tab, level=level, array_format=array_format,
         epsilon_nan=epsilon_nan, epsilon_inf=epsilon_inf,
+        epsilon_power=epsilon_power,
         assertions=assertions, contracts=contracts,
         postcheck_hooks=postcheck_hooks, do_cse=do_cse).doprint(
             expr, assign_to))
@@ -892,6 +896,7 @@ def funcodegen(name, expr, variables=None, intervals=None,
                maxval=1e6, result='result', float_type='double',
                tab='    ',
                level=0, array_format='C', epsilon_nan=0., epsilon_inf=0.,
+               epsilon_power=1.,
                assertions=False, contracts=False,
                postcheck_hooks=False, main_check=False, do_cse=True, settings={}):
 
@@ -969,7 +974,9 @@ def funcodegen(name, expr, variables=None, intervals=None,
         localccode(expr=expr, assign_to=result, tab=tab, level=level,
                    array_format=array_format, epsilon_nan=epsilon_nan,
                    epsilon_inf=epsilon_inf,
+                   epsilon_power=epsilon_power,
                    assertions=assertions,
                    contracts=contracts,
-                   postcheck_hooks=postcheck_hooks, do_cse=do_cse, settings=settings) +\
+                   postcheck_hooks=postcheck_hooks, do_cse=do_cse,
+                   settings=settings) +\
         '\n}\n' + str_check
