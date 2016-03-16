@@ -36,5 +36,5 @@ J = Matrix(J_.shape[0], J_.shape[1],
 
 
 print funcodegen('norm2d_jacobian', J, array_format='Fortran',
-                 assertions=True, epsilon_inf=EPSILON, main_check=True, do_cse=True)
+                 assertions=True, contracts=False, epsilon_inf=EPSILON, epsilon_power=2, main_check=True, do_cse=True)
 

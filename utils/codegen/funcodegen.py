@@ -11,7 +11,10 @@ from sympy.printing.precedence import precedence
 from sympy.printing.str import StrPrinter
 
 # dummy sqrt for cse and to avoid sympy transforms on Pow(_x, Rational(1, 2))
+
+
 class fsqrt(Function):
+
     def _eval_is_negative(self):
         return False
 
@@ -19,17 +22,19 @@ class fsqrt(Function):
         return self._args[0].is_positive
 
 # dummy mul function to avoid x*x*x*x* ... *x -> Pow(x, n)
+
+
 class fmul(Function):
 
     def _eval_is_negative(self):
         return Mul(self._args[0], self._args[1]).is_negative
 
 
-
 def print_float(x):
     return StrPrinter({'full_prec': False}).doprint(Float(x, 3))
 
-def append(d,k,v):
+
+def append(d, k, v):
     if k in d:
         if not v in d[k]:
             d[k].append(v)
@@ -44,11 +49,13 @@ def is_not_zero(a, epsilon):
     else:
         return '{0} < -{1} || {0} > {1}'.format(a, epsilon)
 
+
 def is_positive_or_zero(a, epsilon):
     if epsilon == 0.:
         return '{0} >= 0'.format(a)
     else:
         return '{0} >= -{1}'.format(a, epsilon)
+
 
 def is_strict_positive(a, epsilon):
     if epsilon == 0.:
@@ -56,22 +63,31 @@ def is_strict_positive(a, epsilon):
     else:
         return '{0} > -{1}'.format(a, epsilon)
 
+
 def assert_is_not_zero(a, epsilon):
 
     return '/*@ assert {0}; */'.format(is_not_zero(a, epsilon))
+
 
 def assert_is_positive_or_zero(a, epsilon):
 
     return '/*@ assert {0}; */'.format(is_positive_or_zero(a, epsilon))
 
 
+def asserts(l):
+    if len(l) > 0:
+        return '/*@ assert {0}; */'.format(' && '.join(l))
+    else:
+        return ''
 
 
 class Is():
+
     """
     check type of an object x:
     Is(x).Matrix <=> hasattr(x, 'is_Matrix') and x.is_Matrix
     """
+
     def __init__(self, x):
         self._x = x
 
@@ -80,6 +96,7 @@ class Is():
             return getattr(self._x, 'is_{0}'.format(name))
         else:
             return False
+
 
 class SomeVars():
 
@@ -91,7 +108,6 @@ class SomeVars():
         while(True):
             self._counter += 1
             yield Symbol('{0}{1}'.format(self._name, self._counter), real=True)
-
 
 
 def flatten_piecewise(expr, upper_conds=None, conds=None, lconds=None):
@@ -116,7 +132,6 @@ def flatten_piecewise(expr, upper_conds=None, conds=None, lconds=None):
 
                 t_cc = tuple(current_conds)
 
-
                 if t_cc in conds:
                     print p_expr
                     print t_cc, e
@@ -138,6 +153,7 @@ def flatten_piecewise(expr, upper_conds=None, conds=None, lconds=None):
 
     else:
         return None
+
 
 class LocalCCodePrinter(CCodePrinter):
 
@@ -176,15 +192,14 @@ class LocalCCodePrinter(CCodePrinter):
                 if n == 1:
                     return ac
                 else:
-                    return irm(x, n-1, fmul(x, ac, evaluate=False))
+                    return irm(x, n - 1, fmul(x, ac, evaluate=False))
 
             if nn > 0:
                 return irm(_expr, _nn, _expr)
             elif nn == 0.:
                 return 1.
             else:
-                return irm(1./_expr, -_nn, 1./_expr)
-
+                return irm(1. / _expr, -_nn, 1. / _expr)
 
         result = raw_mul(expr, nn)
 
@@ -214,17 +229,20 @@ class LocalCCodePrinter(CCodePrinter):
             ensures.append(is_positive_or_zero(var, 0.))
 
         if Is(expr).Relational or Is(expr).Boolean:
-            ensures = ['{0} <==> ({1})'.format(var, self._print(expr))]
+            ensures.append('{0} <==> ({1})'.format(var, self._print(expr)))
         else:
-            ensures = ['same_sign({0}, {1})'.format(var, self._print(expr)),
-                       r'\is_finite(({0}) {1})'.format(self._value_type, var)]
+            assigns.append('assigns {0};'.format(var))
+            ensures.append(
+                'same_sign({0}, {1})'.format(var, self._print(expr)))
+            ensures.append(
+                r'\is_finite(({0}) {1})'.format(self._value_type, var))
 
         if Is(expr).Pow:
 
             sestr = self._print(expr.base)
 
             requires.append(r'\is_finite(({0}) ({1}))'.format(self._value_type,
-                                                             sestr))
+                                                              sestr))
 
             if abs(float(expr.exp) - int(expr.exp)) > 0:
                 requires.append(is_positive_or_zero(sestr, self._epsilon_nan))
@@ -252,6 +270,10 @@ class LocalCCodePrinter(CCodePrinter):
 
         sa += assigns
 
+        pc = self._postconditions(var, expr)
+        if len(pc) > 0:
+            ensures.append(' && '.join(pc))
+
         if len(ensures) > 0:
             sa.append('ensures {0};'.format(' && '.join(map(parenthesize,
                                                             ensures))))
@@ -267,50 +289,56 @@ class LocalCCodePrinter(CCodePrinter):
             else:
                 return []
 
-    def _postconditions(self, lhs, rhs):
+    def _postconditions(self, lhs, rhs, on_lhs=True):
 
         if not self._assertions:
             return ''
 
         sa = []
 
-        sestr = '({0})'.format(self._print(lhs))
+        if on_lhs:
+            sestr = '({0})'.format(self._print(lhs))
+        else:
+            sestr = '({0})'.format(self._print(rhs))
+
+        if Is(rhs).Relational or Is(rhs).Boolean:
+            sa.append('{0} <==> ({1})'.format(
+                self._print(lhs), self._print(rhs)))
 
         if not Is(rhs).Relational and not isinstance(rhs,
                                                      (Logic, And, Or, Not)):
 
-            sa.append(r'/*@ assert \is_finite(({0}) {1}); */'.format(
+            sa.append(r'\is_finite(({0}) {1})'.format(
                 self._value_type, sestr))
 
             if not Is(rhs).Piecewise:
 
                 if Is(rhs).positive:
-                    sa.append(assert_is_positive_or_zero(sestr, 0.))
-                    sa.append(assert_is_not_zero(sestr, 0.))
+                    sa.append(is_positive_or_zero(sestr, 0.))
+                    sa.append(is_not_zero(sestr, 0.))
 
                 else:
                     if Is(rhs).negative is not None and not Is(rhs).negative:
-                        sa.append(assert_is_positive_or_zero(sestr, 0.))
+                        sa.append(is_positive_or_zero(sestr, 0.))
 
                     else:
                         if Is(rhs).negative is not None and Is(rhs).negative:
-                            sa.append(assert_is_positive_or_zero(self.parenthesize(rhs, precedence(
+                            sa.append(is_positive_or_zero(self.parenthesize(rhs, precedence(
                                 - rhs)), 0.))
                         else:
                             if Is(rhs).nonzero:
-                                sa.append(assert_is_not_zero(sestr, 0.))
+                                sa.append(is_not_zero(sestr, 0.))
 
-
-        return sa + ['']
+        return sa
 
     def _print_MatrixElement(self, expr):
         if self._array_format == 'C':
             return "{0}[{1}]".format(expr.parent, expr.j +
-                                     expr.i*expr.parent.shape[1])
+                                     expr.i * expr.parent.shape[1])
 
         elif self._array_format == 'Fortran':
-             return "{0}[{1}]".format(expr.parent, expr.i +
-                                      expr.j*expr.parent.shape[0])
+            return "{0}[{1}]".format(expr.parent, expr.i +
+                                     expr.j * expr.parent.shape[0])
 
     def _traverse_matrix_indices(self, mat):
 
@@ -320,14 +348,14 @@ class LocalCCodePrinter(CCodePrinter):
         elif self._array_format == 'Fortran':
             return ((i, j) for j in range(cols) for i in range(rows))
 
-
     def _fix_integer_power(self, expr):
         subs = dict()
 
         for subexpr in list(postorder_traversal(expr)):
             if Is(subexpr).Pow:
-                if Is(subexpr.args[1]).Integer and subexpr.args[1]>0:
-                    expr = expr.subs(subexpr, Mul(*([subexpr.args[0]]*subexpr.args[1])))
+                if Is(subexpr.args[1]).Integer and subexpr.args[1] > 0:
+                    expr = expr.subs(
+                        subexpr, Mul(*([subexpr.args[0]] * subexpr.args[1])))
 
         return expr
 
@@ -354,34 +382,33 @@ class LocalCCodePrinter(CCodePrinter):
 
         exprs = set()
 
-
         expr_n = expr.\
-                 replace(sqrt(2),
-                         Float(sqrt(2).evalf(n=128), 128)). \
-                 replace(Pow(y, -Rational(3, 2)),
-                         lambda y: 1./Mul(y, fsqrt(y),
-                                          evaluate=False)).\
-                 replace(Pow(y, Rational(3, 2)),
-                         lambda y: Mul(y, fsqrt(y),
+            replace(sqrt(2),
+                    Float(sqrt(2).evalf(n=128), 128)). \
+            replace(Pow(y, -Rational(3, 2)),
+                    lambda y: 1. / Mul(y, fsqrt(y),
                                        evaluate=False)).\
-                 replace(Pow(y, Rational(5, 2)),
-                         lambda y: Mul(y, y, fsqrt(y),
+            replace(Pow(y, Rational(3, 2)),
+                    lambda y: Mul(y, fsqrt(y),
+                                  evaluate=False)).\
+            replace(Pow(y, Rational(5, 2)),
+                    lambda y: Mul(y, y, fsqrt(y),
+                                  evaluate=False)).\
+            replace(Pow(y, -Rational(5, 2)),
+                    lambda y: 1. / Mul(y, y, fsqrt(y),
                                        evaluate=False)).\
-                 replace(Pow(y, -Rational(5, 2)),
-                         lambda y: 1./Mul(y, y, fsqrt(y),
-                                          evaluate=False)).\
-                 replace(Pow(y, Rational(1, 2)),
-                         lambda y: fsqrt(y)).\
-                 replace(Pow(y, -Rational(1, 2)),
-                         lambda y: 1./fsqrt(y))#.\
+            replace(Pow(y, Rational(1, 2)),
+                    lambda y: fsqrt(y)).\
+            replace(Pow(y, -Rational(1, 2)),
+                    lambda y: 1. / fsqrt(y))  # .\
 #                 replace(lambda expr: expr.is_Pow and expr.args[1].is_Integer and expr.args[1]>2,
 #                         lambda z: self.recurs_mul(z.args[0], z.args[1])).\
 #                 replace(lambda expr: expr.is_Pow and expr.args[1].is_Integer and expr.args[1]<-2,
-#                         lambda z: 1./(self.recurs_mul(z.args[0], -z.args[1])))
+# lambda z: 1./(self.recurs_mul(z.args[0], -z.args[1])))
 
         for subexpr in postorder_traversal(expr_n):
 
-# AC & JM failure                             
+# AC & JM failure
 #            if Is(subexpr).Piecewise:
 #                for (e, c) in subexpr.args:
 #                    exprs.add(e)
@@ -393,7 +420,7 @@ class LocalCCodePrinter(CCodePrinter):
                 exprs.add(subexpr)
 #                exprs.add(subexpr.args[0])
 
-# AC & JM failure                 
+# AC & JM failure
 #            if Is(subexpr).Mul or Is(subexpr).Add:
 #                for e in subexpr.args:
 #                    exprs.add(e)
@@ -410,13 +437,14 @@ class LocalCCodePrinter(CCodePrinter):
         for var, _ in sorted([(s, self._varid[s]) for s in l], key=lambda t: t[1]):
             if var in self._decls and not var in self._declared:
                 if self._decls[var].is_Relational or isinstance(self._decls[var], (Logic, And, Or, Not)):
-                    decls.append('{0} {1} = 0;'.format(self._relational_type, var))
+                    decls.append(
+                        '{0} {1} = 0;'.format(self._relational_type, var))
                 else:
                     decls.append('{0} {1} = 0.;'.format(self._value_type, var))
 
                 self._declared[var] = True
 
-        if len(decls)>0:
+        if len(decls) > 0:
 
             return '\n'.join(decls) + '\n'
 
@@ -425,8 +453,6 @@ class LocalCCodePrinter(CCodePrinter):
 
     def _print_affectations(self, lexpr, condition=None):
 
-
-
         l = set()
         affcts = []
         for expr in lexpr:
@@ -434,10 +460,11 @@ class LocalCCodePrinter(CCodePrinter):
 
         def tag(var):
             if condition is not None:
-#                affcts.append('// cond tag({0})={1}'.format(var,var in self._affcts or (var in self._cond_affcts and condition in self._cond_affcts[var])))
+# affcts.append('// cond tag({0})={1}'.format(var,var in self._affcts or
+# (var in self._cond_affcts and condition in self._cond_affcts[var])))
                 return var in self._affcts or (var in self._cond_affcts and condition in self._cond_affcts[var])
             else:
-#                affcts.append('// tag({0})={1}'.format(var,var in self._affcts))
+# affcts.append('// tag({0})={1}'.format(var,var in self._affcts))
                 if self._current_condition is None:
                     return var in self._affcts
                 else:
@@ -459,26 +486,27 @@ class LocalCCodePrinter(CCodePrinter):
                         postcheck = 'POST_CHECK'
 #                affcts.append('/*@ assigns {0}; */'.format(var))
                 if postcheck is not None:
-                    affcts.append('{0} = {1}; {2}({0});'.format(var, super(LocalCCodePrinter, self)._print(self._decls[var]), postcheck))
+                    affcts.append('{0} = {1}; {2}({0});'.format(
+                        var, super(LocalCCodePrinter, self)._print(self._decls[var]), postcheck))
                 else:
-                    affcts.append('{0} = {1};'.format(var, super(LocalCCodePrinter, self)._print(self._decls[var])))
+                    affcts.append(
+                        '{0} = {1};'.format(var, super(LocalCCodePrinter, self)._print(self._decls[var])))
 
-                for sa in self._postconditions(var, self._decls[var]):
-                    affcts.append(sa)
+                affcts.append(
+                    asserts(self._postconditions(var, self._decls[var])))
 
                 if condition is not None:
                     if var in self._cond_affcts:
                         assert type(self._cond_affcts[var]) == list
                         self._cond_affcts[var].append(condition)
-#                        affcts.append('// cond_affcts[{0}].append({1})'.format(var, condition))
+# affcts.append('// cond_affcts[{0}].append({1})'.format(var, condition))
                     else:
                         self._cond_affcts[var] = [condition]
-#                        affcts.append('// cond_affcts[{0}] = {1}'.format(var, condition))
+# affcts.append('// cond_affcts[{0}] = {1}'.format(var, condition))
 
                 else:
                     if self._current_condition is None:
                         self._affcts[var] = True
-
 
         if len(affcts) > 0:
 
@@ -498,7 +526,6 @@ class LocalCCodePrinter(CCodePrinter):
         expr = Matrix(expr.shape[0], expr.shape[1],
                       lambda i, j: piecewise_fold(expr[i, j]))
 
-
         for i in range(nrows):
             for j in range(ncols):
                 if expr[i, j].is_Piecewise:
@@ -509,7 +536,7 @@ class LocalCCodePrinter(CCodePrinter):
                             exprs[c] = dict()
                             exprs[c][(i, j)] = e
 
-        if len(exprs)>0:
+        if len(exprs) > 0:
             m = dict()
 
             for c in exprs:
@@ -522,8 +549,6 @@ class LocalCCodePrinter(CCodePrinter):
 
         else:
             return expr
-
-
 
     def doprint(self, expr, assign_to=None):
 
@@ -545,7 +570,6 @@ class LocalCCodePrinter(CCodePrinter):
         elif expr.is_Piecewise:
             expr = flatten_piecewise(expr)
 
-
         # cse is meaningful only if assignment is specified
         if assign_to is not None:
 
@@ -553,7 +577,6 @@ class LocalCCodePrinter(CCodePrinter):
                 (assignments, substitued_expr) = self._cse(expr)
             else:
                 (assignments, substitued_expr) = ([], [expr])
-
 
             subs = []
             reworked_expr = substitued_expr[0]
@@ -567,7 +590,7 @@ class LocalCCodePrinter(CCodePrinter):
                 # cse(Matrix([[x**2 + 1.0/fsqrt(x**2 + y**2)]]))
                 # => ([(x0, x**2)], [Matrix([[x0 + 1.0/fsqrt(x0 + y**2)]])])
                 reworked_expr = reworked_expr.subs(val, var)
-                
+
                 self._varid[var] = i
 
                 self._decls[var] = val
@@ -589,7 +612,6 @@ class LocalCCodePrinter(CCodePrinter):
                         except:
                             pass
 
-
         else:
             reworked_expr = expr
 
@@ -598,7 +620,6 @@ class LocalCCodePrinter(CCodePrinter):
 
         return self.indent_code(pre_asserts + decls + affcts + super(LocalCCodePrinter, self).doprint(
             piecewise_fold(reworked_expr), assign_to))
-
 
     def _print_Assignment(self, expr):
 
@@ -618,9 +639,9 @@ class LocalCCodePrinter(CCodePrinter):
                                 conds.append(c)
                                 clines[c].append(e)
 
-
             lines = []
-            if len(conds)>0:
+            if len(conds) > 0:
+
                 for c in conds:
                     lines.append(self._print_declarations([c]))
                     lines.append(self._print_declarations(clines[c]))
@@ -637,21 +658,28 @@ class LocalCCodePrinter(CCodePrinter):
 
                 laffects_cond = len(affects_cond)
 
+                if self._assertions:
+                    lines.append('/*@ assert {0}; */'.format(
+                        ' || '.join([self._print(c) for c in conds])))
+
                 for c in affects_cond:
-                    lines.append('{0} ({1})'.format(if_s[if_s_index], self._print(c)))
+                    lines.append(
+                        '{0} ({1})'.format(if_s[if_s_index], self._print(c)))
                     if_s_index = 1
                     lines.append('{')
-                    lines.append(self._print_affectations(clines[c], condition=c))
+                    lines.append(
+                        self._print_affectations(clines[c], condition=c))
                     lines.append('}')
 
                 lines.append('')
 
-            return '\n'.join(filter(lambda s: len(s)>0, lines)) +\
+            return '\n'.join(filter(lambda s: len(s) > 0, lines)) +\
                 super(LocalCCodePrinter, self)._print_Assignment(expr)
 
         else:
 
-#            comment = '/* Assignment {0}={1} */'.format(self._print(expr.lhs), expr.rhs)
+# comment = '/* Assignment {0}={1} */'.format(self._print(expr.lhs),
+# expr.rhs)
             comment = ''
 #            for sa in self._preconditions(expr.lhs, expr.rhs):
 #                comment += '{0}\n'.format(sa)
@@ -669,23 +697,52 @@ class LocalCCodePrinter(CCodePrinter):
                     self._print_affectations(conditions) +\
                     self._print_declarations(expressions) + '\n' +\
                     super(LocalCCodePrinter, self)._print_Assignment(expr) + '\n' +\
-                                         '\n'.join(self._postconditions(expr.lhs, expr.rhs))
+                    asserts(self._postconditions(expr.lhs, expr.rhs))
             else:
                 expressions = [expr]
 
+                assigns = ''
                 if self._assertions:
-                    assigns = '/*@ assigns {0}; */\n'.format(self._print(expr.lhs))
-                else:
-                    assigns = ''
+                    assigns = '/*@ assigns {0}; */\n'.format(
+                        self._print(expr.lhs))
 
+                if self._contracts:
+                    copen = '/*@\n'
+                    cclose = '*/\n'
+                    assigns = 'assigns {0};\n'.format(self._print(expr.lhs))
+                    pc = self._postconditions(expr.lhs, expr.rhs)
+                    if len(pc) > 0:
+                        ensures = 'ensures {0};\n'.format(' && '.join(pc))
+                    else:
+                        ensures = ''
+
+                    prec = self._postconditions(
+                        expr.lhs, expr.rhs, on_lhs=False)
+                    if len(prec) > 0:
+                        requires = 'requires {0};\n'.format(' && '.join(prec))
+                        pre_asserts = '/*@ assert {0};*/\n'.format(
+                            ' && '.join(prec))
+                    else:
+                        requires = ''
+                        pre_asserts = ''
+                else:
+                    copen = ''
+                    cclose = ''
+                    requires = ''
+                    ensures = ''
+                    pre_asserts = ''
                 return comment + \
                     self._print_declarations(expressions) +\
                     self._print_affectations(expressions) +\
+                    pre_asserts +\
+                    copen +\
+                    requires +\
                     assigns +\
+                    ensures +\
+                    cclose +\
                     super(LocalCCodePrinter, self)._print_Assignment(expr) + '\n' +\
-                                         '\n'.join(self._postconditions(expr.lhs, expr.rhs))
-
-
+                    asserts(
+                        self._postconditions(expr.lhs, expr.rhs))
 
     def _print_Function(self, expr):
         return '{0}({1})'.format(type(expr), ','.join((self._print(a) for a in expr.args)))
@@ -697,7 +754,6 @@ class LocalCCodePrinter(CCodePrinter):
         p, q = int(expr.p), int(expr.q)
         return '%d.0/%d.0' % (p, q)
 
-
     def _print_fsqrt(self, expr):
 
         return self._print(sqrt(expr.args[0]))
@@ -705,7 +761,6 @@ class LocalCCodePrinter(CCodePrinter):
     def _print_fmul(self, expr):
 
         return self._print(Mul(*expr.args))
-
 
     def _print_Pow(self, expr):
 
@@ -731,23 +786,21 @@ class LocalCCodePrinter(CCodePrinter):
                 plh = '{0}'
             else:
                 plh = '({0})'
-            return '*'.join([plh.format(self._print(expr.base))]*expr.exp)
+            return '*'.join([plh.format(self._print(expr.base))] * expr.exp)
 
         elif Is(expr.exp).Rational:
 
-            return self._print(Pow(Pow(expr.base, Rational(1,expr.exp.q)),
+            return self._print(Pow(Pow(expr.base, Rational(1, expr.exp.q)),
                                    expr.exp.p, evaluate=False))
-
 
         else:
 
             return 'pow({0}, {1})'.format(self._print(expr.base),
                                           self._print(expr.exp))
 
-
-
     def _print_Float(self, expr):
-        # cf http://stackoverflow.com/questions/25222681/scientific-exponential-notation-with-sympy-in-an-ipython-notebook
+        # cf
+        # http://stackoverflow.com/questions/25222681/scientific-exponential-notation-with-sympy-in-an-ipython-notebook
         return StrPrinter({'full_prec': False}).doprint(Float(expr, 52))
 
     def _print_Mul(self, expr):
@@ -825,15 +878,16 @@ class LocalCCodePrinter(CCodePrinter):
 
                 lines.append(if_st.format(self._print(cond)))
                 lines.append('{')
-#                lines.append('DEBUG_PRINT("Case ({0}) is True.\\n");'.format(cond))
-                lines.append(self._print_affectations([expressions[num_cond]], cond))
+# lines.append('DEBUG_PRINT("Case ({0}) is True.\\n");'.format(cond))
+                lines.append(
+                    self._print_affectations([expressions[num_cond]], cond))
                 self._current_condition = cond
                 lines.append(self._print(expressions[num_cond]))
                 self._current_condition = None
 
                 lines.append('}')
 
-            return '\n'.join(filter(lambda s: len(s)>0, lines))
+            return '\n'.join(filter(lambda s: len(s) > 0, lines))
 
         else:
             # The piecewise was used in an expression, need to do inline
@@ -841,11 +895,10 @@ class LocalCCodePrinter(CCodePrinter):
             # not work for statements that span multiple lines (Matrix or
             # Indexed expressions).
             ecpairs = ["((%s) ? (%s)" % (self._print(c), self._print(e))
-                    for e, c in expr.args[:-1]]
+                       for e, c in expr.args[:-1]]
             last_line = ": (%s)" % self._print(expr.args[-1].expr)
 
-            return ": ".join(ecpairs) + last_line + " ".join([")"*len(ecpairs)])
-
+            return ": ".join(ecpairs) + last_line + " ".join([")" * len(ecpairs)])
 
     def indent_code(self, code):
         """Accepts a string of code or a list of code lines"""
@@ -857,11 +910,11 @@ class LocalCCodePrinter(CCodePrinter):
         inc_token = ('{', '(', '{\n', '(\n')
         dec_token = ('}', ')')
 
-        code = [ line.lstrip(' \t') for line in code ]
+        code = [line.lstrip(' \t') for line in code]
 
-        increase = [ int(any(map(line.endswith, inc_token))) for line in code ]
-        decrease = [ int(any(map(line.startswith, dec_token)))
-                     for line in code ]
+        increase = [int(any(map(line.endswith, inc_token))) for line in code]
+        decrease = [int(any(map(line.startswith, dec_token)))
+                    for line in code]
 
         pretty = []
         level = self._level
@@ -870,10 +923,9 @@ class LocalCCodePrinter(CCodePrinter):
                 pretty.append(line)
                 continue
             level -= decrease[n]
-            pretty.append("%s%s" % (self._tab*(level+1), line))
+            pretty.append("%s%s" % (self._tab * (level + 1), line))
             level += increase[n]
         return pretty
-
 
 
 def localccode(expr, assign_to=None, tab='    ', level=0,
@@ -890,15 +942,37 @@ def localccode(expr, assign_to=None, tab='    ', level=0,
         epsilon_power=epsilon_power,
         assertions=assertions, contracts=contracts,
         postcheck_hooks=postcheck_hooks, do_cse=do_cse).doprint(
-            expr, assign_to))
+        expr, assign_to))
+
+
+def files_generation(name, variables, data, result='result',
+                     float_type='double'):
+
+    with open('{0}.h'.format(name), 'w') as header:
+        header.write(
+            """
+#ifndef {0}_H
+#define {0}_H
+void {1}({2}, {3});
+#endif
+""".format(name.upper(), name, ', '.join(
+           ['{0} {1}'.format(float_type, v) for v in variables]),
+           '{0}* {1}'.format(float_type, result)))
+
+    with open('{0}.c'.format(name), 'w') as implem:
+        implem.write('#include "{0}.h"\n'.format(name))
+        implem.write(data)
+
 
 def funcodegen(name, expr, variables=None, intervals=None,
                maxval=1e6, result='result', float_type='double',
                tab='    ',
                level=0, array_format='C', epsilon_nan=0., epsilon_inf=0.,
                epsilon_power=1.,
+               with_files_generation=False,
                assertions=False, contracts=False,
-               postcheck_hooks=False, main_check=False, do_cse=True, settings={}):
+               postcheck_hooks=False, main_check=False, do_cse=True,
+               settings={}):
 
     if variables is None:
         variables_str = dict()
@@ -917,7 +991,7 @@ def funcodegen(name, expr, variables=None, intervals=None,
                 intervals[v] = Interval(-maxval, maxval)
 
     if not Is(expr).Matrix:
-        return funcodegen(name, Matrix([expr]), 
+        return funcodegen(name, Matrix([expr]),
                           variables=variables,
                           intervals=intervals,
                           maxval=maxval,
@@ -928,6 +1002,7 @@ def funcodegen(name, expr, variables=None, intervals=None,
                           array_format=array_format,
                           epsilon_nan=epsilon_nan,
                           epsilon_inf=epsilon_inf,
+                          with_files_generation=with_files_generation,
                           assertions=assertions,
                           contracts=contracts,
                           postcheck_hooks=postcheck_hooks,
@@ -935,33 +1010,31 @@ def funcodegen(name, expr, variables=None, intervals=None,
                           do_cse=do_cse,
                           settings=settings)
 
-
-
     if main_check:
         include_check = \
-    '#ifdef __FRAMAC__\n' +\
-    '#include "cgen.h"\n' +\
-    '#endif\n\n'
+            '#include "funcodegen.h"\n'
         requires_check = \
-    '/*@\n' +\
-    'requires ' + ' && '.join(('({0} <= {1} <= {2})'.format(print_float(intervals[v].inf), v.__str__(), print_float(intervals[v].sup)) for v in variables)) + ';\n' +\
-    '*/\n'
+            '/*@\n' +\
+            'requires ' + ' && '.join(('({0} <= {1} <= {2})'.format(print_float(intervals[v].inf), v.__str__(), print_float(intervals[v].sup)) for v in variables)) + ';\n' +\
+            'assigns {0}[0..{1}];\n'.format(result, (expr.shape[0] * expr.shape[1]) - 1) +\
+            'ensures {0};\n'.format(' && '.join(('\is_finite((double) {0}[{1}])'.format(result, ind) for ind in range(expr.shape[0] * expr.shape[1])))) +\
+            '*/\n'
         str_check = \
-    '#ifdef __FRAMAC__\n' +\
-    'int main()\n{\n' +\
-    '\n'.join(['{0}{1} {2} =  Frama_C_double_interval({3}, {4});'.format(
-        tab, float_type, v.__str__(), print_float(intervals[v].inf), print_float(intervals[v].sup)) for v in variables]) +\
-    '\n' +\
-    '{0}{1} {2}[{3}];'.format(tab, float_type, result, expr.shape[0]*expr.shape[1]) +\
-    '\n' +\
-    '{0}{1}({2}, {3});'.format(tab, name, ', '.join((v.__str__() for v in variables)), result) +\
-    '\n}' +\
-    '\n#endif'
+            '#ifdef __FRAMAC__\n' +\
+            'int main()\n{\n' +\
+            '\n'.join(['{0}{1} {2} =  Frama_C_double_interval({3}, {4});'.format(
+                       tab, float_type, v.__str__(), print_float(intervals[v].inf), print_float(intervals[v].sup)) for v in variables]) +\
+            '\n' +\
+            '{0}{1} {2}[{3}];'.format(tab, float_type, result, expr.shape[0] * expr.shape[1]) +\
+            '\n' +\
+            '{0}{1}({2}, {3});'.format(tab, name, ', '.join((v.__str__() for v in variables)), result) +\
+            '\n}' +\
+            '\n#endif'
     else:
         include_check = ''
         requires_check = ''
         str_check = ''
-    return \
+    code_result = \
         include_check +\
         requires_check +\
         'void ' + name + '(\n' +\
@@ -980,3 +1053,8 @@ def funcodegen(name, expr, variables=None, intervals=None,
                    postcheck_hooks=postcheck_hooks, do_cse=do_cse,
                    settings=settings) +\
         '\n}\n' + str_check
+    if with_files_generation:
+        return files_generation(name, variables, code_result, result=result,
+                                float_type=float_type)
+    else:
+        return code_result

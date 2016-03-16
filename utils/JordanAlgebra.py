@@ -23,8 +23,9 @@ def prod(x, y):
     return (x.transpose() * y).col_join(
         y[0] * x[1:, 0] + x[0] * y[1:, 0])
 
+import numpy as np
 
-def spectral_decomposition(x):
+def spectral_decomposition(x, epsilon=np.finfo(float).eps):
     """
     Jordan spectral decomposition.
     """
@@ -39,13 +40,13 @@ def spectral_decomposition(x):
 
     u1 = (1./2.)*Matrix([
         1]).col_join(
-        piecewise_matrix(Piecewise((-xt/xt_norm, xt_norm > 0),
-                                   (- omega, xt_norm <= 0))))
+            piecewise_matrix(Piecewise((-xt/xt_norm, xt_norm > epsilon),
+                                       (- omega, xt_norm <= epsilon))))
 
     u2 = (1./2.)*Matrix([
         1]).col_join(
-        piecewise_matrix(Piecewise((xt/xt_norm, xt_norm > 0),
-                                   (omega, xt_norm <= 0))))
+            piecewise_matrix(Piecewise((xt/xt_norm, xt_norm > epsilon),
+                                       (omega, xt_norm <= epsilon))))
 
     return (lambda1, lambda2, u1, u2)
 

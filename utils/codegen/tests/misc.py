@@ -112,5 +112,14 @@ void f(
 }
 """
 
+    def test_7(self):
+        x = Symbol('x', real=True)
+        
+        p0 = Piecewise((-x, x<=0), (x, x>0))
+        p1 = Piecewise((p0, And(x < 1, x > -1)), ((p0*p0, Or(x<=-1, x>=1))))
+
+        print funcodegen('f', p1)
+
+                
 if __name__ == '__main__':
     unittest.main()

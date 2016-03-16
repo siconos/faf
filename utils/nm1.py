@@ -1,17 +1,17 @@
 #!/usr/bin/env sage
 
 #
-# print the Fischer Burmeister function and its derivatives in FAC A B Rnow pickle files
+# print the Natural Map function and its derivatives in Fnat A B Rnow pickle files
 #
 
-# Usage: ./fb1.py
+# Usage: ./nm1.py
 
 from sympy import *
 from sympy.core.numbers import  NaN
 import pickle
 
 import sage
-from sage.all import maple, Maple
+from sage.all import Maple
 import numpy as np
 
 init_printing()
@@ -22,7 +22,7 @@ maple = Maple(server="bizet.inria.fr")
 EPSILON = np.finfo(float).eps
 
 
-mu = Symbol('mu', positive=True, real=True)
+mu = Symbol('mu', negative=False, real=True)
 rn = Symbol('rn', real=True)
 rt1 = Symbol('rt1', real=True)
 rt2 = Symbol('rt2', real=True)
@@ -61,6 +61,7 @@ FAC = Fnat
 A_ = Fnat.jacobian(u)
 B_ = Fnat.jacobian(r)
 
+
 t = Symbol('t', positive=True, real=True)
 
 class Memoize():
@@ -72,13 +73,9 @@ class Memoize():
         if args in self._done:
             return self._done[args]
         else:
-            try:
-                r = self._fun(*args)
-                self._done[args] = r
-                return r
-            except Exception as e:
-                self._done[args] = e
-                return e
+            r = self._fun(*args)
+            self._done[args] = r
+            return r
 
 def _maple_simplify(expr):
 
@@ -127,11 +124,11 @@ maple.assume('rn', 'real')
 maple.assume('rt1', 'real')
 maple.assume('rt2', 'real')
 
-maple.assume('mu>0')
+maple.assume('mu>=0')
+maple.assume('mu<1')
 
 maple.assume('rn>=0')
 maple.assume('t>0')
-
 
 
 def msubs(e, syms):
@@ -156,34 +153,64 @@ def utzero(e):
     else:
         return e
 
+# find a limit of e when ||rt|| -> 0
+def rtzero(e):
+
+    if hasattr(e, 'subs'):
+#        xe = msubs(e, [(ut1, t), (ut2, t)])
+        xe = e.subs(rt1, 0).subs(rt2, 0)
+        return xe
+#        return mlimit(xe, t, 0)
+#        return limit(xe._sage_(), t=0, dir='+')._sympy_()
+    else:
+        return e    
+
 # find a limit of e when (mu*ut1 - rt1)^2  + (mu*ut2 - rt2)^2 -> 0
 def projzero(e):
 
     if hasattr(e, 'subs'):
         xe = e.subs(ut1, t*rt1/mu).subs(ut2, t*rt2/mu)
         return mlimit(xe, t, 0)
+#        return limit(xe._sage_(), t=0, dir='+')._sympy_()
 
 
 # ||u|| -> 0 ||r|| -> 0
 def utrtzero(e):
 
     if hasattr(e, 'subs'):
-        xe = e.subs(ut1, t).subs(ut2, 0).subs(rt1, 0).subs(rt2, t)
+        xe = e.replace(ut1, t).replace(ut2, t).replace(rt1, 0).replace(rt2, 0)
+
         return mlimit(xe, t, 0)
+#        return limit(xe._sage_(), t=0, dir='+')._sympy_()
+    
+for i in range(0, 3):
+    for j in range(0, 3):
+        print '======================='
+        print i,j
+        print 'utrtzero(A_[i,j])=', utrtzero(A_[i,j])
+        print 'utzero(A_[i,j])=',  utzero(A_[i,j])
+        print 'rtzero(A_[i,j])=', rtzero(A_[i, j])
 
-
+        print 'utrtzero(B_[i,j])=', utrtzero(B_[i,j])
+        print 'projzero(B_[i,j])=', projzero(B_[i,j])
+        print 'utzero(B_[i,j])=',  utzero(B_[i,j])
+        print 'rtzero(B_[i,j])=',  rtzero(B_[i,j])
+    
 A = Matrix(3, 3, lambda i, j:
            Piecewise(
-               (utrtzero(A_[i, j]), ut.norm() + rt.norm() <= EPSILON),
-               (utzero(A_[i, j]), ut.norm() <= EPSILON),
-               (A_[i, j], ut.norm() > EPSILON)))
-
+               (utrtzero(A_[i, j]), And(ut.norm() <= EPSILON, rt.norm() <= EPSILON)),
+               (utzero(A_[i, j]),   And(ut.norm() <= EPSILON, rt.norm() > EPSILON)),
+               (rtzero(A_[i, j]),   And(ut.norm() > EPSILON, rt.norm() <= EPSILON)),
+               (A_[i, j],           And(ut.norm() > EPSILON, r.norm() > EPSILON))))
 
 B = Matrix(3, 3, lambda i, j:
            Piecewise(
-               (utrtzero(B_[i, j]), ut.norm() + rt.norm() <= EPSILON), 
+               (utrtzero(B_[i, j]), And(ut.norm() <= EPSILON, rt.norm() <= EPSILON)),
                (projzero(B_[i, j]), (mu*ut1 - rt1)**2 + (mu*ut2 - rt2)**2 <= EPSILON),
-               (B_[i, j], (mu*ut1 - rt1)**2 + (mu*ut2 - rt2)**2 > EPSILON)))
+               (utzero(B_[i, j]),   And(ut.norm() <= EPSILON, rt.norm() > EPSILON)),
+               (rtzero(B_[i, j]),   And(ut.norm() > EPSILON, rt.norm() <= EPSILON)),
+               (B_[i, j], And((mu*ut1 - rt1)**2 + (mu*ut2 - rt2)**2 > EPSILON,
+                              ut.norm() > EPSILON, rt.norm() > EPSILON))))
 
 def isnan(x):
     return isinstance(x, NaN)
