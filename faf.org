@@ -392,13 +392,31 @@ v%     \end{array}\right]
     + NSN supersedes
     + Line search does not help much (nonmonotone version?)
     + JM and AC work better -> analyse this maybe from an Augmented Lagrangian perspective
-    + 
+
+
+
+** Meeting <2016-03-17 Thu>
+   MB, VA, OH.
+
+   + MB: new generatation of the gradient
+     + Jean Moreau, Alart Curnier, k
+     + Natural map. pb de division par la norme de x_t
+     + VA: Scaling Nesterov Todd
+
+   + VA: Why nothing on Interior points?
+
+   + OH:
+     + Remark on the introduction. restructuration
+     + Delete problem I
+     + Notation des variables
+
 
 ** TODO List of actions 
   + Formulation of hybrid Solvers 
   + MB : Rerun computation  
-  + VA : Clean Redaction Note from the paper 
+  + VA : Clean Redaction Note from the paper Why this stuff and not this one
   + VA : investigate the best journal to submit (and format)
   + OH : Fclib. Thinking of howto bind with Matlab 
   + OH : fixes + new parts in paper
-  + MB : fclib and python
+  + MB : fclib and swig python
+
