@@ -318,8 +318,8 @@ v%     \end{array}\right]
      + Hertz 3D FEM
      + masonry
 
-** TODO Redaction article ABH
-   DEADLINE: <2015-11-08 Sun>
+** POSTPONED Redaction article ABH
+   CLOSED: [2016-03-20 Sun 21:48] DEADLINE: <2015-11-08 Sun>
    + Complete the introduction
      + Add a list of approach not discussed in the paper. leave it as future work.
    + Complete Section 3
@@ -344,7 +344,6 @@ v%     \end{array}\right]
        Krylov techniques
  
 
-
 ** Meeting <2015-12-04 Fri>
    MB, VA
 + Methods:
@@ -356,7 +355,7 @@ v%     \end{array}\right]
   + Rerun all the tests on Luke to get a full-test.pdf
   + Plan a meeting to discuss the conclusion to draw of the document (redo, check, conclude, ...)
 
-
+    
 ** Meeting <2016-03-07 Mon>
    MB, VA, OH 
 
@@ -411,12 +410,42 @@ v%     \end{array}\right]
      + Notation des variables
 
 
-** TODO List of actions 
-  + Formulation of hybrid Solvers 
-  + MB : Rerun computation  
-  + VA : Clean Redaction Note from the paper Why this stuff and not this one
-  + VA : investigate the best journal to submit (and format)
-  + OH : Fclib. Thinking of howto bind with Matlab 
-  + OH : fixes + new parts in paper
-  + MB : fclib and swig python
+** TODO List of actions.  Last update <2016-03-20 Sun>
+   DEADLINE: <2016-04-04 Mon>
+
+
+   + Paper. General Work :
+     + All sections : Clean redaction note and report here the items  :VA:
+     + Complete the introduction
+       + Add a list of approach not discussed in the paper. leave it as future work.
+       + Detail whre it is possible why some approaches are not discussed (IPM)
+     + Complete Section 3
+       + Understand the continuity argument of Alart
+       + Find references for alternating projection N and after T
+     + Complete Section 4
+       + Section 4.1
+	 \begin{itemize}
+	 \item situate the work of \cite{DeSaxce.Feng90,DeSaxce.Feng1998}
+             and  \cite{Simo.Laursen1992,Laursen.Simo1993b}.
+	 \item implement the work of Simo just to laugh
+	 \item Have a careful look to the work of Krause.
+	 \end{itemize}
+       + Section 4.2
+	 \begin{itemize}
+	 \item Rule and efficient Choice of $\rho$.
+	 \item Should we remove hyperplane projection ?
+	 \item Acceleration techniques and Nesterov Method ? FISTA and Nesterov work. INPPA
+	 \end{itemize}
+       + Section 4.3
+	 What can be retained from\cite{Heyn_PhD2013} ?
+
+	 Krylov techniques
+ 
+     + Where to write the formulation of hybrid Solvers :VA:
+     + Investigate the best journal to submit (and format) :VA:
+     + Fixes + new parts in paper :OH:
+   + Devel and comparisons:    
+     + Rerun computation  :MB:
+     + Fclib. Thinking of howto bind with Matlab :OH:
+     + Fclib and swig python :MB:
 
