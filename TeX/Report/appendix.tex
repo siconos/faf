@@ -1,25 +1,33 @@
 \clearpage
 \appendix
 
-\section{Basics in Convex Analysis}
-\label{Sec:Ann:ConvexAnalysis}
-\begin{eqnarray}
-y = P_K(x) & \Longleftrightarrow &
+\section{Basics in Convex Analysis} \label{Sec:Ann:ConvexAnalysis}
+\begin{definition}[\cite{rockafellar2009variational}]\label{def:MM}
+ Let $X\subseteq \RR^n$. A multivalued (or point-to-set) mapping $T\colon X\rightrightarrows X$ is said to be (strictly) monotone if
+ there exists $c (>) \geq 0$ such that for all $\hat{x}, \widetilde{x} \in X$
+ \begin{equation}
+  {(\hat{v} - \widetilde{v})}^\top(\hat{x} - \widetilde{x})\geq c \|\hat{x} - \widetilde{x}\|\qquad\text{with}\; \hat{v}\in T(\hat{x}), \widetilde{v}\in T(\widetilde{x}).
+ \end{equation}
+ Moreover $T$ is said to be maximal when it is not possible to add a pair $(x, v)$ to the graph of $T$ without destroying the monotonicity.
+\end{definition}
+
+\begin{align}
+y = P_K(x) & \Longleftrightarrow 
 \begin{array}{ll}
   \min &\frac 1 2 (y-x)^\top (y-x ) \\
   \text {s.t. } & y \in K
 \end{array}
 \\
-& \Longleftrightarrow & - (y-x) \in N_K(y) \\
-& \Longleftrightarrow & (x-y)^\top(y-z) \geq 0, \forall z \in K 
+& \Longleftrightarrow  - (y-x) \in N_K(y) \\
+& \Longleftrightarrow  (x-y)^\top(y-z) \geq 0, \forall z \in K 
 \label{eq:tutu}
-\end{eqnarray}
+\end{align}
 
-\begin{eqnarray}
--F(x) \in N_K(x) & \Longleftrightarrow & -\rho F(x)^\top(y-x) \geq 0, \forall y \in K\\
-& \Longleftrightarrow &  (x-(x - \rho F(x))^\top(y-x) \geq 0, \forall y \in K \\
-& \Longleftrightarrow &  x = P_K(x- \rho F(x)) \text{ thanks to~\eqref{eq:tutu}} 
-\end{eqnarray}
+\begin{align}
+-F(x) \in N_K(x) & \Longleftrightarrow -\rho F(x)^\top(y-x) \geq 0, \forall y \in K\\
+& \Longleftrightarrow  (x-(x - \rho F(x))^\top(y-x) \geq 0, \forall y \in K \\
+& \Longleftrightarrow  x = P_K(x- \rho F(x)) \text{ thanks to~\eqref{eq:tutu}} 
+\end{align}
 
 \begin{equation}
   \label{eq:sub-norm}

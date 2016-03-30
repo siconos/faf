@@ -8,6 +8,19 @@
   bottom=3cm
 }
 
+\usepackage{natbib}
+% For unicode 
+%\usepackage{ucs}
+\usepackage[utf8]{inputenc}
+%\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+
+% invisible unicode space
+\DeclareUnicodeCharacter{00A0}{~}
+
+\usepackage{mathtools, amsthm, amssymb}
+
 \usepackage{graphicx}
 \usepackage{psfrag}
 
@@ -43,9 +56,9 @@
 \usepackage{algorithmic}
 
 %\usepackage[numbers]{natbib}
-\usepackage{natbib}
 
-\def\cite#1{\citep{#1}}
+\renewcommand{\cite}[1]{\protect\citep{#1}}
+%\def\cite#1{\citep{#1}}
 %\usepackage{draftcopy}
 
 \usepackage{float}

@@ -1,0 +1,249 @@
+% This file contains all the tex code relative to the global FC that were deleted from the original paper
+% This material should serve as a basis for a paper dealing with those issues.
+
+
+\subsection{Frictional contact discrete problems}
+
+Let us now introduce two basic frictional contact problems defined in terms of complementarity over cones.
+\begin{problem}[Discrete frictional contact problem]\label{prob:I}
+  Given
+  \begin{itemize}
+    \item a symmetric positive definite matrix ${M} \in \nbR^{n \times n}$,
+    \item a vector $ {f} \in \nbR^n$,
+    \item a matrix  ${H} \in \nbR^{n \times m}$,
+    \item a vector $w \in \RR^{m}$,
+    \item a vector of coefficients of friction $\mu \in \RR^{n_c}$,
+  \end{itemize}
+find two vectors $ {v} \in \nbR^n$ and $r\in \RR^m$, denoted by $\mathrm{FC/I}(M,H,f,w,\mu)$  such that
+\begin{equation}\label{eq:soccp1}
+  \begin{cases}
+    M v = {H} {r} + {f} \\[2mm]
+    u = H^\top v + w \\[2mm]
+    \hat u = u + g(u) \\[2mm]
+    K^\star \ni {\hat u} \perp r \in K
+  \end{cases}
+\end{equation}
+with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldots n_c]^\top$. 
+\qed
+\end{problem}
+
+
+Problem~\ref{prob:II} is also often referenced as the \emph{condensed} or \emph{reduced} problem. The two problems are closely related. Indeed, if we consider the inverse of the matrix $M$ we obtain an explicit equation for $v$ in Problem~\ref{prob:I}
+\begin{equation}
+  \label{eq:vv}
+  v = M^{-1}\,(Hr +f).
+\end{equation}
+Substituting~\eqref{eq:vv} in the first line of~\eqref{eq:soccp1}, we get
+\begin{equation}
+  \label{eq:vv-1}
+  u = H^\top M^{-1} H r + H^\top M^{-1} f +w.
+\end{equation}
+The matrix $W$, often called the \emph{Delassus matrix}, is easily identified as
+\begin{equation}
+  \label{eq:Delassus}
+  W = H^\top M^{-1} H 
+\end{equation}
+and the vector $q$ as
+\begin{equation}
+  \label{eq:qq}
+  q = H^\top M^{-1} f + w.
+\end{equation}
+
+\paragraph{Comments} The variable $\hat u$ does not explicitly appear as a variable of the problem since the mapping $u \mapsto u+g(u)$ is a one--to--one mapping.
+
+\tb{Even if the matrix $M$ is invertible, the problem $\mathrm{FC/I}(M,H,f,w,\mu)$ and $\mathrm{FC/II}(W,q,\mu)$ are different from the point of view of their structure. The problem $\mathrm{FC/I}(M,H,f,w,\mu)$ enjoys good properties of sparsity in most of the applications. Either if $M$ comes from multi--body rigid systems or finite--element applications, it is sparse. It is also the same for $H$ since a contact relation involves at best two bodies. When we compute $W$, this sparsity may be lost for instance for systems that comes from finite--element applications, but the system is smaller in terms of number of unknowns. In~$\mathrm{FC/II}(W,q,\mu)$, the structure of $q$ has to be remarked from~\eqref{eq:qq}. Again, if $w=0$ or $w \in \mathrm{im}(H^\top)$, $q$ belongs to the range of $H^\top$ and we will see that it has some consequence on the existence of solutions in the sequel.}
+
+\subsection{Variational Inequalities (VI) formulations}
+
+For Problem~\ref{prob:I}, let us start by rewriting the problem~\eqref{eq:soccp1} as a normal cone inclusion
+\begin{equation}
+  \label{eq:soccp1-bis}
+  \left\{\begin{array}{l}
+    M v-H r-f=0, \\[2mm]
+   -(H^\top v + w + g(H^\top v + w)) \in N_K(r).
+ \end{array}\right.
+\end{equation}
+The problem~\eqref{eq:soccp1-bis} is written as an inclusion into the normal cone to $\bar K = \RR^n  \times K\subset \RR^{m+n}$ as
+\begin{equation}
+  \label{eq:soccp1-ter}
+  - \left[\begin{array}{l}
+    M v-H r-f \\
+    H^\top v+w  + g(H^\top v +w)
+ \end{array}\right]    \in N_{\bar K}\left(
+\left[\begin{array}{l}
+  v \\r
+\end{array}\right]
+\right).
+\end{equation}
+Finally, the VI formulation of Problem~\ref{prob:I} is given by
+\begin{equation}
+  \label{eq:vi-I-bis}
+  \left[\begin{array}{l}
+    M v-H r-f \\
+    H^\top v+w  + g(H^\top v +w)
+  \end{array}\right] \left(
+  \left[\begin{array}{l}
+      p  \\ s
+    \end{array}\right] - \left[\begin{array}{l}
+      v  \\ r
+    \end{array}\right]
+\right) \geq 0,\quad \text{ for all } s \in K,  p \in \RR^n.
+\end{equation}
+Let us introduce a convenient notation for this formulation as $\mathrm{VI}(F_{\vione},X_{\vione})$ with
+\begin{equation}
+  \label{eq:vi-I}
+  F_{\vione}(v,r) \coloneqq \left[\begin{array}{l}
+    M v-H r-f \\
+    H^\top v+w  + g(H^\top v +w)
+  \end{array}\right],\quad \text{ and } X_{\vione} = \bar K = \RR^n \times K\subset \RR^{n+m}.
+\end{equation}
+
+It is also therefore easy to conclude to the existence of a unique solution for  $\mathrm{VI}(F_{\vione},X_{\vione})$.
+
+ we obtain for Problem~\ref{prob:I} under the VI form~\eqref{eq:vi-I},
+\begin{equation}
+  \label{eq:natural-I}
+  F_\vione^\nat(v,r) \coloneqq \left[
+  \begin{array}{l}
+    \rho (Mv - Hr + f) \\
+    r - P_{K}\left(r  - \rho (H^\top v +w  + g(H^\top v +w))\right)
+  \end{array}\right] = 0,
+\end{equation}
+and  for 
+
+
+\subsection{Nonsmooth Equations}
+
+Problem~\ref{prob:I} under the VI form~\eqref{eq:vi-I},
+\begin{equation}
+  \label{eq:natural-typeI}
+  F_{\vione,D}^\nat(v,r) \coloneqq \left[
+  \begin{array}{l}
+    D_1^{-1} (Mv - Hr + f) \\ 
+    r - P_{K}\left(r  - D_2^{-1} (H^\top v + w  + g(H^\top v + w))\right)
+  \end{array}\right] = 0
+\end{equation}
+with $D_1\in \RR^{n\times n}$ and $D_2\in \RR^{m\times m}$.
+For
+
+\paragraph{Jean--Moreau's and Alart-Curnier's functions}
+
+Problem~\ref{prob:I} is then reformulated as
+\begin{equation}
+  \label{eq:MJ-I}
+  F_{\mjone}(v,r) \coloneqq \left[
+    \begin{array}{c}
+    Mv - Hr - f \\
+    r_\n - P_{\RR^{n_c}_+}(r_\n - \rho_\n (H^\top v + w)_\n) \\
+    r_\t - P_{D(\mu, (r_{\n})_+)}(r_\t - \rho_\t (H^\top v + w)_\t   ) 
+  \end{array}\right] =0
+\end{equation}
+and  
+
+
+Problem~\ref{prob:I} is then reformulated as
+\begin{equation}
+  \label{eq:AC-I}
+  F_{\acone}(v,r) \coloneqq \left[
+    \begin{array}{c}
+    Mv - Hr - f \\
+    r_\n - P_{\RR^{n_c}_+}(r_\n - \rho_\n (H^\top v +w)_\n) \\
+    r_\t - P_{D(\mu, (r_\n - \rho_\n u_\n)_+)}(r_\t - \rho_\t (H^\top v +w)_\t   )
+  \end{array}\right] =0
+\end{equation}
+and  
+
+\subsection{Optimization problems}
+\paragraph{The alternating optimization approach}
+
+Problem~\ref{prob:I} is treated in the same manner by splitting the matrix $H$ and the vector $w_\n$ such that
+\begin{equation}
+  \label{eq:H-split}
+  u = H^\top v +w \Longleftrightarrow  \left[\begin{array}{c}
+    u_\n \\ u_\t
+  \end{array}\right]
+ =
+  \left[\begin{array}{c}
+      H_{\n} \\
+      H_{\t} \\    
+    \end{array}\right]^\top   \, v+
+ \left[\begin{array}{c}
+    w_\n \\w_\t
+  \end{array}\right].
+\end{equation}
+We get for the normal part
+\begin{equation}\label{eq:soccp1-normal}
+  \begin{cases}
+    M v = {H_\n} {r_\n} + {\tilde f_\n} \\[2mm]
+    u_\n = H_\n^\top v + w_\n \\[2mm]
+    0 \leq { u_\n} \perp r _\n \geq 0
+  \end{cases}
+\end{equation}
+for  given value of $\tilde r_\t$ and $\tilde f_\n = f + H_\t r_\t$. Since $M$ is a symmetric positive definite matrix, an equivalent convex optimization can be written
+\begin{equation}
+  \label{eq:soccp1-normal-min}
+    \begin{cases}
+    \min\, \frac 1 2 v^\top M v + v^\top \tilde f_\n  \\[2mm]
+     \begin{array}{ll}
+    s.t. & H_\n^\top v + w_\n \geq 0
+  \end{array}
+  \end{cases}
+\end{equation}
+and $u_\n$ is obtained by $ u_n = H_\n^\top v + w_\n $ and $r_\n$ is the Lagrange multiplier associated with the constraints. For the tangent part, the situation is a slightly more complicated since we get
+\begin{equation}\label{eq:soccp1-tangent}
+  \begin{cases}
+    M v = {H_\t} {r_\t} + {\tilde f_\t} \\[2mm]
+    u_\t = H_\t^\top v + w_\t \\[2mm]
+    -u_\t \in N_{D(\mu,\tilde r_{\n})}(r_\t),
+  \end{cases}
+\end{equation}
+for  given value of  $\tilde r_\n$ and $\tilde f_\t = f + H_\n \tilde r_\n$. It is therefore difficult to associate an optimization which differs from~\eqref{eq:AO-4}.  
+
+\paragraph{The convex SOCP}
+
+Problem~\ref{prob:I} may be also reformulated in this form.
+\begin{equation}\label{eq:ACLM-4}
+  \begin{cases}
+    s = g(u) \\[2mm]
+    \left\{
+      \begin{array}{ll}
+        \min\,&\Frac 1 2 v^\top M v -  f^\top v  \\
+        \text{s.t. } & H v  + w + s  \in K^\star.
+      \end{array}
+    \right.
+  \end{cases}
+\end{equation} 
+In this latter formulation, the optimization sub--problem appears as a strictly convex optimization problem ($M$ is assumed to be semi--definite positive) under (possibly redundant) cone constraints. If this sub--problem is feasible, the sub--problem admits a unique solution. 
+
+\subsection{Basic fixed point  and projection methods for VI}
+
+Applying the Algorithm~\ref{Algo:FP-vi} to the VI formulation~\eqref{eq:vi-I} leads to the following iteration
+\begin{equation}
+  \label{eq:FP-vi-I}
+  \begin{cases}
+    v_{k+1} \leftarrow  v_k - D_1^{-1}( M v_{k} - H r_k +f) \\
+    u_{k+1} \leftarrow  u_k - D_2^{-1}( u_k - H^\top v_{k} - w) \\ 
+    r_{k+1} \leftarrow  P_{K,D_3}(r_k - D_3^{-1}(u_k +  g(u_k))).
+  \end{cases}
+\end{equation}
+Due to the fact that $u$ is explicitly given as a function of $v$, $D_2$ is chosen as the identity matrix and $u_{k+1}$ plays the role of $u_k$ in the last equation. The following iteration is obtained
+\begin{equation}
+  \label{eq:FP-vi-Ibis}
+  \begin{cases}
+    v_{k+1} \leftarrow  v_k - D_1^{-1}( M v_{k} - H r_k +f) \\
+    r_{k+1} \leftarrow  P_{K,D_3}(r_k - D_3^{-1}(H^\top v_k + w +  g(H^\top v_k+ w ))).
+  \end{cases}
+\end{equation}
+
+\subsection{Application to  the discrete frictional contact problem}
+\subsubsection{Nonsmooth newton based on the natural map}
+
+Let us consider the natural map $F_{\vione}^\nat$ in~\eqref{eq:natural-I} that enables to write Problem~\ref{prob:I} in a nonsmooth equation.  Algorithm~\ref{Algo:NSN} may be also applied or $z =(v,r)$ with
+\begin{equation}
+  \label{eq:phiphi_bis}
+  \begin{cases}
+    \Phi(v,r) \in \partial_{v,r} F_{\vione}^\nat(r)
+  \end{cases}
+\end{equation}
+
+

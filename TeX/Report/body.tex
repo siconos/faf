@@ -1,8 +1,11 @@
 \newcommand{\tb}[1]{\textcolor{blue}{#1}}
+\definecolor{applegreen}{rgb}{0.05, 0.41, 0.0}
+\newcommand{\tg}[1]{\textcolor{applegreen}{#1}}
+
 \section*{Notation}
 
-The following notation is used throughout the paper. The 2-norm for a function $f$ is denoted  by $\|f\|$ and for a vector $x\in\RR^n$ by $\|x\|$. 
-The set $ K^\star $ is the dual convex cone to a convex cone $K$ defined by
+The following notation is used throughout the paper: the 2-norm for a function $f$ is denoted  by $\|f\|$ and for a vector $x\in\RR^n$ by $\|x\|$. 
+The dual convex cone to a convex cone $K$ defined by
 \begin{equation}
   \label{eq:dual-cone}
   K^\star = \{u \in \RR^3 \mid  r^\top u \geq 0, \quad \text{for all } r \in K   \}.
@@ -11,11 +14,14 @@ The set $ K^\star $ is the dual convex cone to a convex cone $K$ defined by
 
 \citet{Panagiotopoulos_IA1975} ?
 
-More than thirty years after the pioneering work of \cite{Necas.ea1980}, \cite{Haslinger1983,Haslinger1984},\cite{Katona_IJNAMG1983}, \cite{Chaudhary.Bathe_CS1986}, \cite{Jean.Moreau1987}, \cite{Mitsopoulou.Doudoumis1988} on numerically solving mechanical problems with contact and friction, there is still an active research activities on this subject in the computational mechanics and applied mathematics communities.  This can be explain by the fact that  mechanical systems with unilateral contact and Coulomb friction are difficult to numerically solve and the mathematical results of convergence of the numerical algorithms are rare and most of these require strong assumptions. In this paper, we want to give some insights of the advantages and weaknesses of standard solvers found in the literature by comparing them on the large sets of examples coming from a wide range of mechanical systems.
+More than thirty years after the pioneering work of~\cite{Necas.ea1980},~\cite{Haslinger1983,Haslinger1984},\cite{Katona_IJNAMG1983},~\cite{Chaudhary.Bathe_CS1986},~\cite{Jean.Moreau1987},~\cite{Mitsopoulou.Doudoumis1988} on numerically solving mechanical problems with contact and friction, there are still active research activities on this subject in the computational mechanics and applied mathematics communities.  This can be explain by the fact that \tg{problems from} mechanical systems with unilateral contact and Coulomb friction are difficult to numerically solve and the mathematical results of convergence of the numerical algorithms are rare and most of these require rather strong assumptions. In this paper, we want to give some insights of the advantages and weaknesses of standard solvers found in the literature by comparing them on the large sets of examples coming from a wide range of mechanical systems.
 
+\begin{ndroh}
+ The following paragraph is too technical for the intro IMHO
+\end{ndroh}
 To fix ideas, we want to discuss possible numerical solution procedures for the following three--dimensional discrete frictional contact problem and some of its variants.  Let $n_c\in \NN$ be the number of contact points and $n\in\NN$ the number of degree of freedom of a discrete mechanical system.  \tb{For each contact $\alpha$, the unknown local variables  $u^\alpha\in\RR^3$ (relative velocity or gap at the contact point) and $r^\alpha\in\RR^3$ (reaction or impulse) are decomposed  in a contact local basis $({\sf N}^\alpha,{\sf T_1}^\alpha,{\sf T_2}^\alpha)$ such that $u^\alpha = u^\alpha_{\n} {\sf N}^\alpha +   u^{\alpha}_{\tone}{\sf T_1}^\alpha + u^{\alpha}_{\ttwo}{\sf T_2}^\alpha , u^\alpha_{\n} \in \RR, u^\alpha_{\t} = [u^{\alpha}_{\tone},u^{\alpha}_{\ttwo}]^\top \in \RR^2$ and  $r^\alpha = r^\alpha_{\n} {\sf N}^\alpha +   r^{\alpha}_{\tone}{\sf T_1}^\alpha + r^{\alpha}_{\ttwo}{\sf T_2}^\alpha  , r^\alpha_{\n} \in \RR, r^\alpha_{\t}=[r^{\alpha}_{\tone},r^{\alpha}_{\ttwo}]^\top \in \RR^2$ (see Figure~\ref{fig:local-frame}).}
 
- Given a symmetric positive (semi-)definite matrix ${M} \in \RR^{n \times n}$, a vector $ {f} \in \RR^n$, a matrix  ${H} \in \RR^{n \times m}$ with $m= 3n_c$, a vector $w \in \RR^{m}$ and a vector of coefficients of friction $\mu \in \RR^{n_c}$, find two vectors $ {v} \in \RR^n$ and $r\in \RR^m$ such that
+ Given a symmetric positive (semi-) definite matrix ${M} \in \RR^{n \times n}$, a vector $ {f} \in \RR^n$, a matrix  ${H} \in \RR^{n \times m}$ with $m= 3n_c$, a vector $w \in \RR^{m}$ and a vector of coefficients of friction $\mu \in \RR^{n_c}$, find two vectors $ {v} \in \RR^n$ and $r\in \RR^m$ such that
 \begin{equation}\label{eq:soccp1-intro}
   \begin{array}{rcl}
     M v = {H} {r} + {f}, &
@@ -33,7 +39,7 @@ and $K^\star$ is dual. The function $g(u)$ is a nonsmooth function defined as
 \begin{equation}
 g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldots n_c]^\top\label{eq:gg}. 
 \end{equation}\tb{The variable $u$ and $\hat u$  do not appear as unknowns since they can be directly obtained from $v$.}
-\tb{The vector is}
+\marginpar{\tg{missing end}}\tb{The vector is}
 \begin{figure}
   \centering
   \begin{tikzpicture}[ scale=4,
@@ -90,24 +96,25 @@ g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldots n_c]
 \label{fig:local-frame}
 \end{figure}
 
-We clearly choose to simplify a lot the general problems of formulating the contact problems with friction by avoiding to include too much side effects that are themselves interesting but render the study to difficult to carry out in a single article. We choose finite dimensional systems where the time dependence does not appear explicitely. For instance, we consider systems that are discretized in space and time if the original system is not a finite dimensional system and if a dynamic or a quasi--static evolution is considered. In the same way, we consider a linear setting in a first attempt and we assume that  nonlinear mechanical bulk behaviors that can be treated at an upper level with a Newton linearization procedure. Even under these assumptions, we believe that there are a strong interest to work on the problem since it appears to be relativey generic in a large number of simulations of systems with contact and friction. This problem is indeed at the heart of the simulation of mechanical systems with 3D Coulomb's friction and unilateral constraints: it might be the result of the time--discretization by event--capturing time--stepping methods or event--detecting (event--driven) techniques of dynamical systems with friction or the result of a space--discretization (by FEM for instance) of the quasi-static problems of frictional contact mechanics. For a description of the derivation of such problems in various practical situations we refer to~\cite{Acary.Brogliato2008,Acary.Cadoux2013}.{\tt XXX discuss the remark Olivier about the motion of this paragraph. }
+We clearly choose to simplify a lot the general problems of formulating the contact problems with friction by avoiding including too much side effects that are themselves interesting but render the study too difficult to carry out in a single article. We choose finite dimensional systems where the time dependence does not appear explicitly. For instance, we consider systems that are discretized both in space and time if the original system is not a finite dimensional system and if a dynamic or a quasi--static evolution is considered. In the same way, we consider a linear setting in a first attempt and we assume that  nonlinear mechanical bulk behaviors that can be treated at an upper level with a Newton linearization procedure. Even under these assumptions, we believe that there are a strong interest to work on the problem since it appears to be relatively generic in numerous of simulations of systems with contact and friction. This problem is indeed at the heart of the simulation of mechanical systems with 3D Coulomb's friction and unilateral constraints: it might be the result of the time--discretization by event--capturing time--stepping methods or event--detecting (event--driven) techniques of dynamical systems with friction or the result of a space--discretization (by FEM for instance) of the quasi-static problems of frictional contact mechanics. For a description of the derivation of such problems in various practical situations we refer to~\cite{Acary.Brogliato2008,Acary.Cadoux2013}.{\tt XXX discuss the remark Olivier about the motion of this paragraph. }
 
 From the mathematical programming point of view, the problem appears to be a Second Order Cone Complementarity Problem (SOCCP)~\cite{Facchinei.Pang2003} which can be generically defined as
 \begin{equation}
   \begin{cases}
     y =f(x) \\
-    K^\star \ni x \perp y \in K
+    K^\star \ni y \perp x \in K,
   \end{cases}
 \end{equation}
 where $K$ is a second order cone. If the nonlinear part of the problem~\eqref{eq:soccp1-intro} is neglected ($g(u)=0$), the problem is an associated friction problem with dilatation, and by the way, is a gentle Second Order Cone Linear Complementarity Problem (SOCLCP) with a positive definite matrix $H^\top M^{-1} H$ (possibly semi--definite).\tb{The assumption of associated frictional law, i.e, a friction law where the local sliding velocity is normal the friction cone differs dramatically from the standard Coulomb friction since it generates a non--vanishing normal velocity when we slide. In other terms, the sliding motion implies the separation of the bodies.}
-When the non-associated character of the friction is taken into account through $g(u)$, the problem is non monotone and nonsmooth, and then very hard to solve efficiently. For a given numerical algorithm, it is not so difficult to design mechanical example to run the algorithm into troubles. The mathematical results of convergence of the numerical algorithms are rare and most of these required strong assumptions such that  the amount of friction, or full rank assumptions of matrices or operators or the dimension of the space in which the problem is formulated. Among these results, we can cite the Czech school where the coefficient of friction is assumed to be bounded and small. This assumption allows us to use fixed point methods on the convex sub--problems of Tresca friction \tb{(friction threshold that does depend on the normal reaction and then transform the cone into a semi-cylinder)}. We can also cite the result that are obtained in~\cite{Pang.Trinkle1996,Stewart.Trinkle1996,Anitescu.Potra97} where the friction cone is polyhedral (in 2D or by a faceting process). In that case, if $w=0$ or $w \in \mathrm{im}(H^\top)$, Lemke's algorithm is able to solve the problem. The question of existence of solutions has been treated in~\cite{Klarbring.Pang1998,Acary.ea_ZAMM2011} under similar assumptions but with different techniques. The question of uniqueness remains a difficult problems in the general case.
+When the non-associated character of the friction is taken into account through $g(u)$, the problem is non monotone and nonsmooth, and therefore is very hard to solve efficiently. For a given numerical algorithm, it is not so difficult to design mechanical example to run the algorithm into troubles.
+\tg{Proof of convergence} of the numerical algorithms are rare and most of these required strong assumptions \tg{on either} the friction coefficients or full rank assumptions of matrices or operators or the dimension of the space in which the problem is formulated. Among these results, we can cite the Czech school where the coefficient of friction is assumed to be bounded and small. This assumption allows us to use fixed point methods on the convex sub--problems of Tresca friction \tb{(friction threshold that does depend on the normal reaction and then transform the cone into a semi-cylinder)}. We can also mention the results from~\cite{Pang.Trinkle1996,Stewart.Trinkle1996,Anitescu.Potra97} where the friction cone is polyhedral (in 2D or by a faceting process). In that case, if $w=0$ or $w \in \mathrm{im}(H^\top)$, Lemke's algorithm is able to solve the problem. The question of existence of solutions has been treated in~\cite{Klarbring.Pang1998,Acary.ea_ZAMM2011} under similar assumptions but with different techniques. The question of uniqueness remains a difficult problem in the general case.
 
 
-In this article,  after stating the problem with more details in Section~\ref{sec:description}, we recall the existence result of~\cite{Acary.ea_ZAMM2011} for the problem in~\eqref{eq:soccp1-intro} in Section \ref{sec:existence}. In this framework, we briefly present in Section~\ref{sec:formulation} a list of alternative formulations of the problem that enable the design of numerical solution procedures. Right after these formulations, we list some of the most standard algorithms dedicated to one of the previous formulation in Sections~\ref{sec:numericalmethods,vi},~\ref{sec:newtonmethods},~\ref{Sec:SplittingTechniquesAndProx}, \ref{Sec:InteriorPoint} and \ref{Sec:OptimisationBasedMethods}. These algorithms that have been previously developed for solving the SOCCP~\eqref{eq:soccp1-intro} are mainly based  variational inequality (Section~\ref{sec:numericalmethods,vi} and~\ref{Sec:SplittingTechniquesAndProx}) and nonsmooth equations (Section~\ref{sec:newtonmethods}) or  optimization--based (Section~\ref{Sec:OptimisationBasedMethods}) reformulations.  
+In this article,  after stating the problem with more details in Section~\ref{sec:description}, we recall the existence result of~\cite{Acary.ea_ZAMM2011} for the problem in~\eqref{eq:soccp1-intro} in Section \ref{sec:existence}. In this framework, we briefly present in Section~\ref{sec:formulation} \tg{a few} alternative formulations of the problem that enable the design of numerical solution procedures. Right after these formulations, we list some of the most standard algorithms dedicated to one of the previous formulation in Sections~\ref{sec:numericalmethods,vi},~\ref{sec:newtonmethods},~\ref{Sec:SplittingTechniquesAndProx}, \ref{Sec:InteriorPoint} and \ref{Sec:OptimisationBasedMethods}. These algorithms that have been previously developed for solving the SOCCP~\eqref{eq:soccp1-intro} are mainly based on  variational inequality (Section~\ref{sec:numericalmethods,vi} and~\ref{Sec:SplittingTechniquesAndProx}) or nonsmooth equations (Section~\ref{sec:newtonmethods}) or  optimization--based (Section~\ref{Sec:OptimisationBasedMethods}) reformulations.  
 
 Since it is difficult to be exhaustive on the approaches developed in the literature to solve frictional contact problems, we decided to leave out the scope of the paper the following approaches:
 \begin{itemize}
-\item the approaches that alter the fundamental assumptions of the 3D Coulomb friction model by faceting the cone as in the pioneering work of \cite{Klarbring1986} and followed by~\cite{AlFahed.Stavroulakis.ea1991,Pang.Trinkle1996,Stewart.Trinkle1996,Anitescu.Potra97,Haslinger.ea_JCAM2004}, or by convexifying the Coulomb law (associated friction law with normal dilatency)~\cite{Heyn.ea_IJNME2013,Tasora.Anistescu_Meccanica2013,Tasora.Anistescu_CMAME2011,Anistescu.Tasora_COA2010,Tasora.Anistescu_CMAME2009} or finally by regularizing the friction law~\cite{Kikuchi.Oden_SIAM1988}.
+\item the approaches that alter the fundamental assumptions of the 3D Coulomb friction model by faceting the cone as in the pioneering work of~\cite{Klarbring1986} and followed by~\cite{AlFahed.Stavroulakis.ea1991,Pang.Trinkle1996,Stewart.Trinkle1996,Anitescu.Potra97,Haslinger.ea_JCAM2004}, or by convexifying the Coulomb law (associated friction law with normal dilatancy)~\cite{Heyn.ea_IJNME2013,Tasora.Anistescu_Meccanica2013,Tasora.Anistescu_CMAME2011,Anistescu.Tasora_COA2010,Tasora.Anistescu_CMAME2009} or finally by regularizing the friction law~\cite{Kikuchi.Oden_SIAM1988}.
 \item Approaches that not give satisfactory results
 \item Approaches that we have not yet implemented. Interior point. SOCCP Solver ??
 \end{itemize}
@@ -115,15 +122,17 @@ Since it is difficult to be exhaustive on the approaches developed in the litera
 Other comparisons articles have already been published in the literature. Cite and comment
 
 \begin{list}{}{}
-\item \cite{Raous.ea1988,Chabrand.ea_MCM1998}
-\item \cite{Christensen.Klarbring.ea1998}
-\item \cite{Mijar.Arora_SMO2000,Mijar.Arora_ACME2000,Mirar.Arora_SMO2004-I,Mirar.Arora_SMO2004-II}
+\item~\cite{Raous.ea1988,Chabrand.ea_MCM1998}
+\item~\cite{Christensen.Klarbring.ea1998}
+\item~\cite{Mijar.Arora_SMO2000,Mijar.Arora_ACME2000,Mirar.Arora_SMO2004-I,Mirar.Arora_SMO2004-II}
 \end{list}
 
 
-The comparison are performed on a large set of examples using performance profiles. The main conclusion that are drawn from Section~\ref{sec:numericalcomparisons} are as follows.
-On one hand, we will show that algorithms based on Newton methods for nonsmooth equations solve quickly the problem when they succeed, but suffer from robustness issues mainly if the matrix $H$ has not full rank. On the other hand, the
-iterative methods dedicated to solving variational inequalities are quite robust but with an extremely slow rate of convergence. To sum up, as far as we know there is no option that combines time efficiency and robustness. To try to answer to this question, we develop an open collection of discrete frictional contact problems called FCLIB~\url{http://fclib.gforge.inria.fr} in order to offer a large library of problems to compare algorithms on a fair basis.  In this work, this collection is solved with the software {\sc Siconos} and its component {\sc Siconos/Numerics}~\url{http://siconos.gforge.inria.fr}\citep{Acary.Bremond.Huber.Perignon2015}.
+The comparison are performed on a large set of examples using performance profiles.
+\tg{Let us summarize the main conclusion from Section~\ref{sec:numericalcomparisons}:
+on one hand}, the algorithms based on Newton methods for nonsmooth equations solve quickly the problem when they succeed, but suffer from robustness issues mainly if the matrix $H$ has not full rank. On the other hand, the
+iterative methods dedicated to solving variational inequalities are quite robust but with an extremely slow rate of convergence. To sum up, as far as we know there is no option that combines time efficiency and robustness.
+\tg{The set of problems used here are from the FCLIB collection\footnote{\url{http://fclib.gforge.inria.fr}}, which aims at providing many problems to compare algorithms on a fair basis}.  In this work, this collection is solved with the software {\sc Siconos} and its component {\sc Siconos/Numerics}\footnote{\url{http://siconos.gforge.inria.fr}}\citep{Acary.Bremond.Huber.Perignon2015}.
 
 
 \clearpage
@@ -131,7 +140,8 @@ iterative methods dedicated to solving variational inequalities are quite robust
 \label{sec:description}
 \subsection{Signorini's condition and Coulomb's friction.}
 
-Let us consider first the contact between two  bodies $A \subset  \R^3$ and $B \subset \R^3$ with sufficiently smooth boundaries. (see Figure \ref{fig:local-frame}). Let us consider a point $C_{A} \in \partial A$ called a master point to contact.  The choice of this master point $C_A$ to write the contact condition is crucial in  practice and amounts to consistently discretizing  the contact surface. The vector  ${\sf N}$ defines an outward unit normal vector to $A$ at the point $C_A$. The normal vector is completed with two tangent vectors $\sf T_1, T_2$ such that $(C_A, \sf N, T_1, T_2)$ is an orthornormal frame called the \emph{local frame at contact}. The slave contact point $C_B \in \partial B$ is defined as the projection of the point $C_A$ on $\partial B$ in the direction given by $\sf N$. Note that we assume that such a point exists. The gap function is defined as the signed distance between $C_A$ and $C_B$
+Let us consider the contact between two  bodies $A \subset  \R^3$ and $B \subset \R^3$ with sufficiently smooth boundaries, \tg{as depicted on} Figure~\ref{fig:local-frame}.
+\tg{From the body $A$ ``perspective'', the point $C_{A} \in \partial A$ is called a \emph{master point to contact}}.  The choice of this master point $C_A$ to write the contact condition is crucial in  practice and amounts to consistently discretizing  the contact surface. The vector  ${\sf N}$ defines an outward unit normal vector to $A$ at the point $C_A$. With $\sf T_1, T_2$ two vectors in the plane orthogonal to ${\sf N}$, we can build  an orthornormal frame $(C_A, \sf N, T_1, T_2)$ called the \emph{local frame at contact}. The slave contact point $C_B \in \partial B$ is defined as the projection of the point $C_A$ on $\partial B$ in the direction given by $\sf N$. Note that we assume that such a point exists. The gap function is defined as the signed distance between $C_A$ and $C_B$
 \begin{equation}
   \label{eq:gap}
   g_{\n} = (C_B-C_A)^\top  \sf N.
@@ -143,26 +153,25 @@ To fix ideas, if we consider two strictly convex bodies, which are non penetrati
   \label{eq:normal}
   {\sf N} = \Frac{C_B-C_A}{\|C_B-C_A\|}.
 \end{equation}
-
-
-
+%
 The contact force exerted by $A$ on $B$ is denoted by $r \in \RR^3$ and is decomposed in the local frame as
 \begin{equation}
   \label{eq:reaction}
-  r = r_{\n} {\sf N} +   r_{\tone}{\sf T_1} + r_{\ttwo}{\sf T_2}  ,\quad \text{ with  } r_{\n} \in \RR, r_{\t}=[r_{\tone},r_{\ttwo}]^\top \in \RR^2
+  r = r_{\n} {\sf N} +   r_{\tone}{\sf T_1} + r_{\ttwo}{\sf T_2}  ,\quad \text{ with  } r_{\n} \in \RR, r_{\t}=[r_{\tone},r_{\ttwo}]^\top \in \RR^2.
 \end{equation}
-
+%
 The \emph{Signorini condition} states that
 \begin{equation}
   \label{eq:signo}
-  0 \leq g_{\n} \perp r_\n \geq 0.
+  0 \leq g_{\n} \perp r_\n \geq 0,
 \end{equation}
- and models the unilateral contact. The condition~\eqref{eq:signo} written at the position level, can also be defined at the velocity level. To that aim, the relative velocity $u \in \RR^3$ of the point $C_{B}$ with respect to $C_{A}$ is also decomposed in the local frame
+and models the unilateral contact. The condition~\eqref{eq:signo}, written at the \emph{position level}, can also be defined at the \emph{velocity level}.
+\tg{To this end}, the relative velocity $u \in \RR^3$ of the point $C_{B}$ with respect to $C_{A}$ is also decomposed in the local frame
 \begin{equation}
   \label{eq:velocity}
   u =  u_\n {\sf N} +  u_{\tone}{\sf T_1} + u_{\ttwo}{\sf T_2}  \quad \text{ with } u_\n \in \RR \text{ and } u_\t=[u_{\tone},u_{\ttwo}]^\top  \in \RR^2.
 \end{equation}
-The velocity level formulation of the Signorini condition is written 
+\tg{At} the velocity level, the Signorini condition is written 
 \begin{equation}
   \label{eq:signo-velocity}
   \left\{\begin{array}{ll}
@@ -188,7 +197,7 @@ and for the sliding case that
   u_{\t}  \neq 0,\quad r \in \partial K, \exists\, \alpha > 0, r_\t = -\alpha u_\t.
 \end{equation}
 \tb{With the Coulomb friction model, there are two relations between $u_\t$ and $r_\t$. The distinction is based on the value of the relative velocity $u_\t$ between the two bodies. If $u_\t=0$ (sticking case), we have $r_\t \leq \mu r_n$. On the other hand, we get the sliding case.} 
-
+\marginpar{\tg{takeoff case?}}
 \paragraph{Disjunctive formulation of the Signorini-Coulomb model}
 
 If we consider the velocity-level Signorini condition~\eqref{eq:signo-velocity} together with the Coulomb friction~\eqref{eq:Coulom-stick}--\eqref{eq:Coulom-slide} which is naturally expressed in terms of velocity, we obtain a disjunctive formulation of the frictional contact behavior as
@@ -201,7 +210,9 @@ If we consider the velocity-level Signorini condition~\eqref{eq:signo-velocity} 
       r \in \partial K,u _\n=0,  \exists\,\alpha > 0, u_\t = -\alpha r_\t &\text{ if } g_{\n} \leq 0 & \text{(sliding)}  \\
 \end{array}\right.
 \end{equation}
-In the computational practice, the disjunctive formulation is not suitable for  solving the Coulomb problem as it suggests the use of enumerative solvers. In the sequel, alternative formulations of the Signorini-Coulomb model prone to numerical applications will be delineated.
+In the computational practice, the disjunctive formulation is not suitable for  solving the Coulomb problem as it suggests the use of enumerative solvers, with exponential behavior.
+In the sequel, alternative formulations of the Signorini-Coulomb model \tg{suitable for} numerical applications are delineated.
+\tg{The core idea is to translate the cases in~\eqref{eq:contact-disjunctive} into complementarity relations.}
 
 \paragraph{Inclusion into normal cones} The Signorini condition~\eqref{eq:signo} in their complementarity forms can be equivalently written  as an inclusion into a normal cone to $\RR_+$
 \begin{equation}
@@ -223,17 +234,19 @@ For the Coulomb friction, we get
   \label{eq:Coulomb-inclusion}
   - u_{\t} \in N_{D(\mu r_\n)}.
 \end{equation}
-Since $D(\mu r_\n)$ is not a cone, \eqref{eq:Coulomb-inclusion} is not a complementarity problem.  The formulation~\eqref{eq:Coulomb-inclusion} is often related to Moreau's maximum dissipation principle of the frictional behavior,
+Since $D(\mu r_\n)$ is not a cone, the inclusion~\eqref{eq:Coulomb-inclusion} is not a complementarity problem.  The formulation~\eqref{eq:Coulomb-inclusion} is often related to Moreau's maximum dissipation principle of the frictional behavior,
 \begin{equation}
   \label{eq:moreau-maxprinciple}
-  r_\t = \mbox{argmax}_{\|z\| \leq \mu r_n}  z^\top u_\t.
+  r_\t \in \argmax_{\|z\| \leq \mu r_n}\;  z^\top u_\t.
 \end{equation}
 This means that the couple $(r_\t,u_\t)$ maximizes the energy lost through dissipation.
 
 
 \paragraph{SOCCP formulation of the Signorini-Coulomb model}
 
-In \cite{Acary.Brogliato2008,Acary.ea_ZAMM2011}, another formulation is proposed inspired by the so-called bipotential \cite{DeSaxce92,DeSaxce.Feng90,DeSaxce.Feng_MCM1998}. Operating a change of variable, we introduce the modified relative velocity $\hat u \in \RR^3$ defined by
+In~\cite{Acary.Brogliato2008,Acary.ea_ZAMM2011}, another formulation is proposed inspired by the so-called bipotential~\cite{DeSaxce92,DeSaxce.Feng90,DeSaxce.Feng_MCM1998}.
+\tg{The goal is to form a complementarity problem out of~\eqref{eq:signo-inclusion-velo} and~\eqref{eq:Coulomb-inclusion}}
+To this end, we introduce the modified relative velocity $\hat u \in \RR^3$ defined by
 \begin{equation}
   \label{eq:modified-velocity}
   \hat u = u +\mu \|u_\t\| \sf N.
@@ -261,9 +274,12 @@ The entire contact model~\eqref{eq:contact-disjunctive} can be put into a Second
 
 \subsection{Frictional contact discrete problems}
 
-In this section, we formulate two basic discrete frictional contact problems considering a finite number $n$ of degrees of freedom  together with a discrete linear dynamics.\tb{ The first problem is directly related to~\eqref{eq:soccp1-intro} and keep the unknown triplet $(v,u,r)$. The second problem will assume that the matrix $M$ is invertible. In that later case, we case eliminate the variable $v$ and reduce the unknown to the couple ($(u,r)$).}
+In this section, we formulate two basic discrete frictional contact problems considering a finite number $n$ of degrees of freedom  together with a discrete linear dynamics.
+\tb{ The first problem is directly related to~\eqref{eq:soccp1-intro} and keep the unknown triplet $(v,u,r)$.
+The second problem will assume that the matrix $M$ is invertible. In that later case, we case eliminate the variable $v$ and reduce the unknown to the couple $(u,r)$.}
 
- We assume that a finite set of $n_c$ contact points and their associated local frames has been defined. In general, this task is not straightforward and amounts to correctly discretizing  the contact surfaces. For more details, we refer to \cite{Wriggers2006,Laursen2003}.
+ We assume that a finite set of $n_c$ contact points and their associated local frames has been defined.
+ In general, this task is not straightforward and amounts to correctly discretizing  the contact surfaces. For more details, we refer to~\cite{Wriggers2006,Laursen2003}.
 
 For each contact $\alpha \in \{1,\ldots n_c\}$, the  local velocity  is denoted by $u \in \RR^3$, the normal velocity by $u_\n^{\alpha}\in \RR$ and the tangential velocity by $u_\t^\alpha\in\RR^2$. One obviously 
 gets
@@ -295,7 +311,7 @@ where
 \end{equation}
 The vectors $\hat u$ and $g(u)$ collect all the modified local velocity at each contact $\hat u = [[\hat u^\alpha]^\top, \alpha = 1\ldots n_c]^\top$ and the function $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldots n_c]^\top$.
 
-% Let us introduce finally the following notation to express the function $g(u)$ in a convenient manner. We denoted by $s^\alpha = \|u^\alpha_\t\|$ the norm of the sliding velocity for the contact $\alpha$. The vector $s$ collects all the sliding velocity at each contact $s = [ s^\alpha, \alpha = 1\ldots n_c]^\top$. The matrix $ N \in \RR^{3n_c\times n_c}$ is composed of the vector $ mu^\alpha N^\alpha$ on its diagonal formally $N = \mbox{diag}(\mu^\alpha N^\alpha$. The function $g()$ can be therefore expressed as $g(u) = N s$.
+% Let us introduce finally the following notation to express the function $g(u)$ conveniently. We denoted by $s^\alpha = \|u^\alpha_\t\|$ the norm of the sliding velocity for the contact $\alpha$. The vector $s$ collects all the sliding velocity at each contact $s = [ s^\alpha, \alpha = 1\ldots n_c]^\top$. The matrix $ N \in \RR^{3n_c\times n_c}$ is composed of the vector $ mu^\alpha N^\alpha$ on its diagonal formally $N = \mbox{diag}(\mu^\alpha N^\alpha$. The function $g()$ can be therefore expressed as $g(u) = N s$.
 
 For each contact $\alpha$, the reaction vector $r^\alpha\in \RR^3$ is also decomposed in its normal part $r_\n^{\alpha}\in \RR$ and the tangential part $r_\t^\alpha\in\RR^2$ as
 \begin{equation}
@@ -310,41 +326,42 @@ The Coulomb friction cone for a  contact $\alpha$ is defined by $K^{\alpha}  = \
 The set $K$ is the cartesian product of Coulomb's friction cone at each contact, that is
 \begin{equation}
   \label{eq:CC_bis}
-  K = \prod_{\alpha=1\ldots n_c} K^{\alpha} 
+  K = \prod_{\alpha=1,\ldots,n_c} K^{\alpha}\quad\text{and}\quad K^\star\;\text{is its dual.}
 \end{equation}
-and $K^\star$ is dual.
-
-Let us now introduce two basic frictional contact problems defined in terms of complementarity overs cones.
-\begin{problem}[Discrete frictional contact problem]\label{prob:I}
-  Given
-  \begin{itemize}
-    \item a symmetric positive definite matrix ${M} \in \nbR^{n \times n}$,
-    \item a vector $ {f} \in \nbR^n$,
-    \item a matrix  ${H} \in \nbR^{n \times m}$,
-    \item a vector $w \in \RR^{m}$,
-    \item a vector of coefficients of friction $\mu \in \RR^{n_c}$,
-  \end{itemize}
-find two vectors $ {v} \in \nbR^n$ and $r\in \RR^m$, denoted by $\mathrm{FC/I}(M,H,f,w,\mu)$  such that
-\begin{equation}\label{eq:soccp1}
-  \begin{cases}
-    M v = {H} {r} + {f} \\[2mm]
-    u = H^\top v + w \\[2mm]
-    \hat u = u + g(u) \\[2mm]
-    K^\star \ni {\hat u} \perp r \in K
-  \end{cases}
+In this paper, we investigate the case where the problem is given in its \emph{reduced} form.
+We consider that the discretized dynamics are of the form
+\begin{equation}
+ M v = {H} {r} + {f},
+ \label{eq:global_dyn}
 \end{equation}
-with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldots n_c]^\top$. 
-\qed
-\end{problem}
+with $M$ an symmetric positive-definite matrix. The local velocities at the point of contact are given by
+\begin{equation}
+  u = H^\top v + w.
+  \label{eq:local_v}
+\end{equation}
+More information on the term $w$ is given later in this section.
+The (global) velocities $v$ can be substitute in~\eqref{eq:local_v} by using a Schur-complement technique.
+This yields
+\begin{equation}
+u = H^\top M^{-1} H r + H^\top M^{-1} f +w.
+\end{equation}
+Let us define $W$, often called the \emph{Delassus matrix}, as
+\begin{align}
+  \label{eq:Delassus}
+  W&\coloneqq H^\top M^{-1} H 
+\intertext{and the vector $q$ as}
+  \label{eq:qq}
+  q&\coloneqq H^\top M^{-1} f + w.
+\end{align}
 
-\begin{problem}[Local discrete frictional contact problem]\label{prob:II}
+\begin{problem}[Discrete frictional contact problem]\label{prob:II}
   Given
   \begin{itemize}
     \item a symmetric positive semi--definite  matrix ${W} \in \nbR^{m \times m}$,
     \item a vector $ {q} \in \nbR^m$,
     \item a vector $\mu \in \RR^{n_c}$ of coefficients of friction, 
   \end{itemize}
-find  a vector $r\in \RR^m$, denoted by $\mathrm{FC/II}(W,q,\mu)$  such that
+find  a vector $r\in \RR^m$, denoted by $\mathrm{FC}(W,q,\mu)$  such that
 \begin{equation}\label{eq:soccp2}
   \begin{cases}
     u =Wr +q \\[2mm]
@@ -363,38 +380,11 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
 % Nonlinear versions of this problem can also be stated but they are out pf the scope of the paper. When the dynamics is nonlinear, an outer Newton linearization is performed leading to a linearized problem. 
 
 
-Problem~\ref{prob:II} is also often referenced as the \emph{condensed} or \emph{reduced} problem. The two problems are closely related. Indeed, if we consider the inverse of the matrix $M$ we obtain an explicit equation for $v$ in Problem~\ref{prob:I}
-\begin{equation}
-  \label{eq:vv}
-  v = M^{-1}\,(Hr +f).
-\end{equation}
-Substituting~\eqref{eq:vv} in the first line of~\eqref{eq:soccp1}, we get
-\begin{equation}
-  \label{eq:vv-1}
-  u = H^\top M^{-1} H r + H^\top M^{-1} f +w.
-\end{equation}
-The matrix $W$, often called the \emph{Delassus matrix}, is easily identified as
-\begin{equation}
-  \label{eq:Delassus}
-  W = H^\top M^{-1} H 
-\end{equation}
-and the vector $q$ as
-\begin{equation}
-  \label{eq:qq}
-  q = H^\top M^{-1} f + w.
-\end{equation}
-
-\paragraph{Comments} The variable $\hat u$ does not explicitly appear as a variable of the problem since the mapping $u \mapsto u+g(u)$ is a one--to--one mapping.
-
-\tb{Even if the matrix $M$ is invertible, the problem $\mathrm{FC/I}(M,H,f,w,\mu)$ and $\mathrm{FC/II}(W,q,\mu)$ are different from the point of view of their structure. The problem $\mathrm{FC/I}(M,H,f,w,\mu)$ enjoys good properties of sparsity in most of the applications. Either if $M$ comes from multi--body rigid systems or finite--element applications, it is sparse. It is also the same for $H$ since a contact relation involves at best two bodies. When we compute $W$, this sparsity may be lost for instance for systems that comes from finite--element applications, but the system is smaller in terms of number of unknowns. In~$\mathrm{FC/II}(W,q,\mu)$, the structure of $q$ has to be remarked from~\eqref{eq:qq}. Again, if $w=0$ or $w \in \mathrm{im}(H^\top)$, $q$ belongs to the range of $H^\top$ and we will see that it has some consequence on the existence of solutions in the sequel.}
-
-\tb{}
-
-
 \subsection{Existence of solutions}
 \label{sec:existence}
 
-The question of the existence of solution for problem~\ref{prob:I} and~\ref{prob:II} have been studied in~\cite{Klarbring.Pang1998} and~\cite{Acary.ea_ZAMM2011} with different analysis techniques. The key assumption for existence of solutions in both papers is as follows
+The question of the existence of solution for the Problem~\ref{prob:II} have been studied in~\cite{Klarbring.Pang1998} and~\cite{Acary.ea_ZAMM2011} with different analysis techniques.
+The key assumption for existence of solutions in both papers is as follows
 \begin{equation}\label{ass}
    \exists v\in \RR^m \,:\: H^\top v + w \in \mathrm{int}\, K^\star,
 \end{equation}
@@ -402,9 +392,9 @@ or equivalently
 \begin{equation}\label{asseq}
   w\in\mathrm{im}\, H + \mathrm{int}\, K^\star.
 \end{equation}
-Under the assumption, the problems~\ref{prob:I} and~\ref{prob:II} have a solution. The question to provide a solution procedure to compute has therefore a sense. In the sequel, we will compare numerical methods only when this assumption is satisfied.
+Under the assumption, the Problem~\ref{prob:II} have a solution. The question to provide a solution procedure to compute has therefore a sense. In the sequel, we will compare numerical methods only when this assumption is satisfied.
 
-This assumption is easy verified in a large number of applications. For applications in nonsmooth dynamics where the unknown $v$ is a relative contact velocity, the term $w$ vanishes if we have only scleronomic constraints. For $w \in \mathrm{im}(H^\top)$ (and especially $w=0$), the assumption is trivially satisfied. Other practical situations are also detailed in~\cite{Acary.Cadoux2013}. \tb{As it is explained in~\cite{Acary.Cadoux2013}, the term $w$ has several possible sources. If the constraints are written at the velocity level, one is given in dynamics by the impact law and in that case, we can show that of the Newton impact law it holds that $w \in \mathrm{im}(H^\top)$.   For other impact law, this is not so clear. Another source for $w$ is given by constraints that depends explicitly on time. In that case, we can have $w \not\in \mathrm{im}(H^\top)$ and non existence of solutions. If the constraints are written at the position level, $w$ can be given by initial of terms that comes velocity discretization. In that cases, the existence is not clear.}
+This assumption is easy verified in numerous applications. For applications in nonsmooth dynamics where the unknown $v$ is a relative contact velocity, the term $w$ vanishes if we have only scleronomic constraints. For $w \in \mathrm{im}(H^\top)$ (and especially $w=0$), the assumption is trivially satisfied. As it is explained in~\cite{Acary.Cadoux2013}, the term $w$ has several possible sources. \tb{If the constraints are written at the velocity level, one is given in dynamics by the impact law and in that case, we can show that of the Newton impact law it holds that $w \in \mathrm{im}(H^\top)$.   For other impact law, this is not so clear. Another source for $w$ is given by constraints that depends explicitly on time. In that case, we can have $w \not\in \mathrm{im}(H^\top)$ and non existence of solutions. If the constraints are written at the position level, $w$ can be given by initial of terms that comes velocity discretization. In that cases, the existence is not clear.}
 
 \tb{The assumption is also satisfied if $\mathrm{im}\, H = \RR^m$ or in other words if $H^\top$ has full row rank. Unfortunately, in large number of applications $H^\top$ is rank deficient. }
 From the mechanical point of view, the rank deficiency of $H$ and the amount of friction seems to play a fundamental role in the question of the existence (and uniqueness) of solutions. In the numerical comparisons, we will attempt to get a deeper understanding on the role of these assumptions on the convergence of the algorithms. The rank deficiency  of $H$ is related to the number of constraints that are imposed to the system with respect to the number of degree of freedom in the system. It is closely related to the concept of hyperstaticity in overconstrained systems. In the most favorable cases, it yields  indeterminate Lagrange multipliers but also to unfeasible problems and then to the lost of solutions in the worth cases. The second assumption on the amount of friction is also well--know. The frictionless problem is  easy to solve if it is  feasible. It is clear that large friction coefficients prevent from sliding and the therefore increase the degree of hyperstaticity of the system. 
@@ -424,73 +414,33 @@ From the mechanical point of view, the rank deficiency of $H$ and the amount of 
 
 % \subsubsection{Quasi-static frictional contact problem}
 
-% \cite{Haslinger1983,Christensen.Klarbring.ea1998,Klarbring.Pang1999}
+%~\cite{Haslinger1983,Christensen.Klarbring.ea1998,Klarbring.Pang1999}
 
 % \subsubsection{Dynamic frictional contact problem}
 
-% \cite{Moreau1998,Moreau1994,Moreau1999}
+%~\cite{Moreau1998,Moreau1994,Moreau1999}
 
 \clearpage
 %----------------------------------------------------------------------------------%
 \section{Alternative formulations}
 %----------------------------------------------------------------------------------%
 \label{sec:formulation}
-In this section, various equivalent formulations of Problems~\ref{prob:I} and~\ref{prob:II} are detailed. We aim at showing that such problems can be recast into several well-known problems in the mathematical programming and optimization community. These formulations will serve as a basis for  numerical solution procedures that we develop in further sections.
+In this section, various equivalent formulations of Problem~\ref{prob:II} are \tg{given.
+Our goal is to show that} such problems can be recast into several well-known problems in the mathematical programming and optimization community.
+These formulations will serve as a basis for numerical solution procedures that we develop in further sections.
 
-\subsection{Variational inequalities (VI) formulations}
+\subsection{Variational Inequalities (VI) formulations}
 
-Let us recall the definition a finite-dimensional VI denoted by $\mathrm{VI}(X,F)$: find $z\in X$ such that 
+Let us recall the definition a finite-dimensional $\mathrm{VI}(X,F)$: find $z\in X$ such that 
 \begin{equation}
   \label{eq:vi}
-  F^\top(z)(y-z) \geq 0, \text{ for all } y \in X,
+  F^\top(z)(y-z) \geq 0 \quad\text{for all}\; y \in X,
 \end{equation}
-with $X$ a nonempty subset of $\RR^n$ and $F$ a mapping from $\RR^n$ into itself. We refer to~\cite{Harker.Pang1990,Facchinei.Pang2003} for the standard  theory of finite--dimensional variational inequalities. The easiest way to state equivalent VI formulations of Problems~\ref{prob:I} and~\ref{prob:II} is to use the following equivalences that
+with $X$ a nonempty subset of $\RR^n$ and $F$ a mapping from $\RR^n$ into itself. We refer to~\cite{Harker.Pang1990,Facchinei.Pang2003} for the standard  theory of finite--dimensional variational inequalities. The easiest way to state equivalent VI formulations of Problem~\ref{prob:II} is to use the following equivalences:
 \begin{equation}
   \label{eq:SOCCP-1}
-  K^\star \ni {\hat u} \perp r \in K \Longleftrightarrow
-  - {\hat u} \in N_K(r)  \Longleftrightarrow \hat u^\top (s -r) \geq 0, \text{ for all } s \in K.
-\end{equation}
-For Problem~\ref{prob:I}, let us start by rewriting the problem~\eqref{eq:soccp1} as a normal cone inclusion
-\begin{equation}
-  \label{eq:soccp1-bis}
-  \left\{\begin{array}{l}
-    M v-H r-f=0, \\[2mm]
-   -(H^\top v + w + g(H^\top v + w)) \in N_K(r).
- \end{array}\right.
-\end{equation}
-The problem~\eqref{eq:soccp1-bis} is written as an inclusion into the normal cone to $\bar K = \RR^n  \times K\subset \RR^{m+n}$ as
-\begin{equation}
-  \label{eq:soccp1-ter}
-  - \left[\begin{array}{l}
-    M v-H r-f \\
-    H^\top v+w  + g(H^\top v +w)
- \end{array}\right]    \in N_{\bar K}\left(
-\left[\begin{array}{l}
-  v \\r
-\end{array}\right]
-\right).
-\end{equation}
-Finally, the VI formulation of Problem~\ref{prob:I} is given by
-\begin{equation}
-  \label{eq:vi-I-bis}
-  \left[\begin{array}{l}
-    M v-H r-f \\
-    H^\top v+w  + g(H^\top v +w)
-  \end{array}\right] \left(
-  \left[\begin{array}{l}
-      p  \\ s
-    \end{array}\right] - \left[\begin{array}{l}
-      v  \\ r
-    \end{array}\right]
-\right) \geq 0,\quad \text{ for all } s \in K,  p \in \RR^n.
-\end{equation}
-Let us introduce a convenient notation for this formulation as $\mathrm{VI}(F_{\vione},X_{\vione})$ with
-\begin{equation}
-  \label{eq:vi-I}
-  F_{\vione}(v,r) := \left[\begin{array}{l}
-    M v-H r-f \\
-    H^\top v+w  + g(H^\top v +w)
-  \end{array}\right],\quad \text{ and } X_{\vione} = \bar K = \RR^n \times K\subset \RR^{n+m}.
+  K^\star \ni {\hat u} \perp r \in K \quad\Longleftrightarrow\quad
+  - {\hat u} \in N_K(r) \quad \Longleftrightarrow\quad \hat u^\top (s -r) \geq 0, \text{ for all } s \in K.
 \end{equation}
 For Problem~\ref{prob:II}, the following equivalent formulation in VI is directly obtained from
 \begin{equation}
@@ -500,20 +450,24 @@ For Problem~\ref{prob:II}, the following equivalent formulation in VI is directl
  The resulting VI is denoted by $\mathrm{VI}(F_{\vitwo},X_{\vitwo})$ with
 \begin{equation}
   \label{eq:vi-II}
-  F_{\vitwo}(r) := W r +q + g(Wr+q)\text{ and } X_{\vitwo} = K.
+  F_{\vitwo}(r) \coloneqq W r +q + g(Wr+q)\quad\text{and}\quad X_{\vitwo} \coloneqq K.
 \end{equation}
 
-\paragraph{Solution properties.} 
-Concerning the mathematical properties of the obtained VI formulations, it is difficult to provide a general result of existence and uniqueness of solutions. Nevertheless, in the case that the matrix $H$ has full rank and for small friction coefficients, a classical argument for the uniqueness of solution of VIs can be satisfied. Since $W$ is a positive definite matrix if $H$ has full rank, we have  $(x-y)^T W (x-y) \geq C_W \|x-y\|^2$ with  $C_W>0$ and then we obtain
+\paragraph{\tg{Uniqueness} properties.} 
+%Concerning the mathematical properties of the obtained VI formulations, it is difficult to provide a general result of existence and uniqueness of solutions.
+\tg{In the general case, it is difficult to prove uniqueness of solutions to~\eqref{eq:vi-II}.}
+\tg{If we suppose that} the matrix $H$ has full rank and that friction coefficients are ``small'', a classical argument for the uniqueness of solution of VIs can be satisfied.
+\tg{Note that the full rank hypothesis on $H$ implies that $W$ is positive. Therefore,} we have  $(x-y)^\top W (x-y) \geq C_W \|x-y\|^2$ with  $C_W>0$.
+Using this relation in~\eqref{eq:vi-II} yields
 \begin{equation}
   \label{eq:mono-II}
   \begin{array}{rcl}
-    (F_{\vitwo}(x)-F_{\vitwo}(y))^T(x-y) &=& (x-y)^T W (x-y)  \\
+    (F_{\vitwo}(x)-F_{\vitwo}(y))^\top(x-y) &=& (x-y)^\top W (x-y)  \\
     &  & \quad\quad + \sum _{\alpha =1}^{n_c} \mu^\alpha (x^\alpha_\n-y^\alpha_\n) [\|[Wx+q]^\alpha_\t \| - \|[Wy+q]^\alpha_\t \|] \\
     & \geq & C_W \|x-y\|^2  + \sum _{\alpha =1}^{n_c} \mu^\alpha (x^\alpha_\n-y^\alpha_\n) [\|[Wx+q]^\alpha_\t \| - \|[Wy+q]^\alpha_\t \|].
   \end{array}
 \end{equation}
-It is obvious that for small value of the coefficient of friction, the mapping $F_\vitwo$ is strictly monotone and this ensures that the VI has at most one solution~\citep[Theorem 2.3.3]{Facchinei.Pang2003}. The fact that $H$ is full rank also implies that the assumption~\eqref{ass} for the existence of solutions is trivially satisfied. We can therefore conclude that there exists a unique solution to the $\mathrm{VI}(F_{\vitwo},X_{\vitwo})$. It is also therefore easy to conclude to the existence of a unique solution for  $\mathrm{VI}(F_{\vione},X_{\vione})$.
+\tg{Note that} for small values of the coefficients of friction, the mapping $F_\vitwo$ is strictly monotone and this ensures that the VI has at most one solution~\citep[Theorem 2.3.3]{Facchinei.Pang2003}. The fact that $H$ is full rank also implies that the Assumption~\eqref{ass} for the existence of solutions is trivially satisfied. \tg{Hence,} there exists a unique solution to the $\mathrm{VI}(F_{\vitwo},X_{\vitwo})$.
 
 
 
@@ -521,110 +475,114 @@ It is obvious that for small value of the coefficient of friction, the mapping $
   Use of homotopy (Haslinger ?)
 \end{ndrva}
 
-\subsection{Quasi-Variational Inequalities(QVI)}
+\subsection{Quasi-Variational Inequalities (QVI)}
 
-Let $X$ be a multi-valued mapping  $\nbR^{n} \rightsquigarrow  \nbR^{n}$ and let  $F$ be a mapping from $\nbR^n$ into itself. The  quasi-variational inequality  problem, denoted by $\mathrm{QVI}(X,F)$ is to find a vector $z\in X(z)$ such that 
+\tg{Let us recast Problem~\ref{prob:II} into the QVI framework. A QVI is a generalization of the VI, where the feasible set is allowed to depend on the solution. Let us define this precisely:}
+let $X$ be a multi-valued mapping  $\nbR^{n} \rightsquigarrow  \nbR^{n}$ and let  $F$ be a mapping from $\nbR^n$ into itself. The  quasi-variational inequality  problem, denoted by $\mathrm{QVI}(X,F)$ is to find a vector $z\in X(z)$ such that 
 \begin{equation}
  \label{eq:qvi}
- F^{T}(z) (y-z) \ge 0, \, \forall y \in X(z).
+ F^{\top}(z) (y-z) \ge 0, \, \forall y \in X(z).
 \end{equation}
 The QVI formulations of the frictional contact problems are obtained by considering the inclusions~\eqref{eq:signo-inclusion-velo} and~\eqref{eq:Coulomb-inclusion}. We get 
 \begin{equation}
   \label{eq:qvi-1}
   u^\top (s - r) \geq 0, \text{ for all } s \in C(\mu, r_\n),
 \end{equation}
-where $C(\mu, r_\n)$ is the Cartesian product of the semi--cylinders of radius $\mu^\alpha r_n^\alpha$ defined by
+where $C(\mu, r_\n)$ is the Cartesian product of the semi--cylinders of radius $\mu^\alpha r_n^\alpha$ defined as
 \begin{equation}
   \label{eq:cylinder}
-  C(\mu, r_\n) = \prod_{\alpha =1}^{n_c} \{ s \in \RR^3 \mid  s_\n \geq 0, \|s_\t\| \leq \mu^\alpha r^\alpha_n     \}.
+  C(\mu, r_\n) \coloneqq \prod_{\alpha =1}^{n_c}\: \left\{ s \in \RR^3 \mid  s_\n \geq 0, \|s_\t\| \leq \mu^\alpha r^\alpha_n\right\}.
 \end{equation}
-Note that the QVI~\eqref{eq:qvi-1} involves only $u$ and not $\hat u$; this is the main interest of formulating a QVI. The price to pay is the dependence on $r$ of the set $C(\mu,r_\n)$. The frictional contact problems~\ref{prob:I} and~\ref{prob:II}  can be expressed as a QVI by substituting the expression of $u$. For Problem~\ref{prob:II} we obtain
+Note that the QVI~\eqref{eq:qvi-1} involves only $u$ and not $\hat u$: this is the main interest of this formulation. The price to pay is the dependence on $r$ of the set $C(\mu,r_\n)$.
+Problem~\ref{prob:II} can be expressed as a QVI by substituting the expression of $u$, which yields
 \begin{equation}
   \label{eq:qvi-IIbis}
    (Wr+q)^\top (s - r) \geq 0, \text{ for all } s \in C(\mu,r_\n).
 \end{equation}
-Since $W$ is assumed to be positive semi-definite  matrix, the affine mapping is monotone, thus we get an affine monotone $\mathrm{QVI}(F_{\qvitwo},X_{\qvitwo})$ with
+\tg{This expression is compactly rewritten as} $\mathrm{QVI}(F_{\qvitwo},X_{\qvitwo})$, with 
 \begin{equation}
   \label{eq:qvi-II}
-  F_{\qvitwo}(r) :=  Wr+q \text{ and } X_{\qvitwo} = C(\mu,r_\n) .
+  F_{\qvitwo}(r) \coloneqq  Wr+q \quad\text{and}\quad X_{\qvitwo}(r) \coloneqq C(\mu,r_\n) .
 \end{equation}
+Since $W$ is assumed to be positive semi-definite matrix, $F_{\qvitwo}$ is monotone. Thus we get an affine monotone $\mathrm{QVI}(F_{\qvitwo},X_{\qvitwo})$ for Problem~\ref{prob:II}.
 
 
 \subsection{Nonsmooth Equations}
 \label{Sec:NonsmoothEquations}
-In this section, we consider the reformulations of Problems~\ref{prob:I} and~\ref{prob:II} into various nonsmooth equations. More precisely for Problem~\ref{prob:I}, we search for an equation of the type
+
+In this section, we reformulate of Problems\ref{prob:II} as an \tg{equation, as opposed to inclusion}.
+\tg{The term nonsmooth equation highlights that the mapping we consider fails to be differentiable.}
+
+More precisely for Problem~\ref{prob:II}, we search for an equation of the type
 \begin{equation}
   \label{eq:ne-1}
   G(v,u,r) = 0
 \end{equation}
-where $G$ is nonsmooth (generally locally Lipschitz continuous) such that the zeroes $u,v,r$ of~\eqref{eq:ne-1} are the solutions of~\eqref{eq:soccp1}. With such a nonsmooth equations formulations, we will see further that several numerical methods can be used to solve it ranging from fixed point algorithms to Newton's method.
+where $G$ is generally \tg{only} locally Lipschitz continuous such that the zeroes $(u,v,r)$ of~\eqref{eq:ne-1} are the solutions of~\eqref{eq:soccp2}.
+\tg{Several numerical methods can be used to solve such a nonsmooth equation}, ranging from fixed point algorithms to Newton's method.
 
 \paragraph{Natural and normal maps for the VI formulations}
 
-A first way to obtain some formulations based on nonsmooth equations of the frictional contact problems is to use the normal and natural maps (see \cite{Facchinei.Pang2003} for details) which enables to restate a VI into a system of nonlinear and  nonsmooth functions.  Let us define the Euclidean projector $P_X$ onto a closed convex set  $X$. For a vector $x\in \RR^n$, the projected vector $\bar x  = P_X(x)$ is the unique solution of the convex quadratic programm
+A first way to obtain some formulations based on nonsmooth equations of the frictional contact problems is to use the normal and natural maps, see~\cite{Facchinei.Pang2003} for details.
+\tg{Those two mapping enable us} to restate a VI as a system of nonlinear and  nonsmooth functions.
+\tg{Firstly,} let us define the Euclidean projector $P_X$ onto a closed convex set $X$: for a vector $x\in \RR^n$, the projected vector $z  = P_X(x)$ is the unique solution of the convex quadratic programm
 \begin{equation}
   \label{eq:opt-proj}
   \begin{cases}
-    \min\, \Frac 1 2 (y-x)^T(y-x), \\[2mm]
+    \min\, \Frac 1 2 (y-x)^\top(y-x), \\[2mm]
     \begin{array}{ll}
-    s.t. & y \in X .
+     \text{s.t.} & y \in X .
   \end{array}
   \end{cases}
 \end{equation}
- The natural map $F^\nat$ associated with the VI~\eqref{eq:vi} is defined by
+ The natural map $F^\nat\colon \RR^n\to\RR^n$ associated with the VI~\eqref{eq:vi} is defined by
 \begin{equation}
   \label{eq:naturalmap}
-  F^\nat(z) := z - P_{X}(z-F(z)),
+  F^\nat(z) \coloneqq z - P_{X}(z-F(z)),
 \end{equation}
-and  the normal map $F^\nor$ is defined by
+and  the normal map $F^\nor\colon \RR^n\to\RR^n$ is defined by
 \begin{equation}
   \label{eq:normalmap}
-  F^\nor(z) := F(P_X(z)) + z - P_{X}(z).
+  F^\nor(x) \coloneqq F(P_X(x)) + x - P_{X}(x).
 \end{equation}
-A well-known result states that the solution of the VI are  the zeroes of the natural map and are related to the normal map (see \cite{Facchinei.Pang2003}) such that
+A well-known result (see~\cite{Facchinei.Pang2003}) states that the solutions of a VI are \tg{related} to the zeroes of the natural map and normal map:
 \begin{equation}
   \label{eq:VI-normalnatural}
   \begin{array}{c}
-  x \text{ solves } \mathrm{VI}(X,F) \Longleftrightarrow  F^\nat(x)=0, \\[2mm]
-  x \text{ solves } \mathrm{VI}(X,F) \Longleftrightarrow x= P_X(z) \text{ for some } z \text{ such that } F^\nor(z)=0.
+  z \text{ solves } \mathrm{VI}(X,F) \Longleftrightarrow  F^\nat(z)=0, \\[2mm]
+  z \text{ solves } \mathrm{VI}(X,F) \Longleftrightarrow z = P_X(x) \text{ for some } x \text{ such that } F^\nor(x)=0.
 \end{array}
 \end{equation}
-Note that if $x$ solves  $\mathrm{VI}(X,F)$, it solves also  $\mathrm{VI}(X,\rho F)$ for $\rho > 0$. Therefore, we can define some parametric normal and natural maps by
+\tg{Using~\eqref{eq:vi}}, it is easy to see that if $z$ solves  $\mathrm{VI}(X,F)$, then it is  also a solution to $\mathrm{VI}(X,\rho F)$ for any $\rho > 0$.
+Therefore, we can define some parametric variants of the normal and natural maps by
 \begin{equation}
   \label{eq:parametrized-naturalnormalmap}
   \begin{array}{l}
     F_\rho^\nat(z) = z - P_{X}(z-\rho F(z)), \\
-    F_\rho^\nor(z) = \rho F(P_X(z)) + z - P_{X}(z).
+    F_\rho^\nor(x) = \rho F(P_X(x)) + x - P_{X}(x).
   \end{array}
 \end{equation}
-The equivalences~\eqref{eq:VI-normalnatural} continue to hold for the parametric maps. 
- 
-
-Using these equivalent nonsmooth equations, the frictional contact problems can be restated as zeroes of nonsmooth functions. Considering the natural map, we obtain for Problem~\ref{prob:I} under the VI form~\eqref{eq:vi-I},
-\begin{equation}
-  \label{eq:natural-I}
-  F_\vione^\nat(v,r) := \left[
-  \begin{array}{l}
-    \rho (Mv - Hr + f) \\
-    r - P_{K}\left(r  - \rho (H^\top v +w  + g(H^\top v +w))\right)
-  \end{array}\right] = 0,
-\end{equation}
-and  for Problem~\ref{prob:II} under the VI form~\eqref{eq:vi-II},
+The \tg{relations given in}~\eqref{eq:VI-normalnatural} continue to hold for the parametric maps. 
+Using those \tg{equivalences}, the frictional contact problem can be restated as zeroes of nonsmooth functions.
+\tg{With} the natural map, Problem~\ref{prob:II} under the VI form~\eqref{eq:vi-II} can be reformulated as
 \begin{equation}
   \label{eq:natural-II}
-  F_\vitwo^\nat(r) :=   \left[
+  F_\vitwo^\nat(r) \coloneqq   \left[
   \begin{array}{l} 
     r - P_{K}\left(r  - \rho (W r +q + g(W r +q))\right) 
   \end{array}\right] 
   = 0.
 \end{equation}
 The normal map based formulation are also obtained in the same way. 
+\begin{ndroh}
+ Is the last sentence justifies here? I don't think we develop an algorithm based on the normal map. If we have to cut more material, we might consider removing the normal map?
+\end{ndroh}
 
-In the seminal work of~\cite{Sibony1970}, iterative methods for solving monotone VIs are based on the natural map and fixed point iterations. The role of $\rho$ is recognized to be very important for the rate of convergence. To improve the methods, \citet{Sibony1970} proposes to use ``skewed'' projector based on a non-Euclidean metric. Given a positive definite matrix $D\in R^{n\times n}$, a skewed projector $P_{X,D}$ onto $X$ can be defined. For a vector $x\in \RR^n$, the skew projected vector $\bar x  = P_{X,D}(x)$ is the unique solution of the convex program
+In the seminal work of~\cite{Sibony1970}, iterative methods for solving monotone VIs are based on the natural map and fixed point iterations. The role of $\rho$ is recognized to be very important for the rate of convergence. To improve the methods,~\citet{Sibony1970} proposes to use ``skewed'' projector based on a non-Euclidean metric. Given a positive definite matrix $D\in R^{n\times n}$, a skewed projector $P_{X,D}$ onto $X$ \tg{is defined as follows:} $z  = P_{X,D}(x)$ is the unique solution of the convex programm
 \begin{equation}
   \label{eq:opt-proj-skew}
   \begin{cases}
-    \min\, \Frac 1 2 (y-x)^T D (y-x), \\[2mm]
+    \min\, \Frac 1 2 (y-x)^\top D (y-x), \\[2mm]
     \begin{array}{ll}
     s.t. & y \in X .
   \end{array}
@@ -635,20 +593,10 @@ The skew natural map can be also defined and yield the following nonsmooth equat
   \label{eq:skew-natural-NE}
    F_D^\nat(z) = z - P_{X,D}(z-D^{-1} F(z)).
 \end{equation}
-Considering the skew natural map, we obtain for Problem~\ref{prob:I} under the VI form~\eqref{eq:vi-I},
-\begin{equation}
-  \label{eq:natural-typeI}
-  F_{\vione,D}^\nat(v,r) := \left[
-  \begin{array}{l}
-    D_1^{-1} (Mv - Hr + f) \\ 
-    r - P_{K}\left(r  - D_2^{-1} (H^\top v + w  + g(H^\top v + w))\right)
-  \end{array}\right] = 0
-\end{equation}
-with $D_1\in \RR^{n\times n}$ and $D_2\in \RR^{m\times m}$.
-For Problem~\ref{prob:II} under the VI form~\eqref{eq:vi-II},
+Considering the skew natural map, we obtain for Problem~\ref{prob:II} under the VI form~\eqref{eq:vi-II},
 \begin{equation}
   \label{eq:natural-typeII}
-  F_{\vitwo,D}^\nat(r) := \left[
+  F_{\vitwo,D}^\nat(r) \coloneqq \left[
   \begin{array}{l} 
     r - P_{K}\left(r  - D^{-1} ( W r +q   + g(Wr+q))\right)  \end{array}\right] = 0
 \end{equation}
@@ -661,6 +609,11 @@ The previous case is retrieved by choosing $D = \rho^{-1} I_{n\times n}$.
 \begin{ndrva}
   It can be interesting to use something $D$ as a preconditionner of the problem ? $D=diag(W)$ or incomplete LU. Warning, $W$ is only SPD, so we cannot have $D =W$.
 \end{ndrva}
+
+\begin{ndroh}
+ I see a notation issue here: in the last subsection $D$ is a matrix; in the next one it is a disk. We should change one of the 2.
+ I vote for changing the matrix $D$ to \ldots $R$ ??
+\end{ndroh}
 
 \paragraph{Jean--Moreau's and Alart-Curnier's functions}
 
@@ -677,7 +630,7 @@ Using the alternative inclusions formulations~\eqref{eq:signo-inclusion-velo}--\
   \label{eq:diskR-prod}
   D(\mu,(r_{n})_+) = \prod_{\alpha=1\ldots n_c} D(\mu^{\alpha} (r_{\n}^\alpha)_+).
 \end{equation}
-defines the Cartesian product of the Coulomb disks for each contact. The notation $x_+$ stands for $x_+ = \max(0,x)$. Using this procedure, \citet{Jean.Moreau1987} proposes the following nonsmooth equation formulation of the frictional contact condition
+defines the Cartesian product of the Coulomb disks for each contact. The notation $x_+$ stands for $x_+ = \max(0,x)$. Using this procedure,~\citet{Jean.Moreau1987} proposes the following nonsmooth equation formulation of the frictional contact condition
 \begin{equation}
   \label{eq:Moreau--Jean-1}
     \begin{cases}
@@ -685,27 +638,21 @@ defines the Cartesian product of the Coulomb disks for each contact. The notatio
     r_\t - P_{D(\mu, (r_{\n})_+)}(r_\t - \rho_\t u_\t   )=0.
   \end{cases}
 \end{equation}
-The parameters $\rho_n,\rho_\t$ may be also chosen contact by contact. Problem~\ref{prob:I} is then reformulated as
-\begin{equation}
-  \label{eq:MJ-I}
-  F_{\mjone}(v,r) := \left[
-    \begin{array}{c}
-    Mv - Hr - f \\
-    r_\n - P_{\RR^{n_c}_+}(r_\n - \rho_\n (H^\top v + w)_\n) \\
-    r_\t - P_{D(\mu, (r_{\n})_+)}(r_\t - \rho_\t (H^\top v + w)_\t   ) 
-  \end{array}\right] =0
-\end{equation}
-and  Problem~\ref{prob:II}  as
+The parameters $\rho_n,\rho_\t$ may be also chosen contact by contact. Problem~\ref{prob:II} \tg{is then reformulated as}
 \begin{equation}
   \label{eq:MJ-II}
-    F_{\mjtwo}(r) := \left[ \begin{array}{c}
+    F_{\mjtwo}(r) \coloneqq \left[ \begin{array}{c}
     r_\n - P_{\RR^{n_c}_+}(r_\n - \rho_\n (W r +  q)_\n) \\
     r_\t - P_{D(\mu, (r_{\n})_+)}(r_\t - \rho_\t (Wr+q)_\t   ) 
   \end{array}\right] =0.
 \end{equation}
 In~\cite{Christensen.Klarbring.ea1998}, the same formulation is used.
+\begin{ndroh}
+ Est ce qu'on veut dire plus de chose avec la phrase précedente. Je trouve que actuellement, cela tombe un peu à plat.
+Si on souhaite juste mentionner ce papier, je propose qu'on remonte la citation pour la mettre au même niveau que celle de M\&J.
+\end{ndroh}
 
- In the seminal work of  Alart \& Curnier~\cite{Curnier.Alart88,Alart.Curnier1991}, the augmented Lagrangian approach is invoked to obtain a  similar formulation motivated by the development of nonsmooth (or generalized) Newton methods (see Sect.~\ref{Sec:NSN-AC} ). To be accurate, the original Alart--Curnier function is given by 
+ In the seminal work of  Alart \& Curnier~\cite{Curnier.Alart88,Alart.Curnier1991}, the augmented Lagrangian approach is invoked to obtain a  similar formulation motivated by the development of nonsmooth (or generalized) Newton methods (see Section~\ref{Sec:NSN-AC}). To be accurate, the original Alart--Curnier function is given by 
 \begin{equation}
   \label{eq:AC-1}
   \begin{cases}
@@ -713,23 +660,12 @@ In~\cite{Christensen.Klarbring.ea1998}, the same formulation is used.
     r_\t - P_{D(\mu, (r_\n - \rho u_\n)_+)}(r_\t - \rho_\t u_\t   )=0.
   \end{cases}
 \end{equation}
-Note that the difference between~\eqref{eq:Moreau--Jean-1} and~\eqref{eq:AC-1} lies in the formulation disk onto which one project: $D(\mu, (r_\n - \rho u_\n)_+)$ rather than $D(\mu, (r_{\n})_+)$. Problem~\ref{prob:I} and~\ref{prob:II} can be also reformulated as in~\eqref{eq:MJ-I} and~\eqref{eq:MJ-II} using~\eqref{eq:AC-1}. We note the mapping that we get in that way $F_{\acone}(v,u,r)$ and  $F_{\actwo}(v,u,r)$.
-
-
-Problem~\ref{prob:I} is then reformulated as
-\begin{equation}
-  \label{eq:AC-I}
-  F_{\acone}(v,r) := \left[
-    \begin{array}{c}
-    Mv - Hr - f \\
-    r_\n - P_{\RR^{n_c}_+}(r_\n - \rho_\n (H^\top v +w)_\n) \\
-    r_\t - P_{D(\mu, (r_\n - \rho_\n u_\n)_+)}(r_\t - \rho_\t (H^\top v +w)_\t   )
-  \end{array}\right] =0
-\end{equation}
-and  Problem~\ref{prob:II}  as
+The difference between~\eqref{eq:Moreau--Jean-1} and~\eqref{eq:AC-1} is in the radius of the disk: $D(\mu, (r_\n - \rho u_\n)_+)$ rather than $D(\mu, (r_{\n})_+)$.
+Problem~\ref{prob:II} can be also reformulated as in~\eqref{eq:MJ-II} using~\eqref{eq:AC-1}.
+\tg{This yields}
 \begin{equation}
   \label{eq:AC-II}
-    F_{\actwo}(r) := \left[ \begin{array}{c}
+    F_{\actwo}(r) \coloneqq \left[ \begin{array}{c}
     r_\n - P_{\RR^{n_c}_+}(r_\n - \rho_\n (W r +  q)_\n) \\
     r_\t - P_{D(\mu, (r_\n - \rho_\n u_\n)_+)}(r_\t - \rho_\n (W r +  q)_\t   )
   \end{array}\right] =0.
@@ -753,15 +689,15 @@ and  Problem~\ref{prob:II}  as
 \tb{  + discussion on $(r_\n)_+$ in \ref{eq:diskR-prod} (cf. Olivier comment)}
 \end{ndrva}
 
-%In \cite{Leung.ea1998} and \cite{Xuewen.ea2000}, alternative equations reformulations are proposed mainly based on the reformulation of the problem in the plane of sliding.
+%In~\cite{Leung.ea1998} and~\cite{Xuewen.ea2000}, alternative equations reformulations are proposed mainly based on the reformulation of the problem in the plane of sliding.
 
 
 \paragraph{General SOCC-functions}
 
-More generally, a large family of reformulations of the SOCCP~\eqref{eq:contact-SOCCP} in terms of equations can be obtained by using a so-called Second Order Cone Complementarity (SOCC) function. Let us consider the following SOCCP over symmetric cone $K^\star = K $. A SOCC-function $\phi$ is defined by
+More generally, a large family of reformulations of the SOCCP~\eqref{eq:contact-SOCCP} in terms of equations can be obtained by using a so-called Second Order Cone Complementarity (SOCC) function. Let us consider the following SOCCP over a symmetric cone $K^\star = K $. A SOCC-function $\phi$ is defined by
 \begin{equation}
   \label{eq:SOCC-function}
-  K \ni x \perp y \in K \Longleftrightarrow \phi(x,y)=0.
+  K \ni x \perp y \in K \quad\Longleftrightarrow\quad \phi(x,y)=0.
 \end{equation}
 The frictional contact problem can be written as a SOCCP over symmetric cones by applying the following transformations
 \begin{equation}
@@ -778,7 +714,7 @@ The frictional contact problem can be written as a SOCCP over symmetric cones by
   \end{bmatrix}.
 \end{equation}
 
-Clearly, the nonsmooth equations of the previous sections provides several examples of SOCC-functions and the natural map offers the most simplest one. In~\cite{Fukushima.ea2001}, the standard complementarity functions for Nonlinear Complementarity Problems (NCP) such as the famous Fischer-Burmeister function are extended to the SOCCP by means of Jordan algebra. Smoothing functions are also given with theirs Jacobians and they studied their properties in view of the application of Newton's method.  For the second order cone, the Jordan algebra can be defined with the following non-associative Jordan product,
+Clearly, the nonsmooth equations of the previous sections provides several examples of SOCC-functions and the natural map offers the simplest one. In~\cite{Fukushima.ea2001}, the standard complementarity functions for Nonlinear Complementarity Problems (NCP) such as the \tg{celebrated} Fischer-Burmeister function are extended to the SOCCP by means of Jordan algebra. Smoothing functions are also given with theirs Jacobians and they studied their properties in view of the application of Newton's method.  For the second order cone, the Jordan algebra can be defined with the following non-associative Jordan product
 \begin{equation}
   \label{eq:Jordan-product}
   x \cdot y =
@@ -788,12 +724,12 @@ Clearly, the nonsmooth equations of the previous sections provides several examp
   \end{array}
 \right]
 \end{equation}
-and the usual componentwise addition $x+y$. The vector $x^2$ denotes $x\cdot x$ and their exists an unique vector $x^{1/2}\in K$ that defines the square root for all $x \in K$ such that
+and the usual componentwise addition $x+y$. The vector $x^2$ denotes $x\cdot x$ and there exists a unique vector $x^{1/2}\in K$, the square root of  $x\in K$, defined as
 \begin{equation}
   \label{eq:Jordan-sqrt}
   (x^{1/2})^2 = x^{1/2} \cdot x^{1/2} = x.
 \end{equation}
-A direct calculation yields
+A direct calculation \tg{for the SOC in $\RR^3$ yields}
 \begin{equation}
   \label{eq:Jordan-sqrt2}
   x^{1/2} =
@@ -802,14 +738,15 @@ A direct calculation yields
     \Frac {x_\t} {2s}
   \end{array}\right], \quad \text{ where } s = \sqrt{(x_\n+\sqrt{x_\n^2 - \|x_\t\|^2})/2}.
 \end{equation}
-If $x=0$, we conventionally define $0^{1/2}=0$. The vector $|x| \in K$ denotes $(x^2)^{1/2}$. Thanks to this algebra and its associated operator, the projection onto $K$ can be written as
+\tg{We adopt the convention that} $0^{1/2}=0$. The vector $|x| \in K$ denotes $(x^2)^{1/2}$. Thanks to this algebra and its associated operator, the projection onto $K$ can be written as
 \begin{equation}
   \label{eq:Jordan-projection}
   P_K(x) = \Frac{x + |x|}2.
 \end{equation}
-This formula provides a new expression for the natural map and its associated nonsmooth equations. This is exactly what is done in~\cite{Hayashi.ea_SIOPT2005} where the natural map~\eqref{eq:naturalmap} is used together with an expression of the projection operator based on the Jordan algebra calculus. The SOCCP is then solved with a semi--smooth Newton method and with the help of smoothing.
+This formula provides a new expression for the natural map and its associated nonsmooth equations. This is exactly what is done in~\cite{Hayashi.ea_SIOPT2005} where the natural map~\eqref{eq:naturalmap} is used together with an expression of the projection operator based on the Jordan algebra calculus. The \tg{resulting} SOCCP is then solved with a semi--smooth Newton method, and \tg{a smoothing parameter can be added}.
 
-Most of the calculus in Jordan algebra are based on the spectral decomposition, which is a basic concept in Jordan Algebra (see for more details \cite{Fukushima.ea2001}). For $x = (x_\n, x_\t)\in \RR\times \RR^2$, the spectral decomposition is defined by
+Most of the calculus in Jordan algebra are based on the spectral decomposition, a basic concept in Jordan Algebra, see~\cite{Fukushima.ea2001} for more details.
+For $x = (x_\n, x_\t)\in \RR\times \RR^2$, the spectral decomposition is defined by
 \begin{equation}
   \label{eq:Jordan-spectraldecomposition}
   x = \lambda_1 u_1 + \lambda_2 u_2,
@@ -830,9 +767,9 @@ where $\lambda_1,\lambda_2\in \RR$ and $u_1,u_2\in\RR^3$ are the spectral values
         1 \\
         (-1)^i w
       \end{bmatrix}, \text{ if } x_\t = 0 \\
-    \end{cases}, i = 1,2
+    \end{cases} \quad i = 1,2
 \end{equation}
-with $w\in\RR^2$ being any vector satisfying $\|w\|=1$. Note that if $x_\t\neq 0$ the decomposition is unique. The spectral decomposition enjoys very nice properties that  allows to simplify  the computation of basic functions such that
+with $w\in\RR^2$ \tg{any unit vector}. Note that the decomposition is unique \tg{whenever $x_\t\neq 0$}. The spectral decomposition enjoys very nice properties that \tg{simplifies} the computation of basic functions such that
 \begin{equation}
   \label{eq:Jordan-spectraldecomposition2}
   \begin{array}{l}
@@ -840,17 +777,13 @@ with $w\in\RR^2$ being any vector satisfying $\|w\|=1$. Note that if $x_\t\neq 0
     P_K(x) = \max(0,\lambda_1) u_1 + \max(0,\lambda_2) u_2. 
   \end{array}
 \end{equation}
-
-
-
-
-More interestingly,  general C-functions can also be extended and smoothed version of this function can be also developed (see \cite{Fukushima.ea2001}
+More interestingly,  general C-functions can also be extended and smoothed version of this function can be also developed (see~\cite{Fukushima.ea2001}
 ). Let us start with the Fischer-Burmeister function
 \begin{equation}
   \label{eq:Jordan-FB}
   \phi_{\fb}(x,y) = x+y - (x^2 + y^2 )^{1/2}.
 \end{equation}
-It can shown that the zeroes of $\phi_{\fb}$ are solutions of the SOCCP~\eqref{eq:SOCC-function} using the Jordan algebra associated with $K$. Using the spectral decomposition, the Fischer-Burmeister function can be computed easily as
+It can show that the zeroes of $\phi_{\fb}$ are solutions of the SOCCP~\eqref{eq:SOCC-function} using the Jordan algebra associated with $K$. Using the spectral decomposition, the Fischer-Burmeister function can be easily computed as
 \begin{equation}
   \label{eq:Jordan-FB-1}
   \phi_{\fb}(x,y) = x+y - (\sqrt{\bar \lambda_1} \bar u_1 + \sqrt{\bar \lambda_2} \bar u_2)
@@ -876,7 +809,10 @@ where $\bar\lambda_1,\bar\lambda_2\in \RR$ and $\bar u_1,\bar u_2\in\RR^3$ are t
 \end{array}, i = 1,2.
 \end{equation}
 
-
+\begin{ndroh}
+- All this presentation is nice. However, does it fit into the story of this article?\newline
+- The notion of C-function is used, but is not defined.
+\end{ndroh}
 
 
 \paragraph{Fischer-Burmeister function for the frictional contact problem}
@@ -895,7 +831,7 @@ where $\bar\lambda_1,\bar\lambda_2\in \RR$ and $\bar u_1,\bar u_2\in\RR^3$ are t
        \end{bmatrix},
        \begin{bmatrix}
          \frac 1 \mu (u_\n+ \mu \|u_\t\|)\\
-         r_\t
+         u_\t
        \end{bmatrix}
        \right)
      \end{array}\right] 
@@ -911,11 +847,18 @@ where $\bar\lambda_1,\bar\lambda_2\in \RR$ and $\bar u_1,\bar u_2\in\RR^3$ are t
     \label{eq:equiv}
     K^* \ni x \perp y \in K \Longleftrightarrow K^* \ni x \cdot y \in K
   \end{equation}
-  Check there is no troubles with $\mu =0$. This has to be done for all of this section.
+  Check there is no trouble with $\mu =0$. This has to be done for all of this section.
 \end{ndrva}
 
 
 \subsection{Alternative  complementarity formulations}
+
+\begin{ndroh}
+ Are we presenting numerical results using this reformulation? If no, we have to think about the usefulness of this paragraph in the article version.
+ It would be great to have more references here. Where does eq:MCP come from?
+ The assumption that $H = I$ (to get eq:kanno1) are stringent. Do we want to keep it in the paper?
+ At the end, we don't say much about the efficiency of the method. Does it work well?
+\end{ndroh}
 
 A direct complementarity formulation over the positive orthant can also be written by introducing the following slack variable  $\kappa^\alpha = \|u^\alpha_{\t}\|$ for each contact $\alpha$. With the help of this new variable, the contact law for one contact can be written
 \begin{equation}
@@ -927,10 +870,10 @@ A direct complementarity formulation over the positive orthant can also be writt
     0 \leq u_\n \perp r_\n \geq 0.
   \end{cases}
 \end{equation}
-Together with the linear discretized dynamics, the whole problem can be formulated as an NCP (or MCP) as it is defined in~\cite{Dirkse.Ferris1995}. This formulation enables therefore the use of MCP solvers as the PATH solver for the frictional contact problem. Unfortunately, the fact that the functions involved in the formulation of the MCP are themselves nonsmooth due to the norm prevents a robust application of such solvers. In~\cite{Glocker1999}, another MCP formulation is provided. The attempt to use it in a numerical framework was a success due the redundancy of constraints in the formulation.
+Together with the linear discretized dynamics, the whole problem can be formulated as an NCP (or MCP) as it is defined in~\cite{Dirkse.Ferris1995}. This formulation enables therefore the use of MCP solvers as the PATH solver for the frictional contact problem. Unfortunately, the fact that the functions involved in the formulation of the MCP are themselves nonsmooth due to the norm prevents a robust application of such solvers. In~\cite{Glocker1999}, another MCP formulation is provided. The attempt to use it in a numerical framework was a success due the redundancy of constraints in the formulation.\marginpar{\tg{We need a reference here}}
 
 
-In~\cite{Kanno.ea2006},  an alternative second--order cone formulation is proposed by introducing a slack variable $\lambda_\n\in\RR$ for each contact. The disjunctive formulation of the Coulomb contact law is then formulated as
+In~\cite{Kanno.ea2006},  an alternative second--order cone formulation is proposed by introducing a slack variable $\lambda_\n\in\RR$ for each contact. The disjunctive formulation of the Coulomb contact law is \tg{given by}
 \begin{equation}
   \label{eq:kanno}
     \RR_+\times K_1 \ni
@@ -941,9 +884,9 @@ In~\cite{Kanno.ea2006},  an alternative second--order cone formulation is propos
     \begin{bmatrix}
      r_\n\\ \mu r_\n \\ r_{\t}
     \end{bmatrix}
-    \in \RR_+ \times K_1
+    \in \RR_+ \times K_1,
 \end{equation}
-where $K_1 =\{x | \mid  \|x_\t\| \leq x_\n  \}$. In the special case that $H$ is the identity matrix (which implies that $n=m$), the linear relations given in Problem~\ref{prob:I} between $u$ and $r$ reduce to $Mv = r +f$ and $u = v+w $. We obtain the following Second Order Cone Linear Complementarity problem (SOCLCP)
+where $K_1 =\{x\in\tg{\RR^{3}} \mid  \|x_\t\| \leq x_\n  \}$. In the special case that $H$ is the identity matrix (which implies that $n=m$), the linear relations given in Problem~\ref{prob:I} between $u$ and $r$ reduce to $Mv = r +f$ and $u = v+w $. We obtain the following Second Order Cone Linear Complementarity problem (SOCLCP)
 \begin{equation}
   \label{eq:kanno1}
   \begin{cases}
@@ -973,12 +916,12 @@ where $K_1 =\{x | \mid  \|x_\t\| \leq x_\n  \}$. In the special case that $H$ is
     \in \RR_+ \times K_1.
   \end{cases}
 \end{equation}
-The fact that the SOCCP is linear is quite attractive but the strong rank deficiency renders difficult the design of robust numerical algorithms. In \cite{Zhang.ea_CMAME2011}, this formulation is used with the help of a normal and tangential penalization of the contact.
+The fact that the SOCCP is linear is quite attractive but the strong rank deficiency \tg{make} the design of robust numerical algorithms \tg{difficult}. In~\cite{Zhang.ea_CMAME2011}, this formulation is used with the help of a normal and tangential penalization of the contact.
 
 
 \subsection{Optimization problems}
 
-In this section, several optimization-based formulations are proposed. The quest for an efficient optimization formulation of the frictional problem is an hard task. Since the problem is nonsmooth and nonconvex, the use of an associated optimization problem is interesting from the numerical point of view if we want to improve the robustness and the stability of the numerical methods.
+In this section, several optimization-based formulations are proposed. The quest for an efficient optimization formulation of the frictional problem is a hard task. Since the problem is nonsmooth and nonconvex, the use of an associated optimization problem is interesting from the numerical point of view if we want to improve the robustness and the stability of the numerical methods.
 
 %\subsubsection{A direct optimization problem}
 
@@ -1022,17 +965,16 @@ Starting from Problem~\ref{prob:II}, a direct substitution of $u = Wr +q$ yields
     \end{array}
   \end{cases}
 \end{equation}
-which is an nonlinear optimization problem with a nonsmooth and nonconvex cost function.  From the numerical point of view this problem may be very difficult and we have to ensure that the cost function have to be zero at the solution which is not guaranteed of some local minima are reached in the minimization process.
+which is a nonlinear optimization problem with a nonsmooth and nonconvex cost function.  From the numerical point of view this problem may be very difficult and we have to ensure that the cost function have to be zero at the solution which is not guaranteed of some local minima are reached in the minimization process.
 
-Other optimization-based formulations have been proposed in the literature. They are not direct optimization formulation but they try to identify an optimization sub-problem which is well-posed and for which efficient numerical methods are available. Three approaches can be listed in three categories : a)  the \emph{alternating optimization} problems, b) the \emph{successive approximation} method and c)  the \emph{convex SOCP} approach.
+Other optimization-based formulations have been proposed in the literature. They are not direct optimization formulation but they try to identify an optimization sub-problem which is well-posed and for which efficient numerical methods are available. Three approaches can be listed in three categories: a)  the \emph{alternating optimization} problems, b) the \emph{successive approximation} method and c)  the \emph{convex SOCP} approach.
 
 
-\paragraph{The alternating optimization problems} aims at solving the frictional contact problem by alternatively solving the Signorini condition for a known fixed values of the tangential reaction $r_\t$ and solving the Coulomb friction model for a known fixed values of the normal reaction $r_\n$. 
-
-For Problem~\ref{prob:II}, let us consider the following splitting of the matrix $W$ and the vector $q$
+\paragraph{The alternating optimization \tg{approach}} aims at solving the frictional contact problem by alternatively solving the Signorini condition for a fixed value of the tangential reaction $r_\t$, and solving the Coulomb friction model for a fixed value of the normal reaction $r_\n$. 
+\tg{Let us split the matrix $W$ and the vector $q$ in the following way:}
 \begin{equation}
   \label{eq:W-split}
-  u = W r +q \Longleftrightarrow 
+  u = W r +q \quad \Longleftrightarrow \quad
   \left[\begin{array}{c}
     u_\n \\ u_\t
   \end{array}\right]
@@ -1047,7 +989,7 @@ For Problem~\ref{prob:II}, let us consider the following splitting of the matrix
     q_\n \\q_\t
   \end{array}\right].
 \end{equation}
-Two sub-problems can therefore be identified : the first problem for the normal part is to find $u_\n$ and $r_\n$ such that
+Two sub-problems can therefore be identified: the first one is to find $u_\n$ and $r_\n$ such that
 \begin{equation}
   \label{eq:AO-1}
   \begin{cases}
@@ -1055,7 +997,7 @@ Two sub-problems can therefore be identified : the first problem for the normal 
     0\leq u_\n \perp r_\n \geq 0,
   \end{cases}
 \end{equation}
-with a given value of $\tilde q_\n = q_\n + W_{\n\t}r_\t$ and the second problem for the tangent part is to find $u_\t$ and $r_\t$ such that
+\tg{where} $\tilde q_\n = q_\n + W_{\n\t}r_\t$. The second problem is to find $u_\t$ and $r_\t$ such that
 \begin{equation}
   \label{eq:AO-2}
   \begin{cases}
@@ -1063,11 +1005,12 @@ with a given value of $\tilde q_\n = q_\n + W_{\n\t}r_\t$ and the second problem
    -u_\t \in N_{D(\mu,\tilde r_{\n})}(r_\t),
   \end{cases}
 \end{equation}
-with  given values of $\tilde r_\n$ and $\tilde q_\t = q_\t + W_{\t\n}r_n$. Since $W$ is a symmetric positive semi--definite  matrix, $W_{\n\n}$ and $W_{\t\t}$ are also symmetric semi--definite positive matrices. Two convex optimization problems can therefore be formulation as
+\tg{where $\tilde r_\n$ is fixed} and $\tilde q_\t = q_\t + W_{\t\n}r_n$. Since $W$ is a symmetric positive semi--definite  matrix, $W_{\n\n}$ and $W_{\t\t}$ are also symmetric semi--definite positive matrices.
+\tg{Therefore,} two convex optimization problems can be formulation:
  \begin{equation}
   \label{eq:AO-3}
   \begin{cases}
-    \min\, \Frac 1 2 r_\n^\top  W_{\n\n} r_\n + r_n^\top \tilde q_\n, \\
+    \min\, \Frac 1 2 r_\n^\top  W_{\n\n} r_\n + r_n^\top \tilde q_\n \\
     \begin{array}{ll}
     \text{s.t.} & r_\n \geq 0,
   \end{array}\end{cases}
@@ -1076,55 +1019,12 @@ and
 \begin{equation}
   \label{eq:AO-4}
   \begin{cases}
-    \min\,  \Frac 1 2 r_\t^\top W _{\t\t} r_\t +  r_\t^\top \tilde q_\t, \\
+    \min\,  \Frac 1 2 r_\t^\top W _{\t\t} r_\t +  r_\t^\top \tilde q_\t \\
     \begin{array}{ll}
      \text{s.t.}  & r_\t \in D(\mu,\tilde r_{\n}).
   \end{array}
 \end{cases}
 \end{equation}
-Problem~\ref{prob:I} is treated in the same manner by splitting the matrix $H$ and the vector $w_\n$ such that
-\begin{equation}
-  \label{eq:H-split}
-  u = H^\top v +w \Longleftrightarrow  \left[\begin{array}{c}
-    u_\n \\ u_\t
-  \end{array}\right]
- =
-  \left[\begin{array}{c}
-      H_{\n} \\
-      H_{\t} \\    
-    \end{array}\right]^\top   \, v+
- \left[\begin{array}{c}
-    w_\n \\w_\t
-  \end{array}\right].
-\end{equation}
-We get for the normal part
-\begin{equation}\label{eq:soccp1-normal}
-  \begin{cases}
-    M v = {H_\n} {r_\n} + {\tilde f_\n} \\[2mm]
-    u_\n = H_\n^\top v + w_\n \\[2mm]
-    0 \leq { u_\n} \perp r _\n \geq 0
-  \end{cases}
-\end{equation}
-for  given value of $\tilde r_\t$ and $\tilde f_\n = f + H_\t r_\t$. Since $M$ is a symmetric positive definite matrix, an equivalent convex optimization can be written
-\begin{equation}
-  \label{eq:soccp1-normal-min}
-    \begin{cases}
-    \min\, \frac 1 2 v^\top M v + v^\top \tilde f_\n  \\[2mm]
-     \begin{array}{ll}
-    s.t. & H_\n^\top v + w_\n \geq 0
-  \end{array}
-  \end{cases}
-\end{equation}
-and $u_\n$ is obtained by $ u_n = H_\n^\top v + w_\n $ and $r_\n$ is the Lagrange multiplier associated with the constraints. For the tangent part, the situation is a little bit more complicated since we get
-\begin{equation}\label{eq:soccp1-tangent}
-  \begin{cases}
-    M v = {H_\t} {r_\t} + {\tilde f_\t} \\[2mm]
-    u_\t = H_\t^\top v + w_\t \\[2mm]
-    -u_\t \in N_{D(\mu,\tilde r_{\n})}(r_\t),
-  \end{cases}
-\end{equation}
-for  given value of  $\tilde r_\n$ and $\tilde f_\t = f + H_\n \tilde r_\n$. It is therefore difficult to associate an optimization which differs from~\eqref{eq:AO-4}.  
-
 %  Since $M$ is a symmetric positive definite matrix, an equivalent convex optimization can be written
 % \begin{equation}
 %   \label{eq:soccp1-tangent-min}
@@ -1143,7 +1043,7 @@ for  given value of  $\tilde r_\n$ and $\tilde f_\t = f + H_\n \tilde r_\n$. It 
 \paragraph{The successive approximation} method identifies a single optimization problem by introducing a function that maps the normal reaction to itself (or the friction threshold) such that
 \begin{equation}
   \label{eq:Haslinger-g}
-  h(r_\n)  = r_\n
+  h(r_\n)  = r_\n.
 \end{equation}
 Using this artifact, we can define a new problem from Problem~\ref{prob:II} such that
 \begin{equation}
@@ -1152,7 +1052,7 @@ Using this artifact, we can define a new problem from Problem~\ref{prob:II} such
     \theta = h(r_\n) \\
     u = W r + q \\
     -u_{\n} \in N_{\RR^{n_c}_+}(r_\n) \\
-    -u_{\t} \in N_{D(\mu,\theta)}(r_\t)
+    -u_{\t} \in N_{D(\mu,\theta)}(r_\t).
   \end{cases}
 \end{equation}
 Since W is a symmetric positive semi-definite  matrix, the last three lines are equivalent to a convex optimization problem over the product of cylinder $C(\mu,\theta)$, that is
@@ -1168,8 +1068,12 @@ Since W is a symmetric positive semi-definite  matrix, the last three lines are 
 \end{equation}
 
 The method of successive approximation has been extensively used for proving existence and uniqueness of solutions to the discrete frictional contact problems. We refer to~\cite{Haslinger.ea1996} which summarizes the seminal work of the Czech school~\cite{Necas.ea1980,Haslinger1983,Haslinger1984}. We will see in the sequel that this approach also provides us with very efficient numerical solvers.
-
-\paragraph{ The convex SOCP} approach operates in the same vein but a  SOCQP sub-problem is identified. To this aim, we use the function $g(u)$ introduced in~\eqref{eq:modified-bis} and thanks to this mapping we rewrite Problem~\ref{prob:II} as
+\begin{ndroh}
+ Do we implement this method? The last sentence suggest that we are going to show numerical results.
+\end{ndroh}
+\paragraph{The convex SOCP} approach \tg{is in the same vein as the previous one, with the difference that} a SOCQP sub-problem is identified.
+To this aim, \tg{we augment the problem by introduction a auxiliary variable $s$, the image of $g(u)$ introduced in~\eqref{eq:modified-bis}.
+We then obtain}
 \begin{equation}\label{eq:ACLM-2}
   \begin{cases}
     s = g(u) \\[2mm]
@@ -1189,19 +1093,12 @@ Since $W$ is a positive semi-definite matrix, a new convex optimization sub-prob
     \right.
   \end{cases}
 \end{equation} 
-Problem~\ref{prob:I} may be also reformulated in this form
-\begin{equation}\label{eq:ACLM-4}
-  \begin{cases}
-    s = g(u) \\[2mm]
-    \left\{
-      \begin{array}{ll}
-        \min\,&\Frac 1 2 v^\top M v -  f^\top v  \\
-        \text{s.t. } & H v  + w + s  \in K^\star.
-      \end{array}
-    \right.
-  \end{cases}
-\end{equation} 
-In this latter formulation, the optimization sub--problem appears as a strictly convex optimization problem ($M$ is assumed to be semi--definite positive) under (possibly redundant) cone constraints. If this sub--problem is feasible, the sub--problem admits a unique solution. This formulation introduced in~\cite{Cadoux2009} and developped in~\cite{Acary.Cadoux2013,Acary.ea_ZAMM2011} has been used to give an existence criteria to the discrete frictional contact problems. Furthermore, this existence criteria can be numerically checked. 
+This formulation introduced in~\cite{Cadoux2009} and developed in~\cite{Acary.Cadoux2013,Acary.ea_ZAMM2011} has been used to give an existence criteria to the discrete frictional contact problems. Furthermore, this existence criteria can be numerically checked. 
+
+\begin{ndroh}
+ Vincent, peut-tu vérifier que les 2 dernières phrases sont encore cohérentes (j'ai supprimé la formulation globale)?
+\end{ndroh}
+
 \clearpage
 \section{Numerical methods for VIs}
 \label{sec:numericalmethods,vi}
@@ -1214,13 +1111,12 @@ Starting from the VI formulations~\eqref{eq:vi} or more precisely an associated 
   \label{eq:skew-natural-NE-bis}
    F_D^\nat(z) = z - P_{X,D}(z-D^{-1} F(z)).
 \end{equation}
-A basic idea of algorithm is to perform fixed point iterations on the mapping
+\tg{The basic idea of the} algorithm is to perform fixed point iterations on the mapping
 \begin{equation}
   \label{eq:skew-fixed-point}
-   z \mapsto P_{X,D}(z-D^{-1} F(z)).
+   z \mapsto P_{X,D}(z-D^{-1} F(z)),
 \end{equation}
-yielding to Algorithm~\ref{Algo:FP-vi} with the specific choice of $D=1/\rho_k \, I$. The choice of the updating rule of $\rho_k$ will be detailed in Section~\ref{sec:numericalmethods,vi,adaptive}.
-
+yielding to Algorithm~\ref{Algo:FP-vi} with the specific choice of $D=\rho_k^{-1} \, I$. The choice of the updating rule of $\rho_k$ is detailed in Section~\ref{sec:numericalmethods,vi,adaptive}.
 \begin{algorithm}
   \begin{algorithmic}
     {\sf
@@ -1241,25 +1137,8 @@ yielding to Algorithm~\ref{Algo:FP-vi} with the specific choice of $D=1/\rho_k \
   \end{algorithmic}
   \caption{Fixed point iterations for the VI~\eqref{eq:vi}}  \label{Algo:FP-vi}
 \end{algorithm}
+%
 
-
-Applying the Algorithm~\ref{Algo:FP-vi} to the VI formulation~\eqref{eq:vi-I} leads to the following iteration
-\begin{equation}
-  \label{eq:FP-vi-I}
-  \begin{cases}
-    v_{k+1} \leftarrow  v_k - D_1^{-1}( M v_{k} - H r_k +f) \\
-    u_{k+1} \leftarrow  u_k - D_2^{-1}( u_k - H^\top v_{k} - w) \\ 
-    r_{k+1} \leftarrow  P_{K,D_3}(r_k - D_3^{-1}(u_k +  g(u_k))).
-  \end{cases}
-\end{equation}
-Due to the fact that $u$ is explicitly given as a function of $v$, $D_2$ is chosen as the identity matrix and $u_{k+1}$ plays the role of $u_k$ in the last equation. The following iteration is obtained
-\begin{equation}
-  \label{eq:FP-vi-Ibis}
-  \begin{cases}
-    v_{k+1} \leftarrow  v_k - D_1^{-1}( M v_{k} - H r_k +f) \\
-    r_{k+1} \leftarrow  P_{K,D_3}(r_k - D_3^{-1}(H^\top v_k + w +  g(H^\top v_k+ w ))).
-  \end{cases}
-\end{equation}
 For the formulation~\eqref{eq:vi-II}, the following iterations are performed
 \begin{equation}
   \label{eq:FP-vi-II}
@@ -1267,7 +1146,7 @@ For the formulation~\eqref{eq:vi-II}, the following iterations are performed
        r_{k+1} \leftarrow  P_{K,D}(r_k - D^{-1}( W r_k + q +  g(W r_k + q ))).
   %\end{cases}
 \end{equation}
- In the sequel when a parameter $\rho$ is specified, it is assumed that $D$ is chosen as $1/\rho$ times the identity matrix.
+In the sequel when a parameter $\rho$ is specified, it is assumed that \tg{$D = \rho^{-1}I$}.
 
 
 % Algorithms~\ref{Algo:FP-vi-I} and~\ref{Algo:FP-vi-I}.
@@ -1314,8 +1193,9 @@ For the formulation~\eqref{eq:vi-II}, the following iterations are performed
 %   \end{algorithmic}
 %   \caption{Fixed point iterations on Problem~\ref{prob:II} based on VI~\eqref{eq:vi-II}}
 % \end{algorithm}
-The convergence of such methods are generally demonstrated for strongly monotone VI. For the problems we are concerned, this assumption is not satisfied, but we will see in the sequel that such methods can converge in practical numerical applications. 
-Algorithm~\ref{Algo:FP-vi} with the iteration rule~\eqref{eq:FP-vi-II} and a fixed value of $\rho_k$ has been originally proposed in \cite{DeSaxce.Feng1998}. The algorithm is called Uzawa's algorithm by reference to the algorithm due to Uzawa in computing the optimal values of convex program by primal-dual techniques.
+The convergence of such methods are generally \tg{shown} for strongly monotone VI.
+\tg{In our case}, this assumption is not satisfied, but we will see in the sequel that such methods can converge in \tg{practice}. 
+Algorithm~\ref{Algo:FP-vi} with the iteration rule~\eqref{eq:FP-vi-II} and a fixed value of $\rho_k$ has been originally proposed in~\cite{DeSaxce.Feng1998}. The algorithm is called Uzawa's algorithm by reference to the algorithm due to Uzawa in computing the optimal values of convex program by primal-dual techniques.\marginpar{\tg{adding a ref would be nice}}
 
 
 
@@ -1345,16 +1225,16 @@ yielding to Algorithm~\ref{Algo:FP-qvi}.
   \end{algorithmic}
   \caption{Fixed point iterations for the QVI~\eqref{eq:qvi}}  \label{Algo:FP-qvi}
 \end{algorithm}
-For Problem~\ref{prob:II} and~\eqref{eq:Moreau--Jean-1}, we get the following iteration rule
+For Problem~\ref{prob:II} and the Jean--Moreau function~\eqref{eq:Moreau--Jean-1}, we get the following iteration rule
 \begin{equation}
   \label{eq:FP-MJ-II}
   \begin{cases}
     u_{k+1} \leftarrow W r_{k} +q\\
     r_{\n,k+1} \leftarrow P_{\RR^{n_c}_+}(r_{\n,k} -\rho_\n u_{\n,k+1}) \\
-    r_{\t,k+1} \leftarrow P_{D(\mu,r_{\n,k})}(r_{\t,k}-\rho_\t u_{\t,k+1})
+    r_{\t,k+1} \leftarrow P_{D(\mu,r_{\n,k})}(r_{\t,k}-\rho_\t u_{\t,k+1}).
   \end{cases}
 \end{equation}
-and with the ~\eqref{eq:AC-1}, we get
+With the Alart--Curnier approach~\eqref{eq:AC-1}, we get
 \begin{equation}
   \label{eq:FP-AC-II}
   \begin{cases}
@@ -1404,7 +1284,7 @@ The extragradient method~\citep{Korpelevich1976} is also a well-known method for
     z_{k+1} &\leftarrow& P_X(z_{k}-\rho\,F(\bar z_k))
   \end{array}
 \end{equation}
-and formulated in Algorithm~\ref{Algo:ExtraGradient-vi}.
+and \tg{formally defined} in Algorithm~\ref{Algo:ExtraGradient-vi}.
 \begin{algorithm}
   \begin{algorithmic}
     {\sf
@@ -1425,7 +1305,7 @@ and formulated in Algorithm~\ref{Algo:ExtraGradient-vi}.
   \end{algorithmic}
   \caption{Extragradient method for the VI~\eqref{eq:vi}}  \label{Algo:ExtraGradient-vi}
 \end{algorithm}
-The convergence of this method requires  that the function $F$ is Lipschitz--continuous and pseudo--monotone and that a solution exists. 
+The convergence of this method \tg{is guaranteed under the following assumptions:} there exists a solution and the function $F$ is Lipschitz--continuous and pseudo--monotone.
 
 In~\citep{He.Liao_JOTA2002}, the extragradient method is reinterpreted as a prediction-correction method applied to the proximal point algorithm. Indeed, the proximal point algorithm amounts to solving the following VI for a given $z_k$
 \begin{equation}
@@ -1440,9 +1320,9 @@ or equivalently
 Searching for a solution $z_{k+1}$ of~\eqref{eq:PPA-VI2} yields
 \begin{equation}
   \label{eq:PPA-VI3}
-  z_{k+1} = P_{X}( z_k - \alpha_k F(z_{k+1})])
+  z_{k+1} = P_{X}( z_k - \alpha_k F(z_{k+1}))
 \end{equation}
-which can be viewed as a implicit version of the basic fixed point iteration based on~\eqref{eq:skew-fixed-point-qvi}. A prediction--correction method based may be written as 
+which can be viewed as an implicit version of the basic fixed point iteration based on~\eqref{eq:skew-fixed-point-qvi}. A prediction--correction method based may be written as 
 \begin{equation}
   \label{eq:PPA-VI4}
   \begin{array}{lcl}
@@ -1450,14 +1330,19 @@ which can be viewed as a implicit version of the basic fixed point iteration bas
     z_{k+1} &\leftarrow& P_X(z_{k}-\alpha_k\,F(\bar z_k))
   \end{array}
 \end{equation}
-where $\alpha_k$ and $\rho_k$ have to be updated at each iteration.
-
-\paragraph{Projection and contraction methods} The extragradient method needs to projection on $X$ per iteration. In order to improve the basic fixed point method but with only one projection per step, \citet{Solodov.Tseng1996} and \citet{He_AMO1997} consdider
+where \tg{the scalars} $\alpha_k$ and $\rho_k$ have to be updated at each iteration.
+\begin{ndroh}
+ I think that the analogy with the proximal point algorithm is premature. We only introduce it in Section~\ref{Sec:Prox}.\newline
+I think we are presenting result with the extragradient. Maybe add a teaser at the end of the paragraph?
+\end{ndroh}
+\paragraph{Projection and contraction methods} The extragradient method needs \tg{two} projections on $X$ per iteration.
+In order to improve the basic fixed point method but with only one projection per step,~\citet{Solodov.Tseng1996} and~\citet{He_AMO1997} consider \tg{the following update:}
 \begin{equation}
   \label{eq:VI-ProjectionContraction1}
   z_{k+1}\leftarrow z_k- \gamma(z_k,\rho) D^{-1}\left[T_{\rho}(z_k)-T_{\rho}(P_X(z_k-\rho F(z_k)) )\right],
 \end{equation}
-where $D\in \nbR^{n\times n}$ is a PD matrix and  $T_\rho=I-\rho F$. The goal is to choose $\rho \in (0,+\infty)$ sufficiently small so that $T_\rho$ is a strongly monotone mapping. Substituting the expression of $T_\rho$ in~\eqref{eq:VI-ProjectionContraction1}, we get
+where $D\in \nbR^{n\times n}$ is a positive definite matrix and  $T_\rho\coloneqq I-\rho F$.
+The \tg{scalar} $\rho \in (0,+\infty)$ must be sufficiently small so that $T_\rho$ is a strongly monotone mapping. Substituting the expression of $T_\rho$ in~\eqref{eq:VI-ProjectionContraction1}, we get
 \begin{equation}
   \label{eq:VI-ProjectionContraction2}
   \begin{array}{lcl}
@@ -1468,7 +1353,7 @@ where $D\in \nbR^{n\times n}$ is a PD matrix and  $T_\rho=I-\rho F$. The goal is
 With the analogy with a gradient method,  the search direction $d(z,\rho))$ may be introduced
 \begin{equation}
   \label{eq:VI-projectionContraction3}
-    d(z,\rho) = z- P_X(z-\rho F(z))  - \rho (F(z) - F(P_X(z-\rho F(z)))) 
+  d(z,\rho) = z- P_X(z-\rho F(z))  - \rho \left[F(z) - F(P_X(z-\rho F(z)))\right].
   \end{equation}
 The method~\eqref{eq:VI-ProjectionContraction2} can be written as 
 \begin{equation}
@@ -1476,46 +1361,46 @@ The method~\eqref{eq:VI-ProjectionContraction2} can be written as
   \begin{array}{lcl}
     \bar z_{k} &\leftarrow& P_X(z_k-\rho F(z_k))\\
     d_k  &\leftarrow&  z_k - \bar z_k - \rho (F(z_k) - F(\bar z_k)) \\
-    z_{k+1} &\leftarrow & z_k - \gamma(z_k,\rho) D^{-1} d_k.
+    z_{k+1} &\leftarrow & z_k - \gamma(z_k,\rho) D^{-1} d_k,
   \end{array}
 \end{equation}
 where the function $\gamma(z,\rho)$ appears as a step-length in the search direction.
-In~\citep{He_AMO1997}, the matrix $D=I$ is the identity matrix and the step-size is chosen as
+In~\citep{He_AMO1997}, the matrix $D$ is set to the identity matrix and the step-size is chosen as
 \begin{equation}
   \label{eq:VI-projectionContraction5}
   \begin{array}{lcl}
-    \gamma (z,\rho) = \Frac{\theta [ z - P_X(z-\rho F(z)) ]^\top d(z,\rho)}{\|d(z,\rho)\|^2}, \theta \in (0,2).
+    \gamma (z,\rho) = \Frac{\theta [ z - P_X(z-\rho F(z)) ]^\top d(z,\rho)}{\|d(z,\rho)\|^2}\qquad \theta \in (0,2).
   \end{array}
 \end{equation}
 with the parameter $\rho$ such that
 \begin{equation}
   \label{eq:VI-projectionContraction6}
   \begin{array}{lcl}
-    \rho \|F(z_k) - F(\bar z_k)\| \leq L \|z_k - \bar z_k\|, \text{ with } L \in (0,1)
+    \rho \|F(z_k) - F(\bar z_k)\| \leq L \|z_k - \bar z_k\|, \quad\text{with } L \in (0,1).
   \end{array}
 \end{equation}
 In~\citep{Solodov.Tseng1996}, the step-size is chosen as
 \begin{equation}
   \label{eq:VI-projectionContraction7}
   \begin{array}{lcl}
-    \gamma (z,\rho) = \Frac{\theta (1-L) \| z - P_X(z-\rho F(z))\|^2} {\|P^{1/2}d(z,\rho)\|^2}, \theta \in (0,2), L\in (0,1),
+    \gamma (z,\rho) = \Frac{\theta (1-L) \| z - P_X(z-\rho F(z))\|^2} {\|P^{1/2}d(z,\rho)\|^2}\qquad \theta \in (0,2), L\in (0,1),
   \end{array}
 \end{equation}
 with the parameter $\rho$ such that
 \begin{equation}
   \label{eq:VI-projectionContraction8}
   \begin{array}{lcl}
-    \rho (z_k-\bar z_k)(F(z_k) - F(\bar z_k) \leq L \|z_k - \bar z_k\|^2, \text{ with } L \in (0,1)
+    \rho (z_k-\bar z_k)(F(z_k) - F(\bar z_k) \leq L \|z_k - \bar z_k\|^2,\quad\text{with } L \in (0,1).
   \end{array}
 \end{equation}
-The resulting algorithm is described in Algorithm~\ref{Algo:ProjectionContraction-vi}. The updating rule for $\rho_k$ is will detailed in Section~\ref{sec:numericalmethods,vi,adaptive} in order to satisfy the conditions~\eqref{eq:VI-projectionContraction6} or~\eqref{eq:VI-projectionContraction8}.
+The resulting algorithm is described in Algorithm~\ref{Algo:ProjectionContraction-vi}. The updating rule for $\rho_k$ is detailed in Section~\ref{sec:numericalmethods,vi,adaptive} in order to satisfy the conditions~\eqref{eq:VI-projectionContraction6} or~\eqref{eq:VI-projectionContraction8}.
 
 
 \begin{algorithm}
   \begin{algorithmic}
     {\sf
       \STATE $ $
-      \REQUIRE $\sf F,X$ Data of VI~\eqref{eq:vi}
+      \REQUIRE $\sf F,X$ data of VI~\eqref{eq:vi}
       \REQUIRE $\sf D$ a symmetric positive definite matrix
       \REQUIRE $z_0$ initial values and $\sf tol >0$ a tolerance
       \ENSURE  $\sf z$ solution of VI~\eqref{eq:vi}
@@ -1538,7 +1423,7 @@ The resulting algorithm is described in Algorithm~\ref{Algo:ProjectionContractio
 Other more evolved projected iterative methods can be found in~\citep{He.ea_COA2012-I,He.ea_COA2012-II}.
 
 \paragraph{Hyperplane projection method}
-The hyperplane projection method has been introduced by \citep{Konnov1993}. The convergence has been proved under the assumptions that $F$ is  a continuous pseudo-monotone mapping. The method is described in Algorithm~\ref{Algo:HPA}.
+This approach was introduced by~\citep{Konnov1993}. The convergence has been proved under the assumptions that $F$ is  a continuous pseudo-monotone mapping. The method is described in Algorithm~\ref{Algo:HPA}.
 \begin{algorithm}
   \begin{algorithmic}
     {\sf
@@ -1552,36 +1437,43 @@ The hyperplane projection method has been introduced by \citep{Konnov1993}. The 
       \STATE (Armijo line--search) Find the smallest integer, $\sf i\in \nbN$ such that 
       \begin{equation}
         \label{eq:HPA1}
-        \sf  F(2^{-i}y_k+(1-2^{-i})z_k)^T (z_k-y_k) \geq \Frac \sigma \tau \|z_k-y_k\|^2
+        \sf  F(2^{-i}y_k+(1-2^{-i})z_k)^\top (z_k-y_k) \geq \Frac \sigma \tau \|z_k-y_k\|^2
       \end{equation}
       \STATE $\sf i_k \leftarrow i$
       \STATE $\sf x^k \leftarrow 2^{-i_k}y_k+(1-2^{-i_k})z_k$
-      \STATE $\sf w_k \leftarrow  z_k - \Frac{F(x_k)^T(z_k-x_k)}{\|F(x_k)\|^2}\,F(x_k)$
+      \STATE $\sf w_k \leftarrow  z_k - \Frac{F(x_k)^\top(z_k-x_k)}{\|F(x_k)\|^2}\,F(x_k)$
       \STATE $\sf z_{k+1}  \leftarrow P_{X}(w_k)$
       \STATE $\sf k \leftarrow k+1$
       \STATE Evaluate $\sf error$.
       \ENDWHILE
     }
   \end{algorithmic}
-  \caption{Hyperplane projection method \citep{Konnov1993}}  \label{Algo:HPA}
+  \caption{Hyperplane projection method~\citep{Konnov1993}}  \label{Algo:HPA}
 \end{algorithm}
-
 \subsection{Self-adaptive step-size rules}
 \label{sec:numericalmethods,vi,adaptive}
-
-In~\citep{Khobotov_CMMP1987}, a method is proposed to improve the extragradient method of~\citet{Korpelevich1976} by adapting $\rho_k$ is the following way. The goal is the find $\rho_k$ that satisfies
+\begin{ndroh}
+ 2, 3 sentences motivating this subsections would be a nice addition. Will try to do it.
+\end{ndroh}
+In~\citep{Khobotov_CMMP1987}, a method is proposed to improve the extragradient method of~\citet{Korpelevich1976} by adapting $\rho_k$ is the following way.
+The goal is the find $\rho_k$ that satisfies
   \begin{equation}
     \label{eq:khobotov1}
     0 < \rho_k \leq \min\left\{\bar\rho,L \Frac{\|z_k-\bar z_k\|}{\|F(z_k)-F(\bar z_k)\|}\right\}\text{ with } L \in (0,1)
   \end{equation}
-where $\bar \rho$ is the maximum value of $\rho_k$ which is chosen in the light of the specific problem.  The goal is clearly to find a coefficient that is bounded by the local Lipschitz constant. The standard way to do that is to use a Armijo--type procedure by successively trying value of $\rho_k = \bar \rho \nu^m$ with $m\in\NN$ and $\nu\in (0,1)$. The parameter $\nu$ is typically chosen as $2/3$.  In the original paper of \cite{Khobotov_CMMP1987}, there is no procedure to size $\bar \rho$ or to update it. In~\cite{He.Liao_JOTA2002} and in the context of prediction--correction, the author proposes to use the rule $\rho_k =  \rho_{k-1} \nu^m$ and  if the criteria~\eqref{eq:khobotov1} is largely satisfied for $\rho_{k}$, the value is increased.
+where $\bar \rho$ is the maximum value of $\rho_k$ which is chosen in the light of the specific problem.
+The \tg{objective} is to find a coefficient that is bounded by the local Lipschitz constant. The standard way to do that is to use an Armijo--type procedure by successively trying value of $\rho_k = \bar \rho \nu^m$ with $m\in\NN$ and $\nu\in (0,1)$, with a typical value of $2/3$.  In the original paper of~\cite{Khobotov_CMMP1987}, there is no procedure to size $\bar \rho$ or to update it. In~\cite{He.Liao_JOTA2002} and in the context of prediction--correction, the authors propose to use the rule $\rho_k =  \rho_{k-1} \nu^m$ and  if the criteria~\eqref{eq:khobotov1} is largely satisfied for $\rho_{k}$, the value is increased.\marginpar{\tg{this sentence needs to be rewritten}}
 In~\citep{Han.Lo_CMA2002},  a similar procedure is used for the extragradient method by the increasing step of $\rho_k$ is done after the correction as in~\cite{He.Liao_JOTA2002}.
- The criteria~\eqref{eq:khobotov1} is  verified by computing the ratio
+
+\begin{ndroh}
+ We have to motivate the ratio before presentation the equations.
+\end{ndroh}
+The criteria~\eqref{eq:khobotov1} is  verified by computing the ratio
 \begin{equation}
   \label{eq:Khobotov-r}
   r _{k} \leftarrow \Frac{\rho_k \|F(z_k)-F(\bar z_k)\|}{ \|z_k-\bar z_k\| }.
 \end{equation}
- In~\citep{Solodov.Tseng1996}, similar Armijo--like technique is used. Nevertheless, the ratio $r_k$ is computed as follows:
+ In~\citep{Solodov.Tseng1996}, similar Armijo--like technique is used, and the ratio $r_k$ is computed as follows:
 \begin{equation}
   \label{eq:SolodovTseng-r}
   r _{k} \leftarrow \Frac{\rho_k(z_k-\bar z_k)^\top(F(z_k)-F(\bar z_k))}{ \|z_k-\bar z_k\|^2 }.
@@ -1592,11 +1484,15 @@ In~\cite{Han.Sun_CMA2004}, the ration $r_k$ is evaluated as
   r _{k} \leftarrow \Frac{\rho_k \|z_k-\bar z_k\|^2 }{(z_k-\bar z_k)^\top(F(z_k)-F(\bar z_k))}.
 \end{equation}
 but in practice this choice appears to be the worth one. 
+\begin{ndroh}
+ We have to back up the last claim with a reference of some data\newline
+ The next paragraph is hard to follow. Maybe we could put some informations in the algorithm description, like the typical values.
+\end{ndroh}
 
 
-  The approach is summarized in Algorithm~\ref{Algo:Up1}. The parameter $L$ typically chosen around $0.9$ is a safety coefficient in the evaluation of $\rho_k$. The parameter $L_{min}$ that implies a increase of $\rho_k$ is chosen around $0.3$.
-In~Algorithm~\ref{Algo:Up1}, a Boolean option is added to the standard Armijo approach. The approximation $\bar z_k$ is updated within the self--adaptive loop. This trick is not justifies by any theoretical argument and is most of the paper this operation is not performed but in pratice (see Section ~\ref{Sec:Comparison,VI,step-length}) it appears to improve the convergence speed.
- The update of the Armijo rule $\rho_k \leftarrow \nu \,\rho_k$ can also be replaced by  $\rho_k \leftarrow \nu \,\rho_k\, \min\left\{1, 1/r_k\right\}$ but it appears that this trick does improve the self--adaptive procedure. Other more evolved step--lengths strategies can be found in \citep{Wang_JCAM2010} that have been tried in this study.
+  The approach is summarized in Algorithm~\ref{Algo:Up1}. The parameter $L$ typically chosen around $0.9$ is a safety coefficient in the evaluation of $\rho_k$. The parameter $\sf L_{min}$ that triggers an increase of $\rho_k$ is chosen around $0.3$.
+In~Algorithm~\ref{Algo:Up1}, a Boolean option is added to the standard Armijo approach. The approximation $\bar z_k$ is updated within the self--adaptive loop. This trick is not justifies by any theoretical argument and is most of the paper this operation is not performed but in practice (see Section ~\ref{Sec:Comparison,VI,step-length}) it appears to improve the convergence speed.
+ The update of the Armijo rule $\rho_k \leftarrow \nu \,\rho_k$ can also be replaced by  $\rho_k \leftarrow \nu \,\rho_k\, \min\left\{1, 1/r_k\right\}$ but it appears that this trick does improve the self--adaptive procedure. Other more evolved step--lengths strategies can be found in~\citep{Wang_JCAM2010} that have been tried in this study.
 
 \begin{algorithm}
   \begin{algorithmic}
@@ -1630,50 +1526,51 @@ In~Algorithm~\ref{Algo:Up1}, a Boolean option is added to the standard Armijo ap
 \subsection{Naming convention}
 \begin{table}
   \centering
-  \begin{tabular}{|l|p{0.7\textwidth}|l|}
+  \begin{tabular}{|l|l|l|l|}
     \hline
-    { Algorithm}
-    & Description 
+    {Name}
+    & Algo.
+    & Additional informations
     & parameters\\
     \hline
     \sf FP-DS
-    &  Algorithm~\ref{Algo:FP-vi} with the iteration rule~\eqref{eq:FP-vi-II} and fixed $\rho$
+    &  \ref{Algo:FP-vi} & iteration rule~\eqref{eq:FP-vi-II} and fixed $\rho$
     & $\rho$ \\
     %\hline
     % \sf FP-VI-1 
-    % &  Algorithm~\ref{Algo:FP-vi} with the iteration rule~\eqref{eq:FP-vi-Ibis}
+    % &  \ref{Algo:FP-vi} & iteration rule~\eqref{eq:FP-vi-Ibis}
     % & $D$ or $\rho$\\
     \hline
     \sf FP-QVI-MJ
-    &  Algorithm~\ref{Algo:FP-qvi} with the iteration rule~\eqref{eq:FP-MJ-II} and fixed $\rho_\n,\rho_\t$
+    &  \ref{Algo:FP-qvi} & iteration rule~\eqref{eq:FP-MJ-II} and fixed $\rho_\n,\rho_\t$
     & $\rho_\n,\rho_\t$\\
      \hline
     \sf FP-QVI-AC 
-    &  Algorithm~\ref{Algo:FP-qvi} with the iteration rule~\eqref{eq:FP-AC-II} and fixed $\rho_\n,\rho_\t$
+    &  \ref{Algo:FP-qvi} & iteration rule~\eqref{eq:FP-AC-II} and fixed $\rho_\n,\rho_\t$
     & $\rho_\n,\rho_\t$\\
     \hline
     \sf FP-VI-UPK
-    &  Algorithm~\ref{Algo:FP-vi} with the iteration rule~\eqref{eq:FP-vi-II} and Algorithm~\ref{Algo:Up1} with~\eqref{eq:Khobotov-r} 
+    &  \ref{Algo:FP-vi} & iteration rule~\eqref{eq:FP-vi-II} and Algorithm~\ref{Algo:Up1} with~\eqref{eq:Khobotov-r} 
     & $L, L_{\min}, \nu $ {\sf isUpdateInTheLoop}\\
     \hline
     \sf FP-VI-UPTS
-    &  Algorithm~\ref{Algo:FP-vi} with the iteration rule~\eqref{eq:FP-vi-II} and Algorithm~\ref{Algo:Up1} with~\eqref{eq:SolodovTseng-r} 
+    &  \ref{Algo:FP-vi} & iteration rule~\eqref{eq:FP-vi-II} and Algorithm~\ref{Algo:Up1} with~\eqref{eq:SolodovTseng-r} 
     & $L, L_{\min}, \nu $ {\sf isUpdateInTheLoop}\\
     \hline
     \sf EG-VI-UPK
-    & Algorithm~\ref{Algo:ExtraGradient-vi} with the formulation~\eqref{eq:vi-I} and Algorithm~\ref{Algo:Up1} with~\eqref{eq:Khobotov-r}
+    & \ref{Algo:ExtraGradient-vi} & formulation~\eqref{eq:vi-II} and Algorithm~\ref{Algo:Up1} with~\eqref{eq:Khobotov-r}
     &  $L, L_{\min}, \nu $ {\sf isUpdateInTheLoop}\\
     \hline
     \sf EG-VI-UPTS
-    & Algorithm~\ref{Algo:ExtraGradient-vi} with the formulation~\eqref{eq:vi-I} and Algorithm~\ref{Algo:Up1} with~\eqref{eq:SolodovTseng-r}
+    & \ref{Algo:ExtraGradient-vi} & formulation~\eqref{eq:vi-II} and Algorithm~\ref{Algo:Up1} with~\eqref{eq:SolodovTseng-r}
     & $L, L_{\min}, \nu $ {\sf isUpdateInTheLoop}\\
     \hline
-    \sf HPA-VI-1 
-    & Algorithm~\ref{Algo:HPA} with the formulation~\eqref{eq:vi-I}
-    & $\sigma,\tau$\\
-    \hline
-    \sf HPA-VI-2 
-    & Algorithm~\ref{Algo:HPA} with the formulation~\eqref{eq:vi-II}
+%    \sf HPA-VI-1 
+%    & \ref{Algo:HPA} & formulation~\eqref{eq:vi-I}
+%    & $\sigma,\tau$\\
+%    \hline
+    \sf \tg{HPA-VI}
+    & \ref{Algo:HPA} & formulation~\eqref{eq:vi-II}
     & $\sigma,\tau$\\ 
     \hline
   \end{tabular}
@@ -1684,15 +1581,15 @@ In~Algorithm~\ref{Algo:Up1}, a Boolean option is added to the standard Armijo ap
 
 \begin{ndrva}
   \begin{itemize}
-  \item Situate the work of \cite{DeSaxce.Feng90,DeSaxce.Feng1998} and  \cite{Simo.Laursen1992,Laursen.Simo1993b}.
-  \item Cite somewhere \citep{Laborde.Renard_MMAS2008}
+  \item Situate the work of~\cite{DeSaxce.Feng90,DeSaxce.Feng1998} and ~\cite{Simo.Laursen1992,Laursen.Simo1993b}.
+  \item Cite somewhere~\citep{Laborde.Renard_MMAS2008}
   \item Have a careful look to the work of Krause.
   \item Implement the work of Simo just to laugh
   \item Implement the FP-QVI-MJ and FP-QVI-AC within the De Saxce approach ?
   \item Rule and efficient Choice of $\rho$.
   \item Should we leave hyperplane projection ?
   \item Acceleration techniques and Nesterov Method ? FISTA and Nesterov work. INPPA 
-  \item To be classified \cite{Yan.ea_CMA2008,Han.Lo_CMA2002,Han.Sun_CMA2004,Han_AMC2006,Yan.ea_AMC2009}
+  \item To be classified~\cite{Yan.ea_CMA2008,Han.Lo_CMA2002,Han.Sun_CMA2004,Han_AMC2006,Yan.ea_AMC2009}
   \item Implement ~\citep{He.Liao_JOTA2002} prediction-correction method ?
   \end{itemize}
 \end{ndrva}
@@ -1702,8 +1599,10 @@ In~Algorithm~\ref{Algo:Up1}, a Boolean option is added to the standard Armijo ap
 
 \subsection{Splitting techniques and proximal point algorithm}
 
-Splitting techniques are standard techniques to solve $\mathrm{VI}(F,X)$ when the function $F$ is affine, that is $F=Mz+q$. Usually, a block splitting of the matrix $M$ is performed and a Projected Successive Over Relaxation(PSOR) is used to solve the VI. Due to the particular structure of the cone $K$, that can be considered is a splitting contact by contact or by group of several contacts. The sub-problems that are generated can be then solved by a dedicated method for the VI that have been presented in the previous sections. In the same way, the proximal point algorithm can also be used which amounts to solving the original VI $\mathrm{VI}(F,X)$ by solving a sequence of $\mathrm{VI}(F_{c,x_k},X)$  problems such that $  F_{c,x}(z) = z - x + c F(z) , \quad c > 0$ and $\lim_ {k \rightarrow +\infty } \|x_k-z\| =0$.
-This intermediate VI can be solved with any solvers presented in the previous sections. 
+Splitting techniques are standard techniques to solve $\mathrm{VI}(F,X)$ when the function $F$ is affine, that is $F(z) = Mz+q$.
+Usually, a block splitting of the matrix $M$ is performed and a Projected Successive Over Relaxation (PSOR) \tg{method} is used to solve the VI.
+\tg{Since the cone $K$ is a product of second-order cones in $\RR^3$, a natural way to split the problem is to form sub-problems by using single contact as a building block.}
+The sub-problems can be solved by any method for the VI that have been presented in the previous sections. In the same way, the proximal point algorithm can also be used which amounts to solving the original $\mathrm{VI}(F,X)$ by solving a sequence of $\mathrm{VI}(F_{c,x_k},X)$  problems such that $  F_{c,x_k}(z) = z - x_k + c F(z) , \quad c > 0$ and $\lim_ {k \rightarrow +\infty } \|x_k-z\| =0$.
 
  Rather than entering into deeper details, we prefer to refer to Sect~\ref{Sec:SplittingTechniquesAndProx} for a more general family of solvers based on splitting techniques and proximal point algorithms 
 
@@ -1712,6 +1611,9 @@ This intermediate VI can be solved with any solvers presented in the previous se
    What can be retained from\cite{Heyn_PhD2013} ? Krylov techniques
  \end{ndrva}
 
+ \begin{ndroh}
+  I'm not sure what to do with this subsection. It is quite short and mention a lot of notions that have not been introduced yet. Should we keep it here or move it to a later Section.
+ \end{ndroh}
 
 \clearpage
 \section{Newton based methods}
@@ -1719,26 +1621,29 @@ This intermediate VI can be solved with any solvers presented in the previous se
 
 \begin{itemize}
 \item Alart Curnier~\cite{Alart.Curnier1991}
-\item Situate \cite{Simo.Laursen1992} w.r.t. Newton methods
+\item Situate~\cite{Simo.Laursen1992} w.r.t. Newton methods
 \item Christensen et al.\cite{Christensen.Klarbring.ea1998}~\cite{Christensen.Pang1998},
-\item Newton sur De Saxce cf P. Joly~\cite{Joli.Feng2008} . Equivalence natural map.
+\item Newton sur De Saxce cf P. Joly~\cite{Joli.Feng2008}. Equivalence natural map.
 \item and others ?~\cite{Stadler_SIOPT2004}~\cite{Hueber.ea_SJSC2008,Hueber.Wolhmuth_CMAME2005}\cite{Koziara.Bicanic_CMAME2008}\cite{Renard_CMAME2013}
 \item Update the section with the substitution of $u$
 \end{itemize}
 
 \subsection{Principle of the nonsmooth Newton methods}
 
-In Section~\ref{Sec:NonsmoothEquations}, several formulations of the frictional contact problems by means of nonsmooth equations  have been presented. These nonsmooth equations call for the use of nonsmooth Newton's methods. If we consider the general equation~\eqref{eq:ne-1} with $z = [u,v,r]^T$ we get
+In Section~\ref{Sec:NonsmoothEquations}, several formulations of the frictional contact problem by means of nonsmooth equations  have been presented. These nonsmooth equations call for the use of nonsmooth Newton's methods.
+\tg{Remember that the standard Newton method is to solve}
 \begin{equation}
   \label{eq:NSN1}
   G(z)=0
 \end{equation}
-which can be solved by the following newton iteration
+\tg{by performing the following Newton iteration}
 \begin{equation}
   \label{eq:NSN2}
-  z_{k+1}  =  z_k -  J^{-1}(z_k) (G(z_k)).
+  z_{k+1}  =  z_k -  J^{-1}(z_k) G(z_k).
 \end{equation}
-If the mapping $G$ is smooth enough, the matrix $J$ is the Jacobian matrix of $G$ with respect to $z$, that is $J(z) = \nabla^T_z G(z)$. When the $G$ is nonsmooth but Lipschitz,  the choice of a substitute to the Jacobian matrix can be given by an element of the Clarke sub--differential at $z$ denoted by $ \Phi(z) \in \partial G(z)$. Let us assume for a moment that the $\Phi$ is nonsingular, a nonsmooth Newton method can be written as 
+If the mapping $G$ is smooth enough, the matrix $J$ is the Jacobian matrix of $G$ with respect to $z$, that is $J(z) = \nabla^\top_z G(z)$.
+\tg{When the $G$ is nonsmooth but Lipschitz continuous, as it is the case in the equation reformulations of VIs, the Jacobian matrix is replaced by an element of the subdifferential at $z$ denoted by $ \Phi(z) \in \partial G(z)$.
+If $\Phi(z)$ is nonsingular, then an iteration of the nonsmooth Newton method is given by}
 \begin{equation}
   \label{eq:NSN3}
   z_{k+1}  =  z_k -  \Phi^{-1}(z_k) (G(z_k)).
@@ -1748,13 +1653,13 @@ The resulting nonsmooth Newton method is detailed in Algorithm~\ref{Algo:NSN}.
   \begin{algorithmic}
     {\sf
       \STATE $ $
-      \REQUIRE $\sf G $ Data of Problem~\eqref{eq:NSN1}
+      \REQUIRE $\sf G $ data of Problem~\eqref{eq:NSN1}
       \REQUIRE $\sf D$ a symmetric positive definite matrix
       \REQUIRE $\sf z_0$ initial values and $\sf tol >0$ a tolerance
       \ENSURE  $\sf z$ solution of Problem~\eqref{eq:NSN1}
       \STATE   $\sf k \leftarrow 0$ 
       \WHILE {$\sf error > tol$} 
-      \STATE compute (choose) $\sf \Phi(z_k) \in \partial G(z_k)$
+      \STATE compute (\tg{select}) $\sf \Phi(z_k) \in \partial G(z_k)$
       \STATE $\sf z_{k+1} \leftarrow   z_k -  \Phi^{-1}(z_k) (G(z_k))$
       \STATE Evaluate $\sf error$.
       \STATE $\sf k \leftarrow k+1$
@@ -1771,30 +1676,21 @@ The resulting nonsmooth Newton method is detailed in Algorithm~\ref{Algo:NSN}.
 \subsection{Application to  the discrete frictional contact problem}
 
 \subsubsection{Nonsmooth newton based on the natural map }
-Let us consider the natural map $F_{\vitwo}^\nat$ in~\eqref{eq:natural-II} that enables to write Problem~\ref{prob:II} in a nonsmooth equation. Algorithm~\ref{Algo:NSN} is applied or $z =r$ with
-\begin{equation}
-  \label{eq:phiphi}
-  \begin{cases}
-    \Phi(r) \in \partial_{r} F_{\vitwo}^\nat(r)
-  \end{cases}
+Let us consider the natural map $F_{\vitwo}^\nat$ in~\eqref{eq:natural-II} that enables to write Problem~\ref{prob:II} \tg{as} a nonsmooth equation.
+Algorithm~\ref{Algo:NSN} is applied \tg{with}
+\begin{equation}  \label{eq:phiphi}
+    \Phi(r) \in \partial F_{\vitwo}^\nat(r)
 \end{equation}
  The details of a possible computation of $\Phi$ can be found in Appendix~\ref{Sec:Phi-natural-typeII}.  Similar computations can also be found in~\cite{Joli.Feng2008} where a Newton method based on the formulation~\eqref{eq:natural-II} is used contact by contact in a Gauss--Seidel loop.
 
-Let us consider the natural map $F_{\vione}^\nat$ in~\eqref{eq:natural-I} that enables to write Problem~\ref{prob:I} in a nonsmooth equation.  Algorithm~\ref{Algo:NSN} may be also applied or $z =(v,r)$ with
-\begin{equation}
-  \label{eq:phiphi_bis}
-  \begin{cases}
-    \Phi(v,r) \in \partial_{v,r} F_{\vione}^\nat(r)
-  \end{cases}
-\end{equation}
-
 \begin{ndrva}
   \begin{itemize}
-    \item  Idea : Iteration can also be interesting to state a Newton method
+    \item  Idea: Iteration can also be interesting to state a Newton method
     on the normal map since the evaluation of $F$ is only made on $K$
     and not outside. Perhaps, we can control the regularity of the
     subgradients of $F(P_X(z))$
-    \item In \cite{Hayashi.ea_SIOPT2005}, spectral decomposition of the projection + smoothing.  semi-smooth Newton method
+    \tg{Olivier: I don't see why the fact that we evaluate $F$ only on $K$ is an argument in our case for the natural map. I believe that any $F$ we consider is defined on the whole space.} 
+    \item In~\cite{Hayashi.ea_SIOPT2005}, spectral decomposition of the projection + smoothing.  semi-smooth Newton method
   \end{itemize}
 \end{ndrva}
 
@@ -1832,7 +1728,7 @@ The details of a possible computation of $\Phi$ can be found in Appendix~\ref{Se
 
 \begin{ndrva}
   Is the proj formulation better than FB for all the reason related to the augmented Lagrangian approach
-  See \cite{Mirar.Arora_SMO2004-I} for an automatic adaption of the penalization coefficient ? Link woth the work of Armand
+  See~\cite{Mirar.Arora_SMO2004-I} for an automatic adaption of the penalization coefficient ? Link woth the work of Armand
 \end{ndrva}
 
 
@@ -1858,13 +1754,20 @@ where $e = (1,0,0)$ is the identity element of the Jordan algebra, that is $e \c
   TBW
 \end{ndrva}
 
-
+\begin{ndroh}
+ Do we have ode with smoothing? Do we want to do it?
+\end{ndroh}
 
 \subsection{Damped Newton and Line-search procedures}
 
 \begin{itemize}
 \item   (GP, Armijo, FBLSA, Non-monotone watch dogs)
 \end{itemize}
+
+\begin{ndroh}
+ I believe we only do GP + Armijo. Do we want to do non-monotone LS? From my very limited experiments, it helps, but usually to convergence faster. I'm not sure it really helps to not get stuff in practice. But I may be wrong.\newline
+ I'm not sure that FBLSA make sense here? What is AC-FBLSA? In siconos, when I used the term FBLSA, it is for FB + line search algo, based on the algorithm name given in F\& Pang. What is AC-FBLSA? Whouldn't it be ACLSA or AC-LSA?
+\end{ndroh}
 
 
 \subsection{Nomenclature}
@@ -1938,10 +1841,14 @@ where $e = (1,0,0)$ is the identity element of the Jordan algebra, that is $e \c
 \section{Splitting techniques and proximal point algorithm}
 \label{Sec:SplittingTechniquesAndProx}
 
+\begin{ndroh}
+ TODO: short intro
+\end{ndroh}
+
 \subsection{Splitting techniques}
 \label{Sec:SplittingTechniques}
- The particular structure of the cone $K$ as a product of second-order cone in $\RR^3$ suggests a special splitting of the problem for each contact labelled by $\alpha \in 1\ldots n_c$. 
-
+ The particular structure of the cone $K$ as a product of second-order cone in $\RR^3$
+ calls for a splitting of the problem contact by contact.
 For Problem~\ref{prob:II}, the relation
 \begin{equation}
   \label{eq:delassus-bis}
@@ -1952,21 +1859,29 @@ is split along each contact as follows
   \label{eq:delassus-ter}
   u^\alpha = W^{\alpha\alpha} r^\alpha + \sum_{\beta\neq \alpha}W^{\alpha\beta} r^\beta +  q^\alpha, \text{ for all } \alpha \in 1\ldots n_c,
 \end{equation}
-where the matrices $W^{\alpha\beta}, \alpha \in 1\ldots n_c, \beta \in 1\ldots n_c $ are easily identified from~\eqref{eq:delassus-bis}.
- 
-From~\eqref{eq:delassus-ter}, a projected Gauss--Seidel (PGS) method can be designed by using the following rule at the iterate $k$
+\tg{where the matrices $\alpha$ and $\beta$ are used to label the variable for each contact.
+ The matrices $W^{\alpha\beta}$ with $\alpha \in 1,\ldots, n_c$ and $\beta \in 1,\ldots, n_c $ are easily identified from~\eqref{eq:delassus-bis}.}
+ From~\eqref{eq:delassus-ter}, a projected Gauss--Seidel (PGS) method \tg{is obtained} by using the following update rule at the $k$-th iterate:
 \begin{equation}
   \label{eq:pgs-1}
-  u^{\alpha}_{k+1} = W^{\alpha\alpha} r^{\alpha}_{k+1} + \sum_{\beta < \alpha}W^{\alpha\beta} r^{\beta}_{k+1} + \sum_{\beta > \alpha}W^{\alpha\beta} r^{\beta}_{k} +  q^\alpha, \text{ for all } \alpha \in 1\ldots n_c,
+  u^{\alpha}_{k+1} = W^{\alpha\alpha} r^{\alpha}_{k+1} + \sum_{\beta < \alpha}W^{\alpha\beta} r^{\beta}_{k+1} + \sum_{\beta > \alpha}W^{\alpha\beta} r^{\beta}_{k} +  q^\alpha, \text{ for all } \alpha \in 1\ldots n_c.
 \end{equation}
-and more generally a Projected Successive Over Relaxation(PSOR) is obtained by introducing a relaxation parameter $\omega>0$ such that
+A Projected Successive Over Relaxation (PSOR) scheme is derived by introducing a relaxation parameter $\omega>0$ such that
 \begin{equation}
   \label{eq:psor-1}
   u^{\alpha}_{k+1} = \frac 1 \omega W^{\alpha\alpha} r^{\alpha}_{k+1} 
   - \frac 1 \omega W^{\alpha\alpha} r^{\alpha}_{k} +
   \sum_{\beta < \alpha}W^{\alpha\beta} r^{\beta}_{k+1} + \sum_{\beta \geq \alpha}W^{\alpha\beta} r^{\beta}_{k} +  q^\alpha, \text{ for all } \alpha \in 1\ldots n_c.
 \end{equation}
-By denoting 
+At the $k$-th iteration, the following problem is solved for each contact $\alpha$:
+\begin{equation}\label{eq:psor-3}
+  \begin{cases}
+    u^{\alpha}_{k+1} =  \Bar W^{\alpha\alpha}  r^{\alpha}_{k+1} + \bar q^{\alpha}_{k+1}, \\
+    \hat u^{\alpha}_{k+1} =u^{\alpha}_{k+1} + g(u^{\alpha}_{k+1}), \\[2mm]
+    K^{\alpha,\star} \ni {\hat u^{\alpha}_{k+1}} \perp r^{\alpha}_{k+1} \in K^\alpha,
+  \end{cases}
+\end{equation}
+where
 \begin{equation}
   \label{eq:psor-2}
   \begin{cases}
@@ -1975,23 +1890,17 @@ By denoting
     + \sum_{\beta < \alpha}W^{\alpha\beta} r^{\beta}_{k+1} + \sum_{\beta
       \geq \alpha}W^{\alpha\beta} r^{\beta}_{k} + q^\alpha
   \end{cases}
-, \text{ for all } \alpha \in 1\ldots n_c,
+, \text{ for all } \alpha \in 1\ldots n_c.
 \end{equation}
-we have to solve at each iteration the following problem on each contact $\alpha$
-\begin{equation}\label{eq:psor-3}
-  \begin{cases}
-    u^{\alpha}_{k+1} =  \Bar W^{\alpha\alpha}  r^{\alpha}_{k+1} + \bar q^{\alpha}_{k+1}, \\
-    \hat u^{\alpha}_{k+1} =u^{\alpha}_{k+1} + g(u^{\alpha}_{k+1}), \\[2mm]
-    K^{\alpha,\star} \ni {\hat u^{\alpha}_{k+1}} \perp r^{\alpha}_{k+1} \in K^\alpha.
-  \end{cases}
-\end{equation}
-The problem on each contact~\eqref{eq:psor-3} has exactly the same structure as Problem~\ref{prob:II}, but only concerns one contact. It can be solved analytically of by invoking one of the algorithms presented in this paper a local solver for the sub-problems. The PSOR algorithm is summarized in Algorithm~\ref{Algo:PSOR-II}.
-
+The problem~\eqref{eq:psor-3} has exactly the same structure as Problem~\ref{prob:II}, but is of lower size since it is only for one contact.
+It is solved by a \emph{local solver}, which can be any of the algorithms presented in this paper or even an analytical method \tg{(enumerating all the possible cases)}.
+The PSOR algorithm is summarized in Algorithm~\ref{Algo:PSOR-II} and the PGS can be recovered by setting $\omega=1$.
+%
 \begin{algorithm}
   \begin{algorithmic}
     {\sf
       \STATE $ $ 
-      \REQUIRE $\sf W,q,\mu $ Date of Problem~\ref{prob:II} 
+      \REQUIRE $\sf W,q,\mu$
       \REQUIRE $\sf r_0$ initial values and $\sf tol >0$ a tolerance
       \REQUIRE $\sf \omega$ a relaxation parameter 
       \ENSURE  $\sf r,u$ solution of Problem~\ref{prob:II}
@@ -2001,7 +1910,7 @@ The problem on each contact~\eqref{eq:psor-3} has exactly the same structure as 
       \STATE $\sf   \bar q^{\alpha}_{k+1} \leftarrow - \frac 1 \omega W^{\alpha\alpha} r^{\alpha}_{k}
       + \sum_{\beta < \alpha}W^{\alpha\beta} r^{\beta}_{k+1} + \sum_{\beta
         \geq \alpha}W^{\alpha\beta} r^{\beta}_{k} + q^\alpha $
-      \STATE Solve the single contact problem $\sf \mathrm{FC/II}(\bar W^{\alpha\alpha},\bar q^{\alpha}_{k+1},\mu)$
+      \STATE Solve the single contact problem $\sf \mathrm{FC}(\bar W^{\alpha\alpha},\bar q^{\alpha}_{k+1},\mu)$
       \ENDFOR
       \STATE Evaluate $\sf error$.
       \STATE $\sf k \leftarrow k+1$ 
@@ -2013,11 +1922,11 @@ The problem on each contact~\eqref{eq:psor-3} has exactly the same structure as 
   \caption{PSOR algorithm for Problem~\ref{prob:II}}  \label{Algo:PSOR-II}
 \end{algorithm}
 
-In~\cite{Jourdan.Alart.ea98}, this method is developed in the Gauss-Seidel configuration ($\omega=1$) with a local Newton solver based on the Alart--Curnier formulation. If the local solver is only one iteration of the VI solver based on projection, we get a standard splitting techniques for VI. In Table~\ref{tab:PSOR-PPA-algos}, the methods based on PSOR used in the comparison are summarized.
+In~\cite{Jourdan.Alart.ea98}, this method is developed in the Gauss-Seidel configuration ($\omega=1$) with a local Newton solver based on the Alart--Curnier formulation. If the local solver is only one iteration of the VI solver based on projection, we get a standard splitting technique for VI. In Table~\ref{tab:PSOR-PPA-algos}, the methods based on PSOR used in the comparison are summarized.
 
 \begin{ndrva}
   \begin{itemize}
-  \item Situate \cite{Hayashi.ea_JCAM2005}
+  \item Situate~\cite{Hayashi.ea_JCAM2005}
   \item Do not forget the overrelaxation and some heuristic to adapt convergence (line search).
   \item Accelration technique
     Aitken acceleration. Lebon, Raous et al.
@@ -2035,11 +1944,27 @@ In~\cite{Jourdan.Alart.ea98}, this method is developed in the Gauss-Seidel confi
 
 
 
-\subsection{Proximal points techniques}
+\subsection{Proximal points techniques}\label{Sec:Prox}
+
+\begin{ndroh}
+ The following paragraph is a work in progress.
+\end{ndroh}
+
+\tg{Proximal points methods, or more generally augmented Lagrangian method, finds their roots in the study of variational inequalities.
+They rely on rather theoretical tools (monotone operators and resolvents), introduced to study VI.
+However, they are also useful to device numerical methods as we shall see.
+The basic idea is to design an iterative algorithm to find a solution to the inclusion
+\begin{equation}
+ 0 \in F(x) + N_X(x)\qquad\text{also} \quad 0\in T(x),
+\end{equation}
+where $T$ is a maximal monotone operator (see Definition~\ref{def:MM}).
+Remember that the first inclusion is a.
+}
 
 \begin{ndrva}
+
   Small introduction on proximal functions of Moreau, algo of Martinet
-  and result of Rockafellar (see \cite{Chen.Teboublle_SIOPT1993})
+  and result of Rockafellar (see~\cite{Chen.Teboublle_SIOPT1993})
 \end{ndrva}
 
 Without entering into theoretical aspects, the key idea of proximal points algorithms it to replace the original $\mathrm{VI}(F,X)$ by a sequence of $\mathrm{VI}(F_{\rho,x_k},X)$  problems such that 
@@ -2081,7 +2006,7 @@ For solving the sub-problem $\mathrm{VI}(F_{\alpha,x_k},X)$, any of the previous
   \label{eq:prox-algo-4}
    F_{\alpha,x}(z) = (I + \alpha M) z - x_k + \rho q , \quad \rho > 0 .
 \end{equation}
-We can easily that for sufficiently small $\rho$, we get a monotone affine VI and even better an strongly monotone VI. For Problem~\ref{prob:II} with $F_{\vitwo}$, the proximal point algorithm yields
+We can easily that for sufficiently small $\rho$, we get a monotone affine VI and even better a strongly monotone VI. For Problem~\ref{prob:II} with $F_{\vitwo}$, the proximal point algorithm yields
 \begin{equation}
   \label{eq:prox-algo-5}
    F_{\vitwo,\rho,x}(r) = (I + \alpha W) r - x_k + \alpha( q + g(W r +q )) , \quad \rho > 0 .
@@ -2094,8 +2019,8 @@ The use of proximal point algorithm can be very interesting when the solving of 
 \begin{ndrva}
   \begin{itemize}
   \item Prove it !
-  \item Is there a analogy with choosing a small $r$ ?
-  \item Techniques of \citep{Han_JCAM2008} for sizing alpha
+  \item Is there an analogy with choosing a small $r$ ?
+  \item Techniques of~\citep{Han_JCAM2008} for sizing alpha
   \end{itemize}
 \end{ndrva}
 
@@ -2138,7 +2063,7 @@ The use of proximal point algorithm can be very interesting when the solving of 
     \hline
     \hline
     \sf PSOR-AC 
-    &  Algorithm~\ref{Algo:PSOR-II} with  with the local solver NSN-AC with tolerance $tol_{local}$
+    &  Algorithm~\ref{Algo:PSOR-II} with the local solver NSN-AC with tolerance $tol_{local}$
     & $\omega, tol,  tol_{local}$\\
     \hline
     \hline
@@ -2167,9 +2092,9 @@ The use of proximal point algorithm can be very interesting when the solving of 
 \cite{Christensen.Pang1998}
 
 
-\cite{Heyn.ea_IJNME2013} + PhD thesis \cite{Heyn_PhD2013}
+\cite{Heyn.ea_IJNME2013} + PhD thesis~\cite{Heyn_PhD2013}
 
-Frictionless ? :\cite{Miyamura.ea_IJNME2010,Temizer.ea_CMAME2014}
+Frictionless?~\cite{Miyamura.ea_IJNME2010,Temizer.ea_CMAME2014}
  
 
 \section{Optimization based methods}
@@ -2183,19 +2108,19 @@ Panagiotopoulos. Un coup N un coup T
 methods of successive approximation successive approximations is a natural tool for the numerical realization [3]. Each iterative step is represented by an auxiliary contact problem with given friction described by a variational inequality of the second kind.
 
 
-\cite{Haslinger.ea_CMAME2002} \& \cite{Dostal_JCAM2002} : successive approximation in 2D a) classical Tresca iteration (FPMI).  b) splitting N/T plus a Fixed point (FPMII). Use of a specific QP solver for box constraint~\cite{Dostal_SIOPT1997} that is a improvement of MOre Toraldo method.
+\cite{Haslinger.ea_CMAME2002} \&~\cite{Dostal_JCAM2002}: successive approximation in 2D a) classical Tresca iteration (FPMI).  b) splitting N/T plus a Fixed point (FPMII). Use of a specific QP solver for box constraint~\cite{Dostal_SIOPT1997} that is an improvement of MOre Toraldo method.
 
 \cite{Haslinger.ea_JCAM2004}.  Extension to 3D with faceting the cone. The QP is box constrained QP.
 
 
-\cite{Haslinger.ea_MCS2012}  successive approximation in 3D the special solver of \cite{Kucera_OMS2007,Kucera_SIOPT2008} which is itself and extension to disk constraints of the Polyak method (CG +active set on bounds constraint) and its improvements~\cite{Dostal_SIOPT1997,Dostal.Schoberl_COA2005}.
+\cite{Haslinger.ea_MCS2012}  successive approximation in 3D the special solver of~\cite{Kucera_OMS2007,Kucera_SIOPT2008} which is itself and extension to disk constraints of the Polyak method (CG +active set on bounds constraint) and its improvements~\cite{Dostal_SIOPT1997,Dostal.Schoberl_COA2005}.
 
 
 
 \cite{Dostal.Kozubek_MP2012} An algorithm (extension of MPGP) for solving QP over convex constraint (disk constraint for instance). Application to frictional contact. 
 
 
-\cite{Dostal.Kucera_SIOPT2010} last improvement of the method in \cite{Dostal.Kozubek_MP2012} and \cite{Kucera_SIOPT2008}
+\cite{Dostal.Kucera_SIOPT2010} last improvement of the method in~\cite{Dostal.Kozubek_MP2012} and~\cite{Kucera_SIOPT2008}
 
 
 
@@ -2419,7 +2344,7 @@ In this section, we study thein the list of contact that is iterated by the NSGS
   \label{fig:PSOR/flpops}
 \end{figure}
 
-In Figure~\ref{fig:PSOR/flpops}, we study the effect of the relaxation parameter $\omega$ ranging from $[0.5,1.5]$ on the computational time.  Two conclusions can be drawn a) with increasing values of $\omega$, the PSOR algorithm increases its convergence rate as we van observe for $\tau=1$ but b) the robustness of the algorithm is weaken. Indeed, $\tau=15$, we observe that the performance profile is flat and the number of problems solved is higher for valued of $\omega$ around $1$.
+In Figure~\ref{fig:PSOR/flpops}, we study the effect of the relaxation parameter $\omega$ ranging from $[0.5,1.5]$ on the computational time.  Two conclusions can be drawn a) with increasing values of $\omega$, the PSOR algorithm increases its convergence rate as we van observe for $\tau=1$ but b) the robustness of the algorithm is weakened. Indeed, $\tau=15$, we observe that the performance profile is flat and the number of problems solved is higher for valued of $\omega$ around $1$.
 
 To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$. If it accelerates drastically the rate of convergence of the algorithm for some problems it deteriorates the convergence for other. Further studies would be needed to design self--adaptive schemes for the choice of $\omega$.
 
@@ -2493,9 +2418,9 @@ Analyze the quickest one and the more robust one.
 
 
 
+\addcontentsline{toc}{section}{References}
 \bibliographystyle{plainnat}
 %\bibliography{./biblio/String,./biblio/NonSmooth,./biblio/Math,./biblio/Multibody,./biblio/Fem.bib,./biblio/Dae.bib,./biblio/Meca,./biblio/AnaNum.bib,./biblio/Math-Impact,./biblio/Contact,./biblio/Optim,./biblio/Cp}
-\addcontentsline{toc}{section}{References}
 \bibliography{biblio-extract}
 
 

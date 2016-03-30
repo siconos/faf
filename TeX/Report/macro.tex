@@ -330,6 +330,19 @@ $ $ \\
 \hrule
 \end{ndr1va}%
 }
+{\newtheorem{ndr1oh}{\textbf{\textsc{\footnotesize Redaction note O.H.}}}[section]}
+
+\newenvironment{ndroh}%
+{%
+\color{applegreen}
+\noindent\begin{ndr1oh}\hrule\vspace{1em}%
+\ttfamily\small \  \\
+\noindent}%
+{%
+$ $ \\
+\hrule
+\end{ndr1oh}%
+}
 \makeatother
 
 
@@ -361,7 +374,7 @@ $ $ \\
 \DeclareMathOperator{\proj}{proj}
 \DeclareMathOperator{\prox}{prox}
 \DeclareMathOperator{\co}{co}
-
+\DeclareMathOperator*{\argmax}{arg\,max}
 
 %\newcommand{\RR}{\mbox{\rm $I\!\!R$}}
 %\newcommand{\NN}{\mbox{\rm $I\!\!N$}}
@@ -407,12 +420,16 @@ $ $ \\
 \def\nor{{\hbox{\sf \tiny{nor}}}}
 \def\fb{\hbox{\tiny{\textsf FB}}}
 \def\vione{{\hbox{\tiny{vi-1}}}}
-\def\vitwo{{\hbox{\tiny{vi-2}}}}
-\def\qvitwo{{\hbox{\tiny{qvi-2}}}}
+\def\vitwo{{\hbox{\tiny{vi}}}}
+\def\qvitwo{{\hbox{\tiny{qvi}}}}
+%\def\vitwo{{\hbox{\tiny{vi-2}}}}
+%\def\qvitwo{{\hbox{\tiny{qvi-2}}}}
 \def\mjone{{\hbox{\tiny{mj-1}}}}
-\def\mjtwo{{\hbox{\tiny{mj-2}}}}
+%\def\mjtwo{{\hbox{\tiny{mj-2}}}}
+\def\mjtwo{{\hbox{\tiny{mj}}}}
 \def\acone{{\hbox{\tiny{ac-1}}}}
-\def\actwo{{\hbox{\tiny{ac-2}}}}
+%\def\actwo{{\hbox{\tiny{ac-2}}}}
+\def\actwo{{\hbox{\tiny{ac}}}}
 
 
 
