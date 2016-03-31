@@ -410,18 +410,27 @@ v%     \end{array}\right]
      + Notation des variables
 
 
+** Meeting <2016-03-31 Thu>
+   + MB : natural map correct. meme chose pour le Fisher
+   + OH:  remark sur le papier.
+     
+
+
+
 ** TODO List of actions.  Last update <2016-03-20 Sun>
    DEADLINE: <2016-04-04 Mon>
 
-
    + Paper. General Work :
      + All sections : Clean redaction note and report here the items  :VA:
+
      + Complete the introduction
        + Add a list of approach not discussed in the paper. leave it as future work.
        + Detail whre it is possible why some approaches are not discussed (IPM)
+
      + Complete Section 3
        + Understand the continuity argument of Alart
        + Find references for alternating projection N and after T
+
      + Complete Section 4
        + Section 4.1
 	 \begin{itemize}
@@ -438,14 +447,21 @@ v%     \end{array}\right]
 	 \end{itemize}
        + Section 4.3
 	 What can be retained from\cite{Heyn_PhD2013} ?
-
 	 Krylov techniques
  
      + Where to write the formulation of hybrid Solvers :VA:
+
      + Investigate the best journal to submit (and format) :VA:
+
      + Fixes + new parts in paper :OH:
+
+
    + Devel and comparisons:    
      + Rerun computation  :MB:
      + Fclib. Thinking of howto bind with Matlab :OH:
-     + Fclib and swig python :MB:
-
+     + Fclib and swig python tranalsation :MB:
+     + Add a small description file for example directory. texfile img profile. :VA:
+     + Add description in fclib report. :VA:
+     + Update and correct naming for the line-searches. FBLSA  :MB:OH:
+     + Merge line--searches procedures :MB:OH:
+       
