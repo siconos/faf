@@ -10,6 +10,21 @@ from sympy.printing.ccode import ccode, CCodePrinter
 from sympy.printing.precedence import precedence
 from sympy.printing.str import StrPrinter
 
+
+class Memoize():
+
+    def __init__(self, fun):
+        self._fun = fun
+        self._done = dict()
+
+    def __call__(self, *args):
+        if args in self._done:
+            return self._done[args]
+        else:
+            r = self._fun(*args)
+            self._done[args] = r
+            return r
+
 # dummy sqrt for cse and to avoid sympy transforms on Pow(_x, Rational(1, 2))
 
 
@@ -63,7 +78,7 @@ def is_strict_positive(a, epsilon):
     else:
         return '{0} > -{1}'.format(a, epsilon)
 
-
+    
 def assert_is_not_zero(a, epsilon):
 
     return '/*@ assert {0}; */'.format(is_not_zero(a, epsilon))
@@ -76,7 +91,7 @@ def assert_is_positive_or_zero(a, epsilon):
 
 def asserts(l):
     if len(l) > 0:
-        return '/*@ assert {0}; */'.format(' && '.join(l))
+        return '\n'.join(['/*@ assert {0}; */'.format(a) for a in l])
     else:
         return ''
 
@@ -112,6 +127,10 @@ class SomeVars():
 
 def flatten_piecewise(expr, upper_conds=None, conds=None, lconds=None):
 
+    if hasattr(expr, 'is_Matrix') and expr.is_Matrix:
+        return Matrix(expr.shape[0], expr.shape[1],
+                      lambda i, j: flatten_piecewise(expr[i, j]))
+
     if upper_conds is None:
         upper_conds = []
 
@@ -123,7 +142,7 @@ def flatten_piecewise(expr, upper_conds=None, conds=None, lconds=None):
 
     p_expr = piecewise_fold(expr)
 
-    if p_expr.is_Piecewise:
+    if hasattr(p_expr, 'is_Piecewise') and p_expr.is_Piecewise:
 
         for e, c in p_expr.args:
             # O(n)
@@ -154,7 +173,6 @@ def flatten_piecewise(expr, upper_conds=None, conds=None, lconds=None):
     else:
         return None
 
-
 class LocalCCodePrinter(CCodePrinter):
 
     def __init__(self, settings={}, tab='    ', level=0, array_format='C',
@@ -183,6 +201,16 @@ class LocalCCodePrinter(CCodePrinter):
         self._postcheck_hooks = postcheck_hooks
         self._current_condition = None
         self._sign = dict()
+
+    def implied_positiveness(self, a, expr):
+        if self._epsilon_inf == 0.:
+            return '{0} > 0 ==> {1} > 0'.format(a, expr.args[0])
+        else:
+            return '{0} > {1} ==> {2} > {3}'.format(
+                a,
+                self._print(self._epsilon_inf),
+                self._print(expr.args[0]),
+                self._print(expr.subs(expr.args[0], self._epsilon_inf)))
 
     def recurs_mul(self, expr, nn):
 
@@ -263,20 +291,20 @@ class LocalCCodePrinter(CCodePrinter):
                     ensures.append(is_strict_positive(var, self._epsilon_inf))
 
         if len(requires) > 0:
-            sa0 += map(lambda s: '/*@ assert {0}; */'.format(s), requires)
-
-            requires_str = ' && '.join(map(parenthesize, requires))
-            sa.append('requires {0};'.format(requires_str))
+            sa0 += ['/*@ assert {0}; */'.format(r)
+                    for r in map(parenthesize, requires)]
+            sa += ['requires {0};'.format(r)
+                   for r in map(parenthesize, requires)]
 
         sa += assigns
 
         pc = self._postconditions(var, expr)
         if len(pc) > 0:
-            ensures.append(' && '.join(pc))
+            ensures += pc
 
         if len(ensures) > 0:
-            sa.append('ensures {0};'.format(' && '.join(map(parenthesize,
-                                                            ensures))))
+            sa += ['ensures {0};'.format(e) for e in map(parenthesize,
+                                                         ensures)]
         if self._contracts:
             if len(requires) > 0:
                 return sa0 + sa + ['*/']
@@ -316,11 +344,13 @@ class LocalCCodePrinter(CCodePrinter):
                 if Is(rhs).positive:
                     sa.append(is_positive_or_zero(sestr, 0.))
                     sa.append(is_not_zero(sestr, 0.))
-
+#                    sa.append(self.implied_strict_positive(sestr, rhs))
+                    
                 else:
                     if Is(rhs).negative is not None and not Is(rhs).negative:
                         sa.append(is_positive_or_zero(sestr, 0.))
-
+                        if type(rhs) == fsqrt:
+                            sa.append(self.implied_positiveness(sestr, Pow(rhs.args[0], 2)))
                     else:
                         if Is(rhs).negative is not None and Is(rhs).negative:
                             sa.append(is_positive_or_zero(self.parenthesize(rhs, precedence(
@@ -328,7 +358,6 @@ class LocalCCodePrinter(CCodePrinter):
                         else:
                             if Is(rhs).nonzero:
                                 sa.append(is_not_zero(sestr, 0.))
-
         return sa
 
     def _print_MatrixElement(self, expr):
@@ -400,7 +429,7 @@ class LocalCCodePrinter(CCodePrinter):
             replace(Pow(y, Rational(1, 2)),
                     lambda y: fsqrt(y)).\
             replace(Pow(y, -Rational(1, 2)),
-                    lambda y: 1. / fsqrt(y))  # .\
+                    lambda y: 1. / fsqrt(y))
 #                 replace(lambda expr: expr.is_Pow and expr.args[1].is_Integer and expr.args[1]>2,
 #                         lambda z: self.recurs_mul(z.args[0], z.args[1])).\
 #                 replace(lambda expr: expr.is_Pow and expr.args[1].is_Integer and expr.args[1]<-2,
@@ -418,12 +447,13 @@ class LocalCCodePrinter(CCodePrinter):
                 exprs.add(subexpr)
             elif Is(subexpr).Pow:
                 exprs.add(subexpr)
-#                exprs.add(subexpr.args[0])
+                exprs.add(subexpr.args[0])
 
+                    
 # AC & JM failure
-#            if Is(subexpr).Mul or Is(subexpr).Add:
-#                for e in subexpr.args:
-#                    exprs.add(e)
+            if Is(subexpr).Mul or Is(subexpr).Add:
+                for e in subexpr.args:
+                    exprs.add(e)
 
         return cse([expr_n] + list(exprs), self._some_vars)
 
@@ -553,9 +583,9 @@ class LocalCCodePrinter(CCodePrinter):
     def doprint(self, expr, assign_to=None):
 
         if self._assertions:
-            pre_asserts = '\n'.join(['/*@', 'assert {0};'.format(
-                ' && '.join([r'\is_finite(({0}) {1})'.format(self._value_type, fsym)
-                             for fsym in expr.free_symbols])), '*/', ''])
+            pre_asserts = '\n'.join(['/*@ assert {0}; */'.format(a) for a in
+                                     [r'\is_finite(({0}) {1})'.format(self._value_type, fsym)
+                                      for fsym in expr.free_symbols]]) + '\n'
         else:
             pre_asserts = ''
 
@@ -638,6 +668,8 @@ class LocalCCodePrinter(CCodePrinter):
                                 clines[c] = []
                                 conds.append(c)
                                 clines[c].append(e)
+                            else:
+                                clines[c].append(e)
 
             lines = []
             if len(conds) > 0:
@@ -658,14 +690,14 @@ class LocalCCodePrinter(CCodePrinter):
 
                 laffects_cond = len(affects_cond)
 
-                if self._assertions:
-                    lines.append('/*@ assert {0}; */'.format(
-                        ' || '.join([self._print(c) for c in conds])))
+#                if self._assertions:
+#                    lines.append('/*@ assert {0}; */'.format(
+#                        ' || '.join([self._print(c) for c in conds])))
 
                 for c in affects_cond:
                     lines.append(
                         '{0} ({1})'.format(if_s[if_s_index], self._print(c)))
-                    if_s_index = 1
+#                    if_s_index = 1
                     lines.append('{')
                     lines.append(
                         self._print_affectations(clines[c], condition=c))
@@ -712,16 +744,18 @@ class LocalCCodePrinter(CCodePrinter):
                     assigns = 'assigns {0};\n'.format(self._print(expr.lhs))
                     pc = self._postconditions(expr.lhs, expr.rhs)
                     if len(pc) > 0:
-                        ensures = 'ensures {0};\n'.format(' && '.join(pc))
+                        ensures = '\n'.join(
+                            ['ensures {0};'.format(e) for e in pc])
                     else:
                         ensures = ''
 
                     prec = self._postconditions(
                         expr.lhs, expr.rhs, on_lhs=False)
                     if len(prec) > 0:
-                        requires = 'requires {0};\n'.format(' && '.join(prec))
-                        pre_asserts = '/*@ assert {0};*/\n'.format(
-                            ' && '.join(prec))
+                        requires = '\n'.join(
+                            ['requires {0};'.format(p) for p in prec])
+                        pre_asserts = '\n'.join(
+                            ['/*@ assert {0};*/'.format(a) for a in prec])
                     else:
                         requires = ''
                         pre_asserts = ''
@@ -1002,6 +1036,7 @@ def funcodegen(name, expr, variables=None, intervals=None,
                           array_format=array_format,
                           epsilon_nan=epsilon_nan,
                           epsilon_inf=epsilon_inf,
+                          epsilon_power=epsilon_power,
                           with_files_generation=with_files_generation,
                           assertions=assertions,
                           contracts=contracts,
@@ -1015,9 +1050,9 @@ def funcodegen(name, expr, variables=None, intervals=None,
             '#include "funcodegen.h"\n'
         requires_check = \
             '/*@\n' +\
-            'requires ' + ' && '.join(('({0} <= {1} <= {2})'.format(print_float(intervals[v].inf), v.__str__(), print_float(intervals[v].sup)) for v in variables)) + ';\n' +\
+            '\n'.join(['requires ({0} <= {1} <= {2});'.format(print_float(intervals[v].inf), v.__str__(), print_float(intervals[v].sup)) for v in variables]) + '\n' +\
             'assigns {0}[0..{1}];\n'.format(result, (expr.shape[0] * expr.shape[1]) - 1) +\
-            'ensures {0};\n'.format(' && '.join(('\is_finite((double) {0}[{1}])'.format(result, ind) for ind in range(expr.shape[0] * expr.shape[1])))) +\
+            '\n'.join(['ensures \is_finite((double) {0}[{1}]);'.format(result, ind) for ind in range(expr.shape[0] * expr.shape[1])]) +\
             '*/\n'
         str_check = \
             '#ifdef __FRAMAC__\n' +\

@@ -9,9 +9,9 @@ execute_process(COMMAND ${frama_c_command} -print-path OUTPUT_VARIABLE frama_c_p
 
 function(frama_c_target name)
 
-  set (file ${CMAKE_CURRENT_BINARY_DIR}/test_${name}.c)
+  set (file ${CMAKE_CURRENT_BINARY_DIR}/${name}.c)
 
-  set(args -cpp-extra-args=-DFUNCODEGEN_CHECK -cpp-extra-args=-I${CMAKE_CURRENT_SOURCE_DIR} -cpp-extra-args=-I${frama_c_path}/libc -cpp-extra-args=-I${frama_c_path} -cpp-extra-args=-std=c99 -kernel-msg-key pp -val ${file} -slevel 16384 -print -ocode ${name}_cil.c -then -wp ${file} -no-print -wp-model nat+real  -wp-rte -wp-alt-ergo-opt="-backward-compat"  -wp-out temp -wp-verbose 2 -wp-prover alt-ergo  -then -report)
+  set(args -cpp-extra-args=-DFUNCODEGEN_CHECK -cpp-extra-args=-I${CMAKE_CURRENT_SOURCE_DIR} -cpp-extra-args=-I${frama_c_path}/libc -cpp-extra-args=-I${frama_c_path} -cpp-extra-args=-std=c99 -kernel-msg-key pp -val ${file} -slevel 16384 -print -ocode ${name}_cil.c -then -wp ${file} -no-print -wp-model nat+real  -wp-timeout 40 -wp-alt-ergo-opt="-backward-compat"  -wp-out temp -wp-verbose 2 -wp-prover alt-ergo  -then -wp -wp-prover cvc3 -then -wp -wp-prover z3 -then -wp -wp-prover zenon -then -report)
 
 
   add_custom_target(${name}_check
@@ -39,7 +39,10 @@ function(add_static_test)
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${exe}
     COMMENT generating C file: ${name}.c
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/${exe} ${args} > ${CMAKE_CURRENT_BINARY_DIR}/test_${name}.c)
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/${exe} ${args} > ${CMAKE_CURRENT_BINARY_DIR}/${name}.c)
+
+  # useless...
+  # set_target_properties(${name}_codegen PROPERTIES ENVIRONMENT PYTHONPATH=${CMAKE_SOURCE_DIR})
 
 
   frama_c_target(${name})

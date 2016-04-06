@@ -81,7 +81,7 @@ output a proof of: limited domain (physically admissible domain) for inputs ==> 
 
 \section{Examples}
 
-\subsection{two-norm function over $\RR^2$}
+\subsection{Euclidian norm function}
 
 \subsubsection{code generation from the mathematical definition}
 \begin{equation}
@@ -228,8 +228,120 @@ void norm2d_jacobian(
 
 \subsubsection{a corrected jacobian}
 
-Alart Curnier function
-Jean Moreau function
+\subsection{The Alart Curnier and the Jean Moreau functions}
+
+Givent the following notations:
+
+\begin{equation}
+  \begin{array}{c}
+    \Delta_n = r_n -\rho_n * u_n\\
+    \Delta_{t1} = t_{t1} - \rho_{t1} * u_{t1}\\
+    \Delta_{t2} = t_{t2} - \rho_{t2} * u_{t2}\\
+    \Delta_{t} = \left [
+      \begin{array}{c}
+        \Delta_{t1}\\
+        \Delta_{t2}
+      \end{array} \right]
+  \end{array}
+\end{equation}
+
+\subsubsection{Alart Curnier}
+
+The Alart Curnier function $F_{AC}$ is written as:
+
+\begin{equation}
+  F_{AC} = \input{fac.tex}
+\end{equation}
+
+We have 
+\begin{equation}
+  A = \left[ A_0 A_1 A_2 \right]
+\end{equation}
+
+with:
+\begin{equation}
+  A_0 = \input{fac_A0.tex}
+\end{equation}
+
+\begin{equation}
+  A_1 = \input{fac_A1.tex}
+\end{equation}
+
+\begin{equation}
+  A_2 = \input{fac_A2.tex}
+\end{equation}
+
+and
+
+\begin{equation}
+  B = \left[ B_0 B_1 B_2 \right]
+\end{equation}
+
+with:
+\begin{equation}
+  B_0 = \input{fac_B0.tex}
+\end{equation}
+
+\begin{equation}
+  B_1 = \input{fac_B1.tex}
+\end{equation}
+
+\begin{equation}
+  B_2 = \input{fac_B2.tex}
+\end{equation}
+
+\subsubsection{Jean Moreau}
+The Jean Moreau function $f_{JM}$ is written as:
+
+\begin{equation}
+  f_{JM} = \input{fJM.tex}
+\end{equation}
+
+We have 
+\begin{equation}
+  A = \left[ A_0 A_1 A_2 \right]
+\end{equation}
+
+with:
+\begin{equation}
+  A_0 = \input{fJM_A0.tex}
+\end{equation}
+
+\begin{equation}
+  A_1 = \input{fJM_A1.tex}
+\end{equation}
+
+\begin{equation}
+  A_2 = \input{fJM_A2.tex}
+\end{equation}
+
+and
+
+\begin{equation}
+  B = \left[ B_0 B_1 B_2 \right]
+\end{equation}
+
+with:
+\begin{equation}
+  B_0 = \input{fJM_B0.tex}
+\end{equation}
+
+\begin{equation}
+  B_1 = \input{fJM_B1.tex}
+\end{equation}
+
+\begin{equation}
+  B_2 = \input{fJM_B2.tex}
+\end{equation}
+
+\subsection{The normal map function}
+
+\begin{equation}
+  F_{nat} = \input{fnat.tex}
+\end{equation}
+
+
+\subsection{The Fischer Burmeister function}
 
 \section{Conclusion}
 

@@ -5,7 +5,7 @@
 #
 
 #
-# Usage ./ACJM.py [JeanMoreau|AlartCurnier] [FAB,F,AB]
+# Usage ./ACJM.py [JeanMoreau|AlartCurnier] [FAB|F|AB]
 #
 
 import sys
@@ -43,7 +43,7 @@ y = Wild('y')
 
 # max(0,x)
 #_sup0 = Lambda(x, Piecewise((0, x<=0),(x, x>0)))
-_sup0 = Lambda(x, Max(0, x))
+_sup0 = Lambda(x, Max(EPSILON, x))
 
 
 # not the same derivative in 0
@@ -85,14 +85,9 @@ u = Matrix([[un], [ut1], [ut2]])
 
 r = Matrix([[rn], [rt1], [rt2]])
 
-FAC_ = Matrix([[phi2],
+FAC = Matrix([[phi2],
               [phi31],
               [phi32]])
-
-FAC = Matrix(FAC_.shape[0], FAC_.shape[1],
-             lambda i, j: Piecewise((FAC_[i, j], Radius > EPSILON),
-                                    (FAC_[i, j].subs(Radius, 0), Radius <= EPSILON)))
-
 
 A = FAC.jacobian(u)
 B = FAC.jacobian(r)
@@ -120,5 +115,5 @@ print funcodegen(C_function_name, expression[C_function_name],
                  array_format='Fortran',
                  epsilon_inf=EPSILON,
                  epsilon_power=3,
-                 with_files_generation=True,
+                 with_files_generation=False,
                  assertions=True, contracts=False, main_check=True)

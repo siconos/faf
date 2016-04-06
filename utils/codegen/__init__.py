@@ -1,1 +1,1 @@
-from funcodegen import localccode
+from funcodegen import Memoize
