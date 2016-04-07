@@ -228,15 +228,22 @@ void norm2d_jacobian(
 
 \subsubsection{a corrected jacobian}
 
+\section{Jacobians}
+
+The Heaviside function is noted $\theta$
+
+The $\epsilon$ parameter is important to avoid infinites or not a number values. 
+The verification is performed by the value analysis.
+
 \subsection{The Alart Curnier and the Jean Moreau functions}
 
-Givent the following notations:
+Given the following notations:
 
 \begin{equation}
   \begin{array}{c}
-    \Delta_n = r_n -\rho_n * u_n\\
-    \Delta_{t1} = t_{t1} - \rho_{t1} * u_{t1}\\
-    \Delta_{t2} = t_{t2} - \rho_{t2} * u_{t2}\\
+    \Delta_n = r_n -\rho_n  u_n\\
+    \Delta_{t1} = t_{t1} - \rho_{t1}  u_{t1}\\
+    \Delta_{t2} = t_{t2} - \rho_{t2}  u_{t2}\\
     \Delta_{t} = \left [
       \begin{array}{c}
         \Delta_{t1}\\
@@ -291,10 +298,10 @@ with:
 \end{equation}
 
 \subsubsection{Jean Moreau}
-The Jean Moreau function $f_{JM}$ is written as:
+The Jean Moreau function $F_{JM}$ is written as:
 
 \begin{equation}
-  f_{JM} = \input{fJM.tex}
+  F_{JM} = \input{fJM.tex}
 \end{equation}
 
 We have 
@@ -336,10 +343,50 @@ with:
 
 \subsection{The normal map function}
 
+With the notations:
+\begin{equation}
+  \begin{array}{c}
+    \Delta_{t1} = \mu u_{t1}-r_{t1}\\
+    \Delta_{t2} = \mu u_{t2}-r_{t2}\\
+    \Delta_{t} = \left [
+      \begin{array}{c}
+        \Delta_{t1}\\
+        \Delta_{t2}
+      \end{array} \right]
+  \end{array}
+\end{equation}
+
 \begin{equation}
   F_{nat} = \input{fnat.tex}
 \end{equation}
 
+\begin{equation}
+  A_0 = \input{A0_fnat.tex}
+\end{equation}
+
+\begin{equation}
+  A_{01} = \input{A01_fnat.tex}
+\end{equation}
+
+\begin{equation}
+  A_{02} = \input{A02_fnat.tex}
+\end{equation}
+
+\begin{equation}
+  A_{11} = \input{A11_fnat.tex}
+\end{equation}
+
+\begin{equation}
+  A_{12} = \input{A12_fnat.tex}
+\end{equation}
+
+\begin{equation}
+  A_{21} = \input{A21_fnat.tex}
+\end{equation}
+
+\begin{equation}
+  A_{22} = \input{A22_fnat.tex}
+\end{equation}
 
 \subsection{The Fischer Burmeister function}
 

@@ -166,7 +166,7 @@ def flatten_piecewise(expr, upper_conds=None, conds=None, lconds=None):
     if len(upper_conds) == 0:
 
         if len(conds) > 0:
-            return Piecewise(*[(conds[k], And(*k)) for k in lconds])
+            return Piecewise(*[(conds[k], And(*(list(reversed(k))))) for k in filter(lambda k_: satisfiable(k_), lconds)])
         else:
             return p_expr
 
