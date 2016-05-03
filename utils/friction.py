@@ -1,6 +1,6 @@
 from sympy import Symbol, Function, Matrix, sqrt
 
-mu = Symbol('mu', negative=False, real=True)
+mu = Symbol('mu', negative=False, real=True, finite=True)
 rn = Symbol('rn', negative=False, real=True)
 rt1 = Symbol('rt1', real=True)
 rt2 = Symbol('rt2', real=True)

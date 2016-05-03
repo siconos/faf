@@ -43,7 +43,7 @@ y = Wild('y')
 
 # max(0,x)
 #_sup0 = Lambda(x, Piecewise((0, x<=0),(x, x>0)))
-_sup0 = Lambda(x, Max(EPSILON, x))
+_sup0 = Lambda(x, Max(0, x))
 
 
 # not the same derivative in 0
@@ -66,10 +66,10 @@ max0D0 = _sup0(D0)
 # Structural Analysis - 2 International Centre for Mechanical Sciences
 # Volume 304, 1987, pp 151-196
 if function_name == 'JeanMoreau':
-    Radius = mu * _sup0(rn)  # JeanMoreau
+    Radius = Max(EPSILON, mu * _sup0(rn))  # JeanMoreau
 
 elif function_name == 'AlartCurnier':
-    Radius = mu * max0D0  # max(0,D0)
+    Radius = Max(EPSILON, mu * max0D0)  # max(0,D0)
 else:
     assert(false)
 

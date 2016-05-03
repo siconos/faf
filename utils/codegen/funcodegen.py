@@ -17,6 +17,9 @@ class Memoize():
         self._fun = fun
         self._done = dict()
 
+    def clear(self):
+        self._done = dict()
+
     def __call__(self, *args):
         if args in self._done:
             return self._done[args]
@@ -78,7 +81,7 @@ def is_strict_positive(a, epsilon):
     else:
         return '{0} > -{1}'.format(a, epsilon)
 
-    
+
 def assert_is_not_zero(a, epsilon):
 
     return '/*@ assert {0}; */'.format(is_not_zero(a, epsilon))
@@ -173,12 +176,13 @@ def flatten_piecewise(expr, upper_conds=None, conds=None, lconds=None):
     else:
         return None
 
+
 class LocalCCodePrinter(CCodePrinter):
 
     def __init__(self, settings={}, tab='    ', level=0, array_format='C',
                  epsilon_nan=0, epsilon_inf=0, epsilon_power=1, assertions=False,
                  contracts=False,
-                 postcheck_hooks=False, do_cse=True):
+                 postcheck_hooks=False, do_cse=True, user_exprs=[]):
         CCodePrinter.__init__(self, settings)
         self._some_vars = SomeVars()
         self._value_type = 'double'
@@ -201,6 +205,7 @@ class LocalCCodePrinter(CCodePrinter):
         self._postcheck_hooks = postcheck_hooks
         self._current_condition = None
         self._sign = dict()
+        self._user_exprs = user_exprs
 
     def implied_positiveness(self, a, expr):
         if self._epsilon_inf == 0.:
@@ -269,15 +274,15 @@ class LocalCCodePrinter(CCodePrinter):
 
             sestr = self._print(expr.base)
 
-            requires.append(r'\is_finite(({0}) ({1}))'.format(self._value_type,
-                                                              sestr))
+#            requires.append(r'\is_finite(({0}) ({1}))'.format(self._value_type,
+#                                                              sestr))
 
             if abs(float(expr.exp) - int(expr.exp)) > 0:
                 requires.append(is_positive_or_zero(sestr, self._epsilon_nan))
 
             if expr.exp < 0:
-                requires.append(is_not_zero(sestr, pow(self._epsilon_inf,
-                                                       self._epsilon_power)))
+                requires.append(is_not_zero(sestr, self._print(pow(self._epsilon_inf,
+                                                        self._epsilon_power))))
 
             if expr.exp.is_even:
                 ensures.append(is_positive_or_zero(var, self._epsilon_nan))
@@ -336,8 +341,8 @@ class LocalCCodePrinter(CCodePrinter):
         if not Is(rhs).Relational and not isinstance(rhs,
                                                      (Logic, And, Or, Not)):
 
-            sa.append(r'\is_finite(({0}) {1})'.format(
-                self._value_type, sestr))
+#            sa.append(r'\is_finite(({0}) {1})'.format(
+#                self._value_type, sestr))
 
             if not Is(rhs).Piecewise:
 
@@ -345,12 +350,13 @@ class LocalCCodePrinter(CCodePrinter):
                     sa.append(is_positive_or_zero(sestr, 0.))
                     sa.append(is_not_zero(sestr, 0.))
 #                    sa.append(self.implied_strict_positive(sestr, rhs))
-                    
+
                 else:
                     if Is(rhs).negative is not None and not Is(rhs).negative:
                         sa.append(is_positive_or_zero(sestr, 0.))
-                        if type(rhs) == fsqrt:
-                            sa.append(self.implied_positiveness(sestr, Pow(rhs.args[0], 2)))
+#                        if type(rhs) == fsqrt:
+#                            sa.append(
+# self.implied_positiveness(sestr, Pow(rhs.args[0], 2)))
                     else:
                         if Is(rhs).negative is not None and Is(rhs).negative:
                             sa.append(is_positive_or_zero(self.parenthesize(rhs, precedence(
@@ -406,38 +412,45 @@ class LocalCCodePrinter(CCodePrinter):
     def _cse(self, expr):
 
         l = set()
-        y = Wild('y')
-        p = Wild('p')
 
         exprs = set()
 
-        expr_n = expr.\
-            replace(sqrt(2),
-                    Float(sqrt(2).evalf(n=128), 128)). \
-            replace(Pow(y, -Rational(3, 2)),
-                    lambda y: 1. / Mul(y, fsqrt(y),
-                                       evaluate=False)).\
-            replace(Pow(y, Rational(3, 2)),
-                    lambda y: Mul(y, fsqrt(y),
-                                  evaluate=False)).\
-            replace(Pow(y, Rational(5, 2)),
-                    lambda y: Mul(y, y, fsqrt(y),
-                                  evaluate=False)).\
-            replace(Pow(y, -Rational(5, 2)),
-                    lambda y: 1. / Mul(y, y, fsqrt(y),
-                                       evaluate=False)).\
-            replace(Pow(y, Rational(1, 2)),
-                    lambda y: fsqrt(y)).\
-            replace(Pow(y, -Rational(1, 2)),
-                    lambda y: 1. / fsqrt(y))
+        expr_n = expr
+        #y = Wild('y')
+
+        # expr_n = expr.\
+        #     replace(sqrt(2),
+        #             Float(sqrt(2).evalf(n=128), 128)). \
+        #     replace(Pow(y, -Rational(3, 2)),
+        #             lambda y: 1. / Mul(y, fsqrt(y),
+        #                                evaluate=False)).\
+        #     replace(Pow(y, Rational(3, 2)),
+        #             lambda y: Mul(y, fsqrt(y),
+        #                           evaluate=False)).\
+        #     replace(Pow(y, Rational(5, 2)),
+        #             lambda y: Mul(y, y, fsqrt(y),
+        #                           evaluate=False)).\
+        #     replace(Pow(y, -Rational(5, 2)),
+        #             lambda y: 1. / Mul(y, y, fsqrt(y),
+        #                                evaluate=False)).\
+        #     replace(Pow(y, Rational(1, 2)),
+        #             lambda y: fsqrt(y)).\
+        #     replace(Pow(y, -Rational(1, 2)),
+        #             lambda y: 1. / fsqrt(y))
 #                 replace(lambda expr: expr.is_Pow and expr.args[1].is_Integer and expr.args[1]>2,
 #                         lambda z: self.recurs_mul(z.args[0], z.args[1])).\
 #                 replace(lambda expr: expr.is_Pow and expr.args[1].is_Integer and expr.args[1]<-2,
 # lambda z: 1./(self.recurs_mul(z.args[0], -z.args[1])))
 
+        user_subs = zip(self._some_vars, self._user_exprs)
+
+        for (v, e) in user_subs:
+            expr_n = expr_n.subs(e, v)
+
         for subexpr in postorder_traversal(expr_n):
 
-# AC & JM failure
+            
+# AC & JM: slower
 #            if Is(subexpr).Piecewise:
 #                for (e, c) in subexpr.args:
 #                    exprs.add(e)
@@ -445,17 +458,35 @@ class LocalCCodePrinter(CCodePrinter):
 
             if Is(subexpr).Function and not subexpr.is_Piecewise:
                 exprs.add(subexpr)
+
             elif Is(subexpr).Pow:
                 exprs.add(subexpr)
                 exprs.add(subexpr.args[0])
 
-                    
-# AC & JM failure
-            if Is(subexpr).Mul or Is(subexpr).Add:
-                for e in subexpr.args:
-                    exprs.add(e)
+            elif Is(subexpr).Relational:
+                exprs.add(subexpr)
 
-        return cse([expr_n] + list(exprs), self._some_vars)
+#            elif Is(subexpr).Pow and not (Is(subexpr.args[0]).Symbol or Is(subexpr.args[0]).Number):
+#                exprs.add(subexpr.args[0])
+
+            
+# AC & JM slower
+#            elif Is(subexpr).Mul or Is(subexpr).Add:
+#                if len(subexpr.args) > 1:
+#                    for e in subexpr.args:
+#                        exprs.add(e)
+
+#            elif Is(subexpr).ExprCondPair:
+#                exprs.add(subexpr.args[0])
+#                exprs.add(subexpr.args[1])
+
+#            else:
+#                print 'unknown subexpr:', type(subexpr), subexpr
+
+        (vs, exprs) = cse([expr_n] + list(exprs), self._some_vars)
+
+        return ((user_subs + vs), (exprs + self._user_exprs))
+
 
     def _print_declarations(self, lexpr):
 
@@ -522,8 +553,9 @@ class LocalCCodePrinter(CCodePrinter):
                     affcts.append(
                         '{0} = {1};'.format(var, super(LocalCCodePrinter, self)._print(self._decls[var])))
 
-                affcts.append(
-                    asserts(self._postconditions(var, self._decls[var])))
+                postconds = self._postconditions(var, self._decls[var])
+                if len(postconds) > 0:
+                    affcts.append(asserts(postconds))
 
                 if condition is not None:
                     if var in self._cond_affcts:
@@ -540,7 +572,7 @@ class LocalCCodePrinter(CCodePrinter):
 
         if len(affcts) > 0:
 
-            return '\n'.join(affcts) + '\n'
+            return '\n'.join(filter(lambda s: s != '', affcts)) + '\n'
 
         else:
             return ''
@@ -967,16 +999,27 @@ def localccode(expr, assign_to=None, tab='    ', level=0,
                epsilon_power=1.,
                assertions=False,
                contracts=False, postcheck_hooks=False, do_cse=True,
+               user_exprs=[],
+               bounds={},
                settings={}):
 
-    return (LocalCCodePrinter(
-        settings=settings,
-        tab=tab, level=level, array_format=array_format,
-        epsilon_nan=epsilon_nan, epsilon_inf=epsilon_inf,
-        epsilon_power=epsilon_power,
-        assertions=assertions, contracts=contracts,
-        postcheck_hooks=postcheck_hooks, do_cse=do_cse).doprint(
-        expr, assign_to))
+        bounds_asserts = '\n'.join([
+            '{0}/*@ assert {1} <= {2} <= {3}; */'.format(tab,
+                                                         bounds[e][0],
+                                                         LocalCCodePrinter().doprint(e), bounds[e][1])
+            for e in bounds])
+        if len(bounds_asserts) > 0:
+                bounds_asserts += '\n'
+        return bounds_asserts +\
+            (LocalCCodePrinter(
+             settings=settings,
+             tab=tab, level=level, array_format=array_format,
+             epsilon_nan=epsilon_nan, epsilon_inf=epsilon_inf,
+             epsilon_power=epsilon_power,
+             assertions=assertions, contracts=contracts,
+             postcheck_hooks=postcheck_hooks,
+             do_cse=do_cse, user_exprs=user_exprs).doprint(
+             expr, assign_to))
 
 
 def files_generation(name, variables, data, result='result',
@@ -1006,6 +1049,8 @@ def funcodegen(name, expr, variables=None, intervals=None,
                with_files_generation=False,
                assertions=False, contracts=False,
                postcheck_hooks=False, main_check=False, do_cse=True,
+               user_exprs=[],
+               bounds={},
                settings={}):
 
     if variables is None:
@@ -1043,6 +1088,8 @@ def funcodegen(name, expr, variables=None, intervals=None,
                           postcheck_hooks=postcheck_hooks,
                           main_check=main_check,
                           do_cse=do_cse,
+                          user_exprs=user_exprs,
+                          bounds=bounds,
                           settings=settings)
 
     if main_check:
@@ -1063,6 +1110,7 @@ def funcodegen(name, expr, variables=None, intervals=None,
             '{0}{1} {2}[{3}];'.format(tab, float_type, result, expr.shape[0] * expr.shape[1]) +\
             '\n' +\
             '{0}{1}({2}, {3});'.format(tab, name, ', '.join((v.__str__() for v in variables)), result) +\
+            '\n{0}return(0);'.format(tab) +\
             '\n}' +\
             '\n#endif'
     else:
@@ -1086,6 +1134,8 @@ def funcodegen(name, expr, variables=None, intervals=None,
                    assertions=assertions,
                    contracts=contracts,
                    postcheck_hooks=postcheck_hooks, do_cse=do_cse,
+                   user_exprs=user_exprs,
+                   bounds=bounds,
                    settings=settings) +\
         '\n}\n' + str_check
     if with_files_generation:

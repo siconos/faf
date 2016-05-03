@@ -42,13 +42,13 @@ def spectral_decomposition(x, epsilon=epsilon, norm=friction.N):
 
     u1 = (1./2.)*Matrix([
         1]).col_join(
-            piecewise_matrix(Piecewise((-xt/xt_norm, xt_norm > epsilon),
-                                       (- omega, xt_norm <= epsilon))))
+            piecewise_matrix(Piecewise((-xt/xt_norm, xt_norm**2 > epsilon),
+                                       (- omega, xt_norm**2 <= epsilon))))
 
     u2 = (1./2.)*Matrix([
         1]).col_join(
-            piecewise_matrix(Piecewise((xt/xt_norm, xt_norm > epsilon),
-                                       (omega, xt_norm <= epsilon))))
+            piecewise_matrix(Piecewise((xt/xt_norm, xt_norm**2 > epsilon),
+                                       (omega, xt_norm**2 <= epsilon))))
 
     return (lambda1, lambda2, u1, u2)
 
@@ -59,9 +59,9 @@ def sqrt(x, epsilon=epsilon, norm=friction.N):
     lambda1, lambda2, u_1, u_2 = spectral_decomposition(x, epsilon, norm)
     return std_sqrt(lambda1) * u_1 + std_sqrt(lambda2) * u_2
 
-def projection(x, norm=friction.N):
+def projection(x, epsilon=epsilon, norm=friction.N):
 
-    lambda1, lambda2, u_1, u_2 = spectral_decomposition(x)
+    lambda1, lambda2, u_1, u_2 = spectral_decomposition(x, epsilon, norm)
 
     return Max(0, lambda1) * u_1 + Max(0, lambda2) * u_2
 
