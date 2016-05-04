@@ -28,9 +28,42 @@ class Memoize():
             self._done[args] = r
             return r
 
+
+class Once():
+
+    def __init__(self, fun, done_value):
+        self._fun = fun
+        self._done_value = done_value
+        self._done = dict()
+
+    def __call__(self, *args):
+        if args in self._done:
+            return self._done_value
+        else:
+            self._done[args] = True
+            r = self._fun(*args)
+        return r
+
+
+def memoize(f):
+    memof = Memoize(f)
+
+    def wrapper(self, *args):
+        return memof(self, *args)
+    return wrapper
+
+
+def once(done_value):
+    def f_once(f):
+        oncef = Once(f, done_value)
+
+        def wrapper(self, *args):
+            return oncef(self, *args)
+        return wrapper
+    return f_once
+
+
 # dummy sqrt for cse and to avoid sympy transforms on Pow(_x, Rational(1, 2))
-
-
 class fsqrt(Function):
 
     def _eval_is_negative(self):
@@ -80,23 +113,6 @@ def is_strict_positive(a, epsilon):
         return '{0} > 0'.format(a)
     else:
         return '{0} > -{1}'.format(a, epsilon)
-
-
-def assert_is_not_zero(a, epsilon):
-
-    return '/*@ assert {0}; */'.format(is_not_zero(a, epsilon))
-
-
-def assert_is_positive_or_zero(a, epsilon):
-
-    return '/*@ assert {0}; */'.format(is_positive_or_zero(a, epsilon))
-
-
-def asserts(l):
-    if len(l) > 0:
-        return '\n'.join(['/*@ assert {0}; */'.format(a) for a in l])
-    else:
-        return ''
 
 
 class Is():
@@ -207,6 +223,17 @@ class LocalCCodePrinter(CCodePrinter):
         self._sign = dict()
         self._user_exprs = user_exprs
 
+    @once('')
+    def insert_assert(self, a):
+        return '/*@ assert {0}; */'.format(a)
+
+    def asserts(self, l):
+        if len(l) > 0:
+            return '\n'.join(filter(lambda s: len(s) > 0,
+                                    [self.insert_assert(a) for a in l]))
+        else:
+            return ''
+
     def implied_positiveness(self, a, expr):
         if self._epsilon_inf == 0.:
             return '{0} > 0 ==> {1} > 0'.format(a, expr.args[0])
@@ -238,6 +265,7 @@ class LocalCCodePrinter(CCodePrinter):
 
         return result
 
+    @memoize
     def _preconditions(self, var, expr):
 
         if not self._assertions:
@@ -274,15 +302,13 @@ class LocalCCodePrinter(CCodePrinter):
 
             sestr = self._print(expr.base)
 
-#            requires.append(r'\is_finite(({0}) ({1}))'.format(self._value_type,
-#                                                              sestr))
-
             if abs(float(expr.exp) - int(expr.exp)) > 0:
                 requires.append(is_positive_or_zero(sestr, self._epsilon_nan))
 
             if expr.exp < 0:
-                requires.append(is_not_zero(sestr, self._print(pow(self._epsilon_inf,
-                                                        self._epsilon_power))))
+                requires.append(
+                    is_not_zero(sestr, self._print(pow(self._epsilon_inf,
+                                                       self._epsilon_power))))
 
             if expr.exp.is_even:
                 ensures.append(is_positive_or_zero(var, self._epsilon_nan))
@@ -296,8 +322,8 @@ class LocalCCodePrinter(CCodePrinter):
                     ensures.append(is_strict_positive(var, self._epsilon_inf))
 
         if len(requires) > 0:
-            sa0 += ['/*@ assert {0}; */'.format(r)
-                    for r in map(parenthesize, requires)]
+            sa0 += filter(lambda s: len(s) > 0, [self.insert_assert(r) for r in
+                                                 requires])
             sa += ['requires {0};'.format(r)
                    for r in map(parenthesize, requires)]
 
@@ -330,7 +356,7 @@ class LocalCCodePrinter(CCodePrinter):
         sa = []
 
         if on_lhs:
-            sestr = '({0})'.format(self._print(lhs))
+            sestr = '{0}'.format(self._print(lhs))
         else:
             sestr = '({0})'.format(self._print(rhs))
 
@@ -416,7 +442,7 @@ class LocalCCodePrinter(CCodePrinter):
         exprs = set()
 
         expr_n = expr
-        #y = Wild('y')
+        # y = Wild('y')
 
         # expr_n = expr.\
         #     replace(sqrt(2),
@@ -449,13 +475,11 @@ class LocalCCodePrinter(CCodePrinter):
 
         for subexpr in postorder_traversal(expr_n):
 
-            
 # AC & JM: slower
 #            if Is(subexpr).Piecewise:
 #                for (e, c) in subexpr.args:
 #                    exprs.add(e)
 #                    exprs.add(c)
-
             if Is(subexpr).Function and not subexpr.is_Piecewise:
                 exprs.add(subexpr)
 
@@ -469,24 +493,19 @@ class LocalCCodePrinter(CCodePrinter):
 #            elif Is(subexpr).Pow and not (Is(subexpr.args[0]).Symbol or Is(subexpr.args[0]).Number):
 #                exprs.add(subexpr.args[0])
 
-            
 # AC & JM slower
 #            elif Is(subexpr).Mul or Is(subexpr).Add:
 #                if len(subexpr.args) > 1:
 #                    for e in subexpr.args:
 #                        exprs.add(e)
-
 #            elif Is(subexpr).ExprCondPair:
 #                exprs.add(subexpr.args[0])
 #                exprs.add(subexpr.args[1])
-
 #            else:
 #                print 'unknown subexpr:', type(subexpr), subexpr
-
         (vs, exprs) = cse([expr_n] + list(exprs), self._some_vars)
 
         return ((user_subs + vs), (exprs + self._user_exprs))
-
 
     def _print_declarations(self, lexpr):
 
@@ -555,7 +574,7 @@ class LocalCCodePrinter(CCodePrinter):
 
                 postconds = self._postconditions(var, self._decls[var])
                 if len(postconds) > 0:
-                    affcts.append(asserts(postconds))
+                    affcts.append(self.asserts(postconds))
 
                 if condition is not None:
                     if var in self._cond_affcts:
@@ -615,9 +634,12 @@ class LocalCCodePrinter(CCodePrinter):
     def doprint(self, expr, assign_to=None):
 
         if self._assertions:
-            pre_asserts = '\n'.join(['/*@ assert {0}; */'.format(a) for a in
-                                     [r'\is_finite(({0}) {1})'.format(self._value_type, fsym)
-                                      for fsym in expr.free_symbols]]) + '\n'
+            pre_asserts = \
+                '\n'.join(filter(lambda s: len(s) > 0,
+                                 [self.insert_assert(a) for a in
+                                  [r'\is_finite(({0}) {1})'.format(
+                                      self._value_type, fsym)
+                                   for fsym in expr.free_symbols]])) + '\n'
         else:
             pre_asserts = ''
 
@@ -761,7 +783,7 @@ class LocalCCodePrinter(CCodePrinter):
                     self._print_affectations(conditions) +\
                     self._print_declarations(expressions) + '\n' +\
                     super(LocalCCodePrinter, self)._print_Assignment(expr) + '\n' +\
-                    asserts(self._postconditions(expr.lhs, expr.rhs))
+                    self.asserts(self._postconditions(expr.lhs, expr.rhs))
             else:
                 expressions = [expr]
 
@@ -786,8 +808,9 @@ class LocalCCodePrinter(CCodePrinter):
                     if len(prec) > 0:
                         requires = '\n'.join(
                             ['requires {0};'.format(p) for p in prec])
-                        pre_asserts = '\n'.join(
-                            ['/*@ assert {0};*/'.format(a) for a in prec])
+                        pre_asserts = '\n'.join(filter(
+                            lambda s: len(s) > 0,
+                            [self.insert_assert(a) for a in prec]))
                     else:
                         requires = ''
                         pre_asserts = ''
@@ -807,7 +830,7 @@ class LocalCCodePrinter(CCodePrinter):
                     ensures +\
                     cclose +\
                     super(LocalCCodePrinter, self)._print_Assignment(expr) + '\n' +\
-                    asserts(
+                    self.asserts(
                         self._postconditions(expr.lhs, expr.rhs))
 
     def _print_Function(self, expr):
@@ -931,7 +954,7 @@ class LocalCCodePrinter(CCodePrinter):
             lconds = len(conditions)
 
             if self._assertions:
-                lines.append('/*@ assert {0}; */'.format(
+                lines.append(self.insert_assert(
                     ' || '.join([self._print(c) for c in conditions])))
 
             for num_cond, cond in enumerate(conditions):
