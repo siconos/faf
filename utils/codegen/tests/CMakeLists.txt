@@ -11,8 +11,7 @@ function(frama_c_target name)
 
   set (file ${CMAKE_CURRENT_BINARY_DIR}/${name}.c)
 
-  set(args -cpp-extra-args=-DFUNCODEGEN_CHECK -cpp-extra-args=-I${CMAKE_CURRENT_SOURCE_DIR} -cpp-extra-args=-I${frama_c_path}/libc -cpp-extra-args=-I${frama_c_path} -cpp-extra-args=-std=c99 -kernel-msg-key pp -val ${file} -slevel 16384 -print -ocode ${name}_cil.c -then -wp ${file} -no-print -wp-model nat+real  -wp-timeout 40 -wp-alt-ergo-opt="-backward-compat"  -wp-out temp -wp-verbose 2 -wp-prover alt-ergo  -then -wp -wp-prover cvc3 -then -wp -wp-prover z3 -then -wp -wp-prover zenon -then -report)
-
+  set(args -cpp-extra-args=-DFUNCODEGEN_CHECK -cpp-extra-args=-I${CMAKE_CURRENT_SOURCE_DIR} -cpp-extra-args=-I${frama_c_path}/libc -cpp-extra-args=-I${frama_c_path} -cpp-extra-args=-std=c99 -kernel-msg-key pp -val ${file} -val-subdivide-non-linear 1200 -slevel 4096 -print -ocode ${name}_cil.c -then -wp ${file} -no-print -wp-model float+int  -wp-timeout 40 -wp-alt-ergo-opt="-backward-compat"  -wp-out temp -wp-verbose 2 -wp-prover alt-ergo  -then -wp -wp-prover z3 -then -wp -wp-prover cvc3 -then -wp -wp-prover cvc4 -then -wp -wp-prover zenon -then -report)
 
   add_custom_target(${name}_check
     COMMAND ${frama_c_command} ${args}

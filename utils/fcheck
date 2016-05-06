@@ -1,0 +1,5 @@
+#!/bin/sh
+
+for file in $@; do
+    frama-c -kernel-msg-key pp -cpp-extra-args="`frama-c -print-path`/libc -I`frama-c -print-path` -std=c99" -pp-annot -print -ocode t_temp.c -val $file -val-subdivide-non-linear 1200 -slevel 1000 -then -wp $file -wp-model float+int -no-print -wp-out temp -wp-verbose 2 -wp-prover alt-ergo -wp-alt-ergo-opt="-backward-compat"  -then -wp -wp-prover z3 -then -wp -wp-prover cvc4 -then -wp -wp-prover cvc3 -then -wp -wp-prover zenon -then -report | tee $file.report
+done

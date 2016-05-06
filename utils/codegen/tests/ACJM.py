@@ -16,17 +16,8 @@ target_name = sys.argv[2]
 
 from sympy import *
 from funcodegen import funcodegen
+from friction import epsilon, mu, rn, rt1, rt2, un, ut1, ut2, u, r
 import numpy as np
-EPSILON = np.finfo(float).eps
-
-mu = Symbol('mu', positive=True, real=True)
-rn = Symbol('rn', real=True)
-rt1 = Symbol('rt1', real=True)
-rt2 = Symbol('rt2', real=True)
-
-un = Symbol('un', real=True)
-ut1 = Symbol('ut1', real=True)
-ut2 = Symbol('ut2', real=True)
 
 rhon = Symbol('rhon', real=True)
 rhot1 = Symbol('rhot1', real=True)
@@ -66,10 +57,10 @@ max0D0 = _sup0(D0)
 # Structural Analysis - 2 International Centre for Mechanical Sciences
 # Volume 304, 1987, pp 151-196
 if function_name == 'JeanMoreau':
-    Radius = Max(EPSILON, mu * _sup0(rn))  # JeanMoreau
+    Radius = Max(epsilon, mu * _sup0(rn))  # JeanMoreau
 
 elif function_name == 'AlartCurnier':
-    Radius = Max(EPSILON, mu * max0D0)  # max(0,D0)
+    Radius = Max(epsilon, mu * max0D0)  # max(0,D0)
 else:
     assert(false)
 
@@ -80,10 +71,6 @@ phi2 = rn - max0D0
 phi31 = rt1 - px.subs(x, D1).subs(y, D2).subs(D, Radius)
 
 phi32 = rt2 - py.subs(x, D1).subs(y, D2).subs(D, Radius)
-
-u = Matrix([[un], [ut1], [ut2]])
-
-r = Matrix([[rn], [rt1], [rt2]])
 
 FAC = Matrix([[phi2],
               [phi31],
@@ -113,7 +100,7 @@ print funcodegen(C_function_name, expression[C_function_name],
                             rhot2],
                  intervals=intervals,
                  array_format='Fortran',
-                 epsilon_inf=EPSILON,
+                 epsilon_inf=epsilon,
                  epsilon_power=3,
                  with_files_generation=False,
                  assertions=True, contracts=False, main_check=True)

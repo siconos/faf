@@ -222,6 +222,7 @@ class LocalCCodePrinter(CCodePrinter):
         self._current_condition = None
         self._sign = dict()
         self._user_exprs = user_exprs
+        self._var_asserts = {}
 
     @once('')
     def insert_assert(self, a):
@@ -468,10 +469,16 @@ class LocalCCodePrinter(CCodePrinter):
 #                 replace(lambda expr: expr.is_Pow and expr.args[1].is_Integer and expr.args[1]<-2,
 # lambda z: 1./(self.recurs_mul(z.args[0], -z.args[1])))
 
-        user_subs = zip(self._some_vars, self._user_exprs)
+        user_defs = zip(self._some_vars, self._user_exprs)
+        user_subs = [(v, e[0]) for v, e in user_defs]
+        self._var_asserts = dict([(v, ['{0} {1}'.format(v, spec)
+                                       for spec in e[1]])
+                                  for v, e in filter(
+                                      lambda c: c[1] is not None or
+                                      c[1] != [], user_defs)])
 
         for (v, e) in user_subs:
-            expr_n = expr_n.subs(e, v)
+            expr_n = expr_n.replace(e, v)
 
         for subexpr in postorder_traversal(expr_n):
 
@@ -575,6 +582,9 @@ class LocalCCodePrinter(CCodePrinter):
                 postconds = self._postconditions(var, self._decls[var])
                 if len(postconds) > 0:
                     affcts.append(self.asserts(postconds))
+
+                if var in self._var_asserts:
+                    affcts.append(self.asserts(self._var_asserts[var]))
 
                 if condition is not None:
                     if var in self._cond_affcts:

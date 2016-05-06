@@ -9,6 +9,8 @@ un = Symbol('un', real=True)
 ut1 = Symbol('ut1', real=True)
 ut2 = Symbol('ut2', real=True)
 
+epsilon = Symbol('epsilon', real=True, positive=True)
+
 #class N(Function):
 #      nargs = (1, 2)
 
