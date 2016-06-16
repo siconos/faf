@@ -428,7 +428,7 @@ v%     \end{array}\right]
 
 
 
-** TODO List of actions.  Last update <2016-04-20 Wed>
+** TODO List of actions.  Last update <2016-06-16 Thu>
    DEADLINE: <2016-04-04 Mon>
 
    + Paper. General Work :
@@ -436,35 +436,63 @@ v%     \end{array}\right]
 
      + Complete the introduction
        + Add a list of approach not discussed in the paper. leave it as future work.
-       + Detail whre it is possible why some approaches are not discussed (IPM)
+       + Detail where it is possible why some approaches are not discussed (IPM)
 
-     + Complete Section 3
-       + Understand the continuity argument of Alart
-       + Find references for alternating projection N and after T
-
-     + Complete Section 4
+     + Section 3.
+       + Understand the continuity argument of Alart (V.A., O.H.)
+       + Find references for alternating projection N and after T (V.A)
+       + Section 3.3 Remork to send the maximum in Appendix (V.A.)
+       + NDRVA 3.3 Comment of Olivier ? (O.H.)
+       + Discuss remark about smoothing
+       + Section 3.4 in Appendix.
+       + NDRVA 3.5 Remark Olivier ?
+ 
+     + Section 4.
        + Section 4.1
 	 \begin{itemize}
-	 \item situate the work of \cite{DeSaxce.Feng90,DeSaxce.Feng1998}
-             and  \cite{Simo.Laursen1992,Laursen.Simo1993b}.
-	 \item implement the work of Simo just to laugh
 	 \item Have a careful look to the work of Krause.
 	 \end{itemize}
+       + NDROH 4.1 :  to be discussed (V.A. O.H.)
        + Section 4.2
 	 \begin{itemize}
-	 \item Rule and efficient Choice of $\rho$.
 	 \item Should we remove hyperplane projection ?
 	 \item Acceleration techniques and Nesterov Method ? FISTA and Nesterov work. INPPA
 	 \end{itemize}
-       + Section 4.3
-	 What can be retained from\cite{Heyn_PhD2013} ?
-	 Krylov techniques
- 
-     + Where to write the formulation of hybrid Solvers :VA:
+	 NRDOH  4.3 4.4 To be discussed, not so clear for me.
+       + Further work
+	 + What can be retained from\cite{Heyn_PhD2013} ?
+	   + Krylov techniques
+	 + cite somewhere~\citep{Laborde.Renard_MMAS2008}
+	 + Have a careful look to the work of Krause.
+         + Implement the FP-QVI-MJ and FP-QVI-AC within the De Saxce approach ? Useful ?
+     
+     + Section 5. 
+       + Section 5.2 
+	 + In~\cite{Hayashi.ea_SIOPT2005}, spectral decomposition of the projection + smoothing.  semi-smooth Newton method
+	 + Choice of $\rho_\n$ $\rho_\t$. Discussion paper Alart~\citep{Alart1993} or \citep{Jourdan.Alart.ea98}.
+	 + Is the proj formulation better than FB for all the reason related to the augmented Lagrangian approach ?
+	 + See~\cite{Mirar.Arora_SMO2004-I} for an automatic adaption of the penalization coefficient ? Link woth the work of Armand
+       + Section 5.3 TBW 
+	 + question about the naming convention : FBLSA ?
 
-     + Investigate the best journal to submit (and format) :VA:
+     + Section 6
+       + Section  6.1
+	 + Situate~\cite{Hayashi.ea_JCAM2005}
+	 + Acceleration technique. Aitken acceleration. Lebon, Raous et al.
+           contractive sequence transformations in 
+           C. Brezinski et M. Redivo-Zaglia, Extrapolation Methods, Theory and Practise, North- Holland, Amsterdam, 1992.
+           J.P. Delahaye, Sequence transformations, Springer Verlag, Berlin, 1988.
+       + Section 6.2 Work on the proximal point.
+	 
+     + Section 7. (Optimization)
+       + Alternating ?
+       + ACML
+       + SOCCP
 
-     + Fixes + new parts in paper :OH:
+     + Misc.
+       + Where to write the formulation of hybrid Solvers :VA:
+       + Investigate the best journal to submit (and format) :VA:
+       + Fixes + new parts in paper :OH:
 
 
    + Devel and comparisons:    
