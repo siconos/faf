@@ -417,7 +417,18 @@ v%     \end{array}\right]
 
 
 
-** TODO List of actions.  Last update <2016-03-20 Sun>
+** Meeting <2016-04-20 Wed>
+
++ MB
+  + clean gradients in the tex file. AC Natural Map
+  + killed job on luke.ciment ?
+  + swig version 2.11
++ VA
+
+
+
+
+** TODO List of actions.  Last update <2016-04-20 Wed>
    DEADLINE: <2016-04-04 Mon>
 
    + Paper. General Work :
@@ -459,7 +470,7 @@ v%     \end{array}\right]
    + Devel and comparisons:    
      + Rerun computation  :MB:
      + Fclib. Thinking of howto bind with Matlab :OH:
-     + Fclib and swig python tranalsation :MB:
+     + Fclib and swig python tranlastion :MB:
      + Add a small description file for example directory. texfile img profile. :VA:
      + Add description in fclib report. :VA:
      + Update and correct naming for the line-searches. FBLSA  :MB:OH:
