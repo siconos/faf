@@ -12,9 +12,8 @@ The dual convex cone to a convex cone $K$ defined by
 \end{equation}
 \section{Introduction}
 
-\citet{Panagiotopoulos_IA1975} ?
 
-More than thirty years after the pioneering work of~\cite{Necas.ea1980},~\cite{Haslinger1983,Haslinger1984},\cite{Katona_IJNAMG1983},~\cite{Chaudhary.Bathe_CS1986},~\cite{Jean.Moreau1987},~\cite{Mitsopoulou.Doudoumis1988} on numerically solving mechanical problems with contact and friction, there are still active research activities on this subject in the computational mechanics and applied mathematics communities.  This can be explain by the fact that \tg{problems from} mechanical systems with unilateral contact and Coulomb friction are difficult to numerically solve and the mathematical results of convergence of the numerical algorithms are rare and most of these require rather strong assumptions. In this paper, we want to give some insights of the advantages and weaknesses of standard solvers found in the literature by comparing them on the large sets of examples coming from a wide range of mechanical systems.
+More than thirty years after the pioneering work of~\cite{Panagiotopoulos_IA1975},~\cite{Necas.ea1980},~\cite{Haslinger1983,Haslinger1984},\cite{Katona_IJNAMG1983},~\cite{Chaudhary.Bathe_CS1986},~\cite{Jean.Moreau1987},~\cite{Mitsopoulou.Doudoumis1988} on numerically solving mechanical problems with contact and friction, there are still active research activities on this subject in the computational mechanics and applied mathematics communities.  This can be explain by the fact that \tg{problems from} mechanical systems with unilateral contact and Coulomb friction are difficult to numerically solve and the mathematical results of convergence of the numerical algorithms are rare and most of these require rather strong assumptions. In this paper, we want to give some insights of the advantages and weaknesses of standard solvers found in the literature by comparing them on the large sets of examples coming from a wide range of mechanical systems.
 
 \begin{ndroh}
  The following paragraph is too technical for the intro IMHO
@@ -985,6 +984,7 @@ The fact that the SOCCP is linear is quite attractive but the strong rank defici
 
 
 \subsection{Optimization problems}
+\label{Sec:OptimisationProblems}
 
 In this section, several optimization-based formulations are proposed. The quest for an efficient optimization formulation of the frictional problem is a hard task. Since the problem is nonsmooth and nonconvex, the use of an associated optimization problem is interesting from the numerical point of view if we want to improve the robustness and the stability of the numerical methods.
 
@@ -1035,7 +1035,7 @@ which is a nonlinear optimization problem with a nonsmooth and nonconvex cost fu
 Other optimization-based formulations have been proposed in the literature. They are not direct optimization formulation but they try to identify an optimization sub-problem which is well-posed and for which efficient numerical methods are available. Three approaches can be listed in three categories: a)  the \emph{alternating optimization} problems, b) the \emph{successive approximation} method and c)  the \emph{convex SOCP} approach.
 
 
-\paragraph{The alternating optimization \tg{approach}} aims at solving the frictional contact problem by alternatively solving the Signorini condition for a fixed value of the tangential reaction $r_\t$, and solving the Coulomb friction model for a fixed value of the normal reaction $r_\n$. 
+\paragraph{The Panagiotopoulos alternating optimization \tg{approach}} aims at solving the frictional contact problem by alternatively solving the Signorini condition for a fixed value of the tangential reaction $r_\t$, and solving the Coulomb friction model for a fixed value of the normal reaction $r_\n$. 
 \tg{Let us split the matrix $W$ and the vector $q$ in the following way:}
 \begin{equation}
   \label{eq:W-split}
@@ -1076,7 +1076,7 @@ Two sub-problems can therefore be identified: the first one is to find $u_\n$ an
   \label{eq:AO-3}
   \begin{cases}
     \min\, \Frac 1 2 r_\n^\top  W_{\n\n} r_\n + r_n^\top \tilde q_\n \\
-    \begin{array}{ll}`
+    \begin{array}{ll}
     \text{s.t.} & r_\n \geq 0,
   \end{array}\end{cases}
 \end{equation}
@@ -1102,9 +1102,26 @@ and
 % \end{equation}
 % and $u_\n$ is obtained by $ u_n = H_\n^\top v + w_\n $ and $r_\n$ is the Lagrange multiplier associated with the constraints.
 
-
+\textcolor{pink}{This approach has been proposed by \cite{Panagiotopoulos_IA1975} for two--dimensional applications in soil foundation computing. It has also been used  in other finite element applications  in \citep{Tzaferopoulos_CS1993} and studied from the mathematical point of view in \cite{Haslinger.ea1996}. }
 \begin{ndrva}
-  cite Panagiotopoulos + remark Olivier
+  remark Olivier : de memoire
+
+  What about
+
+$$ 0 \ni
+\begin{bmatrix}
+  M & -H_\t \\
+  H_\t & 0 
+\end{bmatrix}
+\begin{bmatrix}
+  v \\ r_\t
+\end{bmatrix}
++
+\begin{bmatrix}
+  \tilde f_\t \\ w_\t
+\end{bmatrix}
++ N_{\RR^{n-m}\times D(\mu,\tilde r_{\n})}
+$$
 \end{ndrva}
 \paragraph{The successive approximation} method identifies a single optimization problem by introducing a function that maps the normal reaction to itself (or the friction threshold) such that
 \begin{equation}
@@ -1133,9 +1150,11 @@ Since W is a symmetric positive semi-definite  matrix, the last three lines are 
   \end{cases}
 \end{equation}
 
-The method of successive approximation has been extensively used for proving existence and uniqueness of solutions to the discrete frictional contact problems. We refer to~\cite{Haslinger.ea1996} which summarizes the seminal work of the Czech school~\cite{Necas.ea1980,Haslinger1983,Haslinger1984}. We will see in the sequel that this approach also provides us with very efficient numerical solvers.
+The method of successive approximation has been extensively used for proving existence and uniqueness of solutions to the discrete frictional contact problems. We refer to~\cite{Haslinger.ea1996} which summarizes the seminal work of the Czech school~\cite{Necas.ea1980,Haslinger1983,Haslinger1984}. We will see in the sequel that this approach also provides us with very efficient numerical solvers \textcolor{pink}{ in Section~\ref{Sec:Tresca-solver}}.
 \begin{ndroh}
  Do we implement this method? The last sentence suggest that we are going to show numerical results.
+
+VA :YES TRESCA family
 \end{ndroh}
 \paragraph{The convex SOCP} approach \tg{is in the same vein as the previous one, with the difference that} a SOCQP sub-problem is identified.
 To this aim, \tg{we augment the problem by introduction a auxiliary variable $s$, the image of $g(u)$ introduced in~\eqref{eq:modified-bis}.
@@ -1606,6 +1625,8 @@ In~Algorithm~\ref{Algo:Up1}, a Boolean option is added to the standard Armijo ap
 \end{algorithm}
 
 \subsection{Nomenclature}
+
+A nomenclature for the algorithms based on the VI formulation is given in Table~\ref{tab:Projection-algos}.
 \begin{table}
   \centering
   \begin{tabular}{|l|l|l|l|}
@@ -1795,7 +1816,7 @@ The details of a possible computation of $\Phi$ can be found in Appendix~\ref{Se
 
 
 \subsection{Nomenclature}
-
+A nomenclature for the algorithms based on the nonsmooth Newton methods is given listed in Table~\ref{tab:NSN-algos}.
 \begin{table}[htbp]
   \centering
   \begin{tabular}{|l|p{0.6\textwidth}|l|}
@@ -1947,7 +1968,7 @@ The PSOR algorithm is summarized in Algorithm~\ref{Algo:PSOR-II} and the PGS can
   \caption{PSOR algorithm for Problem~\ref{prob:II}}  \label{Algo:PSOR-II}
 \end{algorithm}
 
-In~\cite{Jourdan.Alart.ea98}, this method is developed in the Gauss-Seidel configuration ($\omega=1$) with a local Newton solver based on the Alart--Curnier formulation. If the local solver is only one iteration of the VI solver based on projection, we get a standard splitting technique for VI. In Table~\ref{tab:PSOR-PPA-algos}, the methods based on PSOR used in the comparison are summarized.
+Applications methods in frictional contact date back to the work of \cite{Mitsopoulou.Doudoumis1988,Mitsopoulou.Doudoumis1987} for two-dimensional friction. In~\cite{Jourdan.Alart.ea98}, this method is developed in the Gauss-Seidel configuration ($\omega=1$) with a local Newton solver based on the Alart--Curnier formulation. If the local solver is only one iteration of the VI solver based on projection, we get a standard splitting technique for VI. In Table~\ref{tab:PSOR-PPA-algos}, the methods based on PSOR used in the comparison are summarized.
 
 \subsection{Proximal points techniques}\label{Sec:Prox}
 
@@ -2029,7 +2050,9 @@ The use of proximal point algorithm can be very interesting when the solving of 
   \end{itemize}
 \end{ndrva}
 
-\subsection{Naming convention}
+\subsection{Nomenclature}
+A nomenclature for the algorithms based on the projection/splitting approach is given in Table~\ref{tab:PSOR-PPA-algos}.
+
 \begin{table}
   \centering
   \begin{tabular}{|l|p{0.6\textwidth}|l|}
@@ -2102,20 +2125,97 @@ The use of proximal point algorithm can be very interesting when the solving of 
 \label{Sec:OptimisationBasedMethods}
 
 \subsection{Alternating optimization problem}
-Panagiotopoulos. Un coup N un coup T
+
+\textcolor{pink}{The Panagiotopoulos approach described in Section~\ref{Sec:OptimisationProblems} generates a family of solvers by choosing a particular solver for the normal contact problem~(\ref{eq:AO-3}) and the tangential contact problem~(\ref{eq:AO-4}). More precisely, the following choices may be made}
+
+\textcolor{pink}{The normal contact problem
+ \begin{equation}
+  \label{eq:AO-3-bis}
+  \begin{cases}
+    \min\, \Frac 1 2 r_\n^\top  W_{\n\n} r_\n + r_n^\top \tilde q_\n \\
+    \begin{array}{ll}
+    \text{s.t.} & r_\n \geq 0
+  \end{array}\end{cases} \text{ with }   \tilde q_\n =  q_\n + W_{\n\t}r_{\t,k},
+\end{equation}
+ is a convex quadratic program with simple bound constraints that can be solved with any dedicated solver. In this work, we solve it with a) an active set strategy, b) a conjugate gradient approach with projection as it is developed in \citep{More.Toraldo1991} or c) an adaptation of one of the splitting techniques detailed in Section~\ref{Sec:SplittingTechniquesAndProx}. It is clear that we can also use semi-smooth Newton methods but our experience has shown that such methods are not efficient when $\ker (W_{\n\n}) \neq \{0\}$. Note that there exists also a bunch of methods in the literature that improves the method of \cite{More.Toraldo1991} for large--scale systems. Unfortunately,  to keep the article in a reasonable size, we leave these improvements for further studies.}
+
+\textcolor{pink}{ The tangential problem,
+\begin{equation}
+  \label{eq:AO-4-bis}
+  \begin{cases}
+    \min\,  \Frac 1 2 r_\t^\top W _{\t\t} r_\t +  r_\t^\top \tilde q_\t \\
+    \begin{array}{ll}
+     \text{s.t.}  & r_\t \in D(\mu,\tilde r_{\n})
+  \end{array}
+\end{cases} \text{ with } \tilde q_\t = q_\t + W_{\t\n}r_{\n,k+1},
+\end{equation}
+is also a convex program but with a more complex structure since the constraints are quadratic one. Although it exists also some dedicated methods to solve this specific problem, we will use an adaptation of one of the splitting techniques detailed in Section~\ref{Sec:SplittingTechniquesAndProx}. The method in~\cite{Dostal.Kozubek_MP2012} (an extension of~\citep{More.Toraldo1991}) which is  an algorithm  for solving QP over convex constraints (disk constraint for instance) could be used.}
+
+\textcolor{pink}{In  Table~\ref{tab:OPTI-algos}, we detailed the algorithms we use in the present study.}
+
+\begin{algorithm}
+  \begin{algorithmic}
+    {\sf
+      \STATE $ $ 
+      \REQUIRE $\sf W,q,\mu$
+      \REQUIRE $\sf r_0$ initial values and $\sf tol >0$ a tolerance
+      \ENSURE  $\sf r,u$ solution of Problem~\ref{prob:II}
+      \STATE $\sf r_{k} \leftarrow r_0 $ ; $\sf k \leftarrow 0$ 
+      \WHILE {$\sf error > tol$} 
+      \STATE $\sf \tilde q_\n \leftarrow q_\n + W_{\n\t}r_{\t,k}$
+      \STATE solve (\ref{eq:AO-3-bis}) for $r_{\n,k+1}$
+      \STATE $\sf  \tilde q_\t \leftarrow q_\t + W_{\t\n}r_{\n,k+1}$
+      \STATE solve (\ref{eq:AO-4-bis}) for $r_{\t,k+1}$
+      \STATE $\sf k \leftarrow k+1$
+      \STATE evaluate $\sf error$.
+      \ENDWHILE
+      \STATE $\sf r \leftarrow r_{k}$ 
+      \STATE $\sf u \leftarrow W r + q$ 
+    }
+  \end{algorithmic}
+  \caption{Panagiotopoulos decomposition algorithm for Problem~\ref{prob:II}}  \label{Algo:Panagiotopoulos}
+\end{algorithm}
 
 \subsection{Successive approximation  method}
+\label{Sec:Tresca-solver}
+\textcolor{pink}{The methods of successive approximation successive approximations is a natural tool for the numerical realization of Problem~\ref{prob:II}. It is based on the Tresca approximation of the Coulomb cone as it is described in Section~\ref{Sec:OptimisationProblems} and the work of the celebrated Czech school which summarizes the seminal work of the Czech school~\cite{Necas.ea1980,Haslinger1983,Haslinger1984,Haslinger.ea1996}.   Each iterative step is represented by an auxiliary contact problem with given friction described by quadratic program over a cylinder~(\ref{eq:Haslinger-2}), that we recall there:
+\begin{equation}
+  \label{eq:Haslinger-2-bis}
+  \begin{cases}
+    \theta = h(r_\n) \\[2mm]
+    \min\, \Frac 1 2 r^\top W r + r^\top q \\
+    \begin{array}{ll}
+    \text{s.t. }& r \in C(\mu,\theta).
+  \end{array}
+  \end{cases}
+\end{equation}
+The radius of the cylinder is then updated in a iterative procedure.  The algorithm is described in Algorithm~\ref{Algo:Tresca}
+\begin{algorithm}
+  \begin{algorithmic}
+    {\sf
+      \STATE $ $ 
+      \REQUIRE $\sf W,q,\mu$
+      \REQUIRE $\sf r_0$ initial values and $\sf tol >0$ a tolerance
+      \ENSURE  $\sf r,u$ solution of Problem~\ref{prob:II}
+      \STATE $\sf r_{k} \leftarrow r_0 $ ; $\sf k \leftarrow 0$ 
+      \WHILE {$\sf error > tol$} 
+      \STATE $\theta \rightarrow h(r_{\n,k})$ 
+      \STATE solve~\ref{eq:Haslinger-2-bis} for $r_{\n,k+1},r_{\t,k+1}$
+      \STATE $\sf k \leftarrow k+1$
+      \STATE evaluate $\sf error$.
+      \ENDWHILE
+      \STATE $\sf r \leftarrow r_{k}$ 
+      \STATE $\sf u \leftarrow W r + q$ 
+    }
+  \end{algorithmic}
+  \caption{Tresca approximation algorithm for Problem~\ref{prob:II}} 
+\end{algorithm}}
 
-methods of successive approximation successive approximations is a natural tool for the numerical realization [3]. Each iterative step is represented by an auxiliary contact problem with given friction described by a variational inequality of the second kind.
+ \textcolor{pink}{In the literature, the successive approximation technique has been used in the bidimensional case in~\citep{Haslinger.ea_CMAME2002} \&~\citep{Dostal_JCAM2002} with improved and dedicated QP solvers overs box-constraints. Two strategies are implemented : a) the classical Tresca iteration (called FPMI) and  b) the Panagiotopoulos decomposition plus a Fixed point (called FPMII). They use  a specific QP solver for box constraint~\cite{Dostal_SIOPT1997} that is an improvement of Mor\'e--Toraldo method~\citep{More.Toraldo1991}. This technique has been direcltly extended in the three-dimensional case with a faceting of the cone in~\cite{Haslinger.ea_JCAM2004}. In the latter case, the problem is still a  box constrained QP since it contains only polyhedral constraints. }
 
 
-\cite{Haslinger.ea_CMAME2002} \&~\cite{Dostal_JCAM2002}: successive approximation in 2D a) classical Tresca iteration (FPMI).  b) splitting N/T plus a Fixed point (FPMII). Use of a specific QP solver for box constraint~\cite{Dostal_SIOPT1997} that is an improvement of MOre Toraldo method.
 
-\cite{Haslinger.ea_JCAM2004}.  Extension to 3D with faceting the cone. The QP is box constrained QP.
-
-
-\cite{Haslinger.ea_MCS2012}  successive approximation in 3D the special solver of~\cite{Kucera_OMS2007,Kucera_SIOPT2008} which is itself and extension to disk constraints of the Polyak method (CG +active set on bounds constraint) and its improvements~\cite{Dostal_SIOPT1997,Dostal.Schoberl_COA2005}.
-
+ \textcolor{pink}{\cite{Haslinger.ea_MCS2012} propose a successive approximation technique in 3D with the special solver of~\cite{Kucera_OMS2007,Kucera_SIOPT2008} which is itself an extension to disk constraints of the Polyak method (conjugate gradient with active set on the bounds constraint) and its improvements~\cite{Dostal_SIOPT1997,Dostal.Schoberl_COA2005}.}
 
 
 \cite{Dostal.Kozubek_MP2012} An algorithm (extension of MPGP) for solving QP over convex constraint (disk constraint for instance). Application to frictional contact. 
@@ -2131,28 +2231,53 @@ methods of successive approximation successive approximations is a natural tool 
 \subsection{SOCCP approach}
 
 
-\subsection{Naming convention}
+\subsection{Nomenclature}
+A nomenclature for the algorithms based on the optimisation approach is given in Table~\ref{tab:OPTI-algos}.
 
 \begin{table}
   \centering
-  \begin{tabular}{|l|p{0.6\textwidth}|l|}
+  \begin{tabular}{|l|l|p{0.6\textwidth}|l|}
     \hline
-    { Algorithm}
-    & Description 
+    {Name}
+    & Algo.
+    & Additional informations
     & parameters\\
     \hline
+    \sf PANA-NSGS-NSN-FB
+    & \ref{Algo:Panagiotopoulos}
+    &  NSGS-NSN-FB for both normal and tangent problem
+    & $tol, tol_{local}$\\
+    \hline
+    \sf PANA-QP-NSGS-NSN
+    & \ref{Algo:Panagiotopoulos}
+    &  Active set strategy for normal contact problem and NSGS with NSN for tangential problem
+    & $tol, tol_{local}$\\
+    \hline
+    \sf PANA-VI-EG
+    & \ref{Algo:Panagiotopoulos}
+    & VI-EG for both normal and tangent problem
+    & $tol, tol_{local}$\\
+    \hline
+    \sf PANA-\ldots
+    & \ref{Algo:Panagiotopoulos}
+    & 
+    & $tol, tol_{local}$\\
+    \hline
+    \hline
     \sf TRESCA-NSGS-FP-VI
+    &
     & 
     & $tol, tol_{local}$\\
     \hline
     \sf ACLM-NSGS-FP-VI
     & 
+    &
     & $tol, tol_{local}$\\
     \hline
     \hline
   \end{tabular}
-  \caption{Naming convention for the algorithms based on splitting and proximal algorithms}
-  \label{tab:SPLIT-PROX-algos}
+  \caption{Naming convention for optimization based  algorithms}
+  \label{tab:OPTI-algos}
 \end{table}
 
 \clearpage

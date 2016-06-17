@@ -485,17 +485,19 @@ v%     \end{array}\right]
        + Section 6.2 Work on the proximal point.
 	 
      + Section 7. (Optimization)
-       + Alternating ?
        + ACML
        + SOCCP
 
      + Misc.
        + Where to write the formulation of hybrid Solvers :VA:
        + Investigate the best journal to submit (and format) :VA:
+	 + CMAME ?
+	 + 
        + Fixes + new parts in paper :OH:
 
 
-   + Devel and comparisons:    
+   + Devel and comparisons:   
+     + Devel alternating solution approaches. 
      + Rerun computation  :MB:
      + Fclib. Thinking of howto bind with Matlab :OH:
      + Fclib and swig python tranlastion :MB:
@@ -503,4 +505,6 @@ v%     \end{array}\right]
      + Add description in fclib report. :VA:
      + Update and correct naming for the line-searches. FBLSA  :MB:OH:
      + Merge line--searches procedures :MB:OH:
+     + Panagiotopoulos to be coded :VA:
+     + improvement of Tresca approach ?
        
