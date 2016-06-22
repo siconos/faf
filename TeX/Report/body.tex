@@ -4,7 +4,7 @@
 
 \section*{Notation}
 
-The following notation is used throughout the paper: the 2-norm for a function $f$ is denoted  by $\|f\|$ and for a vector $x\in\RR^n$ by $\|x\|$. 
+The following notation is used throughout the article: the 2-norm for a function $f$ is denoted  by $\|f\|$ and for a vector $x\in\RR^n$ by $\|x\|$. 
 The dual convex cone to a convex cone $K$ defined by
 \begin{equation}
   \label{eq:dual-cone}
@@ -13,14 +13,21 @@ The dual convex cone to a convex cone $K$ defined by
 \section{Introduction}
 
 
-More than thirty years after the pioneering work of~\cite{Panagiotopoulos_IA1975},~\cite{Necas.ea1980},~\cite{Haslinger1983,Haslinger1984},\cite{Katona_IJNAMG1983},~\cite{Chaudhary.Bathe_CS1986},~\cite{Jean.Moreau1987},~\cite{Mitsopoulou.Doudoumis1988} on numerically solving mechanical problems with contact and friction, there are still active research activities on this subject in the computational mechanics and applied mathematics communities.  This can be explain by the fact that \tg{problems from} mechanical systems with unilateral contact and Coulomb friction are difficult to numerically solve and the mathematical results of convergence of the numerical algorithms are rare and most of these require rather strong assumptions. In this paper, we want to give some insights of the advantages and weaknesses of standard solvers found in the literature by comparing them on the large sets of examples coming from a wide range of mechanical systems.
+More than thirty years after the pioneering work of~\cite{Panagiotopoulos_IA1975},~\cite{Necas.ea1980},~\cite{Haslinger1983,Haslinger1984,Haslinger.Panagiotopoulos_PRSE1984}, ~\cite{z-DelPieroMaceri_CISM1983,z-DelPieroMaceri_CISM1985},~\cite{Katona_IJNAMG1983},~\cite{Chaudhary.Bathe_CS1986},~\cite{Jean.Moreau1987},~\cite{Mitsopoulou.Doudoumis1988} on numerically solving mechanical problems with contact and friction, there are still active research activities on this subject in the computational mechanics and applied mathematics communities.  This can be explain by the fact that \tg{problems from} mechanical systems with unilateral contact and Coulomb friction are difficult to numerically solve and the mathematical results of convergence of the numerical algorithms are rare and most of these require rather strong assumptions. In this article, we want to give some insights of the advantages and weaknesses of standard solvers found in the literature by comparing them on the large sets of examples coming from a wide range of mechanical systems.
 
+\subsection{Problem statement}
 \begin{ndroh}
  The following paragraph is too technical for the intro IMHO
-\end{ndroh}
-To fix ideas, we want to discuss possible numerical solution procedures for the following three--dimensional discrete frictional contact problem and some of its variants.  Let $n_c\in \NN$ be the number of contact points and $n\in\NN$ the number of degree of freedom of a discrete mechanical system.  \tb{For each contact $\alpha$, the unknown local variables  $u^\alpha\in\RR^3$ (relative velocity or gap at the contact point) and $r^\alpha\in\RR^3$ (reaction or impulse) are decomposed  in a contact local basis $({\sf N}^\alpha,{\sf T_1}^\alpha,{\sf T_2}^\alpha)$ such that $u^\alpha = u^\alpha_{\n} {\sf N}^\alpha +   u^{\alpha}_{\tone}{\sf T_1}^\alpha + u^{\alpha}_{\ttwo}{\sf T_2}^\alpha , u^\alpha_{\n} \in \RR, u^\alpha_{\t} = [u^{\alpha}_{\tone},u^{\alpha}_{\ttwo}]^\top \in \RR^2$ and  $r^\alpha = r^\alpha_{\n} {\sf N}^\alpha +   r^{\alpha}_{\tone}{\sf T_1}^\alpha + r^{\alpha}_{\ttwo}{\sf T_2}^\alpha  , r^\alpha_{\n} \in \RR, r^\alpha_{\t}=[r^{\alpha}_{\tone},r^{\alpha}_{\ttwo}]^\top \in \RR^2$ (see Figure~\ref{fig:local-frame}).}
 
- Given a symmetric positive (semi-) definite matrix ${M} \in \RR^{n \times n}$, a vector $ {f} \in \RR^n$, a matrix  ${H} \in \RR^{n \times m}$ with $m= 3n_c$, a vector $w \in \RR^{m}$ and a vector of coefficients of friction $\mu \in \RR^{n_c}$, find two vectors $ {v} \in \RR^n$ and $r\in \RR^m$ such that
+ VA: Do you want to put some illustrations ?
+\end{ndroh}
+\tp{We start this section by formulating an abstract, algebraic finite--dimensional frictional contact problem. We continue by showing that this problem, central in the simulation of mechanical systems with contact and Coulomb's friction is an particular instance of general problem in Mathematical programming. We end this section by discussing its wide range of applicability in problems involving contact and friction.}
+
+\paragraph{Abstract problem.}
+
+To fix ideas, we want to discuss possible numerical solution procedures for the following three--dimensional finite--dimensional frictional contact problem and some of its variants.  Let $n_c\in \NN$ be the number of contact points and $n\in\NN$ the number of degree of freedom of a discrete mechanical system.  \tb{For each contact $\alpha$, the unknown local variables  $u^\alpha\in\RR^3$ (relative velocity or gap at the contact point) and $r^\alpha\in\RR^3$ (reaction or impulse) are decomposed  in a contact local basis $({\sf N}^\alpha,{\sf T_1}^\alpha,{\sf T_2}^\alpha)$ such that $u^\alpha = u^\alpha_{\n} {\sf N}^\alpha +   u^{\alpha}_{\tone}{\sf T_1}^\alpha + u^{\alpha}_{\ttwo}{\sf T_2}^\alpha , u^\alpha_{\n} \in \RR, u^\alpha_{\t} = [u^{\alpha}_{\tone},u^{\alpha}_{\ttwo}]^\top \in \RR^2$ and  $r^\alpha = r^\alpha_{\n} {\sf N}^\alpha +   r^{\alpha}_{\tone}{\sf T_1}^\alpha + r^{\alpha}_{\ttwo}{\sf T_2}^\alpha  , r^\alpha_{\n} \in \RR, r^\alpha_{\t}=[r^{\alpha}_{\tone},r^{\alpha}_{\ttwo}]^\top \in \RR^2$ (see Figure~\ref{fig:local-frame}).}
+
+ Given a symmetric positive (semi-) definite matrix ${M} \in \RR^{n \times n}$, a vector $ {f} \in \RR^n$, a matrix  ${H} \in \RR^{n \times m}$ with $m= 3n_c$, a vector $w \in \RR^{m}$ and a vector of coefficients of friction $\mu \in \RR^{n_c}$, find two vectors $ {v} \in \RR^n$, \tp{a velocity--like vector} and $r\in \RR^m$, \tp{a contact reaction or impulse},  such that
 \begin{equation}\label{eq:soccp1-intro}
   \begin{array}{rcl}
     M v = {H} {r} + {f}, &
@@ -37,8 +44,7 @@ where the set $K$ is the cartesian product of Coulomb's friction cone at each co
 and $K^\star$ is dual. The function $g(u)$ is a nonsmooth function defined as
 \begin{equation}
 g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldots n_c]^\top\label{eq:gg}. 
-\end{equation}\tb{The variable $u$ and $\hat u$  do not appear as unknowns since they can be directly obtained from $v$.}
-\marginpar{\tg{missing end}}\tb{The vector is}
+\end{equation}\tb{Note that the variable $u$ and $\hat u$  do not appear as unknowns since they can be directly obtained from $v$.}
 \begin{figure}
   \centering
   \begin{tikzpicture}[ scale=4,
@@ -95,8 +101,7 @@ g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldots n_c]
 \label{fig:local-frame}
 \end{figure}
 
-We clearly choose to simplify a lot the general problems of formulating the contact problems with friction by avoiding including too much side effects that are themselves interesting but render the study too difficult to carry out in a single article. We choose finite dimensional systems where the time dependence does not appear explicitly. For instance, we consider systems that are discretized both in space and time if the original system is not a finite dimensional system and if a dynamic or a quasi--static evolution is considered. In the same way, we consider a linear setting in a first attempt and we assume that  nonlinear mechanical bulk behaviors that can be treated at an upper level with a Newton linearization procedure. Even under these assumptions, we believe that there are a strong interest to work on the problem since it appears to be relatively generic in numerous of simulations of systems with contact and friction. This problem is indeed at the heart of the simulation of mechanical systems with 3D Coulomb's friction and unilateral constraints: it might be the result of the time--discretization by event--capturing time--stepping methods or event--detecting (event--driven) techniques of dynamical systems with friction or the result of a space--discretization (by FEM for instance) of the quasi-static problems of frictional contact mechanics. For a description of the derivation of such problems in various practical situations we refer to~\cite{Acary.Brogliato2008,Acary.Cadoux2013}.{\tt XXX discuss the remark Olivier about the motion of this paragraph. }
-
+\paragraph{A Second Order Cone Complementarity Problem (SOCCP).}
 From the mathematical programming point of view, the problem appears to be a Second Order Cone Complementarity Problem (SOCCP)~\cite{Facchinei.Pang2003} which can be generically defined as
 \begin{equation}
   \begin{cases}
@@ -108,31 +113,48 @@ where $K$ is a second order cone. If the nonlinear part of the problem~\eqref{eq
 When the non-associated character of the friction is taken into account through $g(u)$, the problem is non monotone and nonsmooth, and therefore is very hard to solve efficiently. For a given numerical algorithm, it is not so difficult to design mechanical example to run the algorithm into troubles.
 \tg{Proof of convergence} of the numerical algorithms are rare and most of these required strong assumptions \tg{on either} the friction coefficients or full rank assumptions of matrices or operators or the dimension of the space in which the problem is formulated. Among these results, we can cite the Czech school where the coefficient of friction is assumed to be bounded and small. This assumption allows us to use fixed point methods on the convex sub--problems of Tresca friction \tb{(friction threshold that does depend on the normal reaction and then transform the cone into a semi-cylinder)}. We can also mention the results from~\cite{Pang.Trinkle1996,Stewart.Trinkle1996,Anitescu.Potra97} where the friction cone is polyhedral (in 2D or by a faceting process). In that case, if $w=0$ or $w \in \mathrm{im}(H^\top)$, Lemke's algorithm is able to solve the problem. The question of existence of solutions has been treated in~\cite{Klarbring.Pang1998,Acary.ea_ZAMM2011} under similar assumptions but with different techniques. The question of uniqueness remains a difficult problem in the general case.
 
+\paragraph{Range of applicability.}
+\tp{We clearly choose to simplify a lot the general problems of formulating the contact problems with friction by avoiding including too much side effects that are themselves interesting but render the study too difficult to carry out in a single article. We choose finite dimensional systems where the time dependence does not appear explicitly.}
 
-In this article,  after stating the problem with more details in Section~\ref{sec:description}, we recall the existence result of~\cite{Acary.ea_ZAMM2011} for the problem in~\eqref{eq:soccp1-intro} in Section \ref{sec:existence}. In this framework, we briefly present in Section~\ref{sec:formulation} \tg{a few} alternative formulations of the problem that enable the design of numerical solution procedures. Right after these formulations, we list some of the most standard algorithms dedicated to one of the previous formulation in Sections~\ref{sec:numericalmethods,vi},~\ref{sec:newtonmethods},~\ref{Sec:SplittingTechniquesAndProx}, \ref{Sec:InteriorPoint} and \ref{Sec:OptimisationBasedMethods}. These algorithms that have been previously developed for solving the SOCCP~\eqref{eq:soccp1-intro} are mainly based on  variational inequality (Section~\ref{sec:numericalmethods,vi} and~\ref{Sec:SplittingTechniquesAndProx}) or nonsmooth equations (Section~\ref{sec:newtonmethods}) or  optimization--based (Section~\ref{Sec:OptimisationBasedMethods}) reformulations.  
-
-Since it is difficult to be exhaustive on the approaches developed in the literature to solve frictional contact problems, we decided to leave out the scope of the paper the following approaches:
+\tp{Nevertheless, we believe that there are a strong interest to study  this problem since it appears to be relatively generic in numerous simulations of systems with contact and friction. This problem is indeed at the heart of the simulation of mechanical systems with 3D Coulomb's friction and unilateral constraints in the following cases:
 \begin{itemize}
-\item the approaches that alter the fundamental assumptions of the 3D Coulomb friction model by faceting the cone as in the pioneering work of~\cite{Klarbring1986} and followed by~\cite{AlFahed.Stavroulakis.ea1991,Pang.Trinkle1996,Stewart.Trinkle1996,Anitescu.Potra97,Haslinger.ea_JCAM2004}, or by convexifying the Coulomb law (associated friction law with normal dilatancy)~\cite{Heyn.ea_IJNME2013,Tasora.Anistescu_Meccanica2013,Tasora.Anistescu_CMAME2011,Anistescu.Tasora_COA2010,Tasora.Anistescu_CMAME2009} or finally by regularizing the friction law~\cite{Kikuchi.Oden_SIAM1988}.
-\item Approaches that not give satisfactory results
-\item Approaches that we have not yet implemented. 
-  \begin{enumerate}
-  \item \item Interior point.
-    
-    \cite{Kleinert.ea_CMAME2014} and references therein
-    
-    \cite{Christensen.Pang1998}
-    
-    \cite{Heyn.ea_IJNME2013} + PhD thesis~\cite{Heyn_PhD2013}
-    
-    Frictionless?~\cite{Miyamura.ea_IJNME2010,Temizer.ea_CMAME2014}
- 
-  \item SOCCP Solver ??
-  \end{enumerate}
-\textcolor{pink}{\item Approaches based on domain decomposition and parallel computing. (cite a bit a literature Krause, Koziara, Renouf, Heyn, .... )}
+\item it might be the result of the time--discretization by event--capturing time--stepping methods or event--detecting (event--driven) techniques of dynamical systems with friction; the variables are homogeneous to pairs velocity/impulses or acceleration forces
+\item it might be the result of space--discretization (by FEM for instance) of the elastic quasi-static problems of frictional contact mechanics; in that case, the variables are homogenous to displacements/forces of displacement rate/forces.
+\item if the system is a dynamical mechanical system composed of solids, the problem is again obtained by a space and time discretization
+\item if the material follows a nonlinear mechanical bulk behavior, we can use this model after a standard Newton linearization procedure. 
 \end{itemize}
+}
+For a description of the derivation of such problems in various practical situations we refer to~\cite{Acary.Brogliato2008,Acary.Cadoux2013}.
 
-Other comparisons articles have already been published in the literature. Cite and comment
+
+
+\subsection{Objectives and outline of the article}
+
+\tp{In this article,  after stating the problem with more details in Section~\ref{sec:description}, we recall the existence result of~\cite{Acary.ea_ZAMM2011} for the problem in~\eqref{eq:soccp1-intro} in Section \ref{sec:existence}. In this framework, we briefly present in Section~\ref{sec:formulation} \tg{a few} alternative formulations of the problem that enable the design of numerical solution procedures : a) finite--dimensional Variational Inequalities(VI) and Quasi-Variational Inequalities(QVI)  b) Nonsmooth equations  and c) Optimization based formulations.}
+
+
+\tp{Right after these formulations, we list some of the most standard algorithms dedicated to one of the previous formulation :
+\begin{enumerate}
+\item the fixed point and projection numerical methods for solving VI are reviewed  with a focus on self-adaptive time--step rules (Section~\ref{sec:numericalmethods,vi}),
+\item the nonsmooth (semi-smooth) Newton methods are described based on the various nonsmooth equations formulations (Section~\ref{sec:newtonmethods}),
+\item Section~\ref{Sec:SplittingTechniquesAndProx} is devoted to the presentation of splitting and proximal point techniques,
+\item and finally, in Section~\ref{Sec:OptimisationBasedMethods}, the Panagiotopoulos alternating optimization technique, the successive approximation technique and the SOCLCP approach are outlined.
+ \end{enumerate}}
+
+
+\tp{Since it is difficult to be exhaustive on the approaches developed in the literature to solve frictional contact problems, we decided to leave out the scope of the article the following approaches:
+\begin{itemize}
+\item the approaches that alter the fundamental assumptions of the 3D Coulomb friction model by faceting the cone as in the pioneering work of~\cite{Klarbring1986} and followed by~\cite{AlFahed.Stavroulakis.ea1991,Pang.Trinkle1996,Stewart.Trinkle1996,Anitescu.Potra97,Haslinger.ea_JCAM2004}, or by convexifying the Coulomb law (associated friction law with normal dilatancy)~\cite{Heyn.ea_IJNME2013,Tasora.Anistescu_Meccanica2013,Tasora.Anistescu_CMAME2011,Anistescu.Tasora_COA2010,Tasora.Anistescu_CMAME2009} or finally by regularizing the friction law~\cite{Kikuchi.Oden_SIAM1988}. In the same way, we are discussing recent developments methods for the frictionless case~\cite{Morales.ea_NM2008,Miyamura.ea_IJNME2010,Temizer.ea_CMAME2014}.
+\item the approaches that are based on domain decomposition and parallel computing. We choose in this article to focus on single domain computation and to skip the discussion about distributed computing mainly for a sake of length of the article. (cite a bit a literature Krause, Koziara, Renouf, Heyn, .... )
+\end{itemize}}
+
+\tp{Finally, some possible interesting approaches have not been reported. We are thinking mainly  to the interior point methods approach~\cite{Christensen.Pang1998,Miyamura.ea_IJNME2010,Kleinert.ea_CMAME2014}. some basic implementations of such methods do not give satisfactory results. One of reason is the fact that we were not able to get robustness and efficiency on a large class of problems. As it is reported in \cite{Kleinert.ea_CMAME2014,Krabbenhoft.ea_CMAME2012}, it seems that it is needed to alter the friction Coulomb's law by adding regularization or dilatency in the model. In the same spirit, we skip also the comparison for the possibly very promising methods developed in~\cite{Heyn.ea_IJNME2013,Heyn_PhD2013} that are based on Krylov subspace and spectral methods. It could be very interesting to bench also these methods on the actual Coulomb friction model, that is to say, in the nonmonotone case. Finally, our preliminary results on the use of direct general SOCP or SOCLCP solvers were not convincing. Indeed, the structure of contact problems (product of a large number of small second order cones) has to be taken into account to get efficiency and unfortunately, these solvers are difficult to adapt to this structure.}    
+
+
+
+
+Other comparisons articles have already been published in the literature.  In~\cite{Chabrand.ea_MCM1998}, formulations as LCP
+Cite and comment
 
 \begin{list}{}{}
 \item~\cite{Raous.ea1988,Chabrand.ea_MCM1998}
@@ -341,7 +363,7 @@ The set $K$ is the cartesian product of Coulomb's friction cone at each contact,
   \label{eq:CC_bis}
   K = \prod_{\alpha=1,\ldots,n_c} K^{\alpha}\quad\text{and}\quad K^\star\;\text{is its dual.}
 \end{equation}
-In this paper, we investigate the case where the problem is given in its \emph{reduced} form.
+In this article, we investigate the case where the problem is given in its \emph{reduced} form.
 We consider that the discretized dynamics are of the form
 \begin{equation}
  M v = {H} {r} + {f},
@@ -390,14 +412,14 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
 
 
 %We will see in the next section how these systems can be  obtained and how they may also be an instance of a quasi-static problem
-% Nonlinear versions of this problem can also be stated but they are out pf the scope of the paper. When the dynamics is nonlinear, an outer Newton linearization is performed leading to a linearized problem. 
+% Nonlinear versions of this problem can also be stated but they are out pf the scope of the article. When the dynamics is nonlinear, an outer Newton linearization is performed leading to a linearized problem. 
 
 
 \subsection{Existence of solutions}
 \label{sec:existence}
 
 The question of the existence of solution for the Problem~\ref{prob:II} have been studied in~\cite{Klarbring.Pang1998} and~\cite{Acary.ea_ZAMM2011} with different analysis techniques.
-The key assumption for existence of solutions in both papers is as follows
+The key assumption for existence of solutions in both articles is as follows
 \begin{equation}\label{ass}
    \exists v\in \RR^m \,:\: H^\top v + w \in \mathrm{int}\, K^\star,
 \end{equation}
@@ -706,7 +728,7 @@ Problem~\ref{prob:II} can be also reformulated as in~\eqref{eq:MJ-II} using~\eqr
     \label{eq:qvi-proj}
     r = P_{C(\mu,r_\n)}(r-\rho u)
   \end{equation}
-  which exactly corresponds to~\eqref{eq:Moreau--Jean-1}. \texttt{ A verifier}
+  which  corresponds to~\eqref{eq:Moreau--Jean-1}. 
 \end{remark}
 
 \textcolor{pink}{
@@ -719,8 +741,8 @@ Problem~\ref{prob:II} can be also reformulated as in~\eqref{eq:MJ-II} using~\eqr
 
 \begin{ndrva}
   + understand the continuity comment of Alart ?
-
-
+  + [12, 30 , 31] of \cite{Tzaferopoulos_CS1993}.
+  + check \ref{eq:qvi-proj}
   \tb{  + discussion on $(r_\n)_+$ in \ref{eq:diskR-prod} (cf. Olivier comment)} To be Discussed
 \end{ndrva}
 
@@ -917,7 +939,7 @@ VA: I think we can transfer a part in Appendix but we use this approach for the 
 \begin{ndroh}
  Are we presenting numerical results using this reformulation? If no, we have to think about the usefulness of this paragraph in the article version.
  It would be great to have more references here. Where does eq:MCP come from?
- The assumption that $H = I$ (to get eq:kanno1) are stringent. Do we want to keep it in the paper?
+ The assumption that $H = I$ (to get eq:kanno1) are stringent. Do we want to keep it in the article?
  At the end, we don't say much about the efficiency of the method. Does it work well?
 
 
@@ -1102,7 +1124,7 @@ and
 % \end{equation}
 % and $u_\n$ is obtained by $ u_n = H_\n^\top v + w_\n $ and $r_\n$ is the Lagrange multiplier associated with the constraints.
 
-\textcolor{pink}{This approach has been proposed by \cite{Panagiotopoulos_IA1975} for two--dimensional applications in soil foundation computing. It has also been used  in other finite element applications  in \citep{Tzaferopoulos_CS1993} and studied from the mathematical point of view in \cite{Haslinger.ea1996}. }
+\textcolor{pink}{This approach has been proposed by \cite{Panagiotopoulos_IA1975} for two--dimensional applications in soil foundation computing. It has also been used  in other finite element applications  in \citep{Barbosa.Feijoo_CISM1985,Tzaferopoulos_CS1993} and studied from the mathematical point of view in \cite{Haslinger.Panagiotopoulos_PRSE1984,Haslinger.ea1996}. }
 \begin{ndrva}
   remark Olivier : de memoire
 
@@ -1191,7 +1213,7 @@ This formulation introduced in~\cite{Cadoux2009} and developed in~\cite{Acary.Ca
 \label{sec:numericalmethods,vi}
 
 
-\subsection{Basic fixed point  and projection methods for VI}
+\subsection{Fixed point  and projection methods for VI}
 
 Starting from the VI formulations~\eqref{eq:vi} or more precisely an associated nonsmooth equation through the natural map,
 \begin{equation}
@@ -1561,7 +1583,7 @@ The goal is the find $\rho_k$ that satisfies
     0 < \rho_k \leq \min\left\{\bar\rho,L \Frac{\|z_k-\bar z_k\|}{\|F(z_k)-F(\bar z_k)\|}\right\}\text{ with } L \in (0,1)
   \end{equation}
 where $\bar \rho$ is the maximum value of $\rho_k$ which is chosen in the light of the specific problem.
-The \tg{objective} is to find a coefficient that is bounded by the local Lipschitz constant. The standard way to do that is to use an Armijo--type procedure by successively trying value of $\rho_k = \bar \rho \nu^m$ with $m\in\NN$ and $\nu\in (0,1)$, with a typical value of $2/3$.  In the original paper of~\cite{Khobotov_CMMP1987}, there is no procedure to size $\bar \rho$ or to update it. In~\cite{He.Liao_JOTA2002} and in the context of prediction--correction, the authors propose to use the rule $\rho_k =  \rho_{k-1} \nu^m$ and  if the criteria~\eqref{eq:khobotov1} is largely satisfied for $\rho_{k}$, the value is increased.\marginpar{\tg{this sentence needs to be rewritten. VA: It is better ?}}
+The \tg{objective} is to find a coefficient that is bounded by the local Lipschitz constant. The standard way to do that is to use an Armijo--type procedure by successively trying value of $\rho_k = \bar \rho \nu^m$ with $m\in\NN$ and $\nu\in (0,1)$, with a typical value of $2/3$.  In the original article of~\cite{Khobotov_CMMP1987}, there is no procedure to size $\bar \rho$ or to update it. In~\cite{He.Liao_JOTA2002} and in the context of prediction--correction, the authors propose to use the rule $\rho_k =  \rho_{k-1} \nu^m$ and  if the criteria~\eqref{eq:khobotov1} is largely satisfied for $\rho_{k}$, the value is increased.\marginpar{\tg{this sentence needs to be rewritten. VA: It is better ?}}
 In~\citep{Han.Lo_CMA2002},  a similar procedure is used for the extragradient method by adding an increasing step of $\rho_k$, which is done after the correction as in~\cite{He.Liao_JOTA2002}.
 
 \begin{ndroh}
@@ -1592,7 +1614,7 @@ but in practice this choice appears to be the worth one.
 
 
   The approach is summarized in Algorithm~\ref{Algo:Up1}. The parameter $L$ typically chosen around $0.9$ is a safety coefficient in the evaluation of $\rho_k$. The parameter $\sf L_{min}$ that triggers an increase of $\rho_k$ is chosen around $0.3$.
-In~Algorithm~\ref{Algo:Up1}, a Boolean option is added to the standard Armijo approach. The approximation $\bar z_k$ is updated within the self--adaptive loop. This trick is not justifies by any theoretical argument and is most of the paper this operation is not performed but in practice (see Section ~\ref{Sec:Comparison,VI,step-length}) it appears to improve the convergence speed.
+In~Algorithm~\ref{Algo:Up1}, a Boolean option is added to the standard Armijo approach. The approximation $\bar z_k$ is updated within the self--adaptive loop. This trick is not justifies by any theoretical argument and is most of the articles this operation is not performed but in practice (see Section ~\ref{Sec:Comparison,VI,step-length}) it appears to improve the convergence speed.
  The update of the Armijo rule $\rho_k \leftarrow \nu \,\rho_k$ can also be replaced by  $\rho_k \leftarrow \nu \,\rho_k\, \min\left\{1, 1/r_k\right\}$ but it appears that this trick does improve the self--adaptive procedure. Other more evolved step--lengths strategies can be found in~\citep{Wang_JCAM2010} that have been tried in this study.
 
 \begin{algorithm}
@@ -1939,7 +1961,7 @@ where
 , \text{ for all } \alpha \in 1\ldots n_c.
 \end{equation}
 The problem~\eqref{eq:psor-3} has exactly the same structure as Problem~\ref{prob:II}, but is of lower size since it is only for one contact.
-It is solved by a \emph{local solver}, which can be any of the algorithms presented in this paper or even an analytical method \tg{(enumerating all the possible cases)}.
+It is solved by a \emph{local solver}, which can be any of the algorithms presented in this article or even an analytical method \tg{(enumerating all the possible cases)}.
 The PSOR algorithm is summarized in Algorithm~\ref{Algo:PSOR-II} and the PGS can be recovered by setting $\omega=1$.
 %
 \begin{algorithm}
@@ -2139,6 +2161,8 @@ A nomenclature for the algorithms based on the projection/splitting approach is 
 \end{equation}
  is a convex quadratic program with simple bound constraints that can be solved with any dedicated solver. In this work, we solve it with a) an active set strategy, b) a conjugate gradient approach with projection as it is developed in \citep{More.Toraldo1991} or c) an adaptation of one of the splitting techniques detailed in Section~\ref{Sec:SplittingTechniquesAndProx}. It is clear that we can also use semi-smooth Newton methods but our experience has shown that such methods are not efficient when $\ker (W_{\n\n}) \neq \{0\}$. Note that there exists also a bunch of methods in the literature that improves the method of \cite{More.Toraldo1991} for large--scale systems. Unfortunately,  to keep the article in a reasonable size, we leave these improvements for further studies.}
 
+
+
 \textcolor{pink}{ The tangential problem,
 \begin{equation}
   \label{eq:AO-4-bis}
@@ -2151,7 +2175,7 @@ A nomenclature for the algorithms based on the projection/splitting approach is 
 \end{equation}
 is also a convex program but with a more complex structure since the constraints are quadratic one. Although it exists also some dedicated methods to solve this specific problem, we will use an adaptation of one of the splitting techniques detailed in Section~\ref{Sec:SplittingTechniquesAndProx}. The method in~\cite{Dostal.Kozubek_MP2012} (an extension of~\citep{More.Toraldo1991}) which is  an algorithm  for solving QP over convex constraints (disk constraint for instance) could be used.}
 
-\textcolor{pink}{In  Table~\ref{tab:OPTI-algos}, we detailed the algorithms we use in the present study.}
+\textcolor{pink}{In Table~\ref{tab:OPTI-algos}, we detailed the algorithms we use in the present study. The algorithm in Algorithm~\ref{Algo:Panagiotopoulos} shows that this method may be viewed as a two-block Gauss-Seidel method as it has been pointed out by \cite{Tzaferopoulos_CS1993}.}
 
 \begin{algorithm}
   \begin{algorithmic}
@@ -2175,6 +2199,10 @@ is also a convex program but with a more complex structure since the constraints
   \end{algorithmic}
   \caption{Panagiotopoulos decomposition algorithm for Problem~\ref{prob:II}}  \label{Algo:Panagiotopoulos}
 \end{algorithm}
+
+\begin{ndrva}
+  cite [11, 13, 14] and [25-29]  of \cite{Tzaferopoulos_CS1993}.
+\end{ndrva}
 
 \subsection{Successive approximation  method}
 \label{Sec:Tresca-solver}
