@@ -124,9 +124,7 @@ When the non-associated character of the friction is taken into account through 
 \item if the material follows a nonlinear mechanical bulk behavior, we can use this model after a standard Newton linearization procedure. 
 \end{itemize}
 }
-For a description of the derivation of such problems in various practical situations we refer to~\cite{Acary.Brogliato2008,Acary.Cadoux2013}.
-
-
+For a description of the derivation of such problems in various practical situations we refer to~\cite{Laursen2003,Wriggers2006,Acary.Brogliato2008,Acary.Cadoux2013}.
 
 \subsection{Objectives and outline of the article}
 
@@ -150,18 +148,27 @@ For a description of the derivation of such problems in various practical situat
 
 \tp{Finally, some possible interesting approaches have not been reported. We are thinking mainly  to the interior point methods approach~\cite{Christensen.Pang1998,Miyamura.ea_IJNME2010,Kleinert.ea_CMAME2014}. some basic implementations of such methods do not give satisfactory results. One of reason is the fact that we were not able to get robustness and efficiency on a large class of problems. As it is reported in \cite{Kleinert.ea_CMAME2014,Krabbenhoft.ea_CMAME2012}, it seems that it is needed to alter the friction Coulomb's law by adding regularization or dilatency in the model. In the same spirit, we skip also the comparison for the possibly very promising methods developed in~\cite{Heyn.ea_IJNME2013,Heyn_PhD2013} that are based on Krylov subspace and spectral methods. It could be very interesting to bench also these methods on the actual Coulomb friction model, that is to say, in the nonmonotone case. Finally, our preliminary results on the use of direct general SOCP or SOCLCP solvers were not convincing. Indeed, the structure of contact problems (product of a large number of small second order cones) has to be taken into account to get efficiency and unfortunately, these solvers are difficult to adapt to this structure.}    
 
+\tp{Other comparisons articles have already been published in the literature.  One of the first comparison study has been done in~\cite{Raous.ea_JMTA1988} and in~\cite{Chabrand.ea_MCM1998}. In this work, several formulations are detailed in the bidimensional case (variational inequality, linear complementarity problem (LCP) and augmented Lagrangian formulation) and comparisons of fixed point methods with projection, splitting methods and Lemke's method for solving LCP. In~\cite{Christensen.Klarbring.ea1998}, a very interesting comparison in the three-dimensional case has been carried out. }
 
 
 
-Other comparisons articles have already been published in the literature.  In~\cite{Chabrand.ea_MCM1998}, formulations as LCP
 Cite and comment
-
 \begin{list}{}{}
-\item~\cite{Raous.ea1988,Chabrand.ea_MCM1998}
 \item~\cite{Christensen.Klarbring.ea1998}
 \item~\cite{Mijar.Arora_SMO2000,Mijar.Arora_ACME2000,Mirar.Arora_SMO2004-I,Mirar.Arora_SMO2004-II}
+\item Mylapilli.Jain_JCND2016.pdf 
+\item HeynAnitescuTasoraNegrut_IJNME_2012_P2099.pdf
+\item Krabbenhoft.ea_CG2012.pdf
+
 \end{list}
 
+
+\begin{ndrva}
+  \begin{itemize}
+  \item low number of benchmarks
+  \item 2D
+  \end{itemize}
+\end{ndrva}
 
 The comparison are performed on a large set of examples using performance profiles.
 \tg{Let us summarize the main conclusion from Section~\ref{sec:numericalcomparisons}:
