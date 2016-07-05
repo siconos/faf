@@ -896,11 +896,11 @@ class Caller():
                 # several call to solver if the precision is not reached
                 while again:
 
-                    t0 = time.clock()
+                    t0 = time.time()
                     #t0 = time.process_time()
                     result = solver(problem, reactions, velocities)
 
-                    time_s = time.clock() - t0 # on unix, t is CPU seconds elapsed (floating point)
+                    time_s = time.time() - t0 # on unix, t is CPU seconds elapsed (floating point)
                     #time_s  = time.process_time() -t0
                     fclib_sol = FCL.fclib_solution()
 
@@ -1400,9 +1400,6 @@ hnsn_ac = SiconosHybridSolver(name = "HLocalAlartCurnier",
                                maxiter=maxiter, precision=precision)
 hnsn_ac.SolverOptions().iparam[3] = 10000000
 
-
-
-
 nsgs = SiconosSolver(name="NSGS-AC",
                      API=N.fc3d_nsgs,
                      TAG=N.SICONOS_FRICTION_3D_NSGS,
@@ -1512,6 +1509,45 @@ nsgs_pr = SiconosSolver(name="NSGS-PR",
                         maxiter=maxiter, precision=precision)
 nsgs_pr.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithRegularization
 
+has_openmp_solvers=False
+nsgs_openmp_solvers=[]
+try:
+    dir(N).index('fc3d_nsgs_openmp')
+    has_openmp_solvers=True
+except ValueError:
+    print("fc3d_nsgs_openmp is not the siconos numerics")
+    
+if (has_openmp_solvers):
+    n_threads_list=[1,2,3,4,5]
+    for n in n_threads_list:
+        nsgs_openmp = SiconosSolver(name="NSGS-OPENMP-AC-FOR-"+str(n),
+                                    API=N.fc3d_nsgs_openmp,
+                                    TAG=N.SICONOS_FRICTION_3D_NSGS_OPENMP,
+                                    iparam_iter=7,
+                                    dparam_err=1,
+                                    maxiter=maxiter, precision=precision)
+        nsgs_openmp.SolverOptions().iparam[10]=n
+        nsgs_openmp.SolverOptions().iparam[11]=0
+        nsgs_openmp.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_AC
+        nsgs_openmp.SolverOptions().internalSolvers.iparam[10]=0
+
+        nsgs_openmp_solvers.append(nsgs_openmp)
+    for n in n_threads_list:
+        nsgs_openmp = SiconosSolver(name="NSGS-OPENMP-AC-REDBLACK-"+str(n),
+                                    API=N.fc3d_nsgs_openmp,
+                                    TAG=N.SICONOS_FRICTION_3D_NSGS_OPENMP,
+                                    iparam_iter=7,
+                                    dparam_err=1,
+                                    maxiter=maxiter, precision=precision)
+        nsgs_openmp.SolverOptions().iparam[10]=n
+        nsgs_openmp.SolverOptions().iparam[11]=1
+        nsgs_openmp.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_AC
+        nsgs_openmp.SolverOptions().internalSolvers.iparam[10]=0
+
+        nsgs_openmp_solvers.append(nsgs_openmp)
+    
+
+print(nsgs_openmp_solvers)
 
 
 
@@ -1994,6 +2030,8 @@ all_solvers.extend(psor_series)
 all_solvers.extend(prox_series)
 all_solvers.extend(regul_series)
 all_solvers.extend(nsgs_series)
+
+all_solvers.extend(nsgs_openmp_solvers)
 
 
 if (os.path.isfile(os.path.join( os.path.dirname(__file__),'adhoc_solverlist.py'))):
