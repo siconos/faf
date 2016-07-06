@@ -878,8 +878,9 @@ class Caller():
             # get first guess or set guess to zero
             reactions, velocities = solver.guess(filename)
 
+            normq = np.linalg.norm(problem.q)
             _, guess_err = N.fc3d_compute_error(read_fclib_format(filename)[1],
-                                                             reactions, velocities, precision, solver.SolverOptions())
+                                                             reactions, velocities, precision, solver.SolverOptions(), normq)
 
 #            print "guess error:", guess_err
 
@@ -1520,7 +1521,8 @@ except ValueError:
 if (has_openmp_solvers):
     n_threads_list=[1,2,3,4,5]
     for n in n_threads_list:
-        nsgs_openmp = SiconosSolver(name="NSGS-OPENMP-AC-FOR-"+str(n),
+        error_evaluation_frequency=500
+        nsgs_openmp = SiconosSolver(name="NSGS-OPENMP-AC-FOR-"+str(error_evaluation_frequency)+"-"+str(n),
                                     API=N.fc3d_nsgs_openmp,
                                     TAG=N.SICONOS_FRICTION_3D_NSGS_OPENMP,
                                     iparam_iter=7,
@@ -1528,6 +1530,7 @@ if (has_openmp_solvers):
                                     maxiter=maxiter, precision=precision)
         nsgs_openmp.SolverOptions().iparam[10]=n
         nsgs_openmp.SolverOptions().iparam[11]=0
+        nsgs_openmp.SolverOptions().iparam[14]=error_evaluation_frequency
         nsgs_openmp.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_AC
         nsgs_openmp.SolverOptions().internalSolvers.iparam[10]=0
 
@@ -1547,7 +1550,7 @@ if (has_openmp_solvers):
         nsgs_openmp_solvers.append(nsgs_openmp)
     
 
-print(nsgs_openmp_solvers)
+#print(nsgs_openmp_solvers)
 
 
 
