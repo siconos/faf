@@ -1521,7 +1521,7 @@ except ValueError:
 if (has_openmp_solvers):
     n_threads_list=[1,2,3,4,5]
     error_evaluation_frequency=1
-    nsgs_openmp = SiconosSolver(name="NSGS-OPENMP-AC-FOR-"+str(error_evaluation_frequency)+"-"+str(0),
+    nsgs_openmp = SiconosSolver(name="NSGS-AC-OPENMP-FOR-"+str(error_evaluation_frequency)+"-"+str(0),
                                 API=N.fc3d_nsgs,
                                 TAG=N.SICONOS_FRICTION_3D_NSGS,
                                 iparam_iter=7,
@@ -1534,7 +1534,7 @@ if (has_openmp_solvers):
 
     
     for n in n_threads_list:
-        nsgs_openmp = SiconosSolver(name="NSGS-OPENMP-AC-FOR-"+str(error_evaluation_frequency)+"-"+str(n),
+        nsgs_openmp = SiconosSolver(name="NSGS-AC-OPENMP-FOR-"+str(error_evaluation_frequency)+"-"+str(n),
                                     API=N.fc3d_nsgs_openmp,
                                     TAG=N.SICONOS_FRICTION_3D_NSGS_OPENMP,
                                     iparam_iter=7,
@@ -1548,7 +1548,7 @@ if (has_openmp_solvers):
 
         nsgs_openmp_solvers.append(nsgs_openmp)
     for n in n_threads_list:
-        nsgs_openmp = SiconosSolver(name="NSGS-OPENMP-AC-REDBLACK-"+str(n),
+        nsgs_openmp = SiconosSolver(name="NSGS-AC-OPENMP-REDBLACK-"+str(n),
                                     API=N.fc3d_nsgs_openmp,
                                     TAG=N.SICONOS_FRICTION_3D_NSGS_OPENMP,
                                     iparam_iter=7,
