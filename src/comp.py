@@ -244,8 +244,8 @@ def usage():
   print "   compute the rank (vairous numerical methods) and condition number of W and store it in the problem file"
   print " --compute-hardness"
   print "   compute the average performance of the best solver on a set of problem divided by the average number of contact"
-  
-  
+  print " --compute-cond-rank"
+  print "   compute the conditioning number and the rank of the matrix in the problems"
 
   print " Other options have to be documented" 
   print " "
@@ -261,7 +261,7 @@ def usage():
 
 try:
     opts, args = getopt.gnu_getopt(sys.argv[1:], '',
-                                   ['help', 'flop', 'iter', 'time', 'verbose=','no-guess',
+                                   ['help', 'verbose=','no-guess',
                                     'clean', 'display', 'display-convergence','no-matplot',
                                     'files=', 'solvers-exact=', 'solvers=',
                                     'random-sample=', 'max-problems=',
@@ -1520,8 +1520,20 @@ except ValueError:
     
 if (has_openmp_solvers):
     n_threads_list=[1,2,3,4,5]
+    error_evaluation_frequency=1
+    nsgs_openmp = SiconosSolver(name="NSGS-OPENMP-AC-FOR-"+str(error_evaluation_frequency)+"-"+str(0),
+                                API=N.fc3d_nsgs,
+                                TAG=N.SICONOS_FRICTION_3D_NSGS,
+                                iparam_iter=7,
+                                dparam_err=1,
+                                maxiter=maxiter, precision=precision)
+    nsgs_openmp.SolverOptions().iparam[14]=error_evaluation_frequency
+    nsgs_openmp.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_AC
+    nsgs_openmp.SolverOptions().internalSolvers.iparam[10]=0
+    nsgs_openmp_solvers.append(nsgs_openmp)
+
+    
     for n in n_threads_list:
-        error_evaluation_frequency=500
         nsgs_openmp = SiconosSolver(name="NSGS-OPENMP-AC-FOR-"+str(error_evaluation_frequency)+"-"+str(n),
                                     API=N.fc3d_nsgs_openmp,
                                     TAG=N.SICONOS_FRICTION_3D_NSGS_OPENMP,
@@ -1548,10 +1560,20 @@ if (has_openmp_solvers):
         nsgs_openmp.SolverOptions().internalSolvers.iparam[10]=0
 
         nsgs_openmp_solvers.append(nsgs_openmp)
-    
 
-#print(nsgs_openmp_solvers)
 
+    nsgs_openmp = SiconosSolver(name="NSGS-ERROR-COMPARISON",
+                                API=N.fc3d_nsgs_openmp,
+                                TAG=N.SICONOS_FRICTION_3D_NSGS_OPENMP,
+                                iparam_iter=7,
+                                dparam_err=1,
+                                maxiter=maxiter, precision=precision)
+    nsgs_openmp.SolverOptions().iparam[10]=n
+    nsgs_openmp.SolverOptions().iparam[11]=10
+    nsgs_openmp.SolverOptions().iparam[14]=error_evaluation_frequency
+    nsgs_openmp.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_AC
+    nsgs_openmp.SolverOptions().internalSolvers.iparam[10]=0
+    nsgs_openmp_solvers.append(nsgs_openmp)
 
 
 local_tol_values = [1e-2,1e-4,1e-6,1e-8,1e-10,1e-12,1e-14,1e-16]
