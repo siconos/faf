@@ -2956,7 +2956,7 @@ if __name__ == '__main__':
 
                 
     if display_speedup:
-        from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure, hist, bar, xlabel, ylabel
+        from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure, hist, bar, xlabel, ylabel, boxplot
         
         with h5py.File('comp.hdf5', 'r') as comp_file:
 
@@ -2970,6 +2970,7 @@ if __name__ == '__main__':
             #print('########## solver=',solvers)
             
             speedup_dict={}
+            nthread_set= set()
             for solver_name in solvers:
 
                 
@@ -2984,6 +2985,7 @@ if __name__ == '__main__':
                 
                 for filename in filenames:
                     nthread=int(solver_name.split('-')[-1])
+                    nthread_set.add(nthread)
                     pfilename = os.path.splitext(filename)[0]
                     measure_data =comp_data[solver_name][pfilename].attrs[measure_name]
                     if filename in speedup_dict.keys():
@@ -3001,7 +3003,31 @@ if __name__ == '__main__':
             count_dict={}
             count_dict_penalized={}
             fails_dict={}
+            print nthread_set
+            nthread_list=list(nthread_set)
+            nthread_list.sort()
+            print nthread_list
+            speedup_list =[]
+            for n in nthread_list:
+                speedup_list.append([])
+
+            filename_fails = []
+                
             for filename,solver in speedup_dict.items():
+                for s in solver:
+                    if np.isnan(s[2]):
+                        filename_fails.append(filename)
+            print 'filename_fails',filename_fails
+            for filename,solver in speedup_dict.items():
+
+                if filename not in filename_fails:
+                    for s in solver:
+                        # if s[1] == 0:
+                        #     print ("nthread, measure", s[1], s[2] )
+                        nthread= s[1]
+                        speedup_list_index=nthread_list.index(nthread)
+                        speedup_list[speedup_list_index].append(s[2])
+                
                 for s in solver:
                     # if s[1] == 0:
                     #     print ("nthread, measure", s[1], s[2] )
@@ -3033,6 +3059,31 @@ if __name__ == '__main__':
                         else:
                             speedup_dict_mean_penalized[nthread] = result_utimeout
 
+            
+                            
+            print('speedup_list', speedup_list)
+            for n in nthread_list:
+                speedup_list_index_ref=nthread_list.index(1)
+                speedup_list_index=nthread_list.index(n)
+                if n !=1 :
+
+                    for i  in range(len(speedup_list[speedup_list_index])):
+                        #print 'ref',  speedup_list[speedup_list_index_ref][i]
+                        
+                        speedup_list[speedup_list_index][i] =  speedup_list[speedup_list_index_ref][i]/speedup_list[speedup_list_index][i]
+                    
+            for n in nthread_list:
+                speedup_list_index_ref=nthread_list.index(1)
+                for i  in range(len(speedup_list[speedup_list_index_ref])):
+                    speedup_list[speedup_list_index_ref][i]=1.0
+                
+            
+            print('speedup_list[12]', speedup_list[nthread_list.index(12)])
+
+
+
+
+            
             for n in speedup_dict_mean.keys():
                 speedup_dict_mean[n] =  speedup_dict_mean[n]/count_dict[n]
             speedup_mean_ref= speedup_dict_mean[1]
@@ -3050,12 +3101,17 @@ if __name__ == '__main__':
             
                 
             figure()
+
+                
+
+                
+            
             for filename,solver in speedup_dict.items():
                 data_tuples = []
                 for s in solver:
                     data_tuples.append((s[1],s[2]))
                 data_tuples=sorted(data_tuples, key=lambda data: data[0])
-                
+                          
                 try:
                     xlabel('number of threads')
                     subplot('211')
@@ -3072,9 +3128,12 @@ if __name__ == '__main__':
                     pass
 
             data_tuples = []
+            data_list =[]
             for nthread,time in speedup_dict_mean.items():
                 data_tuples.append((nthread,time))
             data_tuples=sorted(data_tuples, key=lambda data: data[0])
+            
+            
             
             data_penalized_tuples = []
             for nthread,time in speedup_dict_mean_penalized.items():
@@ -3086,17 +3145,21 @@ if __name__ == '__main__':
                 data_fails_tuples.append((n,fails))
             data_fails_tuples=sorted(data_fails_tuples, key=lambda data: data[0])
             
-            figure()
+            figure(figsize=(8,14))
             xlabel('number of threads')
-            subplot('311')
+            subplot('411')
             plot(np.array([data[0] for data in data_tuples])[:],np.array([data[1] for data in data_tuples])[:])
-            ylabel('avg. cpu time')
+            ylabel('avg. speed up')
             legend()
-            subplot('312')
+            subplot('412')
+            boxplot(speedup_list,positions=nthread_list)
+            ylabel('speedup distribution')
+            legend()
+            subplot('413')
             plot(np.array([data[0] for data in data_penalized_tuples])[:],np.array([data[1] for data in data_penalized_tuples]   )[:])
-            ylabel('avg. cpu time \n w. penalization')
+            ylabel('avg. speedup \n w. penalization')
             legend()
-            subplot('313')
+            subplot('414')
             bar(np.array([data[0] for data in data_fails_tuples])[:],np.array([data[1] for data in data_fails_tuples]   )[:])
             ylabel('# fails')
             legend()
