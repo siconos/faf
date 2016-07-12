@@ -522,6 +522,14 @@ def timeout(seconds, force_kill=True):
 def dense_matrix_rank(M):
     return matrix_rank(M)
 
+@timeout(900)
+def sparse_matrix_svd(A,k):
+    return svds(A,k)
+
+@timeout(900)
+def dense_matrix_rank_estimate(A,tol):
+    return (A,tol)
+
 
 
 # estimate of condition number and norm from lsmr
@@ -532,7 +540,7 @@ def _norm_cond(problem_filename):
     A = csr_matrix(N.SBMtoSparse(problem.M)[1])
     #print "A=", A
     print "A.shape", A.shape
-    print "computev lsmr ..."
+    print "Computev lsmr ..."
     r = lsmr(A, np.ones([A.shape[0], 1]))  # solve Ax = 1
     norm_lsmr=r[5]
     cond_lsmr=r[6]
@@ -540,7 +548,7 @@ def _norm_cond(problem_filename):
     print "cond_lsr=", cond_lsmr
     #print "r=", r
     try:
-        print "computev svds(A,1) ..."
+        print "Computev svds(A,1) ..."
         _svd = svds(A,1)[1]
         eps = sys.float_info.epsilon
         tol = _svd.max() * max(A.shape) * eps
@@ -560,11 +568,12 @@ def _norm_cond(problem_filename):
     rank_estimate = np.nan
     try:
         print "Compute rank estimate ..."
-        rank_estimate=estimate_rank(A.todense(), tol)
-        print "rank_estimate", rank_estimate
+        rank_estimate=dense_matrix_rank_estimate(A.todense(),tol)
+        #rank_estimate=estimate_rank(A.todense(), tol)
     except Exception as e :
-        print e
-    
+        print "--> rank_estimate", e
+    print "rank_estimate", rank_estimate
+        
     #print "svd dense method", svd(A.todense())[1]
 
     rank_dense = np.nan
@@ -574,18 +583,18 @@ def _norm_cond(problem_filename):
     except Exception as e :
         print "--> dense_matrix_rank", e
     print "rank_dense", rank_dense
-    
-    k=min(rank_estimate,A.shape[0]-1)
+
+    if not np.isnan(rank_estimate):
+        k=min(rank_estimate,A.shape[0]-1)
+    else:
+        k = A.shape[0]-1
     try:
-        print "Compute svds(A,k)  ..."
-        _svd = svds(A,k)[1]
+        print "Compute svds(A,k) for  ",k," singular values  ..."
+        _svd = sparse_matrix_svd(A,k)[1]
         #print "_svd",_svd
-    # except Warning as w:
-    #     print "-->   svds warnig in computing ",k," singular values"
-    #     print "-->" ,  w
     except Exception as e :
-        print "-->   svds failed to compute ",k," singular values"
-        print "-->" ,  e
+        print "--> sparse_matrix_svd  failed to compute ",k," singular values"
+        print "--> sparse_matrix_svd " ,  e
 
         _svd =[]
     # compute rank with http://docs.scipy.org/doc/numpy-dev/reference/generated/numpy.linalg.matrix_rank.html
@@ -598,8 +607,11 @@ def _norm_cond(problem_filename):
             nonzero_sv.append(sv)
     nonzero_sv.sort(reverse=True)
     #print(nonzero_sv)
-    rank_svd = len(nonzero_sv)
-    print "rank_svd", len(nonzero_sv)
+    if (len(nonzero_sv) >0):
+        rank_svd = len(nonzero_sv)
+    else:
+        rank_svd = np.nan
+    #print "rank_svd", rank_svd
 
     if not math.isnan(rank_dense):
         rank=rank_dense
@@ -609,9 +621,19 @@ def _norm_cond(problem_filename):
         else :
             rank=rank_estimate
             
-    nonzero_sv = nonzero_sv[0:rank]
+    if not math.isnan(rank):   
+        nonzero_sv = nonzero_sv[0:rank]
+
+    if (len(nonzero_sv) >0):
+        max_nonzero_sv= max(nonzero_sv)
+        min_nonzero_sv= min(nonzero_sv)
+        ratio_max_min_nonzero_sv =  max(nonzero_sv)/min(nonzero_sv)
+    else:
+        max_nonzero_sv= np.nan
+        min_nonzero_sv= np.nan
+        ratio_max_min_nonzero_sv =  np.nan
     # http://personales.unican.es/beltranc/archivos/CNmatricesF.pdf
-    return norm_lsmr, cond_lsmr, max(nonzero_sv), min(nonzero_sv), max(nonzero_sv)/min(nonzero_sv), rank, rank_dense, rank_svd, rank_estimate
+    return norm_lsmr, cond_lsmr, max_nonzero_sv, min_nonzero_sv,  ratio_max_min_nonzero_sv, rank, rank_dense, rank_svd, rank_estimate
 
 norm_cond = Memoize(_norm_cond)
 
