@@ -106,7 +106,7 @@ def subsample_problems(filenames, proba, maxp, cond, overwrite=False):
             return f
         else:
             return '{0}.hdf5'.format(f)
-        
+
     _filenames = [addext(f) for f in filenames]
 
     if proba is not None:
@@ -198,19 +198,19 @@ def usage():
   print "\n \n"
   print 'Usage: '+sys.argv[0]+'[option]'
   print "Options : "
-  print " --help "   
+  print " --help "
   print "   display this message"
-  print " --verbose "   
+  print " --verbose "
   print "   enable verbose mode equal to 1 for Siconos Numerics"
-  print " --no-collect "   
+  print " --no-collect "
   print "   leave the result into separate file that are named according the solver and the name of the problem"
   print " --just-collect"
   print "   collect all the result into comp.hdf5"
-  print " --timeout=n"  
+  print " --timeout=n"
   print "   set the maximum time of computation for each problem to n seconds (default",utimeout,"s)"
-  print " --maxiter=n"  
+  print " --maxiter=n"
   print "   set the maximum number of iterations for each problem to n (default",maxiter,")"
-  print " --maxiterls=n"  
+  print " --maxiterls=n"
   print "   set the maximum number of iterations for each problem to n (default",maxiterls,")"
   print " --domain='a:d:b'"
   print "   restrict the domain of the performance profile to the interval [a,b] with a step of d (default",domain[0],":",domain[1]-domain[0],":",domain[-1]+domain[1]-domain[0],")"
@@ -230,12 +230,12 @@ def usage():
   print " --with-mumps"
   print "   use mumps as linear system solver"
   print " --max-problems=<max>"
-  print "   Randomly select <max> problems in current directory." 
+  print "   Randomly select <max> problems in current directory."
   print "   The problems list is written in problems.txt file"
   print " --gnuplot-profile"
-  print "   output gnuplot command file profile.gp for plotting profiles woth gnuplot" 
+  print "   output gnuplot command file profile.gp for plotting profiles woth gnuplot"
   print " --gnuplot-distrib"
-  print "   output gnuplot command file distrib.gp for plotting distribution woth gnuplot" 
+  print "   output gnuplot command file distrib.gp for plotting distribution woth gnuplot"
   print " --gnuplot-separate-keys"
   print "   output keys anf legend for gnuplot in a separate file."
   print " --display-distrib='from-files' "
@@ -248,17 +248,17 @@ def usage():
   print " --compute-cond-rank"
   print "   compute the conditioning number and the rank of the matrix in the problems"
 
-  print " Other options have to be documented" 
+  print " Other options have to be documented"
   print " "
   print " Usage examples:"
 
   toto = """
   comp.py   --display --time --domain='1:0.1:10'  comp.hdf5
-  
+
   comp.py --display --measure=time --solvers=Gauss,Tresca,SOCLCP,ACLM --domain=1:0.1:100
   """
   print toto
-  
+
 
 try:
     opts, args = getopt.gnu_getopt(sys.argv[1:], '',
@@ -407,7 +407,7 @@ for o, a in opts:
                     user_filenames += ['{0}.hdf5'.format(f)]
     elif o == '--file-filter':
         file_filter=split(a, ',')
-        
+
     elif o == '--no-guess':
         with_guess = False
     elif o == '--add-precision-in-comp-file':
@@ -425,7 +425,7 @@ for o, a in opts:
     elif o == '--adhoc':
         adhoc = True
         compute = False
-    
+
 
 from ctypes import cdll, c_float, c_longlong, byref
 try:
@@ -573,7 +573,7 @@ def _norm_cond(problem_filename):
     except Exception as e :
         print "--> rank_estimate", e
     print "rank_estimate", rank_estimate
-        
+
     #print "svd dense method", svd(A.todense())[1]
 
     rank_dense = np.nan
@@ -620,8 +620,8 @@ def _norm_cond(problem_filename):
             rank=rank_svd
         else :
             rank=rank_estimate
-            
-    if not math.isnan(rank):   
+
+    if not math.isnan(rank):
         nonzero_sv = nonzero_sv[0:rank]
 
     if (len(nonzero_sv) >0):
@@ -654,7 +654,7 @@ def _read_fclib_format(filename):
 
 def _numberOfDegreeofFreedom(f):
     with h5py.File(f, 'r') as fclib_file:
-        
+
         try:
             r = 6*fclib_file['fclib_local']['info'].attrs['numberOfInvolvedDS']
         except:
@@ -808,7 +808,7 @@ class Caller():
                 digest = hashlib.sha256(open(filename, 'rb').read()).digest()
 
                 create_attrs_in_comp_file(output,precision,utimeout,measure_name)
-                
+
                 comp_data=output['data']['comp']
                 solver_data = comp_data.create_group(solver.name())
                 solver_problem_data = solver_data.create_group(pfilename)
@@ -842,7 +842,7 @@ class Caller():
                               time_s, real_time, proc_time,
                               flpops, mflops,
                               precision, utimeout]
-                
+
                 if numerics_has_openmp_solvers :
                     attrs.create('n_threads', solver.SolverOptions().iparam[10] )
                     list_print.append(solver.SolverOptions().iparam[10])
@@ -863,9 +863,9 @@ class Caller():
         with h5py.File(output_filename, 'w') as output:
 
             create_attrs_in_comp_file(output,precision,utimeout,measure_name)
-                
+
             comp_data=output['data']['comp']
-            
+
             solver_data = comp_data.create_group(solver.name())
 
             solver_problem_data = solver_data.create_group(pfilename)
@@ -1010,7 +1010,7 @@ class Caller():
                           time_s, real_time, proc_time,
                           flpops, mflops,
                           precision, utimeout]
-                
+
             if numerics_has_openmp_solvers :
                 attrs.create('n_threads', solver.SolverOptions().iparam[10] )
                 list_print.append(solver.SolverOptions().iparam[10])
@@ -1557,11 +1557,11 @@ try:
     numerics_has_openmp_solvers=True
 except ValueError:
     print("fc3d_nsgs_openmp is not the siconos numerics")
-    
+
 if (numerics_has_openmp_solvers):
     n_threads_list=[1,2,3,4,5]
     error_evaluation_frequency=1
-    
+
     nsgs_openmp = SiconosSolver(name="NSGS-AC-OPENMP-FOR-"+str(error_evaluation_frequency)+"-"+str(0),
                                 API=N.fc3d_nsgs,
                                 TAG=N.SICONOS_FRICTION_3D_NSGS,
@@ -1574,7 +1574,7 @@ if (numerics_has_openmp_solvers):
     nsgs_openmp.SolverOptions().internalSolvers.iparam[10]=0
     nsgs_openmp_solvers.append(nsgs_openmp)
 
-    
+
     for n in n_threads_list:
         nsgs_openmp = SiconosSolver(name="NSGS-AC-OPENMP-FOR-"+str(error_evaluation_frequency)+"-"+str(n),
                                     API=N.fc3d_nsgs_openmp,
@@ -1664,7 +1664,7 @@ for i in range(10):
 
 
 
- 
+
 # only dense
 nsgsv = SiconosSolver(name="NSGS-Velocity",
                       API=N.fc3d_nsgs_velocity,
@@ -1773,11 +1773,11 @@ for i1 in iparam1_values:
                 g_name = g_name + " False"
             elif i2 == 1:
                 g_name = g_name + " True"
-                
+
             if i3 == 0:
-                g_name = g_name 
+                g_name = g_name
             elif i3 == 1:
-                g_name = g_name + " min" 
+                g_name = g_name + " min"
 
             VIExtraGrad_solver= SiconosSolver(name="ExtraGrad-VI-"+str(i1)+str(i2)+str(i3),
                                                          gnuplot_name=g_name,
@@ -1791,7 +1791,7 @@ for i1 in iparam1_values:
             VIExtraGrad_solver.SolverOptions().iparam[3] = i3
             VIExtraGrad_series.append(VIExtraGrad_solver)
 
-            
+
 VIFixedPointProjection = SiconosSolver(name="FixedPoint-VI",
                                        API=N.fc3d_VI_FixedPointProjection,
                                        TAG=N.SICONOS_FRICTION_3D_VI_FPP,
@@ -1825,11 +1825,11 @@ for i1 in iparam1_values:
                 g_name = g_name + " True"
             elif i2 == 2:
                 g_name = g_name + " semi False"
-                
+
             if i3 == 0:
-                g_name = g_name 
+                g_name = g_name
             elif i3 == 1:
-                g_name = g_name + " min" 
+                g_name = g_name + " min"
 
             VIFixedPointProjection_solver= SiconosSolver(name="FixedPoint-VI-"+str(i1)+str(i2)+str(i3),
                                                          gnuplot_name=g_name,
@@ -2108,7 +2108,7 @@ if (os.path.isfile('adhoc_solverlist.py')):
     execfile('adhoc_solverlist.py')
     #print "execfile(adhoc_solverlist.py)"
 
-    
+
 
 solvers=[]
 if user_solvers != []:
@@ -2124,13 +2124,13 @@ elif user_solvers_exact != []:
 
     if solvers == []:
         raise RuntimeError("Cannot find any solvers in specified list")
-    
+
 else:
     solvers= all_solvers
 
 
 #solvers = [ProxFB]
-    
+
 def is_fclib_file(filename):
     r = False
     try:
@@ -2178,17 +2178,17 @@ if user_filenames == []:
         all_filenames = list_from_file('problems.txt')
     else:
         all_filenames = filter(lambda f: any(uf in f for uf in file_filter), list_from_file('problems.txt'))
-   
+
 else:
-    
+
         all_filenames = user_filenames
-   
+
 #all_filenames=['BoxesStack1-i9841-33.hdf5']
 #ask_collect = False
 
 _problem_filenames = filter(is_fclib_file,
                             all_filenames)
-    
+
 __problem_filenames = subsample_problems(_problem_filenames,
                                          random_sample_proba,
                                          max_problems, None, overwrite = (not display and not ask_compute and not ask_collect))
@@ -2225,7 +2225,7 @@ def create_attrs_precision_in_comp_file(comp_file,precision_val):
     if data == None :
         data = comp_file.create_group('data')
     comp_data = data.get('comp')
-    if comp_data == None: 
+    if comp_data == None:
         comp_data = data.create_group('comp')
     comp_data.attrs.create('precision',precision_val)
 
@@ -2234,7 +2234,7 @@ def create_attrs_timeout_in_comp_file(comp_file,utimeout_val):
     if data == None :
         data = comp_file.create_group('data')
     comp_data = data.get('comp')
-    if comp_data == None: 
+    if comp_data == None:
         comp_data = data.create_group('comp')
     comp_data.attrs.create('timeout',utimeout_val)
 
@@ -2267,19 +2267,19 @@ def collect(tpl):
             comp_precision=comp_file['data']['comp'].attrs.get('precision')
             comp_utimeout=comp_file['data']['comp'].attrs.get('timeout')
             comp_measure_name=comp_file['data']['comp'].attrs.get('mesaure_name')
-            
+
     if os.path.exists(results_filename) and not os.stat(results_filename).st_size == 0:
         try:
-            if os.path.exists('comp.hdf5'):                
+            if os.path.exists('comp.hdf5'):
                 with h5py.File( results_filename, 'r+') as result_file:
                     result_precision=result_file['data']['comp'].attrs.get('precision')
                     result_utimeout=result_file['data']['comp'].attrs.get('timeout')
-                    result_measure_name=result_file['data']['comp'].attrs.get('measure_name')                                    
+                    result_measure_name=result_file['data']['comp'].attrs.get('measure_name')
                     if comp_precision != result_precision:
                         raise RuntimeError ("Precision of the result in comp.hdf5 ({0}) are not consistent result with the new computed result ({1}) \nWe dot not collect it\nCreate a new comp.hdf5 file".format(comp_precision,result_precision))
                     if comp_utimeout != result_utimeout:
                         raise RuntimeError ("Timeout of the result in comp.hdf5 ({0}) are not consistent result with the new computed result ({1}) \nWe dot not collect it\nCreate a new comp.hdf5 file".format(comp_utimeout,result_utimeout))
-                           
+
             check_call(['h5copy','-p','-i', results_filename,
                         '-ocomp.hdf5','-s/data/comp/{0}/{1}'.format(solver.name(),pfilename),
                         '-d/data/comp/{0}/{1}'.format(solver.name(),pfilename)])
@@ -2309,7 +2309,7 @@ class Results():
             if numerics_has_openmp_solvers :
                 list_print.append(r.attrs['n_threads'])
 
-            
+
             print "Already in comp file : ", list_print
             return False
         except:
@@ -2320,9 +2320,9 @@ if __name__ == '__main__':
     if compute:
         print "Tasks will be run for solvers :", [ s._name for s in solvers]
         print " on files ",problem_filenames
-        
 
-        
+
+
         all_tasks = [t for t in product(solvers, problem_filenames)]
 
         if os.path.exists('comp.hdf5'):
@@ -2337,7 +2337,7 @@ if __name__ == '__main__':
 
         if ask_collect:
             map(collect, tasks)
-            
+
     if list_contents:
         with h5py.File('comp.hdf5', 'r') as comp_file:
 
@@ -2354,8 +2354,8 @@ if __name__ == '__main__':
                         list_keys.remove(u'digest')
                     print "  ",solvername,   [comp_data[solvername][filename].attrs[item] for item in list_keys]
 
-                    
-            
+
+
     if display:
         print "Tasks will be run for solvers :", [ s._name for s in solvers]
         filename=None
@@ -2394,7 +2394,7 @@ if __name__ == '__main__':
                                                    random_sample_proba,
                                                    max_problems, cond_nc)
 
-                    
+
                     assert len(filenames) <= n_problems
 
                     measure[solver_name] = np.inf * np.ones(n_problems)
@@ -2512,7 +2512,7 @@ if __name__ == '__main__':
                     gp.write('set ylabel \'$\\rho(\\tau)$ \' \n')
                     maxrows=len(solvers)/2+1
                     gp.write('set key below right vertical maxrows {0}\n'.format(maxrows))
-                   
+
                     if logscale:
                         gp.write('set logscale x\n')
                         gp.write('set xlabel \'$\\tau$ ({0}) (logscale)\' \n'.format(measure_name))
@@ -2526,7 +2526,7 @@ if __name__ == '__main__':
                             gp.write(
                                 ','.join(['resultfile using 1:{0} notitle w l  dashtype {1} linecolor {2}'.format(index + 2,index+1,index%6+1)
                                           for index, solver in enumerate(filter(lambda s: s._name in comp_data, solvers)) ]))
-                            
+
                             gp.write('\n set output basename.extension_legend; \n')
                             gp.write('print "output = ", basename.extension_legend; \n \n')
                             gp.write('unset border; \n \n')
@@ -2534,7 +2534,7 @@ if __name__ == '__main__':
                             gp.write('unset xlabel; \n \n')
                             gp.write('unset ylabel; \n \n')
                             gp.write('set term tikz standalone monochrome  size 5in,1.5in font \'\\scriptsize\\sf\';  \\\n')
- 
+
                             gp.write('set key right inside vertical maxrows {0}\n'.format(maxrows))
 
                             gp.write('\n plot [0:1] [0:1]')
@@ -2542,8 +2542,8 @@ if __name__ == '__main__':
                                 ','.join([' NaN t "{1}" w l dashtype {2} linecolor {3}'.format(index + 2, solver.gnuplot_name(),index+1,index%6+1)
                                           for index, solver in enumerate(filter(lambda s: s._name in comp_data, solvers)) ]))
 
-                            
-                            
+
+
                         else:
                             gp.write(
                                 ','.join(['resultfile using 1:{0} t "{1}" w l dashtype {2} linecolor {3}'.format(index + 2, solver.gnuplot_name(),index+1,8)
@@ -2557,7 +2557,7 @@ if __name__ == '__main__':
                             gp.write(
                                 ','.join(['resultfile using 1:{0} t "{1}" w l dashtype {2} linecolor {3}'.format(index + 2, solver.gnuplot_name(),index+1,8)
                                           for index, solver in enumerate(filter(lambda s: s._name in comp_data, solvers)) ]))
-                        
+
                 # all_rhos = [ rhos[solver_name] for solver_name in comp_data ]
                 # g.plot(*all_rhos)
 
@@ -2565,7 +2565,7 @@ if __name__ == '__main__':
                 print "Warning: no problem corresponding to the required solver"
                 if (os.path.isfile('profile.gp')):
                     os.remove('profile.gp')
-                
+
             if not no_matplot:
                 # 5 plot
                 from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure, xlim, ylim, xscale
@@ -2583,7 +2583,7 @@ if __name__ == '__main__':
                         legend(loc=4)
                     grid()
 
-                
+
     if display_convergence:
         from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure
         with h5py.File('comp.hdf5', 'r') as comp_file:
@@ -2639,7 +2639,7 @@ if __name__ == '__main__':
                         fclib_file['fclib_local']['W'].attrs.create('cond_lsmr', cond_lsmr)
                 except Exception as e :
                     print "-->", e
-                        
+
     if adhoc:
         print "script adhoc (convenient moulinette)"
         # for problem_filename in problem_filenames:
@@ -2657,7 +2657,7 @@ if __name__ == '__main__':
         #                 if rank_svd != None and not math.isnan(rank_svd):
         #                     print "rank := rank_svd"
         #                     fclib_file['fclib_local']['W'].attrs.create('rank', rank_svd)
-                        
+
         #             else:
         #                 print "rank already present"
 
@@ -2671,7 +2671,7 @@ if __name__ == '__main__':
         #                 print "r2 --> cond_lsmr"
         #                 fclib_file['fclib_local']['W'].attrs.create('cond_lsmr',r2)
         #                 fclib_file['fclib_local']['W'].attrs.__delitem__('r2')
-                    
+
         #         except Exception as e :
         #             print e
         #             pass
@@ -2749,8 +2749,8 @@ if __name__ == '__main__':
             #print         "avg_min_measure",avg_min_measure
             print         "Average min resolution measure by contact = {0:12.8e}".format(avg_min_measure/nc_avg)
 
-               
-                    
+
+
     if display_distrib:
         from matplotlib.pyplot import title, subplot, grid, show, legend, figure, hist, xlim, ylim, xscale
         if display_distrib_var == 'from-files':
@@ -2792,7 +2792,7 @@ if __name__ == '__main__':
             print "cond_nc", cond_nc
             print "cond_W", cond_W
 
-                
+
             figure()
             subplot(311)
             hist(nc, 100, label='nc', histtype='stepfilled')
@@ -2805,7 +2805,7 @@ if __name__ == '__main__':
             grid()
             legend()
             subplot(313)
-            
+
             if not math.isnan(min(cond_nc)):
                 hist(cond_nc, 100, label='cond_nc', histtype='stepfilled')
             grid()
@@ -2823,17 +2823,17 @@ if __name__ == '__main__':
             grid()
             legend()
             subplot(313)
-            
+
             if not math.isnan(min(rank_ratio)):
                 hist(rank_ratio, 100, label='rank_ratio(W)', histtype='stepfilled')
             grid()
             legend()
 
-            
 
 
 
-            
+
+
             if gnuplot_distrib :
 
                 with open('distrib.gp','w') as gp:
@@ -2954,26 +2954,26 @@ if __name__ == '__main__':
                 hist(values, 100, range=(min(values), max(values)), histtype='stepfilled')
                 grid()
 
-                
+
     if display_speedup:
         from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure, hist, bar, xlabel, ylabel, boxplot
-        
+
         with h5py.File('comp.hdf5', 'r') as comp_file:
 
             data = comp_file['data']
             comp_data = data['comp']
             result_utimeout=comp_file['data']['comp'].attrs.get('timeout')
-            
+
             solvers=[]
-            
+
             solvers.extend( filter(lambda s: ('OPENMP' in s), comp_data))
             #print('########## solver=',solvers)
-            
+
             speedup_dict={}
             nthread_set= set()
             for solver_name in solvers:
 
-                
+
                 if user_filenames == []:
                     filenames = subsample_problems(comp_data[solver_name],
                                                    random_sample_proba,
@@ -2981,45 +2981,44 @@ if __name__ == '__main__':
                 else:
                     filenames = user_filenames
 
-                    
-                
+
+
                 for filename in filenames:
+                    pfilename = os.path.splitext(filename)[0]
                     nthread=int(solver_name.split('-')[-1])
                     nthread_set.add(nthread)
-                    pfilename = os.path.splitext(filename)[0]
+
                     measure_data =comp_data[solver_name][pfilename].attrs[measure_name]
                     if filename in speedup_dict.keys():
                         speedup_dict[filename].append((solver_name,nthread,measure_data))
                     else:
                         speedup_dict[filename] = [(solver_name,nthread,measure_data)]
 
-            
-            #print(speedup_dict)
-            #print('')
-            #print('')
-            #print('')
+            nthread_list=list(nthread_set)
+            nthread_list.sort()
+
+
+
+
             speedup_dict_mean ={}
             speedup_dict_mean_penalized ={}
             count_dict={}
             count_dict_penalized={}
             fails_dict={}
-            print nthread_set
-            nthread_list=list(nthread_set)
-            nthread_list.sort()
-            print nthread_list
+
             speedup_list =[]
+            speedup_size_list =[]
             for n in nthread_list:
                 speedup_list.append([])
-
+                speedup_size_list.append([])
             filename_fails = []
-                
+
             for filename,solver in speedup_dict.items():
                 for s in solver:
                     if np.isnan(s[2]):
                         filename_fails.append(filename)
             print 'filename_fails',filename_fails
             for filename,solver in speedup_dict.items():
-
                 if filename not in filename_fails:
                     for s in solver:
                         # if s[1] == 0:
@@ -3027,7 +3026,8 @@ if __name__ == '__main__':
                         nthread= s[1]
                         speedup_list_index=nthread_list.index(nthread)
                         speedup_list[speedup_list_index].append(s[2])
-                
+
+
                 for s in solver:
                     # if s[1] == 0:
                     #     print ("nthread, measure", s[1], s[2] )
@@ -3045,7 +3045,7 @@ if __name__ == '__main__':
                             fails_dict[nthread] = 0
                         else:
                             fails_dict[nthread] = 1
-                            
+
                     if nthread in speedup_dict_mean_penalized.keys():
                         count_dict_penalized[nthread] += 1
                         if not np.isnan(s[2]):
@@ -3059,38 +3059,51 @@ if __name__ == '__main__':
                         else:
                             speedup_dict_mean_penalized[nthread] = result_utimeout
 
-            
-                            
-            print('speedup_list', speedup_list)
+
+
+            #print('speedup_list', speedup_list)
+
             for n in nthread_list:
                 speedup_list_index_ref=nthread_list.index(1)
                 speedup_list_index=nthread_list.index(n)
                 if n !=1 :
-
                     for i  in range(len(speedup_list[speedup_list_index])):
                         #print 'ref',  speedup_list[speedup_list_index_ref][i]
-                        
                         speedup_list[speedup_list_index][i] =  speedup_list[speedup_list_index_ref][i]/speedup_list[speedup_list_index][i]
-                    
+
             for n in nthread_list:
                 speedup_list_index_ref=nthread_list.index(1)
                 for i  in range(len(speedup_list[speedup_list_index_ref])):
                     speedup_list[speedup_list_index_ref][i]=1.0
-                
-            
-            print('speedup_list[12]', speedup_list[nthread_list.index(12)])
+            _cmp=0
+            for filename,solver in speedup_dict.items():
+                pfilename = os.path.splitext(filename)[0]
+                nc =comp_data[solver_name][pfilename].attrs['nc']
+                if filename not in filename_fails:
+
+                    for s in solver:
+                        # if s[1] == 0:
+                        #     print ("nthread, measure", s[1], s[2] )
+                        nthread= s[1]
+                        speedup_list_index=nthread_list.index(nthread)
+                        size= nc
+                        #print _cmp, speedup_list[speedup_list_index], speedup_list[speedup_list_index][_cmp]
+                        speedup_size_list[speedup_list_index].append([size , speedup_list[speedup_list_index][_cmp]])
+                    _cmp+=1
+
+            #print('speedup_size_list', speedup_size_list)
 
 
 
+            #print('speedup_list[12]', speedup_list[nthread_list.index(12)])
 
-            
             for n in speedup_dict_mean.keys():
                 speedup_dict_mean[n] =  speedup_dict_mean[n]/count_dict[n]
             speedup_mean_ref= speedup_dict_mean[1]
             for n in speedup_dict_mean.keys():
                 speedup_dict_mean[n] =  speedup_mean_ref/speedup_dict_mean[n]
             print('speedup_dict_mean',speedup_dict_mean)
-            
+
             for n in speedup_dict_mean_penalized.keys():
                 speedup_dict_mean_penalized[n] =  speedup_dict_mean_penalized[n]/count_dict_penalized[n]
             speedup_mean_penalized_ref= speedup_dict_mean_penalized[1]
@@ -3098,32 +3111,39 @@ if __name__ == '__main__':
                 speedup_dict_mean_penalized[n] =  speedup_mean_penalized_ref/speedup_dict_mean_penalized[n]
 
 
-            
-                
-            figure()
 
-                
 
-                
-            
+
+            figure(figsize=(8,14))
+
             for filename,solver in speedup_dict.items():
                 data_tuples = []
                 for s in solver:
                     data_tuples.append((s[1],s[2]))
                 data_tuples=sorted(data_tuples, key=lambda data: data[0])
-                          
+
                 try:
-                    xlabel('number of threads')
-                    subplot('211')
+
+                    subplot('311')
                     #plot(np.array([data[0] for data in data_tuples])[:],np.array([data[1] for data in data_tuples])[:], label =filename)
                     plot(np.array([data[0] for data in data_tuples])[:],np.array([data[1] for data in data_tuples])[:])
                     ylabel('cpu time')
+                    xlabel('number of threads')
                     legend()
-                    subplot('212')
+                    subplot('312')
                     #plot(np.array([data[0] for data in data_tuples])[:],np.array([data[1] for data in data_tuples])[:], label =filename)
                     plot(np.array([data[0] for data in data_tuples])[:],np.array([data_tuples[1][1]/data[1] for data in data_tuples])[:])
                     ylabel('speedup')
+                    xlabel('number of threads')
                     legend()
+                    subplot('313')
+                    xlabel('problem size')
+                    ylabel('speedup')
+                    for n in nthread_list:
+                        index=nthread_list.index(n)
+                        list_size_speedup= speedup_size_list[index]
+                        list_size_speedup= sorted(list_size_speedup, key=lambda data: data[0])
+                        plot(np.array([t[0]  for t in list_size_speedup]), np.array([t[1]  for t in list_size_speedup]), label=str(n))
                 except:
                     pass
 
@@ -3132,19 +3152,19 @@ if __name__ == '__main__':
             for nthread,time in speedup_dict_mean.items():
                 data_tuples.append((nthread,time))
             data_tuples=sorted(data_tuples, key=lambda data: data[0])
-            
-            
-            
+
+
+
             data_penalized_tuples = []
             for nthread,time in speedup_dict_mean_penalized.items():
                 data_penalized_tuples.append((nthread,time))
             data_penalized_tuples=sorted(data_penalized_tuples, key=lambda data: data[0])
-             
+
             data_fails_tuples = []
             for n,fails in fails_dict.items():
                 data_fails_tuples.append((n,fails))
             data_fails_tuples=sorted(data_fails_tuples, key=lambda data: data[0])
-            
+
             figure(figsize=(8,14))
             xlabel('number of threads')
             subplot('411')
@@ -3164,9 +3184,9 @@ if __name__ == '__main__':
             ylabel('# fails')
             legend()
 
-  
-            
-                
+
+
+
 
     if display or display_convergence or display_distrib or display_speedup:
         if not no_matplot:
