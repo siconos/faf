@@ -160,6 +160,7 @@ display = False
 display_convergence = False
 display_distrib = False
 display_distrib_var = False
+display_speedup= False
 no_matplot=False
 gnuplot_profile = False
 logscale=False
@@ -275,7 +276,8 @@ try:
                                     'output-dat', 'with-mumps', 'file-filter=',
                                     'list-contents',
                                     'add-precision-in-comp-file','add-timeout-in-comp-file',
-                                    'compute-cond-rank','compute-hardness','adhoc'])
+                                    'compute-cond-rank','compute-hardness','adhoc',
+                                    'display-speedup'])
 
 
 except getopt.GetoptError, err:
@@ -306,6 +308,9 @@ for o, a in opts:
         compute = False
     elif o == '--display-convergence':
         display_convergence = True
+        compute = False
+    elif o == '--display-speedup':
+        display_speedup = True
         compute = False
     elif o == '--measure':
         measure_name = a
@@ -811,10 +816,15 @@ class Caller():
                 attrs.create('precision', precision)
                 attrs.create('timeout', utimeout)
 
-                print(filename, numberOfDegreeofFreedomContacts(filename), numberOfDegreeofFreedom(filename), cond_problem(filename), solver.name(), info, iter, err,
-                      time_s, real_time, proc_time,
-                      flpops, mflops,
-                      precision, utimeout)
+                list_print = [filename, numberOfDegreeofFreedomContacts(filename), numberOfDegreeofFreedom(filename), cond_problem(filename), solver.name(), info, iter, err,
+                              time_s, real_time, proc_time,
+                              flpops, mflops,
+                              precision, utimeout]
+                
+                if numerics_has_openmp_solvers :
+                    attrs.create('n_threads', solver.SolverOptions().iparam[10] )
+                    list_print.append(solver.SolverOptions().iparam[10])
+                print(list_print)
 
                 with open('report.txt', "a") as report_file:
                     print   >> report_file , (filename, solver.name(), info, iter, err,
@@ -973,11 +983,19 @@ class Caller():
             attrs.create('precision', precision)
             attrs.create('timeout', utimeout)
             # filename, solver name, revision svn, parameters, nb iter, err
-            print(filename, numberOfDegreeofFreedomContacts(filename), numberOfDegreeofFreedom(filename), cond_problem(filename), solver.name(), info, iter, err,
-                  time_s, real_time, proc_time,
-                  flpops, mflops, precision, utimeout)
 
-                    # if info == 1:
+            list_print = [filename, numberOfDegreeofFreedomContacts(filename), numberOfDegreeofFreedom(filename), cond_problem(filename), solver.name(), info, iter, err,
+                          time_s, real_time, proc_time,
+                          flpops, mflops,
+                          precision, utimeout]
+                
+            if numerics_has_openmp_solvers :
+                attrs.create('n_threads', solver.SolverOptions().iparam[10] )
+                list_print.append(solver.SolverOptions().iparam[10])
+
+            print(list_print)
+
+            # if info == 1:
                     #     measure_v = np.inf
                     # else:
                     #     if measure == 'flop':
@@ -1510,23 +1528,25 @@ nsgs_pr = SiconosSolver(name="NSGS-PR",
                         maxiter=maxiter, precision=precision)
 nsgs_pr.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithRegularization
 
-has_openmp_solvers=False
+numerics_has_openmp_solvers=False
 nsgs_openmp_solvers=[]
 try:
     dir(N).index('fc3d_nsgs_openmp')
-    has_openmp_solvers=True
+    numerics_has_openmp_solvers=True
 except ValueError:
     print("fc3d_nsgs_openmp is not the siconos numerics")
     
-if (has_openmp_solvers):
+if (numerics_has_openmp_solvers):
     n_threads_list=[1,2,3,4,5]
     error_evaluation_frequency=1
+    
     nsgs_openmp = SiconosSolver(name="NSGS-AC-OPENMP-FOR-"+str(error_evaluation_frequency)+"-"+str(0),
                                 API=N.fc3d_nsgs,
                                 TAG=N.SICONOS_FRICTION_3D_NSGS,
                                 iparam_iter=7,
                                 dparam_err=1,
                                 maxiter=maxiter, precision=precision)
+    nsgs_openmp.SolverOptions().iparam[1] = N.SICONOS_FRICTION_3D_NSGS_LIGHT_ERROR_EVALUATION_WITH_FULL_FINAL
     nsgs_openmp.SolverOptions().iparam[14]=error_evaluation_frequency
     nsgs_openmp.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_AC
     nsgs_openmp.SolverOptions().internalSolvers.iparam[10]=0
@@ -2260,9 +2280,15 @@ class Results():
             #     raise RuntimeError()
             # if abs(r.attrs.get('timeout') -  utimeout) >= 1e-16 :
             #    raise RuntimeError()
-            print "Already in comp file : ", (r.attrs['filename'], cond_problem(r.attrs['filename']), solver.name(), r.attrs['info'],
+
+            list_print =[r.attrs['filename'], cond_problem(r.attrs['filename']), solver.name(), r.attrs['info'],
                                               r.attrs['iter'], r.attrs['err'], r.attrs['time'], r.attrs['real_time'], r.attrs['proc_time'],
-                                              r.attrs['flpops'], r.attrs['mflops'],r.attrs.get('precision'),r.attrs.get('timeout'))
+                                              r.attrs['flpops'], r.attrs['mflops'],r.attrs.get('precision'),r.attrs.get('timeout')]
+            if numerics_has_openmp_solvers :
+                list_print.append(r.attrs['n_threads'])
+
+            
+            print "Already in comp file : ", list_print
             return False
         except:
             return True
@@ -2906,6 +2932,157 @@ if __name__ == '__main__':
                 hist(values, 100, range=(min(values), max(values)), histtype='stepfilled')
                 grid()
 
-    if display or display_convergence or display_distrib:
+                
+    if display_speedup:
+        from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure, hist, bar, xlabel, ylabel
+        
+        with h5py.File('comp.hdf5', 'r') as comp_file:
+
+            data = comp_file['data']
+            comp_data = data['comp']
+            result_utimeout=comp_file['data']['comp'].attrs.get('timeout')
+            
+            solvers=[]
+            
+            solvers.extend( filter(lambda s: ('OPENMP' in s), comp_data))
+            #print('########## solver=',solvers)
+            
+            speedup_dict={}
+            for solver_name in solvers:
+
+                
+                if user_filenames == []:
+                    filenames = subsample_problems(comp_data[solver_name],
+                                                   random_sample_proba,
+                                                   max_problems, cond_nc)
+                else:
+                    filenames = user_filenames
+
+                    
+                
+                for filename in filenames:
+                    nthread=int(solver_name.split('-')[-1])
+                    pfilename = os.path.splitext(filename)[0]
+                    measure_data =comp_data[solver_name][pfilename].attrs[measure_name]
+                    if filename in speedup_dict.keys():
+                        speedup_dict[filename].append((solver_name,nthread,measure_data))
+                    else:
+                        speedup_dict[filename] = [(solver_name,nthread,measure_data)]
+
+            
+            #print(speedup_dict)
+            #print('')
+            #print('')
+            #print('')
+            speedup_dict_mean ={}
+            speedup_dict_mean_penalized ={}
+            count_dict={}
+            count_dict_penalized={}
+            fails_dict={}
+            for filename,solver in speedup_dict.items():
+                for s in solver:
+                    # if s[1] == 0:
+                    #     print ("nthread, measure", s[1], s[2] )
+                    nthread= s[1]
+                    if nthread in speedup_dict_mean.keys():
+                        if not np.isnan(s[2]):
+                            speedup_dict_mean[nthread] += s[2]
+                            count_dict[nthread] += 1
+                        else:
+                            fails_dict[nthread] += 1
+                    else:
+                        if not np.isnan(s[2]):
+                            speedup_dict_mean[nthread] = s[2]
+                            count_dict[nthread] = 1
+                            fails_dict[nthread] = 0
+                        else:
+                            fails_dict[nthread] = 1
+                            
+                    if nthread in speedup_dict_mean_penalized.keys():
+                        count_dict_penalized[nthread] += 1
+                        if not np.isnan(s[2]):
+                            speedup_dict_mean_penalized[nthread] += s[2]
+                        else:
+                            speedup_dict_mean_penalized[nthread] += result_utimeout
+                    else:
+                        count_dict_penalized[nthread] = 1
+                        if not np.isnan(s[2]):
+                            speedup_dict_mean_penalized[nthread] = s[2]
+                        else:
+                            speedup_dict_mean_penalized[nthread] = result_utimeout
+
+            for n in speedup_dict_mean.keys():
+                speedup_dict_mean[n] =  speedup_dict_mean[n]/count_dict[n]
+            speedup_mean_ref= speedup_dict_mean[1]
+            for n in speedup_dict_mean.keys():
+                speedup_dict_mean[n] =  speedup_mean_ref/speedup_dict_mean[n]
+            print('speedup_dict_mean',speedup_dict_mean)
+            
+            for n in speedup_dict_mean_penalized.keys():
+                speedup_dict_mean_penalized[n] =  speedup_dict_mean_penalized[n]/count_dict_penalized[n]
+            speedup_mean_penalized_ref= speedup_dict_mean_penalized[1]
+            for n in speedup_dict_mean_penalized.keys():
+                speedup_dict_mean_penalized[n] =  speedup_mean_penalized_ref/speedup_dict_mean_penalized[n]
+
+
+            
+                
+            figure()
+            for filename,solver in speedup_dict.items():
+                data_tuples = []
+                for s in solver:
+                    data_tuples.append((s[1],s[2]))
+                data_tuples=sorted(data_tuples, key=lambda data: data[0])
+                
+                try:
+                    xlabel('number of threads')
+                    subplot('211')
+                    #plot(np.array([data[0] for data in data_tuples])[:],np.array([data[1] for data in data_tuples])[:], label =filename)
+                    plot(np.array([data[0] for data in data_tuples])[:],np.array([data[1] for data in data_tuples])[:])
+                    ylabel('cpu time')
+                    legend()
+                    subplot('212')
+                    #plot(np.array([data[0] for data in data_tuples])[:],np.array([data[1] for data in data_tuples])[:], label =filename)
+                    plot(np.array([data[0] for data in data_tuples])[:],np.array([data_tuples[1][1]/data[1] for data in data_tuples])[:])
+                    ylabel('speedup')
+                    legend()
+                except:
+                    pass
+
+            data_tuples = []
+            for nthread,time in speedup_dict_mean.items():
+                data_tuples.append((nthread,time))
+            data_tuples=sorted(data_tuples, key=lambda data: data[0])
+            
+            data_penalized_tuples = []
+            for nthread,time in speedup_dict_mean_penalized.items():
+                data_penalized_tuples.append((nthread,time))
+            data_penalized_tuples=sorted(data_penalized_tuples, key=lambda data: data[0])
+             
+            data_fails_tuples = []
+            for n,fails in fails_dict.items():
+                data_fails_tuples.append((n,fails))
+            data_fails_tuples=sorted(data_fails_tuples, key=lambda data: data[0])
+            
+            figure()
+            xlabel('number of threads')
+            subplot('311')
+            plot(np.array([data[0] for data in data_tuples])[:],np.array([data[1] for data in data_tuples])[:])
+            ylabel('avg. cpu time')
+            legend()
+            subplot('312')
+            plot(np.array([data[0] for data in data_penalized_tuples])[:],np.array([data[1] for data in data_penalized_tuples]   )[:])
+            ylabel('avg. cpu time \n w. penalization')
+            legend()
+            subplot('313')
+            bar(np.array([data[0] for data in data_fails_tuples])[:],np.array([data[1] for data in data_fails_tuples]   )[:])
+            ylabel('# fails')
+            legend()
+
+  
+            
+                
+
+    if display or display_convergence or display_distrib or display_speedup:
         if not no_matplot:
             show()
