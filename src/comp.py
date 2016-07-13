@@ -2969,219 +2969,215 @@ if __name__ == '__main__':
             solvers.extend( filter(lambda s: ('OPENMP' in s), comp_data))
             #print('########## solver=',solvers)
 
-            speedup_dict={}
+
+            
+            # collect results by filename
+            results_filename={}
             nthread_set= set()
             for solver_name in solvers:
-
-
-                if user_filenames == []:
+               if user_filenames == []:
                     filenames = subsample_problems(comp_data[solver_name],
                                                    random_sample_proba,
                                                    max_problems, cond_nc)
-                else:
+               else:
                     filenames = user_filenames
-
-
-
-                for filename in filenames:
+                    
+               for filename in filenames:
                     pfilename = os.path.splitext(filename)[0]
                     nthread=int(solver_name.split('-')[-1])
                     nthread_set.add(nthread)
 
                     measure_data =comp_data[solver_name][pfilename].attrs[measure_name]
-                    if filename in speedup_dict.keys():
-                        speedup_dict[filename].append((solver_name,nthread,measure_data))
+                    nc =comp_data[solver_name][pfilename].attrs['nc']
+                    n_iter =comp_data[solver_name][pfilename].attrs['iter']
+                    if filename in results_filename.keys():
+                        results_filename[filename].append([solver_name,nthread,measure_data,nc,n_iter])
                     else:
-                        speedup_dict[filename] = [(solver_name,nthread,measure_data)]
+                        results_filename[filename] = [[solver_name,nthread,measure_data,nc,n_iter]]
 
-            nthread_list=list(nthread_set)
-            nthread_list.sort()
-
-
-
-
-            speedup_dict_mean ={}
-            speedup_dict_mean_penalized ={}
-            count_dict={}
-            count_dict_penalized={}
-            fails_dict={}
-
-            speedup_list =[]
-            speedup_size_list =[]
-            for n in nthread_list:
-                speedup_list.append([])
-                speedup_size_list.append([])
             filename_fails = []
-
-            for filename,solver in speedup_dict.items():
+            for filename,solver in results_filename.items():
                 for s in solver:
                     if np.isnan(s[2]):
                         filename_fails.append(filename)
+                        
             print 'filename_fails',filename_fails
-            for filename,solver in speedup_dict.items():
+
+            
+            nthread_list=list(nthread_set)
+            nthread_list.sort()
+
+            # collect results by thread
+ 
+            measure_by_nthread=[]
+            measure_penalized_by_nthread=[]
+            measure_mean_by_nthread=[]
+            measure_mean_penalized_by_nthread=[]
+            count_non_failed=[]
+            count_failed=[]
+            
+            for n in nthread_list:
+                print n
+                measure_by_nthread.append([])
+                measure_penalized_by_nthread.append([])
+                measure_mean_by_nthread.append(0.0)
+                measure_mean_penalized_by_nthread.append(0.0)
+                count_non_failed.append(0)
+                count_failed.append(0)       
+        
+                         
+            speedup_list =[]
+            speedup_size_list =[]
+
+            for n in nthread_list:
+                speedup_list.append([])
+                speedup_size_list.append([])
+                
+            for filename,solver in results_filename.items():
                 if filename not in filename_fails:
                     for s in solver:
-                        # if s[1] == 0:
-                        #     print ("nthread, measure", s[1], s[2] )
                         nthread= s[1]
-                        speedup_list_index=nthread_list.index(nthread)
-                        speedup_list[speedup_list_index].append(s[2])
-
-
+                        thread_index=nthread_list.index(nthread)
+                        speedup_list[thread_index].append(s[2])
+                        measure_by_nthread[thread_index].append(s[2])
+                        measure_mean_by_nthread[thread_index] += s[2]
+                        count_non_failed[thread_index] += 1
+                        
                 for s in solver:
-                    # if s[1] == 0:
-                    #     print ("nthread, measure", s[1], s[2] )
                     nthread= s[1]
-                    if nthread in speedup_dict_mean.keys():
-                        if not np.isnan(s[2]):
-                            speedup_dict_mean[nthread] += s[2]
-                            count_dict[nthread] += 1
-                        else:
-                            fails_dict[nthread] += 1
+                    thread_index=nthread_list.index(nthread)
+                    if  not np.isnan(s[2]):
+                        measure_penalized_by_nthread[thread_index].append(s[2])
+                        measure_mean_penalized_by_nthread[thread_index] += s[2]
+                        count_non_failed[thread_index] += 1
                     else:
-                        if not np.isnan(s[2]):
-                            speedup_dict_mean[nthread] = s[2]
-                            count_dict[nthread] = 1
-                            fails_dict[nthread] = 0
-                        else:
-                            fails_dict[nthread] = 1
+                        measure_penalized_by_nthread[thread_index].append(result_utimeout)
+                        measure_mean_penalized_by_nthread[thread_index] += result_utimeout
+                        count_failed[thread_index] += 1
+                        
+            for n in nthread_list:
+                thread_index    = nthread_list.index(n)
+                measure_mean_by_nthread[thread_index] /= count_non_failed[thread_index]
+                measure_mean_penalized_by_nthread[thread_index] /= (count_non_failed[thread_index]+count_failed[thread_index])
+           
+            #print('measure_penalized_by_nthread', measure_penalized_by_nthread)
+            #raw_input()
+            print('measure_mean_by_nthread', measure_mean_penalized_by_nthread)
+            print('measure_mean_penalized_by_nthread', measure_mean_penalized_by_nthread)
+            print('count_failed', count_failed)
+            print('count_non_failed', count_non_failed)
 
-                    if nthread in speedup_dict_mean_penalized.keys():
-                        count_dict_penalized[nthread] += 1
-                        if not np.isnan(s[2]):
-                            speedup_dict_mean_penalized[nthread] += s[2]
-                        else:
-                            speedup_dict_mean_penalized[nthread] += result_utimeout
-                    else:
-                        count_dict_penalized[nthread] = 1
-                        if not np.isnan(s[2]):
-                            speedup_dict_mean_penalized[nthread] = s[2]
-                        else:
-                            speedup_dict_mean_penalized[nthread] = result_utimeout
-
-
-
+            speedup_list =[]
+            speedup_penalized_list =[]
+            speedup_size_list =[]
+            iter_size_list=[]
+            speedup_avg =[]
+            speedup_penalized_avg =[]
+            for n in nthread_list:
+                speedup_list.append([])
+                speedup_penalized_list.append([])
+                speedup_size_list.append([])
+                iter_size_list.append([])
+                speedup_avg.append(0.0)
+                speedup_penalized_avg.append(0.0)
+                thread_index=nthread_list.index(n)
+                for i in range(count_non_failed[thread_index]):
+                    speedup_list[thread_index].append(0.0)
+                    speedup_penalized_list[thread_index].append(0.0)
+                
             #print('speedup_list', speedup_list)
 
             for n in nthread_list:
-                speedup_list_index_ref=nthread_list.index(1)
-                speedup_list_index=nthread_list.index(n)
-                if n !=1 :
-                    for i  in range(len(speedup_list[speedup_list_index])):
-                        #print 'ref',  speedup_list[speedup_list_index_ref][i]
-                        speedup_list[speedup_list_index][i] =  speedup_list[speedup_list_index_ref][i]/speedup_list[speedup_list_index][i]
+                thread_index_ref= nthread_list.index(1)
+                thread_index    = nthread_list.index(n)
+                for i  in range(len(measure_by_nthread[thread_index])):
+                    speedup_list[thread_index][i] =  measure_by_nthread[thread_index_ref][i]/measure_by_nthread[thread_index][i]
+                    speedup_avg[thread_index] += speedup_list[thread_index][i]
+                speedup_avg[thread_index] /=len(measure_by_nthread[thread_index])
+                print('len(measure_penalized_by_nthread[thread_index])',len(measure_penalized_by_nthread[thread_index]))
+                for i  in range(len(measure_penalized_by_nthread[thread_index])):
+                    speedup_penalized_list[thread_index][i] =  measure_penalized_by_nthread[thread_index_ref][i]/measure_penalized_by_nthread[thread_index][i]
+                    speedup_penalized_avg[thread_index] += speedup_penalized_list[thread_index][i]
+                speedup_penalized_avg[thread_index] /=len(measure_penalized_by_nthread[thread_index])
+            print('speedup_avg', speedup_avg)
 
-            for n in nthread_list:
-                speedup_list_index_ref=nthread_list.index(1)
-                for i  in range(len(speedup_list[speedup_list_index_ref])):
-                    speedup_list[speedup_list_index_ref][i]=1.0
+                    
             _cmp=0
-            for filename,solver in speedup_dict.items():
-                pfilename = os.path.splitext(filename)[0]
-                nc =comp_data[solver_name][pfilename].attrs['nc']
+            for filename,solver in results_filename.items():
                 if filename not in filename_fails:
-
                     for s in solver:
-                        # if s[1] == 0:
-                        #     print ("nthread, measure", s[1], s[2] )
-                        nthread= s[1]
-                        speedup_list_index=nthread_list.index(nthread)
-                        size= nc
-                        #print _cmp, speedup_list[speedup_list_index], speedup_list[speedup_list_index][_cmp]
-                        speedup_size_list[speedup_list_index].append([size , speedup_list[speedup_list_index][_cmp]])
+                        thread_index=nthread_list.index(s[1])
+                        #print _cmp, speedup_list[thread_index], speedup_list[thread_index][_cmp]
+                        speedup_size_list[thread_index].append([s[3] , speedup_list[thread_index][_cmp]])
+                        iter_size_list[thread_index].append([s[3] , s[4]])
                     _cmp+=1
-
             #print('speedup_size_list', speedup_size_list)
 
+            figure(figsize=(16,14))
 
-
-            #print('speedup_list[12]', speedup_list[nthread_list.index(12)])
-
-            for n in speedup_dict_mean.keys():
-                speedup_dict_mean[n] =  speedup_dict_mean[n]/count_dict[n]
-            speedup_mean_ref= speedup_dict_mean[1]
-            for n in speedup_dict_mean.keys():
-                speedup_dict_mean[n] =  speedup_mean_ref/speedup_dict_mean[n]
-            print('speedup_dict_mean',speedup_dict_mean)
-
-            for n in speedup_dict_mean_penalized.keys():
-                speedup_dict_mean_penalized[n] =  speedup_dict_mean_penalized[n]/count_dict_penalized[n]
-            speedup_mean_penalized_ref= speedup_dict_mean_penalized[1]
-            for n in speedup_dict_mean_penalized.keys():
-                speedup_dict_mean_penalized[n] =  speedup_mean_penalized_ref/speedup_dict_mean_penalized[n]
-
-
-
-
-
-            figure(figsize=(8,14))
-
-            for filename,solver in speedup_dict.items():
+            for filename,solver in results_filename.items():
                 data_tuples = []
                 for s in solver:
-                    data_tuples.append((s[1],s[2]))
+                    data_tuples.append((s[1],s[2],s[3],s[4]))
                 data_tuples=sorted(data_tuples, key=lambda data: data[0])
-
                 try:
-
-                    subplot('311')
+                    subplot('411')
                     #plot(np.array([data[0] for data in data_tuples])[:],np.array([data[1] for data in data_tuples])[:], label =filename)
                     plot(np.array([data[0] for data in data_tuples])[:],np.array([data[1] for data in data_tuples])[:])
                     ylabel('cpu time')
                     xlabel('number of threads')
                     legend()
-                    subplot('312')
+                    
+                    subplot('412')
                     #plot(np.array([data[0] for data in data_tuples])[:],np.array([data[1] for data in data_tuples])[:], label =filename)
                     plot(np.array([data[0] for data in data_tuples])[:],np.array([data_tuples[1][1]/data[1] for data in data_tuples])[:])
                     ylabel('speedup')
                     xlabel('number of threads')
                     legend()
-                    subplot('313')
-                    xlabel('problem size')
-                    ylabel('speedup')
-                    for n in nthread_list:
-                        index=nthread_list.index(n)
-                        list_size_speedup= speedup_size_list[index]
-                        list_size_speedup= sorted(list_size_speedup, key=lambda data: data[0])
-                        plot(np.array([t[0]  for t in list_size_speedup]), np.array([t[1]  for t in list_size_speedup]), label=str(n))
                 except:
                     pass
-
-            data_tuples = []
-            data_list =[]
-            for nthread,time in speedup_dict_mean.items():
-                data_tuples.append((nthread,time))
-            data_tuples=sorted(data_tuples, key=lambda data: data[0])
-
-
-
-            data_penalized_tuples = []
-            for nthread,time in speedup_dict_mean_penalized.items():
-                data_penalized_tuples.append((nthread,time))
-            data_penalized_tuples=sorted(data_penalized_tuples, key=lambda data: data[0])
-
-            data_fails_tuples = []
-            for n,fails in fails_dict.items():
-                data_fails_tuples.append((n,fails))
-            data_fails_tuples=sorted(data_fails_tuples, key=lambda data: data[0])
-
-            figure(figsize=(8,14))
-            xlabel('number of threads')
-            subplot('411')
-            plot(np.array([data[0] for data in data_tuples])[:],np.array([data[1] for data in data_tuples])[:])
-            ylabel('avg. speed up')
+                
+            subplot('413')
+            xlabel('problem size')
+            ylabel('speedup')
+            for n in nthread_list:
+                index=nthread_list.index(n)
+                list_size_speedup= speedup_size_list[index]
+                list_size_speedup= sorted(list_size_speedup, key=lambda data: data[0])
+                plot(np.array([t[0]  for t in list_size_speedup]), np.array([t[1]  for t in list_size_speedup]), label='n='+str(n))
             legend()
-            subplot('412')
+            subplot('414')
+            xlabel('problem size')
+            ylabel('iter')
+            for n in nthread_list:
+                index=nthread_list.index(n)
+                iter_size_speedup= iter_size_list[index]
+                iter_size_speedup= sorted(iter_size_speedup, key=lambda data: data[0])
+                plot(np.array([t[0]  for t in iter_size_speedup]), np.array([t[1]  for t in iter_size_speedup]), label='n='+str(n))
+            legend()
+ 
+            figure(figsize=(8,14))
+
+            subplot('411')
             boxplot(speedup_list,positions=nthread_list)
             ylabel('speedup distribution')
             legend()
+            
+            
+            subplot('412')
+            plot(nthread_list,speedup_avg)
+            ylabel('avg. speed up')
+            legend()
+
             subplot('413')
-            plot(np.array([data[0] for data in data_penalized_tuples])[:],np.array([data[1] for data in data_penalized_tuples]   )[:])
+            plot(nthread_list,speedup_penalized_avg)
             ylabel('avg. speedup \n w. penalization')
             legend()
+            
             subplot('414')
-            bar(np.array([data[0] for data in data_fails_tuples])[:],np.array([data[1] for data in data_fails_tuples]   )[:])
+            bar(nthread_list,count_failed)
             ylabel('# fails')
+            xlabel('number of threads')
             legend()
 
 
