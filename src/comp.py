@@ -1624,7 +1624,18 @@ if (numerics_has_openmp_solvers):
     nsgs_openmp.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_AC
     nsgs_openmp.SolverOptions().internalSolvers.iparam[10]=0
     nsgs_openmp_solvers.append(nsgs_openmp)
-
+    
+    nsgs_openmp = SiconosSolver(name="NSGS-AC-OPENMP-REDBLACK-"+str(0),
+                                API=N.fc3d_nsgs_openmp,
+                                TAG=N.SICONOS_FRICTION_3D_NSGS_OPENMP,
+                                iparam_iter=7,
+                                dparam_err=1,
+                                maxiter=maxiter, precision=precision)
+    nsgs_openmp.SolverOptions().iparam[10]=1
+    nsgs_openmp.SolverOptions().iparam[11]=1
+    nsgs_openmp.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_AC
+    nsgs_openmp.SolverOptions().internalSolvers.iparam[10]=0
+    nsgs_openmp_solvers.append(nsgs_openmp)
 
 local_tol_values = [1e-2,1e-4,1e-6,1e-8,1e-10,1e-12,1e-14,1e-16]
 #local_tol_values = [1e-2,1e-6,1e-10,1e-16]
@@ -2326,24 +2337,22 @@ class Results():
 if __name__ == '__main__':
 
     if compute:
-        print "Tasks will be run for solvers :", [ s._name for s in solvers]
-        print " on files ",problem_filenames
-
-
-
+        
         all_tasks = [t for t in product(solvers, problem_filenames)]
-
         if os.path.exists('comp.hdf5'):
             with h5py.File('comp.hdf5', 'r') as comp_file:
                 tasks = filter(Results(comp_file), all_tasks)
-
         else:
             tasks = all_tasks
 
         if ask_compute:
+            print "Tasks will be run for solvers :", [ s._name for s in solvers]
+            print " on files ",problem_filenames
             r = map(caller, tasks)
 
         if ask_collect:
+            print "Tasks will be run for solvers :", [ s._name for s in solvers]
+            print " on files ",problem_filenames
             map(collect, tasks)
 
     if list_contents:
@@ -2971,30 +2980,52 @@ if __name__ == '__main__':
             data = comp_file['data']
             comp_data = data['comp']
             result_utimeout=comp_file['data']['comp'].attrs.get('timeout')
-
+            print('solver in comp_data =',[s for s in comp_data] )
             solvers=[]
+            if user_solvers != []:
+                #print "user_solvers", user_solvers
+                solvers.extend( filter(lambda s: any(us in s for us in user_solvers), comp_data))
+                
+                if solvers == []:
+                    raise RuntimeError ("Cannot find any matching solver")
+                
+            elif user_solvers_exact != []:
+                #print "user_solvers_exact", user_solvers_exact
+                solvers.extend(filter(lambda s: any(us ==  s  for us in user_solvers_exact), comp_data))
+                
+                if solvers == []:
+                    raise RuntimeError("Cannot find any solvers in specified list")
 
-            solvers.extend( filter(lambda s: ('OPENMP' in s), comp_data))
-            #print('########## solver=',solvers)
+            else:
+                solvers= comp_data
 
-
+            print ' filtered solver in comp_data =',[s for s in solvers]
+                
+            solvers= filter(lambda s: ('OPENMP' in s), solvers)
             
+
+            print ' solver for speedup-display =',[s for s in solvers]
+            if solvers == []:
+                raise RuntimeError("Cannot find any solvers in specified list")
+            #---#
             # collect results by filename
+            #---#
             results_filename={}
             nthread_set= set()
+            n_filename=[]
+            
             for solver_name in solvers:
-               if user_filenames == []:
+                if user_filenames == []:
                     filenames = subsample_problems(comp_data[solver_name],
                                                    random_sample_proba,
                                                    max_problems, cond_nc)
-               else:
+                else:
                     filenames = user_filenames
-                    
-               for filename in filenames:
+                n_filename.append(len(filenames))
+                for filename in filenames:
                     pfilename = os.path.splitext(filename)[0]
                     nthread=int(solver_name.split('-')[-1])
                     nthread_set.add(nthread)
-
                     measure_data =comp_data[solver_name][pfilename].attrs[measure_name]
                     nc =comp_data[solver_name][pfilename].attrs['nc']
                     n_iter =comp_data[solver_name][pfilename].attrs['iter']
@@ -3003,13 +3034,20 @@ if __name__ == '__main__':
                     else:
                         results_filename[filename] = [[solver_name,nthread,measure_data,nc,n_iter]]
 
-            filename_fails = []
+                        
+            #print("n_filename", n_filename)
+            
+            results_filename_fails = {}
             for filename,solver in results_filename.items():
                 for s in solver:
                     if np.isnan(s[2]):
-                        print('problem : ', filename, 'fails for solver :', s)
-                        filename_fails.append(filename)
+                        if filename in results_filename.keys():
+                            results_filename_fails[filename]=results_filename[filename]
+                            print "\nremove failed instance for filename:",filename
+                            print(results_filename.pop(filename)) 
 
+
+            
             
             nthread_list=list(nthread_set)
             nthread_list.sort()
@@ -3020,17 +3058,12 @@ if __name__ == '__main__':
             measure_penalized_by_nthread=[]
             measure_mean_by_nthread=[]
             measure_mean_penalized_by_nthread=[]
-            count_non_failed=[]
-            count_failed=[]
+            index_non_failed=[]
+            index_failed=[]
             
             for n in nthread_list:
                 measure_by_nthread.append([])
-                measure_penalized_by_nthread.append([])
                 measure_mean_by_nthread.append(0.0)
-                measure_mean_penalized_by_nthread.append(0.0)
-                count_non_failed.append(0)
-                count_failed.append(0)       
-        
                          
             speedup_list =[]
             speedup_size_list =[]
@@ -3040,110 +3073,73 @@ if __name__ == '__main__':
                 speedup_size_list.append([])
                 
             for filename,solver in results_filename.items():
-                if filename not in filename_fails:
-                    for s in solver:
+                for s in solver:
                         nthread= s[1]
                         thread_index=nthread_list.index(nthread)
-                        speedup_list[thread_index].append(s[2])
                         measure_by_nthread[thread_index].append(s[2])
                         measure_mean_by_nthread[thread_index] += s[2]
-                        count_non_failed[thread_index] += 1
                         
-                for s in solver:
-                    nthread= s[1]
-                    thread_index=nthread_list.index(nthread)
-                    if  not np.isnan(s[2]):
-                        measure_penalized_by_nthread[thread_index].append(s[2])
-                        measure_mean_penalized_by_nthread[thread_index] += s[2]
-                        count_non_failed[thread_index] += 1
-                    else:
-                        measure_penalized_by_nthread[thread_index].append(result_utimeout)
-                        measure_mean_penalized_by_nthread[thread_index] += result_utimeout
-                        count_failed[thread_index] += 1
                         
             for n in nthread_list:
                 thread_index    = nthread_list.index(n)
-                measure_mean_by_nthread[thread_index] /= count_non_failed[thread_index]
-                measure_mean_penalized_by_nthread[thread_index] /= (count_non_failed[thread_index]+count_failed[thread_index])
+                measure_mean_by_nthread[thread_index] /= len(measure_by_nthread[thread_index])
            
-            #print('measure_penalized_by_nthread', measure_penalized_by_nthread)
             #raw_input()
             #print('measure_mean_by_nthread', measure_mean_penalized_by_nthread)
-            #print('measure_mean_penalized_by_nthread', measure_mean_penalized_by_nthread)
-            #print('count_failed', count_failed)
-            #print('count_non_failed', count_non_failed)
 
             speedup_list =[]
-            speedup_penalized_list =[]
             speedup_size_list =[]
             iter_size_list=[]
             speedup_avg =[]
-            speedup_penalized_avg =[]
+            
             for n in nthread_list:
                 speedup_list.append([])
-                speedup_penalized_list.append([])
                 speedup_size_list.append([])
                 iter_size_list.append([])
                 speedup_avg.append(0.0)
-                speedup_penalized_avg.append(0.0)
                 thread_index=nthread_list.index(n)
-                for i in range(count_non_failed[thread_index]):
+                for i in range(len(measure_by_nthread[thread_index])):
                     speedup_list[thread_index].append(0.0)
-                    speedup_penalized_list[thread_index].append(0.0)
-                
-            #print('speedup_list', speedup_list)
 
             for n in nthread_list:
                 thread_index_ref= nthread_list.index(1)
                 thread_index    = nthread_list.index(n)
                 for i  in range(len(measure_by_nthread[thread_index])):
                     speedup_list[thread_index][i] =  measure_by_nthread[thread_index_ref][i]/measure_by_nthread[thread_index][i]
-                    speedup_avg[thread_index] += speedup_list[thread_index][i]
+                    speedup_avg[thread_index] += speedup_list[thread_index][-1]
                 speedup_avg[thread_index] /=len(measure_by_nthread[thread_index])
 
-                for i  in range(len(measure_penalized_by_nthread[thread_index])):
-                    speedup_penalized_list[thread_index][i] =  measure_penalized_by_nthread[thread_index_ref][i]/measure_penalized_by_nthread[thread_index][i]
-                    speedup_penalized_avg[thread_index] += speedup_penalized_list[thread_index][i]
-                speedup_penalized_avg[thread_index] /=len(measure_penalized_by_nthread[thread_index])
-            print('speedup_avg', speedup_avg)
-
-                    
+            #print('speedup_avg', speedup_avg)
+            #print('speedup_list', speedup_list)
+            
             _cmp=0
             for filename,solver in results_filename.items():
-                if filename not in filename_fails:
-                    for s in solver:
-                        thread_index=nthread_list.index(s[1])
-                        #print _cmp, speedup_list[thread_index], speedup_list[thread_index][_cmp]
-                        speedup_size_list[thread_index].append([s[3] , speedup_list[thread_index][_cmp]])
-                        iter_size_list[thread_index].append([s[3] , s[4]])
-                    _cmp+=1
-            #print('speedup_size_list', speedup_size_list)
-
-            figure(figsize=(16,14))
-
-            for filename,solver in results_filename.items():
-                data_tuples = []
                 for s in solver:
-                    data_tuples.append((s[1],s[2],s[3],s[4]))
-                data_tuples=sorted(data_tuples, key=lambda data: data[0])
-                try:
-                    subplot('411')
-                    #plot(np.array([data[0] for data in data_tuples])[:],np.array([data[1] for data in data_tuples])[:], label =filename)
-                    plot(np.array([data[0] for data in data_tuples])[:],np.array([data[1] for data in data_tuples])[:])
-                    ylabel('cpu time for each problems')
-                    xlabel('number of threads')
-                    legend()
-                    
-                    subplot('412')
-                    #plot(np.array([data[0] for data in data_tuples])[:],np.array([data[1] for data in data_tuples])[:], label =filename)
-                    plot(np.array([data[0] for data in data_tuples])[:],np.array([data_tuples[1][1]/data[1] for data in data_tuples])[:])
-                    ylabel('speedup for each problems')
-                    xlabel('number of threads')
-                    legend()
-                except:
-                    pass
-                
-            subplot('413')
+                    thread_index=nthread_list.index(s[1])
+                    #print _cmp, speedup_list[thread_index], speedup_list[thread_index][_cmp]
+                    speedup_size_list[thread_index].append([s[3] , speedup_list[thread_index][_cmp]])
+                    iter_size_list[thread_index].append([s[3] , s[4]])
+                _cmp+=1
+
+            count_failed=[]
+            for n in nthread_list:
+                count_failed.append(0)
+            for filename,solver in results_filename_fails.items():
+                for s in solver:
+                    nthread=  s[1]
+                    thread_index=nthread_list.index(nthread)
+                    if np.isnan(s[2]):
+                        count_failed[thread_index] +=1  
+
+            # ---------------------------- #
+            # figure #
+            # ---------------------------- #
+ 
+
+
+            figure(figsize=(8,14))
+
+            subplot('211')
             xlabel('problem size')
             ylabel('speedup for each thread')
             for n in nthread_list:
@@ -3152,7 +3148,7 @@ if __name__ == '__main__':
                 list_size_speedup= sorted(list_size_speedup, key=lambda data: data[0])
                 plot(np.array([t[0]  for t in list_size_speedup]), np.array([t[1]  for t in list_size_speedup]), label='n='+str(n))
             legend()
-            subplot('414')
+            subplot('212')
             xlabel('problem size')
             ylabel('iter for each thread')
             for n in nthread_list:
@@ -3164,28 +3160,47 @@ if __name__ == '__main__':
  
             figure(figsize=(8,14))
 
-            subplot('411')
+            subplot('311')
             boxplot(speedup_list,positions=nthread_list)
             ylabel('speedup distribution')
             legend()
             
             
-            subplot('412')
+            subplot('312')
             plot(nthread_list,speedup_avg)
             ylabel('avg. speed up')
             legend()
-
-            subplot('413')
-            plot(nthread_list,speedup_penalized_avg)
-            ylabel('avg. speedup \n w. penalization')
-            legend()
             
-            subplot('414')
+            subplot('313')
             bar(nthread_list,count_failed)
             ylabel('# fails')
             xlabel('number of threads')
             legend()
+            
+            figure(figsize=(16,14))
 
+            for filename,solver in results_filename.items():
+                data_tuples = []
+                for s in solver:
+                    data_tuples.append((s[1],s[2],s[3],s[4]))
+                data_tuples=sorted(data_tuples, key=lambda data: data[0])
+                try:
+                    subplot('211')
+                    #plot(np.array([data[0] for data in data_tuples])[:],np.array([data[1] for data in data_tuples])[:], label =filename)
+                    plot(np.array([data[0] for data in data_tuples])[:],np.array([data[1] for data in data_tuples])[:])
+                    ylabel('cpu time for each problems')
+                    xlabel('number of threads')
+                    legend()
+
+                    
+                    subplot('212')
+                    #plot(np.array([data[0] for data in data_tuples])[:],np.array([data[1] for data in data_tuples])[:], label =filename)
+                    plot(np.array([data[0] for data in data_tuples])[:],np.array([data_tuples[1][1]/data[1] for data in data_tuples])[:])
+                    ylabel('speedup for each problems')
+                    xlabel('number of threads')
+                    legend()
+                except:
+                    pass
 
 
 
