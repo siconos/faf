@@ -194,6 +194,7 @@ list_contents=False
 compute_hardness = False
 compute_cond_rank = False
 adhoc= False
+thread_list =[]
 def usage():
   print "\n \n"
   print 'Usage: '+sys.argv[0]+'[option]'
@@ -256,6 +257,11 @@ def usage():
   comp.py   --display --time --domain='1:0.1:10'  comp.hdf5
 
   comp.py --display --measure=time --solvers=Gauss,Tresca,SOCLCP,ACLM --domain=1:0.1:100
+
+  comp.py --thread-list=1,2,3,4,5 --solvers=NSGS-AC-OPENMP
+
+  comp.py --display-speedup --measure=time
+
   """
   print toto
 
@@ -277,7 +283,7 @@ try:
                                     'list-contents',
                                     'add-precision-in-comp-file','add-timeout-in-comp-file',
                                     'compute-cond-rank','compute-hardness','adhoc',
-                                    'display-speedup'])
+                                    'display-speedup', 'thread-list='])
 
 
 except getopt.GetoptError, err:
@@ -312,6 +318,9 @@ for o, a in opts:
     elif o == '--display-speedup':
         display_speedup = True
         compute = False
+    elif o == '--thread-list':
+        print a
+        thread_list =  [int (x) for x in split(a,',')]
     elif o == '--measure':
         measure_name = a
     elif o == '--random-sample':
@@ -1559,7 +1568,6 @@ except ValueError:
     print("fc3d_nsgs_openmp is not the siconos numerics")
 
 if (numerics_has_openmp_solvers):
-    n_threads_list=[1,2,3,4,5]
     error_evaluation_frequency=1
 
     nsgs_openmp = SiconosSolver(name="NSGS-AC-OPENMP-FOR-"+str(error_evaluation_frequency)+"-"+str(0),
@@ -1575,7 +1583,7 @@ if (numerics_has_openmp_solvers):
     nsgs_openmp_solvers.append(nsgs_openmp)
 
 
-    for n in n_threads_list:
+    for n in thread_list:
         nsgs_openmp = SiconosSolver(name="NSGS-AC-OPENMP-FOR-"+str(error_evaluation_frequency)+"-"+str(n),
                                     API=N.fc3d_nsgs_openmp,
                                     TAG=N.SICONOS_FRICTION_3D_NSGS_OPENMP,
@@ -1589,7 +1597,7 @@ if (numerics_has_openmp_solvers):
         nsgs_openmp.SolverOptions().internalSolvers.iparam[10]=0
 
         nsgs_openmp_solvers.append(nsgs_openmp)
-    for n in n_threads_list:
+    for n in thread_list:
         nsgs_openmp = SiconosSolver(name="NSGS-AC-OPENMP-REDBLACK-"+str(n),
                                     API=N.fc3d_nsgs_openmp,
                                     TAG=N.SICONOS_FRICTION_3D_NSGS_OPENMP,
@@ -2957,7 +2965,7 @@ if __name__ == '__main__':
 
     if display_speedup:
         from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure, hist, bar, xlabel, ylabel, boxplot
-
+        print('\n display speedup is starting ...')
         with h5py.File('comp.hdf5', 'r') as comp_file:
 
             data = comp_file['data']
@@ -2999,9 +3007,8 @@ if __name__ == '__main__':
             for filename,solver in results_filename.items():
                 for s in solver:
                     if np.isnan(s[2]):
+                        print('problem : ', filename, 'fails for solver :', s)
                         filename_fails.append(filename)
-                        
-            print 'filename_fails',filename_fails
 
             
             nthread_list=list(nthread_set)
@@ -3017,7 +3024,6 @@ if __name__ == '__main__':
             count_failed=[]
             
             for n in nthread_list:
-                print n
                 measure_by_nthread.append([])
                 measure_penalized_by_nthread.append([])
                 measure_mean_by_nthread.append(0.0)
@@ -3062,10 +3068,10 @@ if __name__ == '__main__':
            
             #print('measure_penalized_by_nthread', measure_penalized_by_nthread)
             #raw_input()
-            print('measure_mean_by_nthread', measure_mean_penalized_by_nthread)
-            print('measure_mean_penalized_by_nthread', measure_mean_penalized_by_nthread)
-            print('count_failed', count_failed)
-            print('count_non_failed', count_non_failed)
+            #print('measure_mean_by_nthread', measure_mean_penalized_by_nthread)
+            #print('measure_mean_penalized_by_nthread', measure_mean_penalized_by_nthread)
+            #print('count_failed', count_failed)
+            #print('count_non_failed', count_non_failed)
 
             speedup_list =[]
             speedup_penalized_list =[]
@@ -3094,7 +3100,7 @@ if __name__ == '__main__':
                     speedup_list[thread_index][i] =  measure_by_nthread[thread_index_ref][i]/measure_by_nthread[thread_index][i]
                     speedup_avg[thread_index] += speedup_list[thread_index][i]
                 speedup_avg[thread_index] /=len(measure_by_nthread[thread_index])
-                print('len(measure_penalized_by_nthread[thread_index])',len(measure_penalized_by_nthread[thread_index]))
+
                 for i  in range(len(measure_penalized_by_nthread[thread_index])):
                     speedup_penalized_list[thread_index][i] =  measure_penalized_by_nthread[thread_index_ref][i]/measure_penalized_by_nthread[thread_index][i]
                     speedup_penalized_avg[thread_index] += speedup_penalized_list[thread_index][i]
