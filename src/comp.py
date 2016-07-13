@@ -3130,14 +3130,14 @@ if __name__ == '__main__':
                     subplot('411')
                     #plot(np.array([data[0] for data in data_tuples])[:],np.array([data[1] for data in data_tuples])[:], label =filename)
                     plot(np.array([data[0] for data in data_tuples])[:],np.array([data[1] for data in data_tuples])[:])
-                    ylabel('cpu time')
+                    ylabel('cpu time for each problems')
                     xlabel('number of threads')
                     legend()
                     
                     subplot('412')
                     #plot(np.array([data[0] for data in data_tuples])[:],np.array([data[1] for data in data_tuples])[:], label =filename)
                     plot(np.array([data[0] for data in data_tuples])[:],np.array([data_tuples[1][1]/data[1] for data in data_tuples])[:])
-                    ylabel('speedup')
+                    ylabel('speedup for each problems')
                     xlabel('number of threads')
                     legend()
                 except:
@@ -3145,7 +3145,7 @@ if __name__ == '__main__':
                 
             subplot('413')
             xlabel('problem size')
-            ylabel('speedup')
+            ylabel('speedup for each thread')
             for n in nthread_list:
                 index=nthread_list.index(n)
                 list_size_speedup= speedup_size_list[index]
@@ -3154,7 +3154,7 @@ if __name__ == '__main__':
             legend()
             subplot('414')
             xlabel('problem size')
-            ylabel('iter')
+            ylabel('iter for each thread')
             for n in nthread_list:
                 index=nthread_list.index(n)
                 iter_size_speedup= iter_size_list[index]
