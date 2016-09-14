@@ -194,7 +194,7 @@ list_contents=False
 compute_hardness = False
 compute_cond_rank = False
 adhoc= False
-thread_list =[]
+thread_list = []
 def usage():
   print "\n \n"
   print 'Usage: '+sys.argv[0]+'[option]'
@@ -1469,6 +1469,17 @@ nsgs_ac_gp = SiconosSolver(name="NSGS-AC-GP",
 nsgs_ac_gp.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_AC_GP
 nsgs_ac_gp.SolverOptions().internalSolvers.iparam[10]=0
 
+nsgs_ac_gp_p = SiconosSolver(name="NSGS-AC-GP-P",
+                             API=N.fc3d_nsgs,
+                             TAG=N.SICONOS_FRICTION_3D_NSGS,
+                             iparam_iter=7,
+                             dparam_err=1,
+                     maxiter=maxiter, precision=precision)
+nsgs_ac_gp.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_AC_GP_P
+nsgs_ac_gp.SolverOptions().internalSolvers.iparam[10]=0
+
+
+
 nsgs_jm = SiconosSolver(name="NSGS-JM",
                      API=N.fc3d_nsgs,
                      TAG=N.SICONOS_FRICTION_3D_NSGS,
@@ -1597,6 +1608,7 @@ if (numerics_has_openmp_solvers):
         nsgs_openmp.SolverOptions().internalSolvers.iparam[10]=0
 
         nsgs_openmp_solvers.append(nsgs_openmp)
+        
     for n in thread_list:
         nsgs_openmp = SiconosSolver(name="NSGS-AC-OPENMP-REDBLACK-"+str(n),
                                     API=N.fc3d_nsgs_openmp,
@@ -1606,6 +1618,22 @@ if (numerics_has_openmp_solvers):
                                     maxiter=maxiter, precision=precision)
         nsgs_openmp.SolverOptions().iparam[10]=n
         nsgs_openmp.SolverOptions().iparam[11]=1
+        nsgs_openmp.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_AC
+        nsgs_openmp.SolverOptions().internalSolvers.iparam[10]=0
+
+        nsgs_openmp_solvers.append(nsgs_openmp)
+
+    for n in thread_list:
+        nsgs_openmp = SiconosSolver(name="NSGS-AC-OPENMP-DDM-NAIVE-"+str(n),
+                                    API=N.fc3d_nsgs_openmp,
+                                    TAG=N.SICONOS_FRICTION_3D_NSGS_OPENMP,
+                                    iparam_iter=7,
+                                    dparam_err=1,
+                                    maxiter=maxiter, precision=precision)
+        nsgs_openmp.SolverOptions().iparam[10]=n
+        nsgs_openmp.SolverOptions().iparam[11]=2
+        nsgs_openmp.SolverOptions().iparam[12]=5
+        nsgs_openmp.SolverOptions().iparam[13]=10
         nsgs_openmp.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_AC
         nsgs_openmp.SolverOptions().internalSolvers.iparam[10]=0
 
@@ -2081,7 +2109,7 @@ HyperplaneProjection = SiconosSolver(name="HyperplaneProjection",
 #               FixedPointProjection, VIFixedPointProjection, ExtraGrad, VIExtraGrad]
 #all_solvers = [nsgs, snsgs, quartic, TrescaFixedPoint, ACLMFixedPoint, DeSaxceFixedPoint, VIFixedPointProjection, VIFixedPointProjection1, VIFixedPointProjection2, VIFixedPointProjection3, VIExtraGrad, SOCLCP, Prox, Prox2, Prox3, Prox4, Prox5, nsn_acSTD, nsn_acSTDGenerated,  nsn_acr, nsn_acJeanMoreau, nsn_acJeanMoreauGenerated, nsn_fb_gp, nsn_fb_fblsa]
 
-nsgs_solvers = [nsgs, nsgs_ac_gp, nsgs_jm, nsgs_jm_gp, nsgs_sfull, snsgs, nsgs_pli, nsgs_pli_10, nsgs_p,nsgs_pd,nsgs_pr , quartic]
+nsgs_solvers = [nsgs, nsgs_ac_gp, nsgs_ac_gp_p, nsgs_jm, nsgs_jm_gp, nsgs_sfull, snsgs, nsgs_pli, nsgs_pli_10, nsgs_p,nsgs_pd,nsgs_pr , quartic]
 # remove very nasty solver
 #nsgs_solvers.remove(nsgs_p)
 nsgs_solvers.remove(nsgs_pd)
@@ -2485,7 +2513,8 @@ if __name__ == '__main__':
                 write_report(solver_r,'solver_r.txt')
                 def long_substr(data):
                     substr = ''
-                    if len(data) > 1 and len(data[0]) > 0:
+                    print "data=",data
+                    if len(data) > 0 and len(data[0]) > 0:
                         for i in range(len(data[0])):
                             for j in range(len(data[0])-i+1):
                                 if j > len(substr) and is_substr(data[0][i:i+j], data):
@@ -2506,12 +2535,16 @@ if __name__ == '__main__':
                     all_rhos = [ domain ] + [ rhos[solver.name()] for solver in filter(lambda s: s._name in comp_data, solvers) ]
                     np.savetxt('profile.dat', np.matrix(all_rhos).transpose())
                     gp.write('resultfile = "profile.dat"\n')
+                    print "filenames=",filenames
+                    print "long_substr(filenames)=", long_substr(filenames)
                     test_name = long_substr(filenames).partition('-')[0]
+                    print "test_name=",test_name
+
                     if test_name.endswith('_'):
                         test_name  = test_name[:-1]
                     gp.write('basename="profile-{0}"\n'.format(test_name))
                     #print filename.partition('-')[0]
-                    print test_name
+                    print "test_name=",test_name
                     gp.write('\n')
                     gp.write('term_choice_tikz=1\n')
                     gp.write('if (term_choice_tikz == 1) \\\n')
@@ -2899,7 +2932,7 @@ if __name__ == '__main__':
                     gp.write('\n')
                     gp.write('set origin 0.0,winheight*2.0*trans+heightoff\n')
                     gp.write('numberofbox=50\n')
-                    gp.write('print \'max_nc =\', max_nc,\'min_nc =\', min_nc \n')
+                    gp.write('print \'max_nc =\', max_nc,\' min_nc =\', min_nc \n')
                     gp.write('binwidth = (max_nc-min_nc)/numberofbox\n')
                     gp.write('set boxwidth binwidth\n')
 
@@ -2909,9 +2942,8 @@ if __name__ == '__main__':
                     #gp.write('plot resultfile u (bin($1, binwidth)):(1.0) smooth freq w boxes title \'number of contacts\'  \n')
                     gp.write('plot resultfile u (bin($1, binwidth)):(1.0) smooth freq w boxes notitle  \n')
                     gp.write('\n')
-
-                    gp.write('binwidth = (max_ndof-min_ndof)/numberofbox\n')
-                    gp.write('print \'binwidth =\', binwidth \n')
+                    gp.write('print \'max_ndof =\', max_ndof,\' min_ndof =\', min_ndof \n')
+                    gp.write('if ( (max_ndof-min_ndof) < numberofbox) {binwidth =1 ;} else {binwidth = (max_ndof-min_ndof)/numberofbox}\n');
 
                     gp.write('set boxwidth binwidth\n')
                     gp.write('set origin 0.0,winheight*1.0*trans+heightoff\n')
@@ -3106,10 +3138,10 @@ if __name__ == '__main__':
                 thread_index    = nthread_list.index(n)
                 for i  in range(len(measure_by_nthread[thread_index])):
                     speedup_list[thread_index][i] =  measure_by_nthread[thread_index_ref][i]/measure_by_nthread[thread_index][i]
-                    speedup_avg[thread_index] += speedup_list[thread_index][-1]
+                    speedup_avg[thread_index] += speedup_list[thread_index][i]
                 speedup_avg[thread_index] /=len(measure_by_nthread[thread_index])
 
-            #print('speedup_avg', speedup_avg)
+            print('speedup_avg', speedup_avg)
             #print('speedup_list', speedup_list)
             
             _cmp=0
