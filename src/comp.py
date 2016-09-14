@@ -1587,7 +1587,7 @@ if (numerics_has_openmp_solvers):
                                 iparam_iter=7,
                                 dparam_err=1,
                                 maxiter=maxiter, precision=precision)
-    nsgs_openmp.SolverOptions().iparam[1] = N.SICONOS_FRICTION_3D_NSGS_LIGHT_ERROR_EVALUATION_WITH_FULL_FINAL
+    nsgs_openmp.SolverOptions().iparam[1] = N.SICONOS_FRICTION_3D_NSGS_ERROR_EVALUATION_LIGHT_WITH_FULL_FINAL
     nsgs_openmp.SolverOptions().iparam[14]=error_evaluation_frequency
     nsgs_openmp.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_AC
     nsgs_openmp.SolverOptions().internalSolvers.iparam[10]=0
