@@ -2,10 +2,24 @@
 #test_name=LMGC_AqueducPR
 #make -f ~/Work/faf/TeX/Makefile -k test_name=LMGC_945_SP_Box_PL measure_name=flpops
 
-all: vi nsgs_localtol nsgs_localsolver nsgs_shuffled psor_solvers nsn_solvers prox_solvers prox_series regul_series opti_solvers comp_solvers comp_solvers_large
+#all: vi nsgs_localtol nsgs_localsolver nsgs_shuffled psor_solvers nsn_solvers prox_solvers prox_series regul_series opti_solvers comp_solvers comp_solvers_large
+all:  nsgs_localsolver nsgs_shuffled psor_solvers nsn_solvers prox_solvers opti_solvers comp_solvers comp_solvers_large
 
 domain_value :
 ifeq ($(test_name),Capsules)
+	echo "10" | cat > domain.txt ;
+	echo "2" | cat >> domain.txt ;
+	echo "4" | cat >> domain.txt
+	echo "5" | cat >> domain.txt
+	echo "5" | cat >> domain.txt
+	echo "15" | cat >> domain.txt
+	echo "100" | cat >> domain.txt
+	echo "100" | cat >> domain.txt
+	echo "10" | cat >> domain.txt
+	echo "20" | cat >> domain.txt
+	echo "100" | cat >> domain.txt # comp large
+endif
+ifeq ($(test_name),Chain)
 	echo "10" | cat > domain.txt ;
 	echo "2" | cat >> domain.txt ;
 	echo "4" | cat >> domain.txt
