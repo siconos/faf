@@ -853,8 +853,13 @@ class Caller():
                               precision, utimeout]
 
                 if numerics_has_openmp_solvers :
-                    attrs.create('n_threads', solver.SolverOptions().iparam[10] )
-                    list_print.append(solver.SolverOptions().iparam[10])
+                    try:
+                        attrs.create('n_threads', solver.SolverOptions().iparam[10] )
+                        list_print.append(solver.SolverOptions().iparam[10])
+                    except :
+                        attrs.create('n_threads',-1)
+                        list_print.append(-1)
+                        
                 print(list_print)
 
                 with open('report.txt', "a") as report_file:
