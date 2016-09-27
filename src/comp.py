@@ -151,6 +151,48 @@ def split(s, sep, maxsplit=-1):
         sys.stderr.write('don\'t know how to split {0} with {1}\n'
                          .format(s, sep))
         return None
+def setAxLinesBW(ax):
+    """
+    Take each Line2D in the axes, ax, and convert the line style to be
+    suitable for black and white viewing.
+    """
+    MARKERSIZE = 5
+
+    COLORMAP = {
+        'b': {'marker': None, 'dash': (None,None)},
+        'g': {'marker': None, 'dash': [5,5]},
+        'r': {'marker': None, 'dash': [5,3,1,3]},
+        'c': {'marker': None, 'dash': [1,3]},
+        'm': {'marker': None, 'dash': [5,2,5,2,5,10]},
+        'y': {'marker': None, 'dash': [5,3,1,2,1,10]},
+        'k': {'marker': 'o', 'dash': (None,None)} #[1,2,1,10]}
+        }
+
+    MARKER = [None, 'o', None, 'o']
+
+    lines_to_adjust = ax.get_lines()
+    try:
+        lines_to_adjust += ax.get_legend().get_lines()
+    except AttributeError:
+        pass
+    count =0
+    for line in lines_to_adjust:
+        #print len(lines_to_adjust)
+        origColor = line.get_color()
+        line.set_color('black')
+        line.set_dashes(COLORMAP[origColor]['dash'])
+        #print count/7
+        line.set_marker(MARKER[count/7])
+        count = count +1
+        line.set_markersize(MARKERSIZE)
+
+def setFigLinesBW(fig):
+    """
+    Take each axes in the figure, and for each line in the axes, make the
+    line viewable in black and white.
+    """
+    for ax in fig.get_axes():
+        setAxLinesBW(ax)
 
 
 measure = 'flop'
@@ -2148,7 +2190,7 @@ all_solvers.extend(VIExtraGrad_series)
 all_solvers.extend(psor_series)
 all_solvers.extend(prox_series)
 all_solvers.extend(regul_series)
-all_solvers.extend(nsgs_series)
+#all_solvers.extend(nsgs_series)
 
 all_solvers.extend(nsgs_openmp_solvers)
 
@@ -2623,7 +2665,7 @@ if __name__ == '__main__':
 
             if not no_matplot:
                 # 5 plot
-                from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure, xlim, ylim, xscale
+                from matplotlib.pyplot import subplot, title, plot, grid, show, get_fignums, legend, figure, xlim, ylim, xscale
 
                 #for solver_name in comp_data:
                 for solver in solvers:
@@ -2640,7 +2682,7 @@ if __name__ == '__main__':
 
 
     if display_convergence:
-        from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure
+        from matplotlib.pyplot import subplot, title, plot, grid, show, get_fignums, legend, figure
         with h5py.File('comp.hdf5', 'r') as comp_file:
 
             data = comp_file['data']
@@ -2807,7 +2849,7 @@ if __name__ == '__main__':
 
 
     if display_distrib:
-        from matplotlib.pyplot import title, subplot, grid, show, legend, figure, hist, xlim, ylim, xscale
+        from matplotlib.pyplot import title, subplot, grid, show, get_fignums, legend, figure, hist, xlim, ylim, xscale
         if display_distrib_var == 'from-files':
 
             nc = []
@@ -3010,7 +3052,7 @@ if __name__ == '__main__':
 
 
     if display_speedup:
-        from matplotlib.pyplot import subplot, title, plot, grid, show, legend, figure, hist, bar, xlabel, ylabel, boxplot
+        from matplotlib.pyplot import subplot, title, plot, grid, show, get_fignums, legend, figure, hist, bar, xlabel, ylabel, boxplot
         print('\n display speedup is starting ...')
         with h5py.File('comp.hdf5', 'r') as comp_file:
 
@@ -3242,6 +3284,12 @@ if __name__ == '__main__':
 
 
 
+    display_bw=False
     if display or display_convergence or display_distrib or display_speedup:
         if not no_matplot:
+            if (display_bw):
+                figs = list(map(figure, get_fignums()))
+                for fig in figs:
+                    setFigLinesBW(fig)
+
             show()
