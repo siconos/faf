@@ -5,7 +5,7 @@ maxiter = 100
 maxiterls = 10
 precision = 1e-8
 with_guess = True
-
+with_mumps = 0
 from faf_tools import *
 from faf_papi import *
 class SiconosSolver():
