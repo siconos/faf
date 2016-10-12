@@ -68,22 +68,6 @@ except:
 #logger.setLevel(logging.INFO)
 
 
-class Memoize():
-    def __init__(self, fun):
-        self._fun = fun
-        self._done = dict()
-
-    def __call__(self, *args):
-        if args in self._done:
-            return self._done[args]
-        else:
-            try:
-                r = self._fun(*args)
-                self._done[args] = r
-                return r
-            except Exception as e:
-                self._done[args] = e
-                return e
 
 class WithCriterium():
 
@@ -186,19 +170,24 @@ def setAxLinesBW(ax):
 
     try:
         lines_legend_to_adjust = ax.get_legend().get_lines()
+        print lines_legend_to_adjust
+        count=1
+        
+        for line in lines_legend_to_adjust:
+            print len(lines_to_adjust)
+            origColor = line.get_color()
+            line.set_color('black')
+            line.set_dashes(COLORMAP[origColor]['dash'])
+            print count/7
+            line.set_marker(MARKER[count/7])
+            count = count +1
+            line.set_markersize(MARKERSIZE)
+    
+
+        
+        
     except AttributeError:
         pass
-    count=1
-    print lines_legend_to_adjust
-    for line in lines_legend_to_adjust:
-        print len(lines_to_adjust)
-        origColor = line.get_color()
-        line.set_color('black')
-        line.set_dashes(COLORMAP[origColor]['dash'])
-        print count/7
-        line.set_marker(MARKER[count/7])
-        count = count +1
-        line.set_markersize(MARKERSIZE)
     
 
 def setFigLinesBW(fig):
@@ -235,15 +224,11 @@ output_reactions = False
 measure_name = 'flpops'
 ask_compute = True
 ask_collect = True
-maxiter = 1000000
-maxiterls = 10
-precision = 1e-8
 domain = np.arange(1, 100, .1)
 ref_solver_name = 'NonsmoothGaussSeidel'
 random_sample_proba = None
 max_problems = None
 cond_nc = None
-with_guess = True
 with_mumps = 0
 file_filter=None
 gnuplot_separate_keys = False
@@ -252,6 +237,12 @@ compute_hardness = False
 compute_cond_rank = False
 adhoc= False
 thread_list = []
+
+from SiconosSolver import *
+from faf_tools import *
+
+
+
 def usage():
   print "\n \n"
   print 'Usage: '+sys.argv[0]+'[option]'
@@ -494,42 +485,7 @@ for o, a in opts:
         compute = False
 
 
-from ctypes import cdll, c_float, c_longlong, byref
-try:
-    with_papi = True
-    papi=cdll.LoadLibrary('/usr/local/lib/libpapi.so')
-except:
-    try:
-        with_papi = True
-        papi=cdll.LoadLibrary('/usr/lib/x86_64-linux-gnu/libpapi.so.5.3.0.0')
-    except:
-        try:
-            with_papi = True
-            papi=cdll.LoadLibrary('/home/bremond/faf/install/lib/libpapi.so')
-        except:
-            with_papi = False
-
-
-def init_flop():
-    if with_papi:
-        ireal_time = c_float()
-        iproc_time = c_float()
-        iflpops = c_longlong()
-        imflops = c_float()
-        papi.PAPI_flops(byref(ireal_time), byref(iproc_time), byref(iflpops),
-                        byref(imflops))
-
-
-def get_flop(real_time, proc_time, flpops, mflops):
-    if with_papi:
-        r = papi.PAPI_flops(byref(real_time), byref(proc_time), byref(flpops),
-                            byref(mflops))
-    else:
-        real_time.value = np.nan
-        proc_time.value = np.nan
-        flpops.value = -1
-        mflops.value = np.nan
-
+from faf_papi import *
 
 class TimeoutException(Exception):
     pass
@@ -704,33 +660,7 @@ def _norm_cond(problem_filename):
 
 norm_cond = Memoize(_norm_cond)
 
-def _read_fclib_format(filename):
-    #fc_problem = FCL.fclib_read_local(f)
-    #solution = FCL.fclib_read_solution(f)
-    #print FCL.fclib_merit_local(fc_problem, FCL.MERIT_1, solution)
-    #print fc_problem.W.m
-    #print solution.u
-    #solution.u = np.zeros(fc_problem.W.m * fc_problem.spacedim)
-    #solution.r = np.zeros(fc_problem.W.m * fc_problem.spacedim)
-    #print FCL.fclib_merit_local(fc_problem, FCL.MERIT_1, solution)
-    #problem = N.frictionContact_fclib_read(f)
-    #    print '{0}: M.m={1}, numberOfContacts*3/dim = {2}'.format(f, problem.W.m, problem.numberOfContacts*3/problem.W.m)
-    fclib_problem = FCL.fclib_read_local(filename)
-    numerics_problem =  N.from_fclib_local(fclib_problem)
-    return fclib_problem, numerics_problem
 
-def _numberOfDegreeofFreedom(f):
-    with h5py.File(f, 'r') as fclib_file:
-
-        try:
-            r = 6*fclib_file['fclib_local']['info'].attrs['numberOfInvolvedDS']
-        except:
-            try:
-                r = fclib_file['fclib_local']['info'].attrs['numberOfDegreeOfFreedom'][0]
-            except:
-                r = np.nan
-            #print "r=",r
-    return r
 
 
 # def _numberOfInvolvedDS(f):
@@ -749,14 +679,6 @@ def _dimension(f):
             r = np.nan
     return r
 
-def _numberOfDegreeofFreedomContacts(f):
-    with h5py.File(f, 'r') as fclib_file:
-        try:
-            r = fclib_file['fclib_local']['W']['m'][0]
-        except:
-            r = np.nan
-    #print "r=",r
-    return r
 
 def _cond_problem(filename):
     problem = read_fclib_format(filename)[1]
@@ -780,11 +702,7 @@ def _rank_dense(f):
     #print "r=",r
     return r
 
-read_fclib_format = Memoize(_read_fclib_format)
 
-numberOfDegreeofFreedom = Memoize(_numberOfDegreeofFreedom)
-
-numberOfDegreeofFreedomContacts = Memoize(_numberOfDegreeofFreedomContacts)
 
 dimension = Memoize(_dimension)
 
@@ -858,6 +776,7 @@ class Caller():
         except:
                 pass
 
+            
         try:
             self._internal_call(solver, sproblem, filename, pfilename, output_filename)
 
@@ -932,6 +851,8 @@ class Caller():
     def _internal_call(self, solver, problem, filename, pfilename, output_filename):
 
 
+        
+        
         with h5py.File(output_filename, 'w') as output:
 
             create_attrs_in_comp_file(output,precision,utimeout,measure_name)
@@ -1114,120 +1035,18 @@ class Caller():
                     # comp_file.flush()
 
 
-class SiconosSolver():
-    _name = None
-    _gnuplot_name = None
-    _API = None
-    _TAG = None
-    _iparam_iter = None
-    _dparam_err = None
-    _SO = None
-
-    def _get(self, tab, index):
-        if index is not None:
-            return tab[index]
-        else:
-            return None
-
-    def __init__(self, name=None, gnuplot_name=None, API=None, TAG=None, iparam_iter=None,
-                 dparam_err=None, maxiter=maxiter, precision=precision):
-        self._name = name
-        if (gnuplot_name==None):
-            self._gnuplot_name = self._name
-        else:
-            self._gnuplot_name = gnuplot_name
-        self._API = API
-        self._TAG = TAG
-        self._iparam_iter = iparam_iter
-        self._dparam_err = dparam_err
-        self._SO = N.SolverOptions(TAG)  # set default solver options
-        self._SO.iparam[0] = maxiter
-        self._SO.dparam[0] = precision
-
-    def SolverOptions(self):
-        return self._SO
-
-    def __call__(self, problem, reactions, velocities):
-        real_time = c_float()
-        proc_time = c_float()
-        flpops = c_longlong()
-        mflops = c_float()
-        init_flop()
-        info = self._API(problem, reactions, velocities, self._SO)
-
-        get_flop(real_time, proc_time, flpops, mflops)
-        return (info, self._get(self._SO.iparam, self._iparam_iter),
-                self._get(self._SO.dparam, self._dparam_err),
-                real_time.value, proc_time.value,
-                flpops.value, mflops.value)
-
-    def guess(self, filename):
-        problem = read_fclib_format(filename)[1]
-
-        with h5py.File(filename, 'r') as f:
-            psize = numberOfDegreeofFreedomContacts(filename)
-            if with_guess and 'guesses' in f:
-                number_of_guesses = f['guesses']['number_of_guesses'][0]
-                velocities = f['guesses']['1']['u'][:]
-                reactions = f['guesses']['1']['r'][:]
-            else:
-                # guess is missing
-                reactions = np.zeros(psize)
-                velocities = np.zeros(psize)
-
-        return reactions, velocities
-
-    def name(self):
-        return self._name
-    def gnuplot_name(self):
-        return self._gnuplot_name
-
-class BogusSolver(SiconosSolver):
-    def read_fclib_format(self, filename):
-        return BogusInterface.FCLib.fclib_read_local(filename)
-
-def wrap_bogus_solve(problem, reactions, velocities, SO):
-    res = BogusInterface.solve_fclib(problem, reactions, velocities, SO)
-    return res
-
-bogusPureNewton = BogusSolver(name="BogusPureNewton", API=wrap_bogus_solve, TAG=N.SICONOS_FRICTION_3D_NSN_FB, iparam_iter=1, dparam_err=1, maxiter=maxiter, precision=precision)
-bogusPureNewton.SolverOptions().iparam[4]=0
-
-
-bogusPureEnumerative = BogusSolver(name="BogusPureEnumerative", API=wrap_bogus_solve, TAG=N.SICONOS_FRICTION_3D_NSN_FB, iparam_iter=1, dparam_err=1, maxiter=maxiter, precision=precision)
-bogusPureEnumerative.SolverOptions().iparam[4]=1
-
-
-bogusHybrid = BogusSolver(name="BogusHybrid", API=wrap_bogus_solve, TAG=N.SICONOS_FRICTION_3D_NSN_FB, iparam_iter=1, dparam_err=1, maxiter=maxiter, precision=precision)
-bogusHybrid.SolverOptions().iparam[4]=2
-
-
-bogusRevHybrid = BogusSolver(name="BogusRevHybrid", API=wrap_bogus_solve, TAG=N.SICONOS_FRICTION_3D_NSN_FB, iparam_iter=1, dparam_err=1, maxiter=maxiter, precision=precision)
-bogusRevHybrid.SolverOptions().iparam[4]=3
-
-
-
-class SiconosHybridSolver(SiconosSolver):
-
-    def guess(self, filename):
-        pfilename = os.path.splitext(filename)[0]
-        with h5py.File('comp.hdf5', 'r') as comp_file:
-            return extern_guess(pfilename, 'NSGS', 1, comp_file)
-
-
-class SiconosWrappedSolver(SiconosSolver):
-    def __call__(self, problem, reactions, velocities):
-        return self._API(problem, reactions, velocities, self._SO)
-
 
 #
 # Some solvers
 #
+
+
+###### NSN Family
 nsn_acSTD = SiconosSolver(name="NSN-AlartCurnier",
                            gnuplot_name="NSN-AC",
                            API=N.fc3d_nonsmooth_Newton_AlartCurnier,
                            TAG=N.SICONOS_FRICTION_3D_NSN_AC,
-                           iparam_iter=1,
+                           iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                            dparam_err=1,
                            maxiter=maxiter, precision=precision)
 
@@ -1241,7 +1060,7 @@ nsn_acSTD_nls = SiconosSolver(name="NSN-AlartCurnier-NLS",
                                gnuplot_name="NSN-AC-NLS",
                                API=N.fc3d_nonsmooth_Newton_AlartCurnier,
                                TAG=N.SICONOS_FRICTION_3D_NSN_AC,
-                               iparam_iter=1,
+                               iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                dparam_err=1,
                                maxiter=maxiter, precision=precision)
 
@@ -1255,7 +1074,7 @@ nsn_acJeanMoreau = SiconosSolver(name="NSN-JeanMoreau",
                                   gnuplot_name="NSN-JM",
                                   API=N.fc3d_nonsmooth_Newton_AlartCurnier,
                                   TAG=N.SICONOS_FRICTION_3D_NSN_AC,
-                                  iparam_iter=1,
+                                  iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                   dparam_err=1,
                                   maxiter=maxiter, precision=precision)
 
@@ -1269,7 +1088,7 @@ nsn_acJeanMoreau_nls = SiconosSolver(name="NSN-JeanMoreau-NLS",
                                       gnuplot_name="NSN-JM-NLS",
                                       API=N.fc3d_nonsmooth_Newton_AlartCurnier,
                                       TAG=N.SICONOS_FRICTION_3D_NSN_AC,
-                                      iparam_iter=1,
+                                      iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                       dparam_err=1,
                                       maxiter=maxiter, precision=precision)
 
@@ -1283,7 +1102,7 @@ nsn_acSTDGenerated = SiconosSolver(name="NSN-AlartCurnier-Generated",
                                     gnuplot_name="NSN-AC-Generated",
                                     API=N.fc3d_nonsmooth_Newton_AlartCurnier,
                                     TAG=N.SICONOS_FRICTION_3D_NSN_AC,
-                                    iparam_iter=1,
+                                    iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                     dparam_err=1,
                                     maxiter=maxiter, precision=precision)
 
@@ -1297,7 +1116,7 @@ nsn_acSTDGenerated_nls = SiconosSolver(name="NSN-AlartCurnier-Generated-NLS",
                                         gnuplot_name="NSN-AC-Generated-NLS",
                                         API=N.fc3d_nonsmooth_Newton_AlartCurnier,
                                         TAG=N.SICONOS_FRICTION_3D_NSN_AC,
-                                        iparam_iter=1,
+                                        iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                         dparam_err=1,
                                         maxiter=maxiter, precision=precision)
 
@@ -1311,7 +1130,7 @@ nsn_acJeanMoreauGenerated = SiconosSolver(name="NSN-JeanMoreau-Generated",
                                            gnuplot_name="NSN-JM-Generated",
                                            API=N.fc3d_nonsmooth_Newton_AlartCurnier,
                                            TAG=N.SICONOS_FRICTION_3D_NSN_AC,
-                                           iparam_iter=1,
+                                           iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                            dparam_err=1,
                                            maxiter=maxiter, precision=precision)
 
@@ -1329,7 +1148,7 @@ if with_mumps:
                                                      gnuplot_name="NSN-JM-Generated-LUSOL",
                                                      API=N.fc3d_nonsmooth_Newton_AlartCurnier,
                                                      TAG=N.SICONOS_FRICTION_3D_NSN_AC,
-                                                     iparam_iter=1,
+                                                     iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                                      dparam_err=1,
                                                      maxiter=maxiter, precision=precision)
 
@@ -1345,7 +1164,7 @@ nsn_acJeanMoreauGenerated_nls = SiconosSolver(name="NSN-JeanMoreau-Generated-NLS
                                                gnuplot_name="NSN-JM-Generated-NLS",
                                                API=N.fc3d_nonsmooth_Newton_AlartCurnier,
                                                TAG=N.SICONOS_FRICTION_3D_NSN_AC,
-                                               iparam_iter=1,
+                                               iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                                dparam_err=1,
                                                maxiter=maxiter, precision=precision)
 
@@ -1361,7 +1180,7 @@ if with_mumps:
                                                          gnuplot_name="NSN-JM-Generated-NLS-LUSOL",
                                                          API=N.fc3d_nonsmooth_Newton_AlartCurnier,
                                                          TAG=N.SICONOS_FRICTION_3D_NSN_AC,
-                                                         iparam_iter=1,
+                                                         iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                                          dparam_err=1,
                                                          maxiter=maxiter, precision=precision)
 
@@ -1375,7 +1194,7 @@ nsn_fb_gp = SiconosSolver(name="NSN-FischerBurmeister-GP",
                            gnuplot_name="NSN-FB-GP",
                            API=N.fc3d_nonsmooth_Newton_FischerBurmeister,
                            TAG=N.SICONOS_FRICTION_3D_NSN_FB,
-                           iparam_iter=1,
+                           iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                            dparam_err=1,
                            maxiter=maxiter, precision=precision)
 
@@ -1390,7 +1209,7 @@ if with_mumps:
                                      gnuplot_name="NSN-FB-GP-LUSOL",
                                      API=N.fc3d_nonsmooth_Newton_FischerBurmeister,
                                      TAG=N.SICONOS_FRICTION_3D_NSN_FB,
-                                     iparam_iter=1,
+                                     iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                      dparam_err=1,
                                      maxiter=maxiter, precision=precision)
 
@@ -1403,7 +1222,7 @@ nsn_fb_fblsa = SiconosSolver(name="NSN-FischerBurmeister-FBLSA",
                               gnuplot_name="NSN-FB-FBLSA",
                               API=N.fc3d_nonsmooth_Newton_FischerBurmeister,
                               TAG=N.SICONOS_FRICTION_3D_NSN_FB,
-                              iparam_iter=1,
+                              iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                               dparam_err=1,
                               maxiter=maxiter, precision=precision)
 
@@ -1416,7 +1235,7 @@ nsn_fb_nls = SiconosSolver(name="NSN-FischerBurmeister-NLS",
                             gnuplot_name="NSN-FB-NLS",
                             API=N.fc3d_nonsmooth_Newton_FischerBurmeister,
                             TAG=N.SICONOS_FRICTION_3D_NSN_FB,
-                            iparam_iter=1,
+                            iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                             dparam_err=1,
                             maxiter=maxiter, precision=precision)
 
@@ -1431,7 +1250,7 @@ if with_mumps:
                                       gnuplot_name="NSN-FB-NLS-LUSOL",
                                       API=N.fc3d_nonsmooth_Newton_FischerBurmeister,
                                       TAG=N.SICONOS_FRICTION_3D_NSN_FB,
-                                      iparam_iter=1,
+                                      iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                       dparam_err=1,
                                       maxiter=maxiter, precision=precision)
 
@@ -1460,7 +1279,7 @@ if with_mumps:
                                      gnuplot_name="NSN-NM-GP-LUSOL",
                                      API=N.fc3d_nonsmooth_Newton_NaturalMap,
                                      TAG=N.SICONOS_FRICTION_3D_NSN_NM,
-                                     iparam_iter=1,
+                                     iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                      dparam_err=1,
                                      maxiter=maxiter, precision=precision)
 
@@ -1473,7 +1292,7 @@ nsn_nm_fblsa = SiconosSolver(name="NSN-NaturalMap-FBLSA",
                               gnuplot_name="NSN-NM-FBLSA",
                               API=N.fc3d_nonsmooth_Newton_NaturalMap,
                               TAG=N.SICONOS_FRICTION_3D_NSN_NM,
-                              iparam_iter=1,
+                              iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                               dparam_err=1,
                               maxiter=maxiter, precision=precision)
 
@@ -1486,7 +1305,7 @@ nsn_nm_nls = SiconosSolver(name="NSN-NaturalMap-NLS",
                             gnuplot_name="NSN-NM-NLS",
                             API=N.fc3d_nonsmooth_Newton_NaturalMap,
                             TAG=N.SICONOS_FRICTION_3D_NSN_NM,
-                            iparam_iter=1,
+                            iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                             dparam_err=1,
                             maxiter=maxiter, precision=precision)
 
@@ -1495,13 +1314,28 @@ nsn_nm_nls.SolverOptions().iparam[11] = -1
 nsn_nm_nls.SolverOptions().iparam[12] = 0
 nsn_nm_nls.SolverOptions().iparam[13] = with_mumps
 
+nsn_acSTD_nls_hybrid = SiconosSolver(name="NSN-AlartCurnier-NLS-HYBRID",
+                                     gnuplot_name="NSN-AC-NLS-HYBRID",
+                                     API=N.fc3d_nonsmooth_Newton_AlartCurnier,
+                                     TAG=N.SICONOS_FRICTION_3D_NSN_AC,
+                                     iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
+                                     dparam_err=1,
+                                     maxiter=maxiter, precision=precision)
+
+nsn_acSTD_nls_hybrid.SolverOptions().iparam[10] = 0;
+nsn_acSTD_nls_hybrid.SolverOptions().iparam[12] = 0;
+nsn_acSTD_nls_hybrid.SolverOptions().iparam[13] = with_mumps;
+nsn_acSTD_nls_hybrid.SolverOptions().iparam[3] =  10000000
+nsn_acSTD_nls_hybrid.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_LINESEARCH] = N.SICONOS_FRICTION_3D_NSN_LINESEARCH_NO;
+nsn_acSTD_nls_hybrid.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY]=N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY_VI_EG_NSN;
+
 nsn_nm_nls_lusol = None
 if with_mumps:
     nsn_nm_nls_lusol = SiconosSolver(name="NSN-NaturalMap-NLS-lusol",
                                       gnuplot_name="NSN-NM-NLS-LUSOL",
                                       API=N.fc3d_nonsmooth_Newton_NaturalMap,
                                       TAG=N.SICONOS_FRICTION_3D_NSN_NM,
-                                      iparam_iter=1,
+                                      iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                       dparam_err=1,
                                       maxiter=maxiter, precision=precision)
 
@@ -1514,29 +1348,32 @@ if with_mumps:
 hnsn_ac = SiconosHybridSolver(name = "HLocalAlartCurnier",
                                API=N.fc3d_nonsmooth_Newton_AlartCurnier,
                                TAG=N.SICONOS_FRICTION_3D_NSN_AC,
-                               iparam_iter=1,
+                               iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                dparam_err=1,
                                maxiter=maxiter, precision=precision)
 hnsn_ac.SolverOptions().iparam[3] = 10000000
 
+###### NSGS Family
+
+
 nsgs = SiconosSolver(name="NSGS-AC",
                      API=N.fc3d_nsgs,
                      TAG=N.SICONOS_FRICTION_3D_NSGS,
-                     iparam_iter=7,
+                     iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                      dparam_err=1,
                      maxiter=maxiter, precision=precision)
 nsgs.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN
-nsgs.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_ONECONTACT_NSN_FORMULATION_ALARTCURNIER_STD
+nsgs.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
 
 
 nsgs_ac_gp = SiconosSolver(name="NSGS-AC-GP",
                      API=N.fc3d_nsgs,
                      TAG=N.SICONOS_FRICTION_3D_NSGS,
-                     iparam_iter=7,
+                     iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                      dparam_err=1,
                      maxiter=maxiter, precision=precision)
 nsgs_ac_gp.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_GP
-nsgs_ac_gp.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_ONECONTACT_NSN_FORMULATION_ALARTCURNIER_STD
+nsgs_ac_gp.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
 
 
 
@@ -1544,28 +1381,28 @@ nsgs_ac_gp.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTA
 nsgs_jm = SiconosSolver(name="NSGS-JM",
                      API=N.fc3d_nsgs,
                      TAG=N.SICONOS_FRICTION_3D_NSGS,
-                     iparam_iter=7,
+                     iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                      dparam_err=1,
                      maxiter=maxiter, precision=precision)
 nsgs_jm.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN
-nsgs_jm.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_ONECONTACT_NSN_FORMULATION_JEANMOREAU_STD
+nsgs_jm.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_JEANMOREAU_STD
 
 
 nsgs_jm_gp = SiconosSolver(name="NSGS-JM-GP",
                      API=N.fc3d_nsgs,
                      TAG=N.SICONOS_FRICTION_3D_NSGS,
-                     iparam_iter=7,
+                     iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                      dparam_err=1,
                      maxiter=maxiter, precision=precision)
 nsgs_jm_gp.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_GP
-nsgs_jm_gp.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_ONECONTACT_NSN_FORMULATION_JEANMOREAU_STD
+nsgs_jm_gp.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_JEANMOREAU_STD
 
 
 snsgs = SiconosSolver(name="NSGS-AC-GP-Shuffled",
                       gnuplot_name="NSGS-AC-GP Shuffled",
                       API=N.fc3d_nsgs,
                       TAG=N.SICONOS_FRICTION_3D_NSGS,
-                      iparam_iter=7,
+                      iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                       dparam_err=1,
                       maxiter=maxiter, precision=precision)
 snsgs.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_GP
@@ -1576,7 +1413,7 @@ nsgs_sfull = SiconosSolver(name="NSGS-AC-GP-Shuffled-full",
                            gnuplot_name="NSGS-AC-GP Fully shuffled",
                            API=N.fc3d_nsgs,
                            TAG=N.SICONOS_FRICTION_3D_NSGS,
-                           iparam_iter=7,
+                           iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                            dparam_err=1,
                            maxiter=maxiter, precision=precision)
 nsgs_sfull.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_GP
@@ -1588,7 +1425,7 @@ nsgs_pli = SiconosSolver(name="NSGS-PLI-100",
                          gnuplot_name="NSGS-FP-VI-UPK iter=100",
                          API=N.fc3d_nsgs,
                          TAG=N.SICONOS_FRICTION_3D_NSGS,
-                         iparam_iter=7,
+                         iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                          dparam_err=1,
                          maxiter=maxiter, precision=precision)
 nsgs_pli.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithLocalIteration
@@ -1598,7 +1435,7 @@ nsgs_pli_10 = SiconosSolver(name="NSGS-PLI-10",
                             gnuplot_name="NSGS-FP-VI-UPK iter=10",
                             API=N.fc3d_nsgs,
                             TAG=N.SICONOS_FRICTION_3D_NSGS,
-                            iparam_iter=7,
+                            iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                             dparam_err=1,
                             maxiter=maxiter, precision=precision)
 nsgs_pli_10.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithLocalIteration
@@ -1609,7 +1446,7 @@ nsgs_p = SiconosSolver(name="NSGS-P",
                        gnuplot_name="NSGS-FP-DS-One",
                        API=N.fc3d_nsgs,
                        TAG=N.SICONOS_FRICTION_3D_NSGS,
-                       iparam_iter=7,
+                       iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                        dparam_err=1,
                        maxiter=maxiter, precision=precision)
 nsgs_p.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnCone
@@ -1618,7 +1455,7 @@ nsgs_pd = SiconosSolver(name="NSGS-PD",
                         gnuplot_name="NSGS-FP-DS-One  D",
                         API=N.fc3d_nsgs,
                         TAG=N.SICONOS_FRICTION_3D_NSGS,
-                        iparam_iter=7,
+                        iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                         dparam_err=1,
                         maxiter=maxiter, precision=precision)
 nsgs_pd.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithDiagonalization
@@ -1627,7 +1464,7 @@ nsgs_pr = SiconosSolver(name="NSGS-PR",
                         gnuplot_name="NSGS-FP-DS-One  R",
                         API=N.fc3d_nsgs,
                         TAG=N.SICONOS_FRICTION_3D_NSGS,
-                        iparam_iter=7,
+                        iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                         dparam_err=1,
                         maxiter=maxiter, precision=precision)
 nsgs_pr.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithRegularization
@@ -1638,110 +1475,110 @@ nsgs_pr.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONT
 nsgs_ac_gp_hybrid_pli_nsn = SiconosSolver(name="NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-1",
                              API=N.fc3d_nsgs,
                              TAG=N.SICONOS_FRICTION_3D_NSGS,
-                             iparam_iter=7,
+                             iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                              dparam_err=1,
                      maxiter=maxiter, precision=precision)
 nsgs_ac_gp_hybrid_pli_nsn.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_GP_HYBRID
-nsgs_ac_gp_hybrid_pli_nsn.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_ONECONTACT_NSN_FORMULATION_ALARTCURNIER_STD
-nsgs_ac_gp_hybrid_pli_nsn.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_MAX_ITER] = 1
-nsgs_ac_gp_hybrid_pli_nsn.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_STRATEGY ] =  N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_STRATEGY_PLI_NSN_LOOP
+nsgs_ac_gp_hybrid_pli_nsn.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
+nsgs_ac_gp_hybrid_pli_nsn.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_MAX_ITER] = 1
+nsgs_ac_gp_hybrid_pli_nsn.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY ] =  N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY_PLI_NSN_LOOP
 
 nsgs_ac_gp_hybrid_pli_nsn_10 = SiconosSolver(name="NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-10",
                              API=N.fc3d_nsgs,
                              TAG=N.SICONOS_FRICTION_3D_NSGS,
-                             iparam_iter=7,
+                             iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                              dparam_err=1,
                      maxiter=maxiter, precision=precision)
 nsgs_ac_gp_hybrid_pli_nsn_10.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_GP_HYBRID
-nsgs_ac_gp_hybrid_pli_nsn_10.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_ONECONTACT_NSN_FORMULATION_ALARTCURNIER_STD
-nsgs_ac_gp_hybrid_pli_nsn_10.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_MAX_ITER] = 10
-nsgs_ac_gp_hybrid_pli_nsn_10.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_STRATEGY ] =  N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_STRATEGY_PLI_NSN_LOOP
+nsgs_ac_gp_hybrid_pli_nsn_10.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
+nsgs_ac_gp_hybrid_pli_nsn_10.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_MAX_ITER] = 10
+nsgs_ac_gp_hybrid_pli_nsn_10.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY ] =  N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY_PLI_NSN_LOOP
 
 nsgs_ac_gp_hybrid_pli_nsn_100 = SiconosSolver(name="NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-100",
                                  API=N.fc3d_nsgs,
                                  TAG=N.SICONOS_FRICTION_3D_NSGS,
-                                 iparam_iter=7,
+                                 iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                  dparam_err=1,
                                  maxiter=maxiter, precision=precision)
 nsgs_ac_gp_hybrid_pli_nsn_100.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_GP_HYBRID
-nsgs_ac_gp_hybrid_pli_nsn_100.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_ONECONTACT_NSN_FORMULATION_ALARTCURNIER_STD
-nsgs_ac_gp_hybrid_pli_nsn_100.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_MAX_ITER] = 100
-nsgs_ac_gp_hybrid_pli_nsn_100.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_STRATEGY ] =  N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_STRATEGY_PLI_NSN_LOOP
+nsgs_ac_gp_hybrid_pli_nsn_100.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
+nsgs_ac_gp_hybrid_pli_nsn_100.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_MAX_ITER] = 100
+nsgs_ac_gp_hybrid_pli_nsn_100.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY ] =  N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY_PLI_NSN_LOOP
 
 nsgs_ac_gp_hybrid_pli_nsn_10_1 = SiconosSolver(name="NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-10-1",
                                  API=N.fc3d_nsgs,
                                  TAG=N.SICONOS_FRICTION_3D_NSGS,
-                                 iparam_iter=7,
+                                 iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                  dparam_err=1,
                                  maxiter=maxiter, precision=precision)
 nsgs_ac_gp_hybrid_pli_nsn_10_1.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_GP_HYBRID
-nsgs_ac_gp_hybrid_pli_nsn_10_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_ONECONTACT_NSN_FORMULATION_ALARTCURNIER_STD
-nsgs_ac_gp_hybrid_pli_nsn_10_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_MAX_ITER] = 10
-nsgs_ac_gp_hybrid_pli_nsn_10_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_MAX_LOOP] = 1
-nsgs_ac_gp_hybrid_pli_nsn_10_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_STRATEGY ] =  N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_STRATEGY_PLI_NSN_LOOP
+nsgs_ac_gp_hybrid_pli_nsn_10_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
+nsgs_ac_gp_hybrid_pli_nsn_10_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_MAX_ITER] = 10
+nsgs_ac_gp_hybrid_pli_nsn_10_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_MAX_LOOP] = 1
+nsgs_ac_gp_hybrid_pli_nsn_10_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY ] =  N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY_PLI_NSN_LOOP
 
 nsgs_ac_gp_hybrid_pli_nsn_100_1 = SiconosSolver(name="NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-100-1",
                                    API=N.fc3d_nsgs,
                                    TAG=N.SICONOS_FRICTION_3D_NSGS,
-                                   iparam_iter=7,
+                                   iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                    dparam_err=1,
                                    maxiter=maxiter, precision=precision)
 nsgs_ac_gp_hybrid_pli_nsn_100_1.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_GP_HYBRID
-nsgs_ac_gp_hybrid_pli_nsn_100_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_ONECONTACT_NSN_FORMULATION_ALARTCURNIER_STD
-nsgs_ac_gp_hybrid_pli_nsn_100_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_MAX_ITER] = 100
-nsgs_ac_gp_hybrid_pli_nsn_100_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_MAX_LOOP] = 1
-nsgs_ac_gp_hybrid_pli_nsn_100_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_STRATEGY ] =  N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_STRATEGY_PLI_NSN_LOOP
+nsgs_ac_gp_hybrid_pli_nsn_100_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
+nsgs_ac_gp_hybrid_pli_nsn_100_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_MAX_ITER] = 100
+nsgs_ac_gp_hybrid_pli_nsn_100_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_MAX_LOOP] = 1
+nsgs_ac_gp_hybrid_pli_nsn_100_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY ] =  N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY_PLI_NSN_LOOP
 
 nsgs_ac_gp_hybrid_pli_nsn_100 = SiconosSolver(name="NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-100",
                                  API=N.fc3d_nsgs,
                                  TAG=N.SICONOS_FRICTION_3D_NSGS,
-                                 iparam_iter=7,
+                                 iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                  dparam_err=1,
                                  maxiter=maxiter, precision=precision)
 nsgs_ac_gp_hybrid_pli_nsn_100.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_GP_HYBRID
-nsgs_ac_gp_hybrid_pli_nsn_100.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_ONECONTACT_NSN_FORMULATION_ALARTCURNIER_STD
-nsgs_ac_gp_hybrid_pli_nsn_100.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_MAX_ITER] = 100
-nsgs_ac_gp_hybrid_pli_nsn_100.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_STRATEGY ] =  N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_STRATEGY_PLI_NSN_LOOP
+nsgs_ac_gp_hybrid_pli_nsn_100.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
+nsgs_ac_gp_hybrid_pli_nsn_100.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_MAX_ITER] = 100
+nsgs_ac_gp_hybrid_pli_nsn_100.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY ] =  N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY_PLI_NSN_LOOP
 
 
 
 nsgs_ac_gp_hybrid_pli_nsn_100_1 = SiconosSolver(name="NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-100-1",
                                    API=N.fc3d_nsgs,
                                    TAG=N.SICONOS_FRICTION_3D_NSGS,
-                                   iparam_iter=7,
+                                   iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                    dparam_err=1,
                                    maxiter=maxiter, precision=precision)
 nsgs_ac_gp_hybrid_pli_nsn_100_1.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_GP_HYBRID
-nsgs_ac_gp_hybrid_pli_nsn_100_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_ONECONTACT_NSN_FORMULATION_ALARTCURNIER_STD
-nsgs_ac_gp_hybrid_pli_nsn_100_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_MAX_ITER] = 100
-nsgs_ac_gp_hybrid_pli_nsn_100_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_MAX_LOOP] = 1
-nsgs_ac_gp_hybrid_pli_nsn_100_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_STRATEGY ] =  N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_STRATEGY_PLI_NSN_LOOP
+nsgs_ac_gp_hybrid_pli_nsn_100_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
+nsgs_ac_gp_hybrid_pli_nsn_100_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_MAX_ITER] = 100
+nsgs_ac_gp_hybrid_pli_nsn_100_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_MAX_LOOP] = 1
+nsgs_ac_gp_hybrid_pli_nsn_100_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY ] =  N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY_PLI_NSN_LOOP
 
 
 nsgs_ac_gp_hybrid_nsn_nsn_pli_100 = SiconosSolver(name="NSGS-AC-GP-HYBRID-NSN-PLI-NSN-LOOP-100",
                                  API=N.fc3d_nsgs,
                                  TAG=N.SICONOS_FRICTION_3D_NSGS,
-                                 iparam_iter=7,
+                                 iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                  dparam_err=1,
                                  maxiter=maxiter, precision=precision)
 nsgs_ac_gp_hybrid_nsn_nsn_pli_100.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_GP_HYBRID
-nsgs_ac_gp_hybrid_nsn_nsn_pli_100.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_ONECONTACT_NSN_FORMULATION_ALARTCURNIER_STD
-nsgs_ac_gp_hybrid_nsn_nsn_pli_100.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_MAX_ITER] = 100
-nsgs_ac_gp_hybrid_nsn_nsn_pli_100.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_STRATEGY] = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_STRATEGY_NSN_AND_NSN_PLI_LOOP 
+nsgs_ac_gp_hybrid_nsn_nsn_pli_100.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
+nsgs_ac_gp_hybrid_nsn_nsn_pli_100.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_MAX_ITER] = 100
+nsgs_ac_gp_hybrid_nsn_nsn_pli_100.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY] = N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY_NSN_AND_NSN_PLI_LOOP 
 
 
 
 nsgs_ac_gp_hybrid_nsn_nsn_pli_100_1 = SiconosSolver(name="NSGS-AC-GP-HYBRID-NSN-PLI-NSN-LOOP-100-1",
                                                     API=N.fc3d_nsgs,
                                                     TAG=N.SICONOS_FRICTION_3D_NSGS,
-                                                    iparam_iter=7,
+                                                    iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                                     dparam_err=1,
                                                     maxiter=maxiter, precision=precision)
 nsgs_ac_gp_hybrid_nsn_nsn_pli_100_1.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_GP_HYBRID
-nsgs_ac_gp_hybrid_nsn_nsn_pli_100_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_ONECONTACT_NSN_FORMULATION_ALARTCURNIER_STD
-nsgs_ac_gp_hybrid_nsn_nsn_pli_100_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_MAX_ITER] = 100
-nsgs_ac_gp_hybrid_nsn_nsn_pli_100_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_MAX_LOOP] = 1
-nsgs_ac_gp_hybrid_nsn_nsn_pli_100_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_STRATEGY] =  N.SICONOS_FRICTION_3D_ONECONTACT_NSN_HYBRID_STRATEGY_NSN_AND_NSN_PLI_LOOP 
+nsgs_ac_gp_hybrid_nsn_nsn_pli_100_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
+nsgs_ac_gp_hybrid_nsn_nsn_pli_100_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_MAX_ITER] = 100
+nsgs_ac_gp_hybrid_nsn_nsn_pli_100_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_MAX_LOOP] = 1
+nsgs_ac_gp_hybrid_nsn_nsn_pli_100_1.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY] =  N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY_NSN_AND_NSN_PLI_LOOP 
 
 
 
@@ -1765,7 +1602,7 @@ if (numerics_has_openmp_solvers):
     nsgs_openmp = SiconosSolver(name="NSGS-AC-OPENMP-FOR-"+str(error_evaluation_frequency)+"-"+str(0),
                                 API=N.fc3d_nsgs,
                                 TAG=N.SICONOS_FRICTION_3D_NSGS,
-                                iparam_iter=7,
+                                iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                 dparam_err=1,
                                 maxiter=maxiter, precision=precision)
     nsgs_openmp.SolverOptions().iparam[1] = N.SICONOS_FRICTION_3D_NSGS_ERROR_EVALUATION_LIGHT_WITH_FULL_FINAL
@@ -1779,7 +1616,7 @@ if (numerics_has_openmp_solvers):
         nsgs_openmp = SiconosSolver(name="NSGS-AC-OPENMP-FOR-"+str(error_evaluation_frequency)+"-"+str(n),
                                     API=N.fc3d_nsgs_openmp,
                                     TAG=N.SICONOS_FRICTION_3D_NSGS_OPENMP,
-                                    iparam_iter=7,
+                                    iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                     dparam_err=1,
                                     maxiter=maxiter, precision=precision)
         nsgs_openmp.SolverOptions().iparam[10]=n
@@ -1794,7 +1631,7 @@ if (numerics_has_openmp_solvers):
         nsgs_openmp = SiconosSolver(name="NSGS-AC-OPENMP-REDBLACK-"+str(n),
                                     API=N.fc3d_nsgs_openmp,
                                     TAG=N.SICONOS_FRICTION_3D_NSGS_OPENMP,
-                                    iparam_iter=7,
+                                    iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                     dparam_err=1,
                                     maxiter=maxiter, precision=precision)
         nsgs_openmp.SolverOptions().iparam[10]=n
@@ -1808,7 +1645,7 @@ if (numerics_has_openmp_solvers):
         nsgs_openmp = SiconosSolver(name="NSGS-AC-OPENMP-DDM-NAIVE-"+str(n),
                                     API=N.fc3d_nsgs_openmp,
                                     TAG=N.SICONOS_FRICTION_3D_NSGS_OPENMP,
-                                    iparam_iter=7,
+                                    iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                     dparam_err=1,
                                     maxiter=maxiter, precision=precision)
         nsgs_openmp.SolverOptions().iparam[10]=n
@@ -1824,7 +1661,7 @@ if (numerics_has_openmp_solvers):
     nsgs_openmp = SiconosSolver(name="NSGS-ERROR-COMPARISON",
                                 API=N.fc3d_nsgs_openmp,
                                 TAG=N.SICONOS_FRICTION_3D_NSGS_OPENMP,
-                                iparam_iter=7,
+                                iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                 dparam_err=1,
                                 maxiter=maxiter, precision=precision)
     nsgs_openmp.SolverOptions().iparam[10]=1
@@ -1837,7 +1674,7 @@ if (numerics_has_openmp_solvers):
     nsgs_openmp = SiconosSolver(name="NSGS-AC-OPENMP-REDBLACK-"+str(0),
                                 API=N.fc3d_nsgs_openmp,
                                 TAG=N.SICONOS_FRICTION_3D_NSGS_OPENMP,
-                                iparam_iter=7,
+                                iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                 dparam_err=1,
                                 maxiter=maxiter, precision=precision)
     nsgs_openmp.SolverOptions().iparam[10]=1
@@ -1855,7 +1692,7 @@ for local_tol in local_tol_values:
                                 gnuplot_name="NSGS-AC-GP \$tol\_{local}="+str1+"\$",
                                 API=N.fc3d_nsgs,
                                 TAG=N.SICONOS_FRICTION_3D_NSGS,
-                                iparam_iter=7,
+                                iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                 dparam_err=1,
                                 maxiter=maxiter, precision=precision)
     nsgs_solver.SolverOptions().internalSolvers.dparam[0] = local_tol
@@ -1867,7 +1704,7 @@ for local_tol in local_tol_values:
                                 gnuplot_name="NSGS-FP-VI-UPK \$tol\_{local}="+str1+"\$",
                                 API=N.fc3d_nsgs,
                                 TAG=N.SICONOS_FRICTION_3D_NSGS,
-                                iparam_iter=7,
+                                iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                 dparam_err=1,
                                 maxiter=maxiter, precision=precision)
     nsgs_pli.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithLocalIteration
@@ -1882,7 +1719,7 @@ for i in range(10):
                                  gnuplot_name="NSGS-AC-GP Shuffled "+str(i),
                                  API=N.fc3d_nsgs,
                                  TAG=N.SICONOS_FRICTION_3D_NSGS,
-                                 iparam_iter=7,
+                                 iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                  dparam_err=1,
                                  maxiter=maxiter, precision=precision)
     snsgs_solver.SolverOptions().iparam[5] = 1
@@ -1897,7 +1734,7 @@ for i in range(10):
 nsgsv = SiconosSolver(name="NSGS-Velocity",
                       API=N.fc3d_nsgs_velocity,
                       TAG=N.SICONOS_FRICTION_3D_NSGSV,
-                      iparam_iter=7,
+                      iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                       dparam_err=1,
                       maxiter=maxiter, precision=precision)
 
@@ -1907,7 +1744,7 @@ psor = SiconosSolver(name="PSOR-AC",
                      gnuplot_name="PSOR-AC",
                      API=N.fc3d_nsgs,
                      TAG=N.SICONOS_FRICTION_3D_NSGS,
-                     iparam_iter=7,
+                     iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                      dparam_err=1,
                      maxiter=maxiter, precision=precision)
 psor.SolverOptions().iparam[4] = 1
@@ -1920,7 +1757,7 @@ for omega in omega_values:
                                 gnuplot_name="PSOR-AC \$\\\omega="+str(omega)+"\$",
                                 API=N.fc3d_nsgs,
                                 TAG=N.SICONOS_FRICTION_3D_NSGS,
-                                iparam_iter=7,
+                                iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                 dparam_err=1,
                                 maxiter=maxiter, precision=precision)
     psor_solver.SolverOptions().iparam[4] = 1
@@ -2304,7 +2141,8 @@ nsgs_solvers.remove(quartic)
 nsn_solvers =  [nsn_acSTD, nsn_acSTD_nls, nsn_acSTDGenerated, nsn_acSTDGenerated_nls,  nsn_acr, nsn_acJeanMoreau, nsn_acJeanMoreau_nls, nsn_acJeanMoreauGenerated, nsn_acJeanMoreauGenerated_lusol,
                 nsn_acJeanMoreauGenerated_nls, nsn_acJeanMoreauGenerated_nls_lusol,
                 nsn_fb_gp, nsn_fb_gp_lusol, nsn_fb_nls, nsn_fb_nls_lusol,
-                nsn_nm_gp, nsn_nm_gp_lusol, nsn_nm_nls, nsn_nm_nls_lusol]
+                nsn_nm_gp, nsn_nm_gp_lusol, nsn_nm_nls, nsn_nm_nls_lusol,
+                nsn_acSTD_nls_hybrid]
 
 all_solvers = list(nsgs_solvers)
 all_solvers.extend(nsn_solvers)
@@ -2323,11 +2161,11 @@ all_solvers = filter(lambda s : s is not None, all_solvers)
 ###
 # specific studies of solvers.
 
-all_solvers.extend(VIFixedPointProjection_series)
-all_solvers.extend(VIExtraGrad_series)
-all_solvers.extend(psor_series)
-all_solvers.extend(prox_series)
-all_solvers.extend(regul_series)
+#all_solvers.extend(VIFixedPointProjection_series)
+#all_solvers.extend(VIExtraGrad_series)
+#all_solvers.extend(psor_series)
+#all_solvers.extend(prox_series)
+#all_solvers.extend(regul_series)
 #all_solvers.extend(nsgs_series)
 
 all_solvers.extend(nsgs_openmp_solvers)
@@ -3422,7 +3260,7 @@ if __name__ == '__main__':
 
 
 
-    display_bw=True
+    display_bw=False
     if display or display_convergence or display_distrib or display_speedup:
         if not no_matplot:
             if (display_bw):
