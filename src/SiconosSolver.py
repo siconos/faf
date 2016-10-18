@@ -1,14 +1,9 @@
 import siconos.numerics as N
 import h5py
 import numpy as np
-maxiter = 100
-maxiterls = 10
-precision = 1e-8
-with_guess = True
-with_mumps = 0
-
 from faf_tools import *
 from faf_papi import *
+
 class SiconosSolver():
     _name = None
     _gnuplot_name = None
@@ -25,7 +20,7 @@ class SiconosSolver():
             return None
 
     def __init__(self, name=None, gnuplot_name=None, API=None, TAG=None, iparam_iter=None,
-                 dparam_err=None, maxiter=maxiter, precision=precision):
+                 dparam_err=None, maxiter=None, precision=None, with_guess=None):
         self._name = name
         if (gnuplot_name==None):
             self._gnuplot_name = self._name
@@ -36,8 +31,19 @@ class SiconosSolver():
         self._iparam_iter = iparam_iter
         self._dparam_err = dparam_err
         self._SO = N.SolverOptions(TAG)  # set default solver options
-        self._SO.iparam[0] = maxiter
-        self._SO.dparam[0] = precision
+        if (maxiter==None):
+            raise RuntimeError ("SiconosSolver() maxiter have to specified.")
+        else :
+            self._SO.iparam[0] = maxiter
+        if (precision==None):
+            raise RuntimeError ("SiconosSolver() precision have to specified.")
+        else:
+            self._SO.dparam[0] = precision
+        if (with_guess==None):
+            raise RuntimeError ("SiconosSolver() with_guess have to specified.")
+        else:
+            self._with_guess = with_guess
+
 
     def SolverOptions(self):
         return self._SO
@@ -61,7 +67,7 @@ class SiconosSolver():
 
         with h5py.File(filename, 'r') as f:
             psize = numberOfDegreeofFreedomContacts(filename)
-            if with_guess and 'guesses' in f:
+            if self._with_guess and 'guesses' in f:
                 number_of_guesses = f['guesses']['number_of_guesses'][0]
                 velocities = f['guesses']['1']['u'][:]
                 reactions = f['guesses']['1']['r'][:]
@@ -85,20 +91,6 @@ def wrap_bogus_solve(problem, reactions, velocities, SO):
     res = BogusInterface.solve_fclib(problem, reactions, velocities, SO)
     return res
 
-bogusPureNewton = BogusSolver(name="BogusPureNewton", API=wrap_bogus_solve, TAG=N.SICONOS_FRICTION_3D_NSN_FB, iparam_iter=1, dparam_err=1, maxiter=maxiter, precision=precision)
-bogusPureNewton.SolverOptions().iparam[4]=0
-
-
-bogusPureEnumerative = BogusSolver(name="BogusPureEnumerative", API=wrap_bogus_solve, TAG=N.SICONOS_FRICTION_3D_NSN_FB, iparam_iter=1, dparam_err=1, maxiter=maxiter, precision=precision)
-bogusPureEnumerative.SolverOptions().iparam[4]=1
-
-
-bogusHybrid = BogusSolver(name="BogusHybrid", API=wrap_bogus_solve, TAG=N.SICONOS_FRICTION_3D_NSN_FB, iparam_iter=1, dparam_err=1, maxiter=maxiter, precision=precision)
-bogusHybrid.SolverOptions().iparam[4]=2
-
-
-bogusRevHybrid = BogusSolver(name="BogusRevHybrid", API=wrap_bogus_solve, TAG=N.SICONOS_FRICTION_3D_NSN_FB, iparam_iter=1, dparam_err=1, maxiter=maxiter, precision=precision)
-bogusRevHybrid.SolverOptions().iparam[4]=3
 
 
 

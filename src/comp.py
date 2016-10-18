@@ -199,47 +199,10 @@ def setFigLinesBW(fig):
         setAxLinesBW(ax)
 
 
-measure = 'flop'
-clean = False
-compute = True
-display = False
-display_convergence = False
-display_distrib = False
-display_distrib_var = False
-display_speedup= False
-no_matplot=False
-gnuplot_profile = False
-logscale=False
-gnuplot_distrib = False
-gnuplot_with_color = True
-output_dat=False
-user_filenames = []
-user_solvers = []
-user_solvers_exact = []
-utimeout = 10
-keep_files = False
-output_errors = False
-output_velocities = False
-output_reactions = False
-measure_name = 'flpops'
-ask_compute = True
-ask_collect = True
-domain = np.arange(1, 100, .1)
-ref_solver_name = 'NonsmoothGaussSeidel'
-random_sample_proba = None
-max_problems = None
-cond_nc = None
-file_filter=None
-gnuplot_separate_keys = False
-list_contents=False
-compute_hardness = False
-compute_cond_rank = False
-adhoc= False
-thread_list = []
-
 from SiconosSolver import *
 from faf_tools import *
-from faf_solvers import *
+from faf_default_values import *
+
 
 def usage():
   print "\n \n"
@@ -481,9 +444,20 @@ for o, a in opts:
     elif o == '--adhoc':
         adhoc = True
         compute = False
+        
+numerics_has_openmp_solvers=False
+try:
+    dir(N).index('fc3d_nsgs_openmp')
+    numerics_has_openmp_solvers=True
+except ValueError:
+    print("fc3d_nsgs_openmp is not the siconos numerics")
 
 
-from faf_papi import *
+## creation of solvers
+    
+from faf_solvers import *
+fs = faf_solvers(maxiter, precision, maxiterls, with_guess, with_mumps, numerics_has_openmp_solvers)
+all_solvers = fs.create_solvers()
 
 
 class TimeoutException(Exception):
@@ -1262,7 +1236,7 @@ if __name__ == '__main__':
         if ask_compute:
             print "Tasks will be run for solvers :", [ s._name for s in solvers]
             print " on files ",problem_filenames
-            print " with precision=", precision, " and timeout=", utimeout
+            print " with precision=", precision, " timeout=", utimeout, "and maxiter = ", maxiter
             r = map(caller, tasks)
 
         if ask_collect:
