@@ -2,7 +2,7 @@ import numpy as np
 
 measure = 'flop'
 
-maxiter = 10000
+maxiter = 1000000
 precision=1e-8
 maxiterls = 10
 utimeout = 10
