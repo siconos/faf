@@ -229,7 +229,6 @@ ref_solver_name = 'NonsmoothGaussSeidel'
 random_sample_proba = None
 max_problems = None
 cond_nc = None
-with_mumps = 0
 file_filter=None
 gnuplot_separate_keys = False
 list_contents=False
@@ -240,8 +239,7 @@ thread_list = []
 
 from SiconosSolver import *
 from faf_tools import *
-
-
+from faf_solvers import *
 
 def usage():
   print "\n \n"
@@ -486,6 +484,7 @@ for o, a in opts:
 
 
 from faf_papi import *
+
 
 class TimeoutException(Exception):
     pass
@@ -1034,8 +1033,6 @@ class Caller():
 
                     # comp_file.flush()
 
-from faf_solvers import *
-
 
 if (os.path.isfile(os.path.join( os.path.dirname(__file__),'adhoc_solverlist.py'))):
     execfile(os.path.join( os.path.dirname(__file__),'adhoc_solverlist.py'))
@@ -1265,6 +1262,7 @@ if __name__ == '__main__':
         if ask_compute:
             print "Tasks will be run for solvers :", [ s._name for s in solvers]
             print " on files ",problem_filenames
+            print " with precision=", precision, " and timeout=", utimeout
             r = map(caller, tasks)
 
         if ask_collect:
