@@ -6,7 +6,7 @@ try:
 except:
     try:
         with_papi = True
-        papi=cdll.LoadLibrary('/usr/lib/x86_64-linux-gnu/libpapi.so.5.3.0.0')
+        papi=cdll.LoadLibrary('/usr/lib/x86_64-linux-gnu/libpapi.so.5.4.3')
     except:
         try:
             with_papi = True

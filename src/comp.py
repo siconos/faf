@@ -9,8 +9,7 @@
 #
 #
 
-
-
+import re
 from glob import glob
 from itertools import product
 import numpy as np
@@ -67,7 +66,38 @@ except:
 #logger = multiprocessing.log_to_stderr()
 #logger.setLevel(logging.INFO)
 
+from contextlib import contextmanager
+from cStringIO import StringIO
+import select
 
+# to collect output from stdout
+# note : callback is much cleaner (no parsing) but is broken...
+@contextmanager
+def catch_stdout(really=True):
+    if really:
+        sys.stdout.write(' \b')
+        pipe_out, pipe_in = os.pipe()
+
+        def read_pipe():
+            def more():
+                r, _, _ = select.select([pipe_out], [], [], 0)
+                return bool(r)
+            out = ''
+            while more():
+                out += os.read(pipe_out, 1024)
+            return out
+
+        stdout = os.dup(1)
+        os.dup2(pipe_in, 1)
+
+        yield read_pipe
+
+        os.dup2(stdout, 1)
+    else:
+        def dummy():
+            return ''
+        yield dummy
+        pass
 
 class WithCriterium():
 
@@ -172,7 +202,7 @@ def setAxLinesBW(ax):
         lines_legend_to_adjust = ax.get_legend().get_lines()
         print lines_legend_to_adjust
         count=1
-        
+
         for line in lines_legend_to_adjust:
             print len(lines_to_adjust)
             origColor = line.get_color()
@@ -182,13 +212,13 @@ def setAxLinesBW(ax):
             line.set_marker(MARKER[count/7])
             count = count +1
             line.set_markersize(MARKERSIZE)
-    
 
-        
-        
+
+
+
     except AttributeError:
         pass
-    
+
 
 def setFigLinesBW(fig):
     """
@@ -444,17 +474,17 @@ for o, a in opts:
     elif o == '--adhoc':
         adhoc = True
         compute = False
-        
+
 numerics_has_openmp_solvers=False
 try:
     dir(N).index('fc3d_nsgs_openmp')
     numerics_has_openmp_solvers=True
 except ValueError:
-    print("fc3d_nsgs_openmp is not the siconos numerics")
+    print("fc3d_nsgs_openmp is not in siconos numerics")
 
 
 ## creation of solvers
-    
+
 from faf_solvers import *
 fs = faf_solvers(maxiter, precision, maxiterls, with_guess, with_mumps, numerics_has_openmp_solvers)
 all_solvers = fs.create_solvers()
@@ -700,16 +730,16 @@ class SolverCallback:
         self._errors = self._data['errors']
         self._offset += 1
         if output_reactions:
-                self._reactions.resize(self._offset, 0)
-                self._reactions[self._offset - 1, :] = reaction
+            self._reactions.resize(self._offset, 0)
+            self._reactions[self._offset - 1, :] = reaction
 
         if output_velocities:
-                self._velocities.resize(self._offset, 0)
-                self._velocities[self._offset - 1, :] = velocity
+            self._velocities.resize(self._offset, 0)
+            self._velocities[self._offset - 1, :] = velocity
 
         if output_errors:
-                self._errors.resize(self._offset, 0)
-                self._errors[self._offset - 1, :] = error
+            self._errors.resize(self._offset, 0)
+            self._errors[self._offset - 1, :] = error
         print "in get_step"
 
 class Caller():
@@ -749,10 +779,10 @@ class Caller():
         except:
                 pass
 
-            
         try:
-            self._internal_call(solver, sproblem, filename, pfilename, output_filename)
-
+            self._internal_call(solver, sproblem, filename, pfilename,
+                                    output_filename)
+            
         except Exception as e:
 
             print 'Exception in internal call', e
@@ -809,7 +839,7 @@ class Caller():
                     except :
                         attrs.create('n_threads',-1)
                         list_print.append(-1)
-                        
+
                 print(list_print)
 
                 with open('report.txt', "a") as report_file:
@@ -820,12 +850,13 @@ class Caller():
 
 
 
+
     @timeout(utimeout)
     def _internal_call(self, solver, problem, filename, pfilename, output_filename):
 
 
-        
-        
+
+
         with h5py.File(output_filename, 'w') as output:
 
             create_attrs_in_comp_file(output,precision,utimeout,measure_name)
@@ -870,8 +901,12 @@ class Caller():
             def pffff(r, v, e):
                 solver_problem_callback.get_step(r, v, e)
 
-            if output_errors or output_velocities or output_reactions:
-                solver.SolverOptions().callback = pffff
+# callback is broken
+#            try:
+#                if output_errors or output_velocities or output_reactions:
+#                    solver.SolverOptions().callback = pffff
+#            except:
+#                pass
 
             # get first guess or set guess to zero
             reactions, velocities = solver.guess(filename)
@@ -884,11 +919,9 @@ class Caller():
 
             try:
 
-
-
                 if numerics_verbose >1:
                     N.solver_options_print(solver.SolverOptions())
-                
+
                 again = True
                 info = 0
                 iter = 0
@@ -903,8 +936,33 @@ class Caller():
 
                     t0 = time.time()
                     #t0 = time.process_time()
-                    result = solver(problem, reactions, velocities)
 
+                    stdout_result = ''
+
+                    with catch_stdout(really=output_errors) as get_stdout:
+
+                        result = solver(problem, reactions, velocities)
+
+                        current_stdout = get_stdout()
+
+                        try:
+
+                            cl = enumerate(filter(lambda s: '||F||' in s,
+                                                  current_stdout.split('\n')))
+
+                            rdat = [re.split('=|,', l)[-3:] for i, l in cl]
+
+                            dat = [float(r) for r, z, f in rdat]
+
+                            for e in dat:
+                                pffff(None, None, e)
+
+                        except Exception, e:
+                            sys.stderr.write('||', type(e))
+                            
+                        stdout_result += current_stdout
+
+                    
                     time_s = time.time() - t0 # on unix, t is CPU seconds elapsed (floating point)
                     #time_s  = time.process_time() -t0
                     fclib_sol = FCL.fclib_solution()
@@ -1225,7 +1283,7 @@ class Results():
 if __name__ == '__main__':
 
     if compute:
-        
+
         all_tasks = [t for t in product(solvers, problem_filenames)]
         if os.path.exists('comp.hdf5'):
             with h5py.File('comp.hdf5', 'r') as comp_file:
@@ -1237,7 +1295,7 @@ if __name__ == '__main__':
             print "Tasks will be run for solvers :", [ s._name for s in solvers]
             print " on files ",problem_filenames
             print " with precision=", precision, " timeout=", utimeout, "and maxiter = ", maxiter
-            r = map(caller, tasks)
+            outputs = map(caller, tasks)
 
         if ask_collect:
             print "Tasks will be run for solvers :", [ s._name for s in solvers]
@@ -1496,33 +1554,48 @@ if __name__ == '__main__':
 
 
     if display_convergence:
-        from matplotlib.pyplot import subplot, title, plot, grid, show, get_fignums, legend, figure
+        import matplotlib.pyplot as plt
+        from matplotlib.pyplot import show
         with h5py.File('comp.hdf5', 'r') as comp_file:
 
             data = comp_file['data']
             comp_data = data['comp']
-            for solver_name in comp_data:
 
-                if user_filenames == []:
+            if user_filenames == []:
+                for solver_name in comp_data:
+
                     filenames = subsample_problems(comp_data[solver_name],
                                                    random_sample_proba,
                                                    max_problems, cond_nc)
-                else:
-                    filenames = user_filenames
+            else:
+                filenames = user_filenames
+            
+            for filename in filenames:
 
-                for filename in filenames:
+                fig, axs = plt.subplots(1, 1)
+                ax = axs
+
+                ax.set_title('Convergence on {0}'.format(filename))
+                ax.grid(True, which="both")
+
+                ax.set_yscale('symlog', linthreshy=0.001)
+                
+                for solver_name in comp_data:
 
                     try:
                         pfilename = os.path.splitext(filename)[0]
                         solver_problem_data = comp_data[solver_name][pfilename]
-                        figure()
-
-                        plot(np.arange(len(solver_problem_data['errors'][:])),
-                             solver_problem_data['errors'], label='{0} - {1}'.format(solver_name, filename))
-                        legend()
-                        grid()
+                    
+                        ax.plot(np.arange(len(solver_problem_data['errors'][:])),
+                                np.log(solver_problem_data['errors']),
+                                label='{0}'.format(solver_name))
+                        ax.legend(loc='lower left')
+                        
                     except:
                         pass
+
+
+
     if compute_cond_rank:
         print "Tasks will be run for", problem_filenames
         for problem_filename in problem_filenames:
@@ -1878,14 +1951,14 @@ if __name__ == '__main__':
             if user_solvers != []:
                 #print "user_solvers", user_solvers
                 solvers.extend( filter(lambda s: any(us in s for us in user_solvers), comp_data))
-                
+
                 if solvers == []:
                     raise RuntimeError ("Cannot find any matching solver")
-                
+
             elif user_solvers_exact != []:
                 #print "user_solvers_exact", user_solvers_exact
                 solvers.extend(filter(lambda s: any(us ==  s  for us in user_solvers_exact), comp_data))
-                
+
                 if solvers == []:
                     raise RuntimeError("Cannot find any solvers in specified list")
 
@@ -1893,9 +1966,9 @@ if __name__ == '__main__':
                 solvers= comp_data
 
             print ' filtered solver in comp_data =',[s for s in solvers]
-                
+
             solvers= filter(lambda s: ('OPENMP' in s), solvers)
-            
+
 
             print ' solver for speedup-display =',[s for s in solvers]
             if solvers == []:
@@ -1906,7 +1979,7 @@ if __name__ == '__main__':
             results_filename={}
             nthread_set= set()
             n_filename=[]
-            
+
             for solver_name in solvers:
                 if user_filenames == []:
                     filenames = subsample_problems(comp_data[solver_name],
@@ -1927,9 +2000,9 @@ if __name__ == '__main__':
                     else:
                         results_filename[filename] = [[solver_name,nthread,measure_data,nc,n_iter]]
 
-                        
+
             #print("n_filename", n_filename)
-            
+
             results_filename_fails = {}
             for filename,solver in results_filename.items():
                 for s in solver:
@@ -1937,46 +2010,46 @@ if __name__ == '__main__':
                         if filename in results_filename.keys():
                             results_filename_fails[filename]=results_filename[filename]
                             print "\nremove failed instance for filename:",filename
-                            print(results_filename.pop(filename)) 
+                            print(results_filename.pop(filename))
 
 
-            
-            
+
+
             nthread_list=list(nthread_set)
             nthread_list.sort()
 
             # collect results by thread
- 
+
             measure_by_nthread=[]
             measure_penalized_by_nthread=[]
             measure_mean_by_nthread=[]
             measure_mean_penalized_by_nthread=[]
             index_non_failed=[]
             index_failed=[]
-            
+
             for n in nthread_list:
                 measure_by_nthread.append([])
                 measure_mean_by_nthread.append(0.0)
-                         
+
             speedup_list =[]
             speedup_size_list =[]
 
             for n in nthread_list:
                 speedup_list.append([])
                 speedup_size_list.append([])
-                
+
             for filename,solver in results_filename.items():
                 for s in solver:
                         nthread= s[1]
                         thread_index=nthread_list.index(nthread)
                         measure_by_nthread[thread_index].append(s[2])
                         measure_mean_by_nthread[thread_index] += s[2]
-                        
-                        
+
+
             for n in nthread_list:
                 thread_index    = nthread_list.index(n)
                 measure_mean_by_nthread[thread_index] /= len(measure_by_nthread[thread_index])
-           
+
             #raw_input()
             #print('measure_mean_by_nthread', measure_mean_penalized_by_nthread)
 
@@ -1984,7 +2057,7 @@ if __name__ == '__main__':
             speedup_size_list =[]
             iter_size_list=[]
             speedup_avg =[]
-            
+
             for n in nthread_list:
                 speedup_list.append([])
                 speedup_size_list.append([])
@@ -2004,7 +2077,7 @@ if __name__ == '__main__':
 
             print('speedup_avg', speedup_avg)
             #print('speedup_list', speedup_list)
-            
+
             _cmp=0
             for filename,solver in results_filename.items():
                 for s in solver:
@@ -2022,12 +2095,12 @@ if __name__ == '__main__':
                     nthread=  s[1]
                     thread_index=nthread_list.index(nthread)
                     if np.isnan(s[2]):
-                        count_failed[thread_index] +=1  
+                        count_failed[thread_index] +=1
 
             # ---------------------------- #
             # figure #
             # ---------------------------- #
- 
+
 
 
             figure(figsize=(8,14))
@@ -2050,26 +2123,26 @@ if __name__ == '__main__':
                 iter_size_speedup= sorted(iter_size_speedup, key=lambda data: data[0])
                 plot(np.array([t[0]  for t in iter_size_speedup]), np.array([t[1]  for t in iter_size_speedup]), label='n='+str(n))
             legend()
- 
+
             figure(figsize=(8,14))
 
             subplot('311')
             boxplot(speedup_list,positions=nthread_list)
             ylabel('speedup distribution')
             legend()
-            
-            
+
+
             subplot('312')
             plot(nthread_list,speedup_avg)
             ylabel('avg. speed up')
             legend()
-            
+
             subplot('313')
             bar(nthread_list,count_failed)
             ylabel('# fails')
             xlabel('number of threads')
             legend()
-            
+
             figure(figsize=(16,14))
 
             for filename,solver in results_filename.items():
@@ -2085,7 +2158,7 @@ if __name__ == '__main__':
                     xlabel('number of threads')
                     legend()
 
-                    
+
                     subplot('212')
                     #plot(np.array([data[0] for data in data_tuples])[:],np.array([data[1] for data in data_tuples])[:], label =filename)
                     plot(np.array([data[0] for data in data_tuples])[:],np.array([data_tuples[1][1]/data[1] for data in data_tuples])[:])
