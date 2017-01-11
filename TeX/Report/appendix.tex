@@ -11,6 +11,18 @@
  Moreover $T$ is said to be maximal when it is not possible to add a pair $(x, v)$ to the graph of $T$ without destroying the monotonicity.
 \end{definition}
 
+The Euclidean projector $P_X$ onto a closed convex set $X$: for a vector $x\in \RR^n$, the projected vector $z  = P_X(x)$ is the unique solution of the convex quadratic programm
+\begin{equation}
+  \label{eq:opt-proj}
+  \begin{cases}
+    \min\, \Frac 1 2 (y-x)^\top(y-x), \\[2mm]
+    \begin{array}{ll}
+     \text{s.t.} & y \in X .
+  \end{array}
+  \end{cases}
+\end{equation}
+
+
 \begin{align}
 y = P_K(x) & \Longleftrightarrow 
 \begin{array}{ll}

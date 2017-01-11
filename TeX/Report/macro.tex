@@ -125,7 +125,8 @@ to0pt{\kern0.55\wd0\vrule height0.5\ht0\hss}\box0}}
 \definecolor{lightgray}{gray}{.75}
 %\definecolor{gradbegin}{rgb}{0,1,1}
 %\definecolor{gradend}{rgb}{0,.1,.95}
-\newcommand{\tp}[1]{\textcolor{pink}{#1}}
+%\newcommand{\tp}[1]{\textcolor{pink}{#1}}
+\newcommand{\tp}[1]{\textcolor{black}{#1}}
 
 
 
@@ -450,6 +451,21 @@ $ $ \\
 \xdef\isodayandtime{\the\year-\2\month-\2\day\space\2{\count0}:%
 \2{\count2}}
 \endgroup
+
+\makeatletter
+\newcommand{\settheoremtag}[1]{% \settheoremtag{<tag>}
+  \let\oldthetheorem\thetheorem% Store \thetheorem
+  \renewcommand{\thetheorem}{#1}% Redefine it to a fixed value
+  \g@addto@macro\endtheorem{% At \end{theorem}, ...
+    \addtocounter{theorem}{-1}% ...restore theorem counter value and...
+    \global\let\thetheorem\oldthetheorem}% ...restore \thetheorem
+  }
+\makeatother
+
+\newenvironment{problemenv}[1]
+ {\renewcommand\theproblem{#1}\problem}
+  {\endproblem}
+
 %%%% fin macro %%%%
 
 

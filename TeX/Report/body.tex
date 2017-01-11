@@ -1,51 +1,165 @@
 \newcommand{\tb}[1]{\textcolor{blue}{#1}}
 \definecolor{applegreen}{rgb}{0.05, 0.41, 0.0}
 \newcommand{\tg}[1]{\textcolor{applegreen}{#1}}
+\newcommand{\moh}[1]{\textcolor{applegreen}{#1}}
+\newcommand{\MM}[0]{\rightrightarrows}
 
 \section*{Notation}
 
-The following notation is used throughout the article: the 2-norm for a function $f$ is denoted  by $\|f\|$ and for a vector $x\in\RR^n$ by $\|x\|$. 
-The dual convex cone to a convex cone $K$ defined by
+The following notation is used throughout the article: the 2-norm for a function $g$ is denoted  by $\|g\|$ and for a vector $x\in\RR^n$ by $\|x\|$. 
+The index $\alpha\in\NN$ is used to identify the variable pertaining to a single contact.
+A multivalued mapping $T\colon\RR^n\MM\RR^n$ is an operator whose images are sets.
+The second order cone, also known as Lorentz or ice--cream cone, is defined as $K_\mu \coloneqq\{(x, t)\in\RR\times\RR_+\mid \|x\|\leq \mu t\}$, $\mu\geq0$.
+By polarity, the dual convex cone to a convex cone $K$ defined by
 \begin{equation}
   \label{eq:dual-cone}
-  K^\star = \{u \in \RR^3 \mid  r^\top u \geq 0, \quad \text{for all } r \in K   \}.
+  K^\star = \{x \in \RR^n \mid  y^\top x \geq 0, \quad \text{for all } y \in K\}.
 \end{equation}
+The normal cone $N_K\colon\RR^n\MM\RR^n$ to a closed convex set $X$ is the set
+\begin{equation}
+ N_K(x) = \{d\in\RR^n\mid d^\top(y - x) \leq 0\}
+\end{equation}
+The notation $0\leq x\perp y\geq 0$ denotes that $x\geq0$, $y\geq0$ and $x^\top y = 0$.
+A complementarity problem associated with a function $F\colon \RR^n\to\RR^n$ is to find $x\in\RR^n$ such that $0\leq F(x) \perp x \geq 0$.
+The generalized complementarity problem is given by $K^\star\ni F(x) \perp x \in K$, where $K$ is a closed convex cone.
+Finite-dimentional Variational Inequality (VI) problems subsumes complementarity problems, system of equations.
+Solving a $\mathrm{VI}(X,F)$ is to find $x\in X$ such that
+%
+\begin{equation}
+ F(x)^\top(y - x)\geq 0\qquad\text{for all}\; y\in X.
+\end{equation}
+%
+It is easy to see this problem is equivalent to solving a \emph{generalized equation}
+\begin{equation}
+ 0 \in F(X) + N_X(x).
+\end{equation}
+The Euclidean projector on a set $X$ is denoted by $P_X$.
+
 \section{Introduction}
 
 
 More than thirty years after the pioneering work of~\cite{Panagiotopoulos_IA1975},~\cite{Necas.ea1980},~\cite{Haslinger1983,Haslinger1984,Haslinger.Panagiotopoulos_PRSE1984}, ~\cite{z-DelPieroMaceri_CISM1983,z-DelPieroMaceri_CISM1985},~\cite{Katona_IJNAMG1983},~\cite{Chaudhary.Bathe_CS1986},~\cite{Jean.Moreau1987},~\cite{Mitsopoulou.Doudoumis1988} on numerically solving mechanical problems with contact and friction, there are still active research activities on this subject in the computational mechanics and applied mathematics communities.  This can be explain by the fact that \tg{problems from} mechanical systems with unilateral contact and Coulomb friction are difficult to numerically solve and the mathematical results of convergence of the numerical algorithms are rare and most of these require rather strong assumptions. In this article, we want to give some insights of the advantages and weaknesses of standard solvers found in the literature by comparing them on the large sets of examples coming from a wide range of mechanical systems.
 
 \subsection{Problem statement}
-\begin{ndroh}
- The following paragraph is too technical for the intro IMHO
+\moh{In this section, we formulate an abstract, algebraic finite--dimensional frictional contact problem. We cast this problem as a complementarity problem over cones, and discuss the properties of the latter.
+We end by presenting some instances with contact and friction phenomenon that fits our problem description.}
 
- VA: Do you want to put some illustrations ?
-\end{ndroh}
-\tp{We start this section by formulating an abstract, algebraic finite--dimensional frictional contact problem. We continue by showing that this problem, central in the simulation of mechanical systems with contact and Coulomb's friction is an particular instance of general problem in Mathematical programming. We end this section by discussing its wide range of applicability in problems involving contact and friction.}
+\paragraph{Abstract problem}
 
-\paragraph{Abstract problem.}
+We want to discuss possible numerical solution procedures for the following three--dimensional finite--dimensional frictional contact problem and some of its variants.  Let $n_c\in \NN$ be the number of contact points and $n\in\NN$ the number of degree of freedom of a discrete mechanical system.
+%\tb{For each contact, the unknown local variables  $u^\alpha\in\RR^3$ (relative velocity or gap at the contact point) and $r^\alpha\in\RR^3$ (reaction or impulse) are decomposed  in a contact local basis $({\sf N}^\alpha,{\sf T_1}^\alpha,{\sf T_2}^\alpha)$ such that $u^\alpha = u^\alpha_{\n} {\sf N}^\alpha +   u^{\alpha}_{\tone}{\sf T_1}^\alpha + u^{\alpha}_{\ttwo}{\sf T_2}^\alpha , u^\alpha_{\n} \in \RR, u^\alpha_{\t} = [u^{\alpha}_{\tone},u^{\alpha}_{\ttwo}]^\top \in \RR^2$ and  $r^\alpha = r^\alpha_{\n} {\sf N}^\alpha +   r^{\alpha}_{\tone}{\sf T_1}^\alpha + r^{\alpha}_{\ttwo}{\sf T_2}^\alpha  , r^\alpha_{\n} \in \RR, r^\alpha_{\t}=[r^{\alpha}_{\tone},r^{\alpha}_{\ttwo}]^\top \in \RR^2$ (see Figure~\ref{fig:local-frame}).}
 
-To fix ideas, we want to discuss possible numerical solution procedures for the following three--dimensional finite--dimensional frictional contact problem and some of its variants.  Let $n_c\in \NN$ be the number of contact points and $n\in\NN$ the number of degree of freedom of a discrete mechanical system.  \tb{For each contact $\alpha$, the unknown local variables  $u^\alpha\in\RR^3$ (relative velocity or gap at the contact point) and $r^\alpha\in\RR^3$ (reaction or impulse) are decomposed  in a contact local basis $({\sf N}^\alpha,{\sf T_1}^\alpha,{\sf T_2}^\alpha)$ such that $u^\alpha = u^\alpha_{\n} {\sf N}^\alpha +   u^{\alpha}_{\tone}{\sf T_1}^\alpha + u^{\alpha}_{\ttwo}{\sf T_2}^\alpha , u^\alpha_{\n} \in \RR, u^\alpha_{\t} = [u^{\alpha}_{\tone},u^{\alpha}_{\ttwo}]^\top \in \RR^2$ and  $r^\alpha = r^\alpha_{\n} {\sf N}^\alpha +   r^{\alpha}_{\tone}{\sf T_1}^\alpha + r^{\alpha}_{\ttwo}{\sf T_2}^\alpha  , r^\alpha_{\n} \in \RR, r^\alpha_{\t}=[r^{\alpha}_{\tone},r^{\alpha}_{\ttwo}]^\top \in \RR^2$ (see Figure~\ref{fig:local-frame}).}
-
- Given a symmetric positive (semi-) definite matrix ${M} \in \RR^{n \times n}$, a vector $ {f} \in \RR^n$, a matrix  ${H} \in \RR^{n \times m}$ with $m= 3n_c$, a vector $w \in \RR^{m}$ and a vector of coefficients of friction $\mu \in \RR^{n_c}$, find two vectors $ {v} \in \RR^n$, \tp{a velocity--like vector} and $r\in \RR^m$, \tp{a contact reaction or impulse},  such that
+\moh{The problem data are: a symmetric positive (semi-) definite matrix ${M} \in \RR^{n \times n}$, a vector $ {f} \in \RR^n$, a matrix  ${H} \in \RR^{n \times m}$ with $m= 3n_c$, a vector $w \in \RR^{m}$ and a vector of coefficients of friction $\mu \in \RR^{n_c}$.}
+The unknowns are two vectors $ {v} \in \RR^n$, \tp{a velocity--like vector} and $r\in \RR^m$, \tp{a contact reaction or impulse}, solution to
 \begin{equation}\label{eq:soccp1-intro}
-  \begin{array}{rcl}
-    M v = {H} {r} + {f}, &
-    u = H^\top v + w,  &
-    \hat u = u + g(u) ,\\[1mm]
-    &    K^\star \ni {\hat u} \perp r \in K,&
-  \end{array}
+ \begin{cases}
+  M v = {H} {r} + {f}\\
+  K^\star \ni {\hat u} \perp r \in K
+ \end{cases}\qquad\text{with}\qquad
+ \begin{aligned}
+    u &\coloneqq H^\top v + w\\
+    \hat u &\coloneqq u + g(u),
+   \end{aligned}
 \end{equation}
 where the set $K$ is the cartesian product of Coulomb's friction cone at each contact, that is
 \begin{equation}
   \label{eq:CC}
   K = \prod_{\alpha=1\ldots n_c} K^{\alpha}  = \prod_{\alpha=1\ldots n_c} \{r^\alpha, \|r^\alpha_\t \| \leq \mu^\alpha |r^\alpha_\n| \}
 \end{equation}
-and $K^\star$ is dual. The function $g(u)$ is a nonsmooth function defined as
+and $K^\star$ is dual. The function $g\colon\RR^m\to\RR^m$ is a nonsmooth function defined as
 \begin{equation}
-g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldots n_c]^\top\label{eq:gg}. 
+g(u) = [[\mu^\alpha  \|u^\alpha_\t\|, 0, 0]^\top, \alpha = 1\ldots n_c]^\top\label{eq:gg}. 
 \end{equation}\tb{Note that the variable $u$ and $\hat u$  do not appear as unknowns since they can be directly obtained from $v$.}
-\begin{figure}
+
+\begin{ndroh}
+I think I got the gist of the following paragraph, but I think we should work on it a bit. For me we discuss approximations in the literature that don't solve the true problem.
+I believe  figure to illustrate the effect of neglecting $g$ would be useful (for the optimizer).
+
+I also think that we should be more explicit that we focus on the reduced form, and also explain that in the rigid case, it may not destroy the sparse stricture of the problem.
+\end{ndroh}
+
+\paragraph{A Second Order Cone Complementarity Problem (SOCCP).}
+From the mathematical programming point of view, the problem appears to be a Second Order Cone Complementarity Problem (SOCCP)~\cite{Facchinei.Pang2003} which can be generically defined as
+\begin{equation}
+  \begin{cases}
+    y =f(x) \\
+    K^\star \ni y \perp x \in K,
+  \end{cases}
+\end{equation}
+where $K$ is a second order cone. If the nonlinear part of the problem~\eqref{eq:soccp1-intro} is neglected ($g(u)=0$), the problem is an associated friction problem with dilatation, and by the way, is a gentle Second Order Cone Linear Complementarity Problem (SOCLCP) with a positive definite matrix $H^\top M^{-1} H$ (possibly semi--definite).\tb{The assumption of associated frictional law, i.e, a friction law where the local sliding velocity is normal the friction cone differs dramatically from the standard Coulomb friction since it generates a non--vanishing normal velocity when we slide. In other terms, the sliding motion implies the separation of the bodies.}
+When the non-associated character of the friction is taken into account through $g(u)$, the problem is non monotone and nonsmooth, and therefore is very hard to solve efficiently. For a given numerical algorithm, it is not so difficult to design mechanical example to run the algorithm into troubles.
+\tg{Proof of convergence} of the numerical algorithms are rare and most of these required strong assumptions \tg{on either} the friction coefficients or full rank assumptions of matrices or operators or the dimension of the space in which the problem is formulated. Among these results, we can cite the Czech school where the coefficient of friction is assumed to be bounded and small. This assumption allows us to use fixed point methods on the convex sub--problems of Tresca friction \tb{(friction threshold that does depend on the normal reaction and then transform the cone into a semi-cylinder)}. We can also mention the results from~\cite{Pang.Trinkle1996,Stewart.Trinkle1996,Anitescu.Potra97} where the friction cone is polyhedral (in 2D or by a faceting process). In that case, if $w=0$ or $w \in \mathrm{im}(H^\top)$, Lemke's algorithm is able to solve the problem. The question of existence of solutions has been treated in~\cite{Klarbring.Pang1998,Acary.ea_ZAMM2011} under similar assumptions but with different techniques. The question of uniqueness remains a difficult problem in the general case.
+
+\paragraph{Range of applicability.}
+\tp{We clearly choose to simplify a lot the general problems of formulating the contact problems with friction by avoiding including too much side effects that are themselves interesting but render the study too difficult to carry out in a single article. We choose finite dimensional systems where the time dependence does not appear explicitly.}
+
+\tp{Nevertheless, we believe that there are a strong interest to study  this problem since it appears to be relatively generic in numerous simulations of systems with contact and friction. This problem is indeed at the heart of the simulation of mechanical systems with 3D Coulomb's friction and unilateral constraints in the following cases:
+\begin{itemize}
+\item it might be the result of the time--discretization by event--capturing time--stepping methods or event--detecting (event--driven) techniques of dynamical systems with friction; the variables are homogeneous to pairs velocity/impulses or acceleration forces
+\item it might be the result of space--discretization (by FEM for instance) of the elastic quasi-static problems of frictional contact mechanics; in that case, the variables are homogenous to displacements/forces of displacement rate/forces.
+\item if the system is a dynamical mechanical system composed of solids, the problem is again obtained by a space and time discretization
+\item if the material follows a nonlinear mechanical bulk behavior, we can use this model after a standard Newton linearization procedure. 
+\end{itemize}
+}
+For a description of the derivation of such problems in various practical situations we refer to~\cite{Laursen2003,Wriggers2006,Acary.Brogliato2008,Acary.Cadoux2013}.
+
+\subsection{Objectives and outline of the article}
+
+\tp{In this article,  after stating the problem with more details in Section~\ref{sec:description}, we recall the existence result of~\cite{Acary.ea_ZAMM2011} for the problem in~\eqref{eq:soccp1-intro} in Section \ref{sec:existence}. In this framework, we briefly present in Section~\ref{sec:formulation} \tg{a few} alternative formulations of the problem that enable the design of numerical solution procedures : a) finite--dimensional Variational Inequalities(VI) and Quasi-Variational Inequalities(QVI)  b) Nonsmooth equations  and c) Optimization based formulations.}
+
+
+\tp{Right after these formulations, we list some of the most standard algorithms dedicated to one of the previous formulation :
+\begin{enumerate}
+\item the fixed point and projection numerical methods for solving VI are reviewed  with a focus on self-adaptive time--step rules (Section~\ref{sec:numericalmethods,vi}),
+\item the nonsmooth (semi-smooth) Newton methods are described based on the various nonsmooth equations formulations (Section~\ref{sec:newtonmethods}),
+\item Section~\ref{Sec:SplittingTechniquesAndProx} is devoted to the presentation of splitting and proximal point techniques,
+\item and finally, in Section~\ref{Sec:OptimisationBasedMethods}, the Panagiotopoulos alternating optimization technique, the successive approximation technique and the SOCLCP approach are outlined.
+ \end{enumerate}}
+
+
+\tp{Since it is difficult to be exhaustive on the approaches developed in the literature to solve frictional contact problems, we decided to leave out the scope of the article the following approaches:
+\begin{itemize}
+\item the approaches that alter the fundamental assumptions of the 3D Coulomb friction model by faceting the cone as in the pioneering work of~\cite{Klarbring1986} and followed by~\cite{AlFahed.Stavroulakis.ea1991,Pang.Trinkle1996,Stewart.Trinkle1996,Anitescu.Potra97,Haslinger.ea_JCAM2004}, or by convexifying the Coulomb law (associated friction law with normal dilatancy)~\cite{Heyn.ea_IJNME2013,Tasora.Anistescu_Meccanica2013,Tasora.Anistescu_CMAME2011,Anistescu.Tasora_COA2010,Tasora.Anistescu_CMAME2009} or finally by regularizing the friction law~\cite{Kikuchi.Oden_SIAM1988}. In the same way, we are discussing recent developments methods for the frictionless case~\cite{Morales.ea_NM2008,Miyamura.ea_IJNME2010,Temizer.ea_CMAME2014}.
+\item the approaches that are based on domain decomposition and parallel computing. We choose in this article to focus on single domain computation and to skip the discussion about distributed computing mainly for a sake of length of the article. (cite a bit a literature Krause, Koziara, Renouf, Heyn, .... )
+\end{itemize}}
+
+\tp{Finally, some possible interesting approaches have not been reported. We are thinking mainly  to the interior point methods approach~\cite{Christensen.Pang1998,Miyamura.ea_IJNME2010,Kleinert.ea_CMAME2014}. some basic implementations of such methods do not give satisfactory results. One of reason is the fact that we were not able to get robustness and efficiency on a large class of problems. As it is reported in \cite{Kleinert.ea_CMAME2014,Krabbenhoft.ea_CMAME2012}, it seems that it is needed to alter the friction Coulomb's law by adding regularization or dilatency in the model. In the same spirit, we skip also the comparison for the possibly very promising methods developed in~\cite{Heyn.ea_IJNME2013,Heyn_PhD2013} that are based on Krylov subspace and spectral methods. It could be very interesting to bench also these methods on the actual Coulomb friction model, that is to say, in the nonmonotone case. Finally, our preliminary results on the use of direct general SOCP or SOCLCP solvers were not convincing. Indeed, the structure of contact problems (product of a large number of small second order cones) has to be taken into account to get efficiency and unfortunately, these solvers are difficult to adapt to this structure.}    
+
+\tp{Other comparisons articles have already been published in the literature.  One of the first comparison study has been done in~\cite{Raous.ea_JMTA1988} and in~\cite{Chabrand.ea_MCM1998}. In this work, several formulations are detailed in the bidimensional case (variational inequality, linear complementarity problem (LCP) and augmented Lagrangian formulation) and comparisons of fixed point methods with projection, splitting methods and Lemke's method for solving LCP. In~\cite{Christensen.Klarbring.ea1998}, a very interesting comparison in the three-dimensional case has been carried out. }
+
+
+
+Cite and comment
+\begin{enumerate}
+\item~\cite{Christensen.Klarbring.ea1998}
+\item~\cite{Mijar.Arora_SMO2000,Mijar.Arora_ACME2000,Mirar.Arora_SMO2004-I,Mirar.Arora_SMO2004-II}
+\item Mylapilli.Jain\_JCND2016.pdf 
+\item \cite{Heyn.ea_IJNME2013}
+\item \cite{Krabbenhoft.ea_CMAME2012}
+\end{enumerate}
+
+
+\begin{ndrva}
+  \begin{itemize}
+  \item low number of benchmarks
+  \item 2D
+  \end{itemize}
+\end{ndrva}
+
+The comparison are performed on a large set of examples using performance profiles.
+\tg{Let us summarize the main conclusion from Section~\ref{sec:numericalcomparisons}:
+on one hand}, the algorithms based on Newton methods for nonsmooth equations solve quickly the problem when they succeed, but suffer from robustness issues mainly if the matrix $H$ has not full rank. On the other hand, the
+iterative methods dedicated to solving variational inequalities are quite robust but with an extremely slow rate of convergence. To sum up, as far as we know there is no option that combines time efficiency and robustness.
+\tg{The set of problems used here are from the FCLIB collection\footnote{\url{http://fclib.gforge.inria.fr}}, which aims at providing many problems to compare algorithms on a fair basis}.  In this work, this collection is solved with the software {\sc Siconos} and its component {\sc Siconos/Numerics}\footnote{\url{http://siconos.gforge.inria.fr}}\citep{Acary.Bremond.Huber.Perignon2015}.
+
+
+\clearpage
+\section{Description of the 3D frictional contact problems}
+\label{sec:description}
+\subsection{Signorini's condition and Coulomb's friction.}
+
+Let us consider the contact between two  bodies $A \subset  \R^3$ and $B \subset \R^3$ with sufficiently smooth boundaries, \tg{as depicted on} Figure~\ref{fig:local-frame}.
+\begin{figure}[htb]
   \centering
   \begin{tikzpicture}[ scale=4,
       axis/.style={ ->, >=stealth'},
@@ -101,88 +215,6 @@ g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldots n_c]
 \label{fig:local-frame}
 \end{figure}
 
-\paragraph{A Second Order Cone Complementarity Problem (SOCCP).}
-From the mathematical programming point of view, the problem appears to be a Second Order Cone Complementarity Problem (SOCCP)~\cite{Facchinei.Pang2003} which can be generically defined as
-\begin{equation}
-  \begin{cases}
-    y =f(x) \\
-    K^\star \ni y \perp x \in K,
-  \end{cases}
-\end{equation}
-where $K$ is a second order cone. If the nonlinear part of the problem~\eqref{eq:soccp1-intro} is neglected ($g(u)=0$), the problem is an associated friction problem with dilatation, and by the way, is a gentle Second Order Cone Linear Complementarity Problem (SOCLCP) with a positive definite matrix $H^\top M^{-1} H$ (possibly semi--definite).\tb{The assumption of associated frictional law, i.e, a friction law where the local sliding velocity is normal the friction cone differs dramatically from the standard Coulomb friction since it generates a non--vanishing normal velocity when we slide. In other terms, the sliding motion implies the separation of the bodies.}
-When the non-associated character of the friction is taken into account through $g(u)$, the problem is non monotone and nonsmooth, and therefore is very hard to solve efficiently. For a given numerical algorithm, it is not so difficult to design mechanical example to run the algorithm into troubles.
-\tg{Proof of convergence} of the numerical algorithms are rare and most of these required strong assumptions \tg{on either} the friction coefficients or full rank assumptions of matrices or operators or the dimension of the space in which the problem is formulated. Among these results, we can cite the Czech school where the coefficient of friction is assumed to be bounded and small. This assumption allows us to use fixed point methods on the convex sub--problems of Tresca friction \tb{(friction threshold that does depend on the normal reaction and then transform the cone into a semi-cylinder)}. We can also mention the results from~\cite{Pang.Trinkle1996,Stewart.Trinkle1996,Anitescu.Potra97} where the friction cone is polyhedral (in 2D or by a faceting process). In that case, if $w=0$ or $w \in \mathrm{im}(H^\top)$, Lemke's algorithm is able to solve the problem. The question of existence of solutions has been treated in~\cite{Klarbring.Pang1998,Acary.ea_ZAMM2011} under similar assumptions but with different techniques. The question of uniqueness remains a difficult problem in the general case.
-
-\paragraph{Range of applicability.}
-\tp{We clearly choose to simplify a lot the general problems of formulating the contact problems with friction by avoiding including too much side effects that are themselves interesting but render the study too difficult to carry out in a single article. We choose finite dimensional systems where the time dependence does not appear explicitly.}
-
-\tp{Nevertheless, we believe that there are a strong interest to study  this problem since it appears to be relatively generic in numerous simulations of systems with contact and friction. This problem is indeed at the heart of the simulation of mechanical systems with 3D Coulomb's friction and unilateral constraints in the following cases:
-\begin{itemize}
-\item it might be the result of the time--discretization by event--capturing time--stepping methods or event--detecting (event--driven) techniques of dynamical systems with friction; the variables are homogeneous to pairs velocity/impulses or acceleration forces
-\item it might be the result of space--discretization (by FEM for instance) of the elastic quasi-static problems of frictional contact mechanics; in that case, the variables are homogenous to displacements/forces of displacement rate/forces.
-\item if the system is a dynamical mechanical system composed of solids, the problem is again obtained by a space and time discretization
-\item if the material follows a nonlinear mechanical bulk behavior, we can use this model after a standard Newton linearization procedure. 
-\end{itemize}
-}
-For a description of the derivation of such problems in various practical situations we refer to~\cite{Laursen2003,Wriggers2006,Acary.Brogliato2008,Acary.Cadoux2013}.
-
-\subsection{Objectives and outline of the article}
-
-\tp{In this article,  after stating the problem with more details in Section~\ref{sec:description}, we recall the existence result of~\cite{Acary.ea_ZAMM2011} for the problem in~\eqref{eq:soccp1-intro} in Section \ref{sec:existence}. In this framework, we briefly present in Section~\ref{sec:formulation} \tg{a few} alternative formulations of the problem that enable the design of numerical solution procedures : a) finite--dimensional Variational Inequalities(VI) and Quasi-Variational Inequalities(QVI)  b) Nonsmooth equations  and c) Optimization based formulations.}
-
-
-\tp{Right after these formulations, we list some of the most standard algorithms dedicated to one of the previous formulation :
-\begin{enumerate}
-\item the fixed point and projection numerical methods for solving VI are reviewed  with a focus on self-adaptive time--step rules (Section~\ref{sec:numericalmethods,vi}),
-\item the nonsmooth (semi-smooth) Newton methods are described based on the various nonsmooth equations formulations (Section~\ref{sec:newtonmethods}),
-\item Section~\ref{Sec:SplittingTechniquesAndProx} is devoted to the presentation of splitting and proximal point techniques,
-\item and finally, in Section~\ref{Sec:OptimisationBasedMethods}, the Panagiotopoulos alternating optimization technique, the successive approximation technique and the SOCLCP approach are outlined.
- \end{enumerate}}
-
-
-\tp{Since it is difficult to be exhaustive on the approaches developed in the literature to solve frictional contact problems, we decided to leave out the scope of the article the following approaches:
-\begin{itemize}
-\item the approaches that alter the fundamental assumptions of the 3D Coulomb friction model by faceting the cone as in the pioneering work of~\cite{Klarbring1986} and followed by~\cite{AlFahed.Stavroulakis.ea1991,Pang.Trinkle1996,Stewart.Trinkle1996,Anitescu.Potra97,Haslinger.ea_JCAM2004}, or by convexifying the Coulomb law (associated friction law with normal dilatancy)~\cite{Heyn.ea_IJNME2013,Tasora.Anistescu_Meccanica2013,Tasora.Anistescu_CMAME2011,Anistescu.Tasora_COA2010,Tasora.Anistescu_CMAME2009} or finally by regularizing the friction law~\cite{Kikuchi.Oden_SIAM1988}. In the same way, we are discussing recent developments methods for the frictionless case~\cite{Morales.ea_NM2008,Miyamura.ea_IJNME2010,Temizer.ea_CMAME2014}.
-\item the approaches that are based on domain decomposition and parallel computing. We choose in this article to focus on single domain computation and to skip the discussion about distributed computing mainly for a sake of length of the article. (cite a bit a literature Krause, Koziara, Renouf, Heyn, .... )
-\end{itemize}}
-
-\tp{Finally, some possible interesting approaches have not been reported. We are thinking mainly  to the interior point methods approach~\cite{Christensen.Pang1998,Miyamura.ea_IJNME2010,Kleinert.ea_CMAME2014}. some basic implementations of such methods do not give satisfactory results. One of reason is the fact that we were not able to get robustness and efficiency on a large class of problems. As it is reported in \cite{Kleinert.ea_CMAME2014,Krabbenhoft.ea_CMAME2012}, it seems that it is needed to alter the friction Coulomb's law by adding regularization or dilatency in the model. In the same spirit, we skip also the comparison for the possibly very promising methods developed in~\cite{Heyn.ea_IJNME2013,Heyn_PhD2013} that are based on Krylov subspace and spectral methods. It could be very interesting to bench also these methods on the actual Coulomb friction model, that is to say, in the nonmonotone case. Finally, our preliminary results on the use of direct general SOCP or SOCLCP solvers were not convincing. Indeed, the structure of contact problems (product of a large number of small second order cones) has to be taken into account to get efficiency and unfortunately, these solvers are difficult to adapt to this structure.}    
-
-\tp{Other comparisons articles have already been published in the literature.  One of the first comparison study has been done in~\cite{Raous.ea_JMTA1988} and in~\cite{Chabrand.ea_MCM1998}. In this work, several formulations are detailed in the bidimensional case (variational inequality, linear complementarity problem (LCP) and augmented Lagrangian formulation) and comparisons of fixed point methods with projection, splitting methods and Lemke's method for solving LCP. In~\cite{Christensen.Klarbring.ea1998}, a very interesting comparison in the three-dimensional case has been carried out. }
-
-
-
-Cite and comment
-\begin{list}{}{}
-\item~\cite{Christensen.Klarbring.ea1998}
-\item~\cite{Mijar.Arora_SMO2000,Mijar.Arora_ACME2000,Mirar.Arora_SMO2004-I,Mirar.Arora_SMO2004-II}
-\item Mylapilli.Jain_JCND2016.pdf 
-\item HeynAnitescuTasoraNegrut_IJNME_2012_P2099.pdf
-\item Krabbenhoft.ea_CG2012.pdf
-
-\end{list}
-
-
-\begin{ndrva}
-  \begin{itemize}
-  \item low number of benchmarks
-  \item 2D
-  \end{itemize}
-\end{ndrva}
-
-The comparison are performed on a large set of examples using performance profiles.
-\tg{Let us summarize the main conclusion from Section~\ref{sec:numericalcomparisons}:
-on one hand}, the algorithms based on Newton methods for nonsmooth equations solve quickly the problem when they succeed, but suffer from robustness issues mainly if the matrix $H$ has not full rank. On the other hand, the
-iterative methods dedicated to solving variational inequalities are quite robust but with an extremely slow rate of convergence. To sum up, as far as we know there is no option that combines time efficiency and robustness.
-\tg{The set of problems used here are from the FCLIB collection\footnote{\url{http://fclib.gforge.inria.fr}}, which aims at providing many problems to compare algorithms on a fair basis}.  In this work, this collection is solved with the software {\sc Siconos} and its component {\sc Siconos/Numerics}\footnote{\url{http://siconos.gforge.inria.fr}}\citep{Acary.Bremond.Huber.Perignon2015}.
-
-
-\clearpage
-\section{Description of the 3D frictional contact problems}
-\label{sec:description}
-\subsection{Signorini's condition and Coulomb's friction.}
-
-Let us consider the contact between two  bodies $A \subset  \R^3$ and $B \subset \R^3$ with sufficiently smooth boundaries, \tg{as depicted on} Figure~\ref{fig:local-frame}.
 \tg{From the body $A$ ``perspective'', the point $C_{A} \in \partial A$ is called a \emph{master point to contact}}.  The choice of this master point $C_A$ to write the contact condition is crucial in  practice and amounts to consistently discretizing  the contact surface. The vector  ${\sf N}$ defines an outward unit normal vector to $A$ at the point $C_A$. With $\sf T_1, T_2$ two vectors in the plane orthogonal to ${\sf N}$, we can build  an orthornormal frame $(C_A, \sf N, T_1, T_2)$ called the \emph{local frame at contact}. The slave contact point $C_B \in \partial B$ is defined as the projection of the point $C_A$ on $\partial B$ in the direction given by $\sf N$. Note that we assume that such a point exists. The gap function is defined as the signed distance between $C_A$ and $C_B$
 \begin{equation}
   \label{eq:gap}
@@ -190,16 +222,20 @@ Let us consider the contact between two  bodies $A \subset  \R^3$ and $B \subset
 \end{equation}
 
 
-To fix ideas, if we consider two strictly convex bodies, which are non penetrating, {\it i.e.}  $A \cap B = \emptyset$, the master and slave contact points can be chosen as the proximal points of each bodies and the normal vector  ${\sf N}$ can be written as
+Consider two strictly convex bodies, which are non penetrating, {\it i.e.}  $A \cap B = \emptyset$, the master and slave contact points can be chosen as the proximal points of each bodies and the normal vector  ${\sf N}$ can be written as
 \begin{equation}
   \label{eq:normal}
   {\sf N} = \Frac{C_B-C_A}{\|C_B-C_A\|}.
 \end{equation}
 %
-The contact force exerted by $A$ on $B$ is denoted by $r \in \RR^3$ and is decomposed in the local frame as
+The contact force exerted by $A$ on $B$ is denoted by $r_G \in \RR^3$ and is decomposed as
 \begin{equation}
   \label{eq:reaction}
-  r = r_{\n} {\sf N} +   r_{\tone}{\sf T_1} + r_{\ttwo}{\sf T_2}  ,\quad \text{ with  } r_{\n} \in \RR, r_{\t}=[r_{\tone},r_{\ttwo}]^\top \in \RR^2.
+  r_G = r_{\n} {\sf N} +   r_{\tone}{\sf T_1} + r_{\ttwo}{\sf T_2}  ,\quad \text{ with  } r_{\n} \in \RR\;\text{and}\; r_{\t}\coloneqq[r_{\tone},r_{\ttwo}]^\top \in \RR^2.
+\end{equation}
+In the local frame, the reaction force is given by
+\begin{equation}
+ r\coloneqq [r_{\n}, r_{\t}] \in \RR^3.
 \end{equation}
 %
 The \emph{Signorini condition} states that
@@ -208,11 +244,15 @@ The \emph{Signorini condition} states that
   0 \leq g_{\n} \perp r_\n \geq 0,
 \end{equation}
 and models the unilateral contact. The condition~\eqref{eq:signo}, written at the \emph{position level}, can also be defined at the \emph{velocity level}.
-\tg{To this end}, the relative velocity $u \in \RR^3$ of the point $C_{B}$ with respect to $C_{A}$ is also decomposed in the local frame
+\tg{To this end}, the relative velocity $u_G \in \RR^3$ of the point $C_{B}$ with respect to $C_{A}$ is also decomposed as
 \begin{equation}
-  \label{eq:velocity}
-  u =  u_\n {\sf N} +  u_{\tone}{\sf T_1} + u_{\ttwo}{\sf T_2}  \quad \text{ with } u_\n \in \RR \text{ and } u_\t=[u_{\tone},u_{\ttwo}]^\top  \in \RR^2.
+  u_G =  u_\n {\sf N} +  u_{\tone}{\sf T_1} + u_{\ttwo}{\sf T_2}  \quad \text{ with } u_\n \in \RR \text{ and } u_\t=[u_{\tone},u_{\ttwo}]^\top  \in \RR^2.
 \end{equation}
+In the local frame, the relative velocity is given by
+\begin{equation}
+ u\coloneqq [u_{\n}, u_{\t}] \in \RR^3.
+\end{equation}
+%
 \tg{At} the velocity level, the Signorini condition is written 
 \begin{equation}
   \label{eq:signo-velocity}
@@ -223,20 +263,15 @@ and models the unilateral contact. The condition~\eqref{eq:signo}, written at th
 \end{equation}
 The Moreau's viability Lemma~\cite{Moreau1988} ensures that~\eqref{eq:signo-velocity} implies~\eqref{eq:signo} if $g_{\n}\geq 0$ holds in the initial configuration.
 
-Coulomb's friction  models the frictional behavior of the contact force law in the tangent plane \tb{ spanned by $(T_1,T_2)$}. Let us define the Coulomb friction  cone $K$ which is chosen as the isotropic second order cone (Lorentz or ice--cream cone)
-\begin{equation}
-  \label{eq:CoulombCone}
-  K = \{r \in \RR^3 \mid \|r_\t\| \leq \mu r_n\},
-\end{equation}
-where $\mu$ is the coefficient of friction. The Coulomb friction  states for the sticking case that 
+Coulomb's friction  models the frictional behavior of the contact force law in the tangent plane \tb{ spanned by $(T_1,T_2)$}. Let us define the Coulomb friction  cone $K_\mu$ is the second order cone (Lorentz or ice--cream cone), where $\mu$ is the coefficient of friction. The Coulomb friction states for the sticking case that
 \begin{equation}
   \label{eq:Coulom-stick}
-  u_{\t} =0,\quad r \in K
+  u_{\t} =0,\quad r \in K,
 \end{equation}
 and for the sliding case that
 \begin{equation}
   \label{eq:Coulom-slide}
-  u_{\t}  \neq 0,\quad r \in \partial K, \exists\, \alpha > 0, r_\t = -\alpha u_\t.
+  u_{\t}  \neq 0,\quad r \in \partial K, \quad\text{and}\quad\exists\, \alpha > 0\;\text{such that}\; r_\t = -\alpha u_\t.
 \end{equation}
 \tb{With the Coulomb friction model, there are two relations between $u_\t$ and $r_\t$. The distinction is based on the value of the relative velocity $u_\t$ between the two bodies. If $u_\t=0$ (sticking case), we have $r_\t \leq \mu r_n$. On the other hand, we get the sliding case.} 
 \marginpar{\tg{takeoff case?}}
@@ -256,27 +291,24 @@ In the computational practice, the disjunctive formulation is not suitable for  
 In the sequel, alternative formulations of the Signorini-Coulomb model \tg{suitable for} numerical applications are delineated.
 \tg{The core idea is to translate the cases in~\eqref{eq:contact-disjunctive} into complementarity relations.}
 
-\paragraph{Inclusion into normal cones} The Signorini condition~\eqref{eq:signo} in their complementarity forms can be equivalently written  as an inclusion into a normal cone to $\RR_+$
+\paragraph{Inclusion into normal cones} The Signorini condition~\eqref{eq:signo} and~\eqref{eq:signo-velocity}, in their complementarity forms can be equivalently written  as an inclusion into a normal cone to $\RR_+$
 \begin{equation}
-  \label{eq:signo-inclusion}
-  - g_\n \in N_{\RR_+}(r_\n),
-\end{equation}
-and respectively for~\eqref{eq:signo-velocity}
-\begin{equation}
-  \label{eq:signo-inclusion-velo}
+ - g_\n \in N_{\RR_+}(r_\n)\qquad\text{and}\qquad
   - u_\n \in N_{\RR_+}(r_\n),
+  \label{eq:signo-inclusion-velo}
 \end{equation}
-if $g_{\n} \leq 0$ and $r_\n =0 $ otherwise. An inclusion form of the Coulomb friction can be also proposed introducing the Coulomb disk $D(\mu r_n)$
+if $g_{\n} \leq 0$ and $r_\n =0 $ otherwise. An inclusion form of the Coulomb friction \moh{for the tangential part} can be also proposed: let $D(\cdot)$ be the Coulomb disk:
 \begin{equation}
   \label{eq:diskR}
-  D(\mu r_\n) = \{r_\t \in \RR^2\mid \|r_T\| \leq \mu r_\n   \}.
+  D(c) \coloneqq \{x\in \RR^2\mid \|x\| \leq c \}.
 \end{equation}
 For the Coulomb friction, we get
 \begin{equation}
   \label{eq:Coulomb-inclusion}
-  - u_{\t} \in N_{D(\mu r_\n)}.
+  - u_{\t} \in N_{D(\mu r_\n)}(r_{\t}).
 \end{equation}
-Since $D(\mu r_\n)$ is not a cone, the inclusion~\eqref{eq:Coulomb-inclusion} is not a complementarity problem.  The formulation~\eqref{eq:Coulomb-inclusion} is often related to Moreau's maximum dissipation principle of the frictional behavior,
+Since $D(\mu r_\n)$ is not a cone, the inclusion~\eqref{eq:Coulomb-inclusion} is not a complementarity problem, \moh{but a variational inequality}.
+The formulation~\eqref{eq:Coulomb-inclusion} is often related to Moreau's maximum dissipation principle of the frictional behavior:
 \begin{equation}
   \label{eq:moreau-maxprinciple}
   r_\t \in \argmax_{\|z\| \leq \mu r_n}\;  z^\top u_\t.
@@ -291,7 +323,7 @@ In~\cite{Acary.Brogliato2008,Acary.ea_ZAMM2011}, another formulation is proposed
 To this end, we introduce the modified relative velocity $\hat u \in \RR^3$ defined by
 \begin{equation}
   \label{eq:modified-velocity}
-  \hat u = u +\mu \|u_\t\| \sf N.
+  \hat u = u + [\mu \|u_\t\|, 0, 0]^\top.
 \end{equation}
 The entire contact model~\eqref{eq:contact-disjunctive} can be put into a Second-Order Cone Complementarity Problem (SOCCP) as
 \begin{equation}
@@ -317,54 +349,32 @@ The entire contact model~\eqref{eq:contact-disjunctive} can be put into a Second
 \subsection{Frictional contact discrete problems}
 
 In this section, we formulate two basic discrete frictional contact problems considering a finite number $n$ of degrees of freedom  together with a discrete linear dynamics.
-\tb{ The first problem is directly related to~\eqref{eq:soccp1-intro} and keep the unknown triplet $(v,u,r)$.
-The second problem will assume that the matrix $M$ is invertible. In that later case, we case eliminate the variable $v$ and reduce the unknown to the couple $(u,r)$.}
+\tb{ The first problem is directly related to~\eqref{eq:soccp1-intro} and keep the unknown pair $(v,r)$.
+The second problem will assume that the matrix $M$ is invertible. In that later case, we case eliminate the variable $v$ and reduce the single unknown $r$.}
 
  We assume that a finite set of $n_c$ contact points and their associated local frames has been defined.
  In general, this task is not straightforward and amounts to correctly discretizing  the contact surfaces. For more details, we refer to~\cite{Wriggers2006,Laursen2003}.
 
-For each contact $\alpha \in \{1,\ldots n_c\}$, the  local velocity  is denoted by $u \in \RR^3$, the normal velocity by $u_\n^{\alpha}\in \RR$ and the tangential velocity by $u_\t^\alpha\in\RR^2$. One obviously 
-gets
-\begin{equation}
-  \label{eq:contactvelocity}
-  u^\alpha =\left[
-  \begin{array}{c}
-    u^\alpha_{\n} \\
-    u^\alpha_{\t}   
-  \end{array}\right].
-\end{equation}
-The vector $u, u_\n, u_\t$ respectively collects all the local velocity
-$  u = [[u^\alpha]^\top, \alpha = 1\ldots n_c]^\top$,
+For each contact $\alpha \in \{1,\ldots, n_c\}$, the local velocity is denoted by $u^\alpha \in \RR^3$, the normal velocity by $u_\n^{\alpha}\in \RR$ and the tangential velocity by $u_\t^\alpha\in\RR^2$ with $u^\alpha = [u^\alpha_{\n}, (u^\alpha_{\t})^\top]^\top$.
+The vectors $u, u_\n, u_\t$ respectively collect all the local velocity
+$u = [(u^\alpha)^\top, \alpha = 1\ldots n_c]^\top$,
 all the normal velocity 
-$
-  u_\n = [ u^\alpha_{\n}, \alpha = 1\ldots n_c]^\top$,
+$u_\n = [ u^\alpha_{\n}, \alpha = 1\ldots n_c]^\top$,
 and all the  tangential velocity
-$
-  u_\t = [ [u^\alpha_{\t}]^\top, \alpha = 1\ldots n_c]^\top$.
+$u_\t = [(u^\alpha_{\t})^\top, \alpha = 1\ldots n_c]^\top$.
 For a contact $\alpha $, the modified local velocity, denoted by $\hat u^\alpha $, is defined by
 \begin{equation}
+  \hat u^\alpha = u^\alpha + g^\alpha(u)\qquad\text{where}\qquad
+ g^\alpha(u^\alpha) =  [\mu^\alpha  \|u^\alpha_\t\|, 0, 0 ]^\top.
   \label{eq:modified}
-  \hat u^\alpha = u^\alpha + g^\alpha(u)
 \end{equation}
-where
-\begin{equation}
-  \label{eq:modified-bis}
-  g^\alpha(u) =  \mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha.
-\end{equation}
-The vectors $\hat u$ and $g(u)$ collect all the modified local velocity at each contact $\hat u = [[\hat u^\alpha]^\top, \alpha = 1\ldots n_c]^\top$ and the function $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldots n_c]^\top$.
+The vector $\hat u$ and the function $g$ collect all the modified local velocity at each contact $\hat u = [\hat u^\alpha, \alpha = 1\ldots n_c]^\top$ and the function $g(u) = [[\mu^\alpha  \|u^\alpha_\t\|, 0, 0]^\top, \alpha = 1\ldots n_c]^\top$.
 
 % Let us introduce finally the following notation to express the function $g(u)$ conveniently. We denoted by $s^\alpha = \|u^\alpha_\t\|$ the norm of the sliding velocity for the contact $\alpha$. The vector $s$ collects all the sliding velocity at each contact $s = [ s^\alpha, \alpha = 1\ldots n_c]^\top$. The matrix $ N \in \RR^{3n_c\times n_c}$ is composed of the vector $ mu^\alpha N^\alpha$ on its diagonal formally $N = \mbox{diag}(\mu^\alpha N^\alpha$. The function $g()$ can be therefore expressed as $g(u) = N s$.
 
 For each contact $\alpha$, the reaction vector $r^\alpha\in \RR^3$ is also decomposed in its normal part $r_\n^{\alpha}\in \RR$ and the tangential part $r_\t^\alpha\in\RR^2$ as
-\begin{equation}
-  \label{eq:contactreaction}
-  r^\alpha = \left[
-  \begin{array}{c}
-    r^\alpha_{\n} \\
-    r^\alpha_{\t}   
-  \end{array}\right].
-\end{equation}
-The Coulomb friction cone for a  contact $\alpha$ is defined by $K^{\alpha}  = \{r^\alpha, \|r^\alpha_\t \| \leq \mu^\alpha |r^\alpha_\n| \}$ and the set $K^{\alpha,\star}$ is its dual. 
+$r^\alpha = [ r^\alpha_{\n}, (r^\alpha_{\t})^\top]^\top$
+The Coulomb friction cone for a  contact $\alpha$ is defined by $K^{\alpha}  = \{r^\alpha \in\RR^3\mid \|r^\alpha_\t \| \leq \mu^\alpha |r^\alpha_\n| \}$ and the set $K^{\alpha,\star}$ is its dual. 
 The set $K$ is the cartesian product of Coulomb's friction cone at each contact, that is
 \begin{equation}
   \label{eq:CC_bis}
@@ -395,25 +405,28 @@ Let us define $W$, often called the \emph{Delassus matrix}, as
   \label{eq:qq}
   q&\coloneqq H^\top M^{-1} f + w.
 \end{align}
-
-\begin{problem}[Discrete frictional contact problem]\label{prob:II}
+%
+\moh{We are now ready to define the mathematical problem that we solve.}
+%\settheoremtag{FC}
+\begin{problemenv}{FC}[Discrete frictional contact problem]\label{prob:II}
   Given
   \begin{itemize}
     \item a symmetric positive semi--definite  matrix ${W} \in \nbR^{m \times m}$,
     \item a vector $ {q} \in \nbR^m$,
     \item a vector $\mu \in \RR^{n_c}$ of coefficients of friction, 
   \end{itemize}
-find  a vector $r\in \RR^m$, denoted by $\mathrm{FC}(W,q,\mu)$  such that
+find  a vector $r\in \RR^m$, such that
 \begin{equation}\label{eq:soccp2}
   \begin{cases}
+   K^\star \ni {\hat u} \perp r \in K \\[2mm]
     u =Wr +q \\[2mm]
-    \hat u =u + g(u) \\[2mm]
-    K^\star \ni {\hat u} \perp r \in K
+    \hat u =u + g(u)
   \end{cases}
 \end{equation}
-with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldots n_c]^\top$.
+with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\|, 0, 0 ]^\top, \alpha = 1\ldots n_c]^\top$.
+An instance of the problem is denoted by $\mathrm{FC}(W,q,\mu)$
 \qed
-\end{problem}
+\end{problemenv}
 
 %The  first two lines of~\eqref{eq:soccp1} may represent a linear time--discretized dynamics and $v$ have the role of the global or generalized velocity. 
 
@@ -434,11 +447,12 @@ or equivalently
 \begin{equation}\label{asseq}
   w\in\mathrm{im}\, H + \mathrm{int}\, K^\star.
 \end{equation}
-Under the assumption, the Problem~\ref{prob:II} have a solution. The question to provide a solution procedure to compute has therefore a sense. In the sequel, we will compare numerical methods only when this assumption is satisfied.
+Under the assumption, the Problem~\ref{prob:II} have a solution.
+\moh{Therefore, it makes sense to design a procedure to solve the problem}. In the sequel, we will compare numerical methods only when this assumption is satisfied.
 
 This assumption is easy verified in numerous applications. For applications in nonsmooth dynamics where the unknown $v$ is a relative contact velocity, the term $w$ vanishes if we have only scleronomic constraints. For $w \in \mathrm{im}(H^\top)$ (and especially $w=0$), the assumption is trivially satisfied. As it is explained in~\cite{Acary.Cadoux2013}, the term $w$ has several possible sources. \tb{If the constraints are written at the velocity level, one is given in dynamics by the impact law and in that case, we can show that of the Newton impact law it holds that $w \in \mathrm{im}(H^\top)$.   For other impact law, this is not so clear. Another source for $w$ is given by constraints that depends explicitly on time. In that case, we can have $w \not\in \mathrm{im}(H^\top)$ and non existence of solutions. If the constraints are written at the position level, $w$ can be given by initial of terms that comes velocity discretization. In that cases, the existence is not clear.}
 
-\tb{The assumption is also satisfied if $\mathrm{im}\, H = \RR^m$ or in other words if $H^\top$ has full row rank. Unfortunately, in large number of applications $H^\top$ is rank deficient. }
+\tb{The assumption is also satisfied \moh{whenever} $\mathrm{im}\, H = \RR^m$ or in other words if $H^\top$ has full row rank. Unfortunately, in large number of applications $H^\top$ is rank deficient. }
 From the mechanical point of view, the rank deficiency of $H$ and the amount of friction seems to play a fundamental role in the question of the existence (and uniqueness) of solutions. In the numerical comparisons, we will attempt to get a deeper understanding on the role of these assumptions on the convergence of the algorithms. The rank deficiency  of $H$ is related to the number of constraints that are imposed to the system with respect to the number of degree of freedom in the system. It is closely related to the concept of hyperstaticity in overconstrained systems. In the most favorable cases, it yields  indeterminate Lagrange multipliers but also to unfeasible problems and then to the lost of solutions in the worth cases. The second assumption on the amount of friction is also well--know. The frictionless problem is  easy to solve if it is  feasible. It is clear that large friction coefficients prevent from sliding and the therefore increase the degree of hyperstaticity of the system. 
 
 
@@ -469,7 +483,7 @@ From the mechanical point of view, the rank deficiency of $H$ and the amount of 
 \label{sec:formulation}
 In this section, various equivalent formulations of Problem~\ref{prob:II} are \tg{given.
 Our goal is to show that} such problems can be recast into several well-known problems in the mathematical programming and optimization community.
-These formulations will serve as a basis for numerical solution procedures that we develop in further sections.
+These formulations will serve as a basis for numerical solution procedures that we develop in later sections.
 
 \subsection{Variational Inequalities (VI) formulations}
 
@@ -498,8 +512,8 @@ For Problem~\ref{prob:II}, the following equivalent formulation in VI is directl
 \paragraph{\tg{Uniqueness} properties.} 
 %Concerning the mathematical properties of the obtained VI formulations, it is difficult to provide a general result of existence and uniqueness of solutions.
 \tg{In the general case, it is difficult to prove uniqueness of solutions to~\eqref{eq:vi-II}.}
-\tg{If we suppose that} the matrix $H$ has full rank and that friction coefficients are ``small'', a classical argument for the uniqueness of solution of VIs can be satisfied.
-\tg{Note that the full rank hypothesis on $H$ implies that $W$ is positive. Therefore,} we have  $(x-y)^\top W (x-y) \geq C_W \|x-y\|^2$ with  $C_W>0$.
+\tg{If} the matrix $H$ has full rank and that friction coefficients are ``small'', a classical argument for the uniqueness of solution of VIs can be satisfied.
+\tg{Note that the full rank hypothesis on $H$ implies that $W$ is positive-definite. Therefore,} we have  $(x-y)^\top W (x-y) \geq C_W \|x-y\|^2$ with  $C_W>0$.
 Using this relation in~\eqref{eq:vi-II} yields
 \begin{equation}
   \label{eq:mono-II}
@@ -509,7 +523,8 @@ Using this relation in~\eqref{eq:vi-II} yields
     & \geq & C_W \|x-y\|^2  + \sum _{\alpha =1}^{n_c} \mu^\alpha (x^\alpha_\n-y^\alpha_\n) [\|[Wx+q]^\alpha_\t \| - \|[Wy+q]^\alpha_\t \|].
   \end{array}
 \end{equation}
-\tg{Note that} for small values of the coefficients of friction, the mapping $F_\vitwo$ is strictly monotone and this ensures that the VI has at most one solution~\citep[Theorem 2.3.3]{Facchinei.Pang2003}. The fact that $H$ is full rank also implies that the Assumption~\eqref{ass} for the existence of solutions is trivially satisfied. \tg{Hence,} there exists a unique solution to the $\mathrm{VI}(F_{\vitwo},X_{\vitwo})$.
+\tg{Note that} for small values of the coefficients of friction \moh{the first term in the right-hand side dominates the second one}.
+Hence, the mapping $F_\vitwo$ is strictly monotone and this ensures that the VI has at most one solution~\citep[Theorem 2.3.3]{Facchinei.Pang2003}. The fact that $H$ is full rank also implies that the Assumption~\eqref{ass} for the existence of solutions is trivially satisfied. \tg{Hence,} there exists a unique solution to the $\mathrm{VI}(F_{\vitwo},X_{\vitwo})$.
 
 
 
@@ -520,12 +535,13 @@ Using this relation in~\eqref{eq:vi-II} yields
 \subsection{Quasi-Variational Inequalities (QVI)}
 
 \tg{Let us recast Problem~\ref{prob:II} into the QVI framework. A QVI is a generalization of the VI, where the feasible set is allowed to depend on the solution. Let us define this precisely:}
-let $X$ be a multi-valued mapping  $\nbR^{n} \rightsquigarrow  \nbR^{n}$ and let  $F$ be a mapping from $\nbR^n$ into itself. The  quasi-variational inequality  problem, denoted by $\mathrm{QVI}(X,F)$ is to find a vector $z\in X(z)$ such that 
+let $X$ be a multi-valued mapping  $\nbR^{n} \MM \nbR^{n}$ and let  $F$ be a mapping from $\nbR^n$ into itself.
+The  quasi-variational inequality  problem, denoted by $\mathrm{QVI}(X,F)$, is to find a vector $z\in X(z)$ such that 
 \begin{equation}
  \label{eq:qvi}
  F^{\top}(z) (y-z) \ge 0, \, \forall y \in X(z).
 \end{equation}
-The QVI formulations of the frictional contact problems are obtained by considering the inclusions~\eqref{eq:signo-inclusion-velo} and~\eqref{eq:Coulomb-inclusion}. We get 
+The QVI formulation of the frictional contact problems is obtained by considering the inclusions~\eqref{eq:signo-inclusion-velo} and~\eqref{eq:Coulomb-inclusion}. We get 
 \begin{equation}
   \label{eq:qvi-1}
   u^\top (s - r) \geq 0, \text{ for all } s \in C(\mu, r_\n),
@@ -552,52 +568,44 @@ Since $W$ is assumed to be positive semi-definite matrix, $F_{\qvitwo}$ is monot
 \subsection{Nonsmooth Equations}
 \label{Sec:NonsmoothEquations}
 
-In this section, we reformulate of Problems\ref{prob:II} as an \tg{equation, as opposed to inclusion}.
-\tg{The term nonsmooth equation highlights that the mapping we consider fails to be differentiable.}
+In this section, \moh{we expose a classical approach to solving a VI or a QVI, based on a reformulation of the inclusion as an nonsmooth equation.}
+\moh{The term nonsmooth equation highlights that the mapping we consider fails to be differentiable.
+This is the price to pay to for this reformulation. We can apply fixed-point and Newton-like algorithms to solve the resulting equation.
+Given the nonsmooth nature of the problem, applying Newton's method appears challenging, but it can still be done for some reformulations.}
 
 More precisely for Problem~\ref{prob:II}, we search for an equation of the type
 \begin{equation}
   \label{eq:ne-1}
-  G(v,u,r) = 0
+  G(r) = 0
 \end{equation}
-where $G$ is generally \tg{only} locally Lipschitz continuous such that the zeroes $(u,v,r)$ of~\eqref{eq:ne-1} are the solutions of~\eqref{eq:soccp2}.
-\tg{Several numerical methods can be used to solve such a nonsmooth equation}, ranging from fixed point algorithms to Newton's method.
+where $G$ is generally \tg{only} locally Lipschitz continuous. \moh{The mapping $G$ is such that} the zeroes $(r)$ of~\eqref{eq:ne-1} are the solutions of~\eqref{eq:soccp2}.
+%\tg{Several numerical methods can be used to solve such a nonsmooth equation}, ranging from fixed point algorithms to Newton's method.
 
 \paragraph{Natural and normal maps for the VI formulations}
 
-A first way to obtain some formulations based on nonsmooth equations of the frictional contact problems is to use the normal and natural maps, see~\cite{Facchinei.Pang2003} for details.
-\tg{Those two mapping enable us} to restate a VI as a system of nonlinear and  nonsmooth functions.
-\tg{Firstly,} let us define the Euclidean projector $P_X$ onto a closed convex set $X$: for a vector $x\in \RR^n$, the projected vector $z  = P_X(x)$ is the unique solution of the convex quadratic programm
-\begin{equation}
-  \label{eq:opt-proj}
-  \begin{cases}
-    \min\, \Frac 1 2 (y-x)^\top(y-x), \\[2mm]
-    \begin{array}{ll}
-     \text{s.t.} & y \in X .
-  \end{array}
-  \end{cases}
-\end{equation}
+\moh{A general-purpose reformulation of VI is obtained by using} the normal and natural maps, see~\cite{Facchinei.Pang2003} for details.
+%\tg{Those two mapping enable us} to restate a VI as a system of nonlinear and  nonsmooth functions.
  The natural map $F^\nat\colon \RR^n\to\RR^n$ associated with the VI~\eqref{eq:vi} is defined by
 \begin{equation}
   \label{eq:naturalmap}
-  F^\nat(z) \coloneqq z - P_{X}(z-F(z)).
+  F^\nat(z) \coloneqq z - P_{X}(z-F(z)),
 \end{equation}
-A well-known result (see~\cite{Facchinei.Pang2003}) states that the solutions of a VI are \tg{related} to the zeroes of the natural map :
+where $P_X$ is the Euclidean projector on the set $X$. A well-known result (see~\cite{Facchinei.Pang2003}) states that the solutions of a VI are \tg{related} to the zeroes of the natural map :
 \begin{equation}
   \label{eq:VI-normalnatural}
   \begin{array}{c}
-  z \text{ solves } \mathrm{VI}(X,F) \Longleftrightarrow  F^\nat(z)=0,
+  z \text{ solves } \mathrm{VI}(X,F)\quad \Longleftrightarrow\quad  F^\nat(z)=0,
 \end{array}
 \end{equation}
 \tg{Using~\eqref{eq:vi}}, it is easy to see that if $z$ solves  $\mathrm{VI}(X,F)$, then it is  also a solution to $\mathrm{VI}(X,\rho F)$ for any $\rho > 0$.
-Therefore, we can define some parametric variants of the normal and natural maps by
+Therefore, we can define a parametric variant of the natural map by
 \begin{equation}
   \label{eq:parametrized-naturalnormalmap}
   \begin{array}{l}
-    F_\rho^\nat(z) = z - P_{X}(z-\rho F(z))
+    F_\rho^\nat(z) = z - P_{X}(z-\rho F(z)).
   \end{array}
 \end{equation}
-The \tg{relations given in}~\eqref{eq:VI-normalnatural} continue to hold for the parametric maps. 
+The \tg{relations given in}~\eqref{eq:VI-normalnatural} continue to hold for the parametric mapping.
 Using those \tg{equivalences}, the frictional contact problem can be restated as zeroes of nonsmooth functions.
 \tg{With} the natural map, Problem~\ref{prob:II} under the VI form~\eqref{eq:vi-II} can be reformulated as
 \begin{equation}
@@ -608,11 +616,6 @@ Using those \tg{equivalences}, the frictional contact problem can be restated as
   \end{array}\right] 
   = 0.
 \end{equation}
-\begin{ndroh}
- Is the last sentence justifies here? I don't think we develop an algorithm based on the normal map. If we have to cut more material, we might consider removing the normal map?
-
- VA ==> I decided to put the normal map stuff in a remark, easier to remove in the submitted version.
-
 \begin{remark}
   Following the same lines, the normal map may also be used to derive algorithms. The normal map $F^\nor\colon \RR^n\to\RR^n$ is defined by
 \begin{equation}
@@ -628,7 +631,7 @@ An equivalent results apply
  \begin{equation}
   \label{eq:VI-normalmap}
   \begin{array}{c}
-  z \text{ solves } \mathrm{VI}(X,F) \Longleftrightarrow z = P_X(x) \text{ for some } x \text{ such that } F^\nor(x)=0.
+  z \text{ solves } \mathrm{VI}(X,F)\quad \Longleftrightarrow \quad z = P_X(x) \text{ for some } x \text{ such that } F^\nor(x)=0.
 \end{array}
 \end{equation}
 The normal map based formulation of VI are also obtained in the same way. 
@@ -650,30 +653,19 @@ The skew natural map can be also defined and yield the following nonsmooth equat
   \label{eq:skew-natural-NE}
    F_R^\nat(z) = z - P_{X,R}(z-R^{-1} F(z)).
 \end{equation}
+The zeros of $F_R^\nat(z)$ are also solution of the $\mathrm{VI}(X,F)$.
 Considering the skew natural map, we obtain for Problem~\ref{prob:II} under the VI form~\eqref{eq:vi-II},
 \begin{equation}
   \label{eq:natural-typeII}
   F_{\vitwo,R}^\nat(r) \coloneqq \left[
   \begin{array}{l} 
-    r - P_{K}\left(r  - R^{-1} ( W r +q   + g(Wr+q))\right)  \end{array}\right] = 0
+    r - P_{K,R}\left(r  - R^{-1} ( W r +q   + g(Wr+q))\right)  \end{array}\right].
 \end{equation}
-The previous case is retrieved by choosing $R = \rho^{-1} I_{n\times n}$. 
-
-
-
-
+The previous case is retrieved by choosing $R = \rho^{-1} I_{n\times n}$.
 
 \begin{ndrva}
   It can be interesting to use something $R$ as a preconditionner of the problem ? $R=diag(W)$ or incomplete LU. Warning, $W$ is only SPR, so we cannot have $R =W$.
 \end{ndrva}
-
-\begin{ndroh}
- I see a notation issue here: in the last subsection $D$ is a matrix; in the next one it is a disk. We should change one of the 2.
- I vote for changing the matrix $D$ to \ldots $R$ ??
-
-
- VA OK
-\end{ndroh}
 
 \paragraph{Jean--Moreau's and Alart-Curnier's functions}
 
@@ -807,7 +799,7 @@ A direct calculation \tg{for the SOC in $\RR^3$ yields}
 \end{equation}
 This formula provides a new expression for the natural map and its associated nonsmooth equations. This is exactly what is done in~\cite{Hayashi.ea_SIOPT2005} where the natural map~\eqref{eq:naturalmap} is used together with an expression of the projection operator based on the Jordan algebra calculus. The \tg{resulting} SOCCP is then solved with a semi--smooth Newton method, and \tg{a smoothing parameter can be added}.
 
-Most of the calculus in Jordan algebra are based on the spectral decomposition, a basic concept in Jordan Algebra, see~\cite{Fukushima.ea2001} for more details.
+Most of the calculus in Jordan algebra are based on the spectral decomposition, a basic concept in Jordan algebra, see~\cite{Fukushima.ea2001} for more details.
 For $x = (x_\n, x_\t)\in \RR\times \RR^2$, the spectral decomposition is defined by
 \begin{equation}
   \label{eq:Jordan-spectraldecomposition}
@@ -1184,7 +1176,7 @@ The method of successive approximation has been extensively used for proving exi
 VA :YES TRESCA family
 \end{ndroh}
 \paragraph{The convex SOCP} approach \tg{is in the same vein as the previous one, with the difference that} a SOCQP sub-problem is identified.
-To this aim, \tg{we augment the problem by introduction a auxiliary variable $s$, the image of $g(u)$ introduced in~\eqref{eq:modified-bis}.
+To this aim, \tg{we augment the problem by introduction a auxiliary variable $s$, the image of $g(u)$ introduced in~\eqref{eq:modified}.
 We then obtain}
 \begin{equation}\label{eq:ACLM-2}
   \begin{cases}
@@ -2579,8 +2571,8 @@ Analyze the quickest one and the more robust one.
 
 \addcontentsline{toc}{section}{References}
 \bibliographystyle{plainnat}
-\bibliography{./biblio/String,./biblio/NonSmooth,./biblio/Math,./biblio/Multibody,./biblio/Fem.bib,./biblio/Dae.bib,./biblio/Meca,./biblio/AnaNum.bib,./biblio/Math-Impact,./biblio/Contact,./biblio/Optim,./biblio/Cp}
-%\bibliography{biblio-extract}
+%\bibliography{./biblio/String,./biblio/NonSmooth,./biblio/Math,./biblio/Multibody,./biblio/Fem.bib,./biblio/Dae.bib,./biblio/Meca,./biblio/AnaNum.bib,./biblio/Math-Impact,./biblio/Contact,./biblio/Optim,./biblio/Cp}
+\bibliography{biblio-extract}
 
 
 
