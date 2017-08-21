@@ -428,8 +428,8 @@ v%     \end{array}\right]
 
 
 
-** TODO List of actions.  Last update <2016-06-16 Thu>
-   DEADLINE: <2016-04-04 Mon>
+** TODO List of actions.  Last update <2016-11-24 Thu>
+   DEADLINE: <2016-12-09 Fri>
 
    + Paper. General Work :
      + All sections : Clean redaction note and report here the items  :VA:
@@ -497,14 +497,79 @@ v%     \end{array}\right]
 
 
    + Devel and comparisons:   
-     + Devel alternating solution approaches. 
-     + Rerun computation  :MB:
-     + Fclib. Thinking of howto bind with Matlab :OH:
-     + Fclib and swig python tranlastion :MB:
+     + Devel alternating solution approaches. :VA:
+       + Panagiotoupolos 
+     + Rerun computation  :MB:VA:
+     + Fclib. Thinking of how to bind with Matlab :OH:
+     + Fclib and swig python tranlastion from siconos to fclib :MB:
      + Add a small description file for example directory. texfile img profile. :VA:
-     + Add description in fclib report. :VA:
+     + Add description of examples in fclib report. :VA:
      + Update and correct naming for the line-searches. FBLSA  :MB:OH:
-     + Merge line--searches procedures :MB:OH:
-     + Panagiotopoulos to be coded :VA:
-     + improvement of Tresca approach ?
-       
+     + Merge line--searches procedures and undertand why they are failing :MB:OH: 
+     + improvement of Tresca approach ? :VA:
+     + debug LMGC90 global interface :VA:
+     + debug proximal point algorithm :VA:
+     + evaluate the effect of filtering local solution in NSGS
+     + reask for the IP method of Jan Kleinert.
+     + 
+
+** TODO targeted List of actions.  Last update <2017-07-06 Thu>
+ 
+   + Paper. General Work :
+     + All sections : Clean redaction note and report here the items  :VA:
+
+     + Complete the introduction
+       + Add a list of approach not discussed in the paper. leave it as future work. :VA
+
+     + Section 3.
+       + remove 3.4., 
+       + Section 3.3 Remork to send the maximum in Appendix (V.A.)
+       + NDRVA 3.3 Comment of Olivier ? (O.H.)
+       + Discuss remark about smoothing
+       + Section 3.4 in Appendix.
+       + NDRVA 3.5 Remark Olivier ?
+ 
+     + Section 4.
+       + Section 4.1
+       + NDROH 4.1 :  to be discussed (V.A. O.H.) --> mode in section 6.2
+       + remove hyperplane projection 
+	 NRDOH  4.3 4.4 To be discussed, not so clear for me. VA
+       + Implement the FP-QVI-MJ and FP-QVI-AC within the De Saxce approach ? Useful ?
+
+     
+     + Section 5.
+       + Merge 5.1 5.2
+       + Section 5.2 
+       + Section 5.3 TBW 
+	 + question about the naming convention : FBLSA ?
+
+     + Section 6
+       + Section  6.1
+	 + Situate~\cite{Hayashi.ea_JCAM2005}
+       + Section 6.2 Work on the proximal point.
+	 
+     + Section 7. (Optimization)
+       + ACML
+       + SOCCP
+
+
+     + Annex
+       + formulation of subgradient.
+       + 
+
+   + Devel and comparisons:   
+     + Devel alternating solution approaches. :VA:
+       + Panagiotoupolos 
+     + Rerun computation  :MB:VA:
+
+     + Add description of examples in fclib report. :VA:
+
+
+     + Update and correct naming for the line-searches. FBLSA  :MB:OH:
+     + Merge line--searches procedures and undertand why they are failing :MB:OH: 
+
+
+     + improvement of Tresca approach ? :VA:
+     + debug proximal point algorithm :VA:
+     + evaluate the effect of filtering local solution in NSGS
+
