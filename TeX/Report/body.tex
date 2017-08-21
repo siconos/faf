@@ -263,7 +263,12 @@ In the local frame, the relative velocity is given by
 \end{equation}
 The Moreau's viability Lemma~\cite{Moreau1988} ensures that~\eqref{eq:signo-velocity} implies~\eqref{eq:signo} if $g_{\n}\geq 0$ holds in the initial configuration.
 
-Coulomb's friction  models the frictional behavior of the contact force law in the tangent plane \tb{ spanned by $(T_1,T_2)$}. Let us define the Coulomb friction  cone $K_\mu$ is the second order cone (Lorentz or ice--cream cone), where $\mu$ is the coefficient of friction. The Coulomb friction states for the sticking case that
+Coulomb's friction  models the frictional behavior of the contact force law in the tangent plane \tb{ spanned by $(T_1,T_2)$}. Let us define the Coulomb friction  cone $K$ which is chosen as the isotropic second order cone (Lorentz or ice--cream cone)
+\begin{equation}
+  \label{eq:CoulombCone}
+  K = \{r \in \RR^3 \mid \|r_\t\| \leq \mu r_\n\},
+\end{equation}
+where $\mu$ is the coefficient of friction. The Coulomb friction  states for the sticking case that 
 \begin{equation}
   \label{eq:Coulom-stick}
   u_{\t} =0,\quad r \in K,
@@ -273,7 +278,7 @@ and for the sliding case that
   \label{eq:Coulom-slide}
   u_{\t}  \neq 0,\quad r \in \partial K, \quad\text{and}\quad\exists\, \alpha > 0\;\text{such that}\; r_\t = -\alpha u_\t.
 \end{equation}
-\tb{With the Coulomb friction model, there are two relations between $u_\t$ and $r_\t$. The distinction is based on the value of the relative velocity $u_\t$ between the two bodies. If $u_\t=0$ (sticking case), we have $r_\t \leq \mu r_n$. On the other hand, we get the sliding case.} 
+\tb{With the Coulomb friction model, there are two relations between $u_\t$ and $r_\t$. The distinction is based on the value of the relative velocity $u_\t$ between the two bodies. If $u_\t=0$ (sticking case), we have $r_\t \leq \mu r_\n$. On the other hand, we get the sliding case.} 
 \marginpar{\tg{takeoff case?}}
 \paragraph{Disjunctive formulation of the Signorini-Coulomb model}
 
@@ -311,7 +316,7 @@ Since $D(\mu r_\n)$ is not a cone, the inclusion~\eqref{eq:Coulomb-inclusion} is
 The formulation~\eqref{eq:Coulomb-inclusion} is often related to Moreau's maximum dissipation principle of the frictional behavior:
 \begin{equation}
   \label{eq:moreau-maxprinciple}
-  r_\t \in \argmax_{\|z\| \leq \mu r_n}\;  z^\top u_\t.
+  r_\t \in \argmax_{\|z\| \leq \mu r_\n}\;  z^\top u_\t.
 \end{equation}
 This means that the couple $(r_\t,u_\t)$ maximizes the energy lost through dissipation.
 
@@ -546,10 +551,10 @@ The QVI formulation of the frictional contact problems is obtained by considerin
   \label{eq:qvi-1}
   u^\top (s - r) \geq 0, \text{ for all } s \in C(\mu, r_\n),
 \end{equation}
-where $C(\mu, r_\n)$ is the Cartesian product of the semi--cylinders of radius $\mu^\alpha r_n^\alpha$ defined as
+where $C(\mu, r_\n)$ is the Cartesian product of the semi--cylinders of radius $\mu^\alpha r_\n^\alpha$ defined as
 \begin{equation}
   \label{eq:cylinder}
-  C(\mu, r_\n) \coloneqq \prod_{\alpha =1}^{n_c}\: \left\{ s \in \RR^3 \mid  s_\n \geq 0, \|s_\t\| \leq \mu^\alpha r^\alpha_n\right\}.
+  C(\mu, r_\n) \coloneqq \prod_{\alpha =1}^{n_c}\: \left\{ s \in \RR^3 \mid  s_\n \geq 0, \|s_\t\| \leq \mu^\alpha r^\alpha_\n\right\}.
 \end{equation}
 Note that the QVI~\eqref{eq:qvi-1} involves only $u$ and not $\hat u$: this is the main interest of this formulation. The price to pay is the dependence on $r$ of the set $C(\mu,r_\n)$.
 Problem~\ref{prob:II} can be expressed as a QVI by substituting the expression of $u$, which yields
@@ -690,7 +695,7 @@ defines the Cartesian product of the Coulomb disks for each contact. The notatio
     r_\t - P_{D(\mu, (r_{\n})_+)}(r_\t - \rho_\t u_\t   )=0.
   \end{cases}
 \end{equation}
-The parameters $\rho_n,\rho_\t$ may be also chosen contact by contact. Problem~\ref{prob:II} \tg{is then reformulated as}
+The parameters $\rho_\n,\rho_\t$ may be also chosen contact by contact. Problem~\ref{prob:II} \tg{is then reformulated as}
 \begin{equation}
   \label{eq:MJ-II}
     F_{\mjtwo}(r) \coloneqq \left[ \begin{array}{c}
@@ -1089,12 +1094,12 @@ Two sub-problems can therefore be identified: the first one is to find $u_\n$ an
    -u_\t \in N_{D(\mu,\tilde r_{\n})}(r_\t),
   \end{cases}
 \end{equation}
-\tg{where $\tilde r_\n$ is fixed} and $\tilde q_\t = q_\t + W_{\t\n}r_n$. Since $W$ is a symmetric positive semi--definite  matrix, $W_{\n\n}$ and $W_{\t\t}$ are also symmetric semi--definite positive matrices.
+\tg{where $\tilde r_\n$ is fixed} and $\tilde q_\t = q_\t + W_{\t\n}r_\n$. Since $W$ is a symmetric positive semi--definite  matrix, $W_{\n\n}$ and $W_{\t\t}$ are also symmetric semi--definite positive matrices.
 \tg{Therefore,} two convex optimization problems can be formulation:
  \begin{equation}
   \label{eq:AO-3}
   \begin{cases}
-    \min\, \Frac 1 2 r_\n^\top  W_{\n\n} r_\n + r_n^\top \tilde q_\n \\
+    \min\, \Frac 1 2 r_\n^\top  W_{\n\n} r_\n + r_\n^\top \tilde q_\n \\
     \begin{array}{ll}
     \text{s.t.} & r_\n \geq 0,
   \end{array}\end{cases}
@@ -2151,12 +2156,13 @@ A nomenclature for the algorithms based on the projection/splitting approach is 
  \begin{equation}
   \label{eq:AO-3-bis}
   \begin{cases}
-    \min\, \Frac 1 2 r_\n^\top  W_{\n\n} r_\n + r_n^\top \tilde q_\n \\
+    \min\, \Frac 1 2 r_\n^\top  W_{\n\n} r_\n + r_\n^\top \tilde q_\n \\
     \begin{array}{ll}
     \text{s.t.} & r_\n \geq 0
   \end{array}\end{cases} \text{ with }   \tilde q_\n =  q_\n + W_{\n\t}r_{\t,k},
 \end{equation}
  is a convex quadratic program with simple bound constraints that can be solved with any dedicated solver. In this work, we solve it with a) an active set strategy, b) a conjugate gradient approach with projection as it is developed in \citep{More.Toraldo1991} or c) an adaptation of one of the splitting techniques detailed in Section~\ref{Sec:SplittingTechniquesAndProx}. It is clear that we can also use semi-smooth Newton methods but our experience has shown that such methods are not efficient when $\ker (W_{\n\n}) \neq \{0\}$. Note that there exists also a bunch of methods in the literature that improves the method of \cite{More.Toraldo1991} for large--scale systems. Unfortunately,  to keep the article in a reasonable size, we leave these improvements for further studies.}
+
 
 
 
