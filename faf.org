@@ -10,6 +10,24 @@
   + Work of Kleinert, Simeon and Obermayr
   +    
 + FB and regularized FB for SOCCP
+
+   smoothing
+    and its smoothed version with a regularization parameter $\tau>0$
+    as
+    \begin{equation}
+      \label{eq:Jordan-FB-smoothed}
+      \phi_{\fb, \tau}(x,y) = x+y - (x^2 + y^2 + 2 \tau^2 e)^{1/2}
+    \end{equation}
+    where $e = (1,0,0)$ is the identity element of the Jordan algebra,
+    that is $e \cdot x =x$. In the same vein, the class of smoothing
+    function of the natural map for NCP developed
+    in~\cite{Chen.Mangasarian1996} is extended to SOCCP
+    in~\cite{Fukushima.ea2001}.
+
+    \cite{Fukushima.ea2001} \cite{Zhang.ea2009}
+    \cite{Hayashi.ea_SIOPT2005}
+  \end{itemize}
+
 + Have a look to cvxopt (python and C)
 ** Proximal point algorithm
 + Continue to study the influence of the regularization parameter
@@ -522,12 +540,13 @@ v%     \end{array}\right]
        + Add a list of approach not discussed in the paper. leave it as future work. :VA
 
      + Section 3.
-       + remove 3.4., 
-       + Section 3.3 Remork to send the maximum in Appendix (V.A.)
-       + NDRVA 3.3 Comment of Olivier ? (O.H.)
-       + Discuss remark about smoothing
-       + Section 3.4 in Appendix.
-       + NDRVA 3.5 Remark Olivier ?
+       + remove 3.4., DONE
+       + Section 3.3 Remark to send the maximum in Appendix (V.A.) DONE
+       + NDRVA 3.3 Comment of Olivier ? (O.H.) DONE
+       + Discuss remark about smoothing DONE
+       + Section 3.4 in Appendix. DONE
+       + NDRVA 3.5 Remark Olivier ? DONE
+
  
      + Section 4.
        + Section 4.1
@@ -572,4 +591,6 @@ v%     \end{array}\right]
      + improvement of Tresca approach ? :VA:
      + debug proximal point algorithm :VA:
      + evaluate the effect of filtering local solution in NSGS
+
+
 
