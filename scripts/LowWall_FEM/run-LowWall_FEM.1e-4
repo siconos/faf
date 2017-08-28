@@ -14,20 +14,25 @@ max_problems=500
 #OAR -p cpumarch != 'haswell'
 #OAR -l /nodes=1,walltime=48:00:00
 
-faf_dir=$HOME/faf/
-faf_src_dir=$HOME/src/faf/
+faf_dir=$HOME/faf
+faf_src_dir=$faf_dir/src
+faf_scripts_dir=$faf_dir/scripts
 
-comp=$faf_src_dir/src/comp.py
-. $faf_dir/faf-install
+fclib_library_dir=$HOME/fclib-library
 
-rundir=/nfs_scratch/acary/faf/${OAR_JOB_ID}
+comp=$faf_src_dir/comp.py
+.
+
+example_name=${OAR_JOB_ID}_$example_$precision
+
+rundir=/nfs_scratch/$HOME/faf/$example_name
 mkdir -p $rundir
 cd $rundir
 . $rundir
 
 # 
 
-rsync -av $faf_dir/data/fclib-library/$example .
+rsync -av $fclib_library_dir/$example .
 for d in $example; do
     cd $d
     $comp --max-problems=$max_problems --no-compute --no-collect # output problems.txt
@@ -36,6 +41,8 @@ for d in $example; do
     cd ..
 done
 #cat $HOME/faf/$examples/$0 > command
-cp $faf_dir/$example/$0 /$rundir/$0
-tar zcvf comps-${OAR_JOB_ID}.tar.gz `find . -name comp.hdf5` /$rundir/$0
-mv comps-${OAR_JOB_ID}.tar.gz $HOME/faf/results
+cp $faf_scripts_dir/$example/$0 $rundir/$0
+tar zcvf comps-$example_name.tar.gz `find . -name comp.hdf5` $rundir/$0
+
+mkdir -p $faf_scripts_dir/results
+mv comps-$example_name.tar.gz $faf_scripts_dir/results

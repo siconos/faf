@@ -2,28 +2,40 @@
 
 # specific variables to the test bench set
 example=LowWall_FEM
-precision=1e-8
-timeout=500
+precision=1e-4
+timeout=1000
+#solvers=' ' 
+solvers='--solvers-exact='NSN-JeanMoreau-NLS','NSN-AlartCurnier-NLS','NSN-NaturalMap-NLS','NSN-FischerBurmeister-NLS','NSN-JeanMoreau-Generated-NLS','NSN-AlartCurnier-Generated-NLS','NSN-AlartCurnier-NLS-HYBRID','NSGS-AC','NSGS-AC-GP','NSGS-PLI-100''
+max_problems=500
+
 
 #OAR --project siconos
 #OAR --name siconos-comp
 #OAR -p cpumarch != 'haswell'
 #OAR -l /nodes=1,walltime=48:00:00
 
-faf_dir=$HOME/faf/
-faf_src_dir=$HOME/src/faf/
+faf_dir=$HOME/faf
+faf_src_dir=$faf_dir/src
+faf_scripts_dir=$faf_dir/scripts
 
-comp=$faf_src_dir/src/comp.py
+fclib_library_dir=$HOME/fclib-library
+
+
+
+
+comp=$faf_src_dir/comp.py
 .
 
-rundir=/nfs_scratch/$HOME/faf/${OAR_JOB_ID}
+example_name=${OAR_JOB_ID}_$example_$precision
+
+rundir=/nfs_scratch/$HOME/faf/$example_name
 mkdir -p $rundir
 cd $rundir
 . $rundir
 
 # 
 
-rsync -av $faf_dir/data/fclib-library/$example .
+rsync -av $fclib_library_dir/$example .
 for d in $example; do
     cd $d
     $comp --max-problems=500 --no-compute --no-collect # output problems.txt
@@ -32,6 +44,8 @@ for d in $example; do
     cd ..
 done
 #cat $HOME/faf/$examples/$0 > command
-cp $faf_dir/$example/$0 /$rundir
-tar zcvf comps-${OAR_JOB_ID}.tar.gz `find . -name comp.hdf5` /$rundir/$0
-mv comps-${OAR_JOB_ID}.tar.gz $HOME/faf/results
+cp $faf_scripts_dir/$example/$0 $rundir/$0
+tar zcvf comps-$example_name.tar.gz `find . -name comp.hdf5` $rundir/$0
+
+mkdir -p $faf_scripts_dir/results
+mv comps-$example_name.tar.gz $faf_scripts_dir/results
