@@ -43,6 +43,7 @@ random_sample_proba = None
 max_problems = None
 cond_nc = None
 file_filter=None
+remove_file=None
 gnuplot_separate_keys = False
 list_contents=False
 compute_hardness = False

@@ -318,7 +318,7 @@ try:
                                     'no-collect', 'no-compute', 'domain=',
                                     'replace-solvers-exact=','replace-solvers=',
                                     'gnuplot-profile','gnuplot-distrib', 'logscale', 'gnuplot-separate-keys',
-                                    'output-dat', 'with-mumps', 'file-filter=',
+                                    'output-dat', 'with-mumps', 'file-filter=', 'remove-files=',
                                     'list-contents',
                                     'add-precision-in-comp-file','add-timeout-in-comp-file',
                                     'compute-cond-rank','compute-hardness','adhoc',
@@ -457,6 +457,10 @@ for o, a in opts:
     elif o == '--file-filter':
         file_filter=split(a, ',')
 
+    elif o == '--remove-files':
+        remove_file=split(a, ',')
+
+
     elif o == '--no-guess':
         with_guess = False
     elif o == '--add-precision-in-comp-file':
@@ -484,7 +488,6 @@ except ValueError:
 
 
 ## creation of solvers
-
 from faf_solvers import *
 fs = faf_solvers(maxiter, precision, maxiterls, with_guess, with_mumps, numerics_has_openmp_solvers)
 all_solvers = fs.create_solvers()
@@ -1338,6 +1341,12 @@ if __name__ == '__main__':
                     else:
                         all_filenames = filter(lambda f: any(uf in f for uf in file_filter), comp_data[solver_name])
 
+                    if remove_file != None:
+                        remove_file_without_ext=[]
+                        for uf in remove_file:
+                            remove_file_without_ext.append(uf.split('.')[:-1][0])
+                        all_filenames = filter(lambda f: any(uf not in f for uf in remove_file_without_ext), all_filenames)
+
                     filenames = subsample_problems(all_filenames,
                                                    random_sample_proba,
                                                    max_problems, cond_nc)
@@ -1353,6 +1362,13 @@ if __name__ == '__main__':
                         all_filenames = comp_data[solver_name]
                     else:
                         all_filenames = filter(lambda f: any(uf in f for uf in file_filter), comp_data[solver_name])
+
+                    if remove_file != None:
+                        remove_file_without_ext=[]
+                        for uf in remove_file:
+                            remove_file_without_ext.append(uf.split('.')[:-1][0])
+                        all_filenames = filter(lambda f: any(uf not in f for uf in remove_file_without_ext), all_filenames)
+
 
                     filenames = subsample_problems(all_filenames,
                                                    random_sample_proba,
@@ -1389,6 +1405,13 @@ if __name__ == '__main__':
                         all_filenames = comp_data[solver_name]
                     else:
                         all_filenames = filter(lambda f: any(uf in f for uf in file_filter), comp_data[solver_name])
+                    if remove_file != None:
+                        remove_file_without_ext=[]
+                        for uf in remove_file:
+                            remove_file_without_ext.append(uf.split('.')[:-1][0])
+                        all_filenames = filter(lambda f: any(uf not in f for uf in remove_file_without_ext), all_filenames)
+
+
 
                     filenames = subsample_problems(all_filenames,
                                                    random_sample_proba,
