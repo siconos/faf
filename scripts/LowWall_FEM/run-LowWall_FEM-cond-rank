@@ -1,0 +1,37 @@
+#!/bin/sh -fx
+
+# specific variables to the test bench set
+example=LowWall_FEM
+precision=1e-8
+timeout=500
+
+#OAR --project siconos
+#OAR --name siconos-comp
+#OAR -p cpumarch != 'haswell'
+#OAR -l /nodes=1,walltime=48:00:00
+
+faf_dir=$HOME/faf/
+faf_src_dir=$HOME/src/faf/
+
+comp=$faf_src_dir/src/comp.py
+.
+
+rundir=/nfs_scratch/$HOME/faf/${OAR_JOB_ID}
+mkdir -p $rundir
+cd $rundir
+. $rundir
+
+# 
+
+rsync -av $faf_dir/data/fclib-library/$example .
+for d in $example; do
+    cd $d
+    $comp --max-problems=500 --no-compute --no-collect # output problems.txt
+    cat problems.txt | LD_PRELOAD=/usr/lib/libmpi.so parallel $comp --compute-cond-rank '--files={}'
+    $comp --just-collect --timeout=$timeout --precision=$precision --with-mumps --maxiterls=6
+    cd ..
+done
+#cat $HOME/faf/$examples/$0 > command
+cp $faf_dir/$example/$0 /$rundir
+tar zcvf comps-${OAR_JOB_ID}.tar.gz `find . -name comp.hdf5` /$rundir/$0
+mv comps-${OAR_JOB_ID}.tar.gz $HOME/faf/results
