@@ -1,3 +1,0 @@
-Sphere .1
-../shapes/ground.vtp
-Box 1 10 40

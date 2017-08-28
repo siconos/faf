@@ -1,3 +1,0 @@
-Capsule 1 3
-../shapes/ground.vtp
-Box 1 10 40
