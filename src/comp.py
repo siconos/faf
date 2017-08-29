@@ -137,7 +137,7 @@ def subsample_problems(filenames, proba, maxp, cond, overwrite=False):
         _r = __r
 
     if cond is not None:
-        r = filter(WithCriterium(cond[0], cond[1]), _r)
+        r = list(filter(WithCriterium(cond[0], cond[1]), _r))
     else:
         r = _r
 
@@ -406,7 +406,7 @@ for o, a in opts:
             with h5py.File('comp.hdf5','r+') as comp_file:
                 solver_in_compfile =  list(comp_file['data']['comp'])
                 #print "list(comp_file['data']['comp'])",  solver_in_compfile
-                replace_solver_in_compfile = filter(lambda s: any(us == s for us in replace_solvers), solver_in_compfile)
+                replace_solver_in_compfile = list(filter(lambda s: any(us == s for us in replace_solvers), solver_in_compfile))
                 print("replace solver in comp file", replace_solver_in_compfile)
                 for s in replace_solver_in_compfile:
                     del comp_file['data']['comp'][s]
@@ -419,7 +419,7 @@ for o, a in opts:
             with h5py.File('comp.hdf5','r+') as comp_file:
                 solver_in_compfile =  list(comp_file['data']['comp'])
                 #print "list(comp_file['data']['comp'])",  solver_in_compfile
-                replace_solver_in_compfile = filter(lambda s: any(us in s for us in replace_solvers), solver_in_compfile)
+                replace_solver_in_compfile = list(filter(lambda s: any(us in s for us in replace_solvers), solver_in_compfile))
                 print("replace solver in comp file", replace_solver_in_compfile)
                 for s in replace_solver_in_compfile:
                     del comp_file['data']['comp'][s]
@@ -756,7 +756,6 @@ class Caller():
     def __call__(self, tpl):
 
         solver, filename = tpl
-
         if hasattr(solver, 'read_fclib_format'):
             sproblem = solver.read_fclib_format(filename)
             problem = read_fclib_format(filename)[1]
@@ -858,7 +857,7 @@ class Caller():
     def _internal_call(self, solver, problem, filename, pfilename, output_filename):
 
 
-
+        print("_internal_call")
 
         with h5py.File(output_filename, 'w') as output:
 
@@ -1081,14 +1080,14 @@ if (os.path.isfile('adhoc_solverlist.py')):
 solvers=[]
 if user_solvers != []:
     #print "user_solvers", user_solvers
-    solvers.extend( filter(lambda s: any(us in s._name for us in user_solvers), all_solvers))
+    solvers.extend(list(filter(lambda s: any(us in s._name for us in user_solvers), all_solvers)))
 
     if solvers == []:
         raise RuntimeError ("Cannot find any matching solver")
 
 elif user_solvers_exact != []:
     #print "user_solvers_exact", user_solvers_exact
-    solvers.extend(filter(lambda s: any(us ==  s._name  for us in user_solvers_exact), all_solvers))
+    solvers.extend(list(filter(lambda s: any(us ==  s._name  for us in user_solvers_exact), all_solvers)))
 
     if solvers == []:
         raise RuntimeError("Cannot find any solvers in specified list")
@@ -1104,8 +1103,10 @@ def is_fclib_file(filename):
     try:
         with h5py.File(filename, 'r') as f:
             r = 'fclib_local' in f or 'fclib_global' in f
-    except:
-        pass
+    except Exception as e:
+        print(e)
+    #except :
+    #    pass
 
     return r
 
@@ -1145,7 +1146,7 @@ if user_filenames == []:
     if file_filter == None:
         all_filenames = list_from_file('problems.txt')
     else:
-        all_filenames = filter(lambda f: any(uf in f for uf in file_filter), list_from_file('problems.txt'))
+        all_filenames = list(filter(lambda f: any(uf in f for uf in file_filter), list_from_file('problems.txt')))
 
 else:
 
@@ -1153,10 +1154,10 @@ else:
 
 #all_filenames=['BoxesStack1-i9841-33.hdf5']
 #ask_collect = False
-
-_problem_filenames = filter(is_fclib_file,
-                            all_filenames)
-
+#print("all_filenames",all_filenames)
+_problem_filenames = list(filter(is_fclib_file,
+                            all_filenames))
+#print("_problems_filenames", _problem_filenames)
 __problem_filenames = subsample_problems(_problem_filenames,
                                          random_sample_proba,
                                          max_problems, None, overwrite = (not display and not ask_compute and not ask_collect))
@@ -1290,20 +1291,19 @@ if __name__ == '__main__':
         all_tasks = [t for t in product(solvers, problem_filenames)]
         if os.path.exists('comp.hdf5'):
             with h5py.File('comp.hdf5', 'r') as comp_file:
-                tasks = filter(Results(comp_file), all_tasks)
+                tasks = list(filter(Results(comp_file), all_tasks))
         else:
             tasks = all_tasks
 
+        print("Tasks will be run for solvers :", [ s._name for s in solvers])
+        print(" on files ",problem_filenames)
+        
+            
         if ask_compute:
-            print("Tasks will be run for solvers :", [ s._name for s in solvers])
-            print(" on files ",problem_filenames)
             print(" with precision=", precision, " timeout=", utimeout, "and maxiter = ", maxiter)
-            outputs = map(caller, tasks)
-
+            outputs = list(map(caller, tasks))
         if ask_collect:
-            print("Tasks will be run for solvers :", [ s._name for s in solvers])
-            print(" on files ",problem_filenames)
-            map(collect, tasks)
+            list(map(collect, tasks))
 
     if list_contents:
         with h5py.File('comp.hdf5', 'r') as comp_file:
@@ -1339,13 +1339,13 @@ if __name__ == '__main__':
                     if file_filter == None:
                         all_filenames = comp_data[solver_name]
                     else:
-                        all_filenames = filter(lambda f: any(uf in f for uf in file_filter), comp_data[solver_name])
+                        all_filenames = list(filter(lambda f: any(uf in f for uf in file_filter), comp_data[solver_name]))
 
                     if remove_file != None:
                         remove_file_without_ext=[]
                         for uf in remove_file:
                             remove_file_without_ext.append(uf.split('.')[:-1][0])
-                        all_filenames = filter(lambda f: any(uf not in f for uf in remove_file_without_ext), all_filenames)
+                        all_filenames = list(filter(lambda f: any(uf not in f for uf in remove_file_without_ext), all_filenames))
 
                     filenames = subsample_problems(all_filenames,
                                                    random_sample_proba,
@@ -1361,13 +1361,13 @@ if __name__ == '__main__':
                     if file_filter == None:
                         all_filenames = comp_data[solver_name]
                     else:
-                        all_filenames = filter(lambda f: any(uf in f for uf in file_filter), comp_data[solver_name])
+                        all_filenames = list(filter(lambda f: any(uf in f for uf in file_filter), comp_data[solver_name]))
 
                     if remove_file != None:
                         remove_file_without_ext=[]
                         for uf in remove_file:
                             remove_file_without_ext.append(uf.split('.')[:-1][0])
-                        all_filenames = filter(lambda f: any(uf not in f for uf in remove_file_without_ext), all_filenames)
+                        all_filenames = list(filter(lambda f: any(uf not in f for uf in remove_file_without_ext), all_filenames))
 
 
                     filenames = subsample_problems(all_filenames,
@@ -1404,12 +1404,12 @@ if __name__ == '__main__':
                     if file_filter == None:
                         all_filenames = comp_data[solver_name]
                     else:
-                        all_filenames = filter(lambda f: any(uf in f for uf in file_filter), comp_data[solver_name])
+                        all_filenames = list(filter(lambda f: any(uf in f for uf in file_filter), comp_data[solver_name]))
                     if remove_file != None:
                         remove_file_without_ext=[]
                         for uf in remove_file:
                             remove_file_without_ext.append(uf.split('.')[:-1][0])
-                        all_filenames = filter(lambda f: any(uf not in f for uf in remove_file_without_ext), all_filenames)
+                        all_filenames = list(filter(lambda f: any(uf not in f for uf in remove_file_without_ext), all_filenames))
 
 
 
@@ -1973,14 +1973,14 @@ if __name__ == '__main__':
             solvers=[]
             if user_solvers != []:
                 #print "user_solvers", user_solvers
-                solvers.extend( filter(lambda s: any(us in s for us in user_solvers), comp_data))
+                solvers.extend( list(filter(lambda s: any(us in s for us in user_solvers), comp_data)))
 
                 if solvers == []:
                     raise RuntimeError ("Cannot find any matching solver")
 
             elif user_solvers_exact != []:
                 #print "user_solvers_exact", user_solvers_exact
-                solvers.extend(filter(lambda s: any(us ==  s  for us in user_solvers_exact), comp_data))
+                solvers.extend(list(filter(lambda s: any(us ==  s  for us in user_solvers_exact), comp_data)))
 
                 if solvers == []:
                     raise RuntimeError("Cannot find any solvers in specified list")
@@ -1990,7 +1990,7 @@ if __name__ == '__main__':
 
             print(' filtered solver in comp_data =',[s for s in solvers])
 
-            solvers= filter(lambda s: ('OPENMP' in s), solvers)
+            solvers= list(filter(lambda s: ('OPENMP' in s), solvers))
 
 
             print(' solver for speedup-display =',[s for s in solvers])
