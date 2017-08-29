@@ -1,6 +1,6 @@
 #measure_name=time
 #test_name=LMGC_AqueducPR
-#make -f ~/Work/faf/TeX/Makefile -k test_name=LMGC_945_SP_Box_PL measure_name=flpops
+#make -f ~/Work/faf/scripts/postprocess.Makefile -k test_name=LMGC_945_SP_Box_PL measure_name=flpops
 
 #all: vi nsgs_localtol nsgs_localsolver nsgs_shuffled psor_solvers nsn_solvers prox_solvers prox_series regul_series opti_solvers comp_solvers comp_solvers_large
 all:  nsgs_localsolver nsgs_shuffled psor_solvers nsn_solvers prox_solvers opti_solvers comp_solvers comp_solvers_large
@@ -123,7 +123,19 @@ ifeq ($(test_name),LMGC_100_PR_PerioBox)
 	echo "5" | cat >> domain.txt
 	echo "100" | cat >> domain.txt # comp large
 endif
-
+ifeq ($(test_name),LMGC_LowWall_FEM)
+	echo "4" | cat > domain.txt ;
+	echo "4" | cat >> domain.txt ;
+	echo "5" | cat >> domain.txt
+	echo "3" | cat >> domain.txt
+	echo "15" | cat >> domain.txt  # PSOR
+	echo "20" | cat >> domain.txt # NSN
+	echo "20" | cat >> domain.txt # PROX
+	echo "20" | cat >> domain.txt # PROX 
+	echo "5" | cat >> domain.txt
+	echo "5" | cat >> domain.txt
+	echo "100" | cat >> domain.txt # comp large
+endif
 ifeq ($(test_name),)
 echo "enter test_name=[name of the test]"
 endif
