@@ -16,7 +16,7 @@ import numpy as np
 import random
 import siconos.numerics as N
 numerics_verbose=0
-N.setNumericsVerbose(numerics_verbose)
+N.numerics_set_verbose(numerics_verbose)
 import siconos.fclib as FCL
 
 from numpy.linalg import matrix_rank,svd
@@ -32,13 +32,13 @@ try:
     from scipy.sparse.linalg import lsmr
 except:
     def lsmr(*args):
-        print "lsmr undefined"
+        print("lsmr undefined")
 
 try:
     from scipy.sparse.linalg import svds
 except:
     def svds(*args):
-        print "svds undefined"
+        print("svds undefined")
 
 from subprocess import check_call
 
@@ -67,7 +67,7 @@ except:
 #logger.setLevel(logging.INFO)
 
 from contextlib import contextmanager
-from cStringIO import StringIO
+from io import StringIO
 import select
 
 # to collect output from stdout
@@ -131,7 +131,7 @@ def subsample_problems(filenames, proba, maxp, cond, overwrite=False):
 
     if maxp is not None:
         _r = random.sample(__r, min(maxp, len(__r)))
-        print _r
+        print(_r)
 
     else:
         _r = __r
@@ -186,29 +186,29 @@ def setAxLinesBW(ax):
     MARKER = [None, 'o', '+', '*']
 
     lines_to_adjust = ax.get_lines()
-    print lines_to_adjust
+    print(lines_to_adjust)
     count =1
     for line in lines_to_adjust:
-        print len(lines_to_adjust)
+        print(len(lines_to_adjust))
         origColor = line.get_color()
         line.set_color('black')
         line.set_dashes(COLORMAP[origColor]['dash'])
-        print count/7
+        print(count/7)
         line.set_marker(MARKER[count/7])
         count = count +1
         line.set_markersize(MARKERSIZE)
 
     try:
         lines_legend_to_adjust = ax.get_legend().get_lines()
-        print lines_legend_to_adjust
+        print(lines_legend_to_adjust)
         count=1
 
         for line in lines_legend_to_adjust:
-            print len(lines_to_adjust)
+            print(len(lines_to_adjust))
             origColor = line.get_color()
             line.set_color('black')
             line.set_dashes(COLORMAP[origColor]['dash'])
-            print count/7
+            print(count/7)
             line.set_marker(MARKER[count/7])
             count = count +1
             line.set_markersize(MARKERSIZE)
@@ -235,64 +235,64 @@ from faf_default_values import *
 
 
 def usage():
-  print "\n \n"
-  print 'Usage: '+sys.argv[0]+'[option]'
-  print "Options : "
-  print " --help "
-  print "   display this message"
-  print " --verbose "
-  print "   enable verbose mode equal to 1 for Siconos Numerics"
-  print " --no-collect "
-  print "   leave the result into separate file that are named according the solver and the name of the problem"
-  print " --just-collect"
-  print "   collect all the result into comp.hdf5"
-  print " --timeout=n"
-  print "   set the maximum time of computation for each problem to n seconds (default",utimeout,"s)"
-  print " --maxiter=n"
-  print "   set the maximum number of iterations for each problem to n (default",maxiter,")"
-  print " --maxiterls=n"
-  print "   set the maximum number of iterations for each problem to n (default",maxiterls,")"
-  print " --domain='a:d:b'"
-  print "   restrict the domain of the performance profile to the interval [a,b] with a step of d (default",domain[0],":",domain[1]-domain[0],":",domain[-1]+domain[1]-domain[0],")"
-  print "   or a perfomance profile a should be greater or equal 1"
-  print " --measure=value"
-  print "   select the value  as the measure for the perfomance profile. Possible values are time, iter, flpops"
-  print " --display"
-  print "   perform the computation of performance profile and display it in matplotlib"
-  print " --display-distrib='from-files' or "
-  print "   perform the computation of distribution and display it in matplotlib"
-  print " --new"
-  print "   remove comp.hdf5 file"
-  print " --solvers=string"
-  print "   use keyworks in s separated by comma for filtering solvers"
-  print " --solvers-exact=string"
-  print "   use exact names of solvers in s separated by comma for filtering solvers"
-  print " --with-mumps"
-  print "   use mumps as linear system solver"
-  print " --max-problems=<max>"
-  print "   Randomly select <max> problems in current directory."
-  print "   The problems list is written in problems.txt file"
-  print " --gnuplot-profile"
-  print "   output gnuplot command file profile.gp for plotting profiles woth gnuplot"
-  print " --gnuplot-distrib"
-  print "   output gnuplot command file distrib.gp for plotting distribution woth gnuplot"
-  print " --gnuplot-separate-keys"
-  print "   output keys anf legend for gnuplot in a separate file."
-  print " --display-distrib='from-files' "
-  print " --list-contents"
-  print "   list contents of comp.hdf5 file"
-  print " --compute-cond-rank"
-  print "   compute the rank (vairous numerical methods) and condition number of W and store it in the problem file"
-  print " --compute-hardness"
-  print "   compute the average performance of the best solver on a set of problem divided by the average number of contact"
-  print " --compute-cond-rank"
-  print "   compute the conditioning number and the rank of the matrix in the problems"
+  print('Usage: '+sys.argv[0]+'[option]')
 
-  print " Other options have to be documented"
-  print " "
-  print " Usage examples:"
+  options_doc = """
+  Options 
+   --help 
+     display this message
+   --verbose 
+     enable verbose mode equal to 1 for Siconos Numerics
+   --no-collect 
+     leave the result into separate file that are named according the solver and the name of the problem
+   --just-collect
+     collect all the result into comp.hdf5
+   --timeout=n
+     set the maximum time of computation for each problem to n seconds (default,utimeout,s)
+   --maxiter=n
+     set the maximum number of iterations for each problem to n (default",maxiter,")
+   --maxiterls=n
+     set the maximum number of iterations for each problem to n (default",maxiterls,")
+   --domain='a:d:b'
+     restrict the domain of the performance profile to the interval [a,b] with a step of d (default",domain[0],":",domain[1]-domain[0],":",domain[-1]+domain[1]-domain[0],")
+     or a perfomance profile a should be greater or equal 1
+   --measure=value
+     select the value  as the measure for the perfomance profile. Possible values are time, iter, flpops
+   --display
+     perform the computation of performance profile and display it in matplotlib
+   --display-distrib='from-files' or 
+     perform the computation of distribution and display it in matplotlib
+   --new
+     remove comp.hdf5 file
+   --solvers=string
+     use keyworks in s separated by comma for filtering solvers
+   --solvers-exact=string
+     use exact names of solvers in s separated by comma for filtering solvers
+   --with-mumps
+     use mumps as linear system solver
+   --max-problems=<max>
+     Randomly select <max> problems in current directory.
+     The problems list is written in problems.txt file
+   --gnuplot-profile
+     output gnuplot command file profile.gp for plotting profiles woth gnuplot
+   --gnuplot-distrib
+     output gnuplot command file distrib.gp for plotting distribution woth gnuplot
+   --gnuplot-separate-keys
+     output keys anf legend for gnuplot in a separate file.
+   --display-distrib='from-files' 
+   --list-contents
+     list contents of comp.hdf5 file
+   --compute-cond-rank
+     compute the rank (vairous numerical methods) and condition number of W and store it in the problem file
+   --compute-hardness
+     compute the average performance of the best solver on a set of problem divided by the average number of contact
+   --compute-cond-rank
+     compute the conditioning number and the rank of the matrix in the problems
 
-  toto = """
+   Other options have to be documented
+   
+   Usage examples:
+
   comp.py   --display --time --domain='1:0.1:10'  comp.hdf5
 
   comp.py --display --measure=time --solvers=Gauss,Tresca,SOCLCP,ACLM --domain=1:0.1:100
@@ -302,7 +302,7 @@ def usage():
   comp.py --display-speedup --measure=time
 
   """
-  print toto
+  print(options_doc)
 
 
 try:
@@ -325,7 +325,7 @@ try:
                                     'display-speedup', 'thread-list='])
 
 
-except getopt.GetoptError, err:
+except getopt.GetoptError as err:
         sys.stderr.write('{0}\n'.format(str(err)))
         usage()
         exit(2)
@@ -359,7 +359,7 @@ for o, a in opts:
         display_speedup = True
         compute = False
     elif o == '--thread-list':
-        print a
+        print(a)
         thread_list =  [int (x) for x in split(a,',')]
     elif o == '--measure':
         measure_name = a
@@ -407,11 +407,11 @@ for o, a in opts:
                 solver_in_compfile =  list(comp_file['data']['comp'])
                 #print "list(comp_file['data']['comp'])",  solver_in_compfile
                 replace_solver_in_compfile = filter(lambda s: any(us == s for us in replace_solvers), solver_in_compfile)
-                print "replace solver in comp file", replace_solver_in_compfile
+                print("replace solver in comp file", replace_solver_in_compfile)
                 for s in replace_solver_in_compfile:
                     del comp_file['data']['comp'][s]
         except Exception as e:
-            print e
+            print(e)
     elif o == '--replace-solvers':
         replace_solvers = split(a, ',')
         #print "replace_solvers",  replace_solvers
@@ -420,11 +420,11 @@ for o, a in opts:
                 solver_in_compfile =  list(comp_file['data']['comp'])
                 #print "list(comp_file['data']['comp'])",  solver_in_compfile
                 replace_solver_in_compfile = filter(lambda s: any(us in s for us in replace_solvers), solver_in_compfile)
-                print "replace solver in comp file", replace_solver_in_compfile
+                print("replace solver in comp file", replace_solver_in_compfile)
                 for s in replace_solver_in_compfile:
                     del comp_file['data']['comp'][s]
         except Exception as e:
-            print e
+            print(e)
     elif o == '--gnuplot-profile':
         gnuplot_profile=True
     elif o == '--logscale':
@@ -568,22 +568,22 @@ def _norm_cond(problem_filename):
     problem = read_fclib_format(problem_filename)[1]
     A = csr_matrix(N.SBMtoSparse(problem.M)[1])
     #print "A=", A
-    print "A.shape", A.shape
-    print "Computev lsmr ..."
+    print("A.shape", A.shape)
+    print("Computev lsmr ...")
     r = lsmr(A, np.ones([A.shape[0], 1]))  # solve Ax = 1
     norm_lsmr=r[5]
     cond_lsmr=r[6]
-    print "norm_lsr=", norm_lsmr
-    print "cond_lsr=", cond_lsmr
+    print("norm_lsr=", norm_lsmr)
+    print("cond_lsr=", cond_lsmr)
     #print "r=", r
     try:
-        print "Computev svds(A,1) ..."
+        print ("Computev svds(A,1) ...")
         _svd = svds(A,1)[1]
         eps = sys.float_info.epsilon
         tol = _svd.max() * max(A.shape) * eps
     except Exception as e :
-        print "-->   svds failed to compute the maximum singular value"
-        print "-->" ,  e
+        print ("-->   svds failed to compute the maximum singular value")
+        print ("-->" ,  e)
         _svd = [1.0]
         eps = sys.float_info.epsilon
         tol = max(A.shape) * eps
@@ -596,34 +596,34 @@ def _norm_cond(problem_filename):
     # print isinstance(A_LO, LinearOperator)
     rank_estimate = np.nan
     try:
-        print "Compute rank estimate ..."
+        print("Compute rank estimate ...")
         rank_estimate=dense_matrix_rank_estimate(A.todense(),tol)
         #rank_estimate=estimate_rank(A.todense(), tol)
     except Exception as e :
-        print "--> rank_estimate", e
-    print "rank_estimate", rank_estimate
+        print ("--> rank_estimate", e)
+    print("rank_estimate", rank_estimate)
 
     #print "svd dense method", svd(A.todense())[1]
 
     rank_dense = np.nan
     try:
-        print "Compute rank dense ..."
+        print("Compute rank dense ...")
         rank_dense = dense_matrix_rank(A.todense())
     except Exception as e :
-        print "--> dense_matrix_rank", e
-    print "rank_dense", rank_dense
+        print ("--> dense_matrix_rank", e)
+    print ("rank_dense", rank_dense)
 
     if not np.isnan(rank_estimate):
         k=min(rank_estimate,A.shape[0]-1)
     else:
         k = A.shape[0]-1
     try:
-        print "Compute svds(A,k) for  ",k," singular values  ..."
+        print("Compute svds(A,k) for  ",k," singular values  ...")
         _svd = sparse_matrix_svd(A,k)[1]
         #print "_svd",_svd
     except Exception as e :
-        print "--> sparse_matrix_svd  failed to compute ",k," singular values"
-        print "--> sparse_matrix_svd " ,  e
+        print("--> sparse_matrix_svd  failed to compute ",k," singular values")
+        print("--> sparse_matrix_svd " ,  e)
 
         _svd =[]
     # compute rank with http://docs.scipy.org/doc/numpy-dev/reference/generated/numpy.linalg.matrix_rank.html
@@ -743,7 +743,7 @@ class SolverCallback:
         if output_errors:
             self._errors.resize(self._offset, 0)
             self._errors[self._offset - 1, :] = error
-        print "in get_step"
+        print("in get_step")
 
 class Caller():
 
@@ -788,7 +788,7 @@ class Caller():
             
         except Exception as e:
 
-            print 'Exception in internal call', e
+            print('Exception in internal call', e)
 
             try:
                os.remove(output_filename)
@@ -960,7 +960,7 @@ class Caller():
                             for e in dat:
                                 pffff(None, None, e)
 
-                        except Exception, e:
+                        except Exception as e:
                             sys.stderr.write('||', type(e))
                             
                         stdout_result += current_stdout
@@ -1012,7 +1012,7 @@ class Caller():
                         mflops = np.nan
 
             except Exception as exception:
-                print exception
+                print(exception)
                 info = 1
                 time_s = np.nan
                 iter = np.nan
@@ -1254,7 +1254,7 @@ def collect(tpl):
             if not keep_files:
                 os.remove('{0}-{1}.hdf5'.format(solver.name(),pfilename))
         except Exception as e:
-            print e
+            print(e)
 
 
 class Results():
@@ -1278,7 +1278,7 @@ class Results():
                 list_print.append(r.attrs['n_threads'])
 
 
-            print "Already in comp file : ", list_print
+            print("Already in comp file : ", list_print)
             return False
         except:
             return True
@@ -1295,14 +1295,14 @@ if __name__ == '__main__':
             tasks = all_tasks
 
         if ask_compute:
-            print "Tasks will be run for solvers :", [ s._name for s in solvers]
-            print " on files ",problem_filenames
-            print " with precision=", precision, " timeout=", utimeout, "and maxiter = ", maxiter
+            print("Tasks will be run for solvers :", [ s._name for s in solvers])
+            print(" on files ",problem_filenames)
+            print(" with precision=", precision, " timeout=", utimeout, "and maxiter = ", maxiter)
             outputs = map(caller, tasks)
 
         if ask_collect:
-            print "Tasks will be run for solvers :", [ s._name for s in solvers]
-            print " on files ",problem_filenames
+            print("Tasks will be run for solvers :", [ s._name for s in solvers])
+            print(" on files ",problem_filenames)
             map(collect, tasks)
 
     if list_contents:
@@ -1311,20 +1311,20 @@ if __name__ == '__main__':
             data = comp_file['data']
             comp_data = data['comp']
             for item in comp_data.attrs.keys():
-                print "comp_data attrs: ", item + ":", comp_data.attrs[item]
-            print "Solvers :"
+                print("comp_data attrs: ", item + ":", comp_data.attrs[item])
+            print("Solvers :")
             for solvername in comp_data:
-                print "  ",solvername
+                print("  ",solvername)
                 for filename in comp_data[solvername]:
                     list_keys= comp_data[solvername][filename].attrs.keys()
                     if u'digest' in list_keys:
                         list_keys.remove(u'digest')
-                    print "  ",solvername,   [comp_data[solvername][filename].attrs[item] for item in list_keys]
+                    print("  ",solvername,   [comp_data[solvername][filename].attrs[item] for item in list_keys])
 
 
 
     if display:
-        print "Tasks will be run for solvers :", [ s._name for s in solvers]
+        print("Tasks will be run for solvers :", [ s._name for s in solvers])
         filename=None
         with h5py.File('comp.hdf5', 'r') as comp_file:
 
@@ -1455,7 +1455,7 @@ if __name__ == '__main__':
                 write_report(solver_r,'solver_r.txt')
                 def long_substr(data):
                     substr = ''
-                    print "data=",data
+                    print("data=",data)
                     if len(data) > 0 and len(data[0]) > 0:
                         for i in range(len(data[0])):
                             for j in range(len(data[0])-i+1):
@@ -1477,16 +1477,16 @@ if __name__ == '__main__':
                     all_rhos = [ domain ] + [ rhos[solver.name()] for solver in filter(lambda s: s._name in comp_data, solvers) ]
                     np.savetxt('profile.dat', np.matrix(all_rhos).transpose())
                     gp.write('resultfile = "profile.dat"\n')
-                    print "filenames=",filenames
-                    print "long_substr(filenames)=", long_substr(filenames)
+                    print("filenames=",filenames)
+                    print("long_substr(filenames)=", long_substr(filenames))
                     test_name = long_substr(filenames).partition('-')[0]
-                    print "test_name=",test_name
+                    print("test_name=",test_name)
 
                     if test_name.endswith('_'):
                         test_name  = test_name[:-1]
                     gp.write('basename="profile-{0}"\n'.format(test_name))
                     #print filename.partition('-')[0]
-                    print "test_name=",test_name
+                    print("test_name=",test_name)
                     gp.write('\n')
                     gp.write('term_choice_tikz=1\n')
                     gp.write('if (term_choice_tikz == 1) \\\n')
@@ -1554,7 +1554,7 @@ if __name__ == '__main__':
                 # g.plot(*all_rhos)
 
             if (gnuplot_profile and (filename == None)) :
-                print "Warning: no problem corresponding to the required solver"
+                print("Warning: no problem corresponding to the required solver")
                 if (os.path.isfile('profile.gp')):
                     os.remove('profile.gp')
 
@@ -1620,20 +1620,20 @@ if __name__ == '__main__':
 
 
     if compute_cond_rank:
-        print "Tasks will be run for", problem_filenames
+        print("Tasks will be run for", problem_filenames)
         for problem_filename in problem_filenames:
-            print "compute for", problem_filename,"...."
+            print("compute for", problem_filename,"....")
             with h5py.File(problem_filename, 'r+') as fclib_file:
                 no_rank_info=True
                 if (fclib_file['fclib_local']['W'].attrs.get('rank') == None) :
-                    print "Rank info already not  in", problem_filename
+                    print("Rank info already not  in", problem_filename)
                 else:
-                    print "Rank info already in", problem_filename
+                    print("Rank info already in", problem_filename)
                     no_rank_info=False
             if no_rank_info:
                 try:
                     [norm_lsmr, cond_lsmr, max_nz_sv, min_nz_sv, cond, rank, rank_dense, rank_svd, rank_estimate] = norm_cond(problem_filename)
-                    print ( problem_filename, norm_lsmr, cond_lsmr, max_nz_sv, min_nz_sv, cond,  rank_dense, rank_svd, rank_estimate)
+                    print( problem_filename, norm_lsmr, cond_lsmr, max_nz_sv, min_nz_sv, cond,  rank_dense, rank_svd, rank_estimate)
                     with h5py.File(problem_filename, 'r+') as fclib_file:
                         fclib_file['fclib_local']['W'].attrs.create('rank', rank)
                         fclib_file['fclib_local']['W'].attrs.create('rank_dense', rank_dense)
@@ -1645,10 +1645,10 @@ if __name__ == '__main__':
                         fclib_file['fclib_local']['W'].attrs.create('norm_lsmr', norm_lsmr)
                         fclib_file['fclib_local']['W'].attrs.create('cond_lsmr', cond_lsmr)
                 except Exception as e :
-                    print "-->", e
+                    print("-->", e)
 
     if adhoc:
-        print "script adhoc (convenient moulinette)"
+        print("script adhoc (convenient moulinette)")
         # for problem_filename in problem_filenames:
         #     print "treatment", problem_filename
         #     with h5py.File(problem_filename, 'r+') as fclib_file:
@@ -1687,11 +1687,11 @@ if __name__ == '__main__':
             comp_data = data['comp']
             for solver in comp_data:
                 if ( 'NSGS-AC-' in solver):
-                    print "solver", solver
+                    print("solver", solver)
                     if ('NSGS-AC-GP' not in solver):
-                        print "solver to be renamed", solver
+                        print("solver to be renamed", solver)
                         new_solver= solver.replace("AC-","AC-GP-")
-                        print "rename", solver, "in ",new_solver
+                        print("rename", solver, "in ",new_solver)
                         data['comp'].move(solver,new_solver)
 
     if compute_hardness:
@@ -1713,9 +1713,9 @@ if __name__ == '__main__':
             except:
                 pass
         # compute other quantities
-        print nc
+        print(nc)
         nc_avg = sum(nc)/float(len(nc))
-        print "nc_avg", nc_avg
+        print("nc_avg", nc_avg)
         with h5py.File('comp.hdf5', 'r') as comp_file:
             data = comp_file['data']
             comp_data = data['comp']
@@ -1747,14 +1747,14 @@ if __name__ == '__main__':
                             measure[solver_name][ip] = np.nan
                         ip += 1
 
-            print "min_measure", min_measure
+            print("min_measure", min_measure)
             avg_min_measure=0.0
             for k,v in min_measure.items():
                 avg_min_measure +=v
 
             avg_min_measure = avg_min_measure/float(len(min_measure))
             #print         "avg_min_measure",avg_min_measure
-            print         "Average min resolution measure by contact = {0:12.8e}".format(avg_min_measure/nc_avg)
+            print(         "Average min resolution measure by contact = {0:12.8e}".format(avg_min_measure/nc_avg))
 
 
 
@@ -1794,10 +1794,10 @@ if __name__ == '__main__':
                     rank_ratio.append(numberOfDegreeofFreedomContacts(problem_filename)/float(rank_dense(problem_filename)))
                 except:
                     pass
-            print "nds", nds
-            print "rank_dense_W",  rank_dense_W
-            print "cond_nc", cond_nc
-            print "cond_W", cond_W
+            print("nds", nds)
+            print("rank_dense_W",  rank_dense_W)
+            print("cond_nc", cond_nc)
+            print("cond_W", cond_W)
 
 
             figure()
@@ -1949,7 +1949,7 @@ if __name__ == '__main__':
                                 x[filename + solver_name] = comp_data[solver_name][pfilename].attrs[display_distrib_var]
                             except:
                                 if display_distrib_var == 'cond-nc':
-                                    print filename
+                                    print(filename)
                                     x[filename + solver_name] = cond_problem(filename)
                                 else:
                                     x[filename + solver_name] = np.nan
@@ -1988,12 +1988,12 @@ if __name__ == '__main__':
             else:
                 solvers= comp_data
 
-            print ' filtered solver in comp_data =',[s for s in solvers]
+            print(' filtered solver in comp_data =',[s for s in solvers])
 
             solvers= filter(lambda s: ('OPENMP' in s), solvers)
 
 
-            print ' solver for speedup-display =',[s for s in solvers]
+            print(' solver for speedup-display =',[s for s in solvers])
             if solvers == []:
                 raise RuntimeError("Cannot find any solvers in specified list")
             #---#
@@ -2032,7 +2032,7 @@ if __name__ == '__main__':
                     if np.isnan(s[2]):
                         if filename in results_filename.keys():
                             results_filename_fails[filename]=results_filename[filename]
-                            print "\nremove failed instance for filename:",filename
+                            print("\nremove failed instance for filename:",filename)
                             print(results_filename.pop(filename))
 
 

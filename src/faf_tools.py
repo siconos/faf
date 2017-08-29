@@ -32,7 +32,7 @@ class Memoize():
                 self._done[args] = r
                 return r
             except Exception as e:
-                print 'Exception in Memoize', e 
+                print('Exception in Memoize', e )
                 self._done[args] = e
                 return e
 
@@ -48,7 +48,7 @@ def _numberOfDegreeofFreedom(f):
             try:
                 r = fclib_file['fclib_local']['info'].attrs['numberOfDegreeOfFreedom'][0]
             except Exception as e:
-                print 'Exception in _numberOfDegreeofFreedom', e
+                print('Exception in _numberOfDegreeofFreedom', e)
                 r = np.nan
                 
             #print "r=",r
@@ -59,7 +59,7 @@ def _numberOfDegreeofFreedomContacts(f):
         try:
             r = fclib_file['fclib_local']['W']['m'][0]
         except Exception as e:
-            print 'Exception in _numberOfDegreeofFreedomContacts', e
+            print('Exception in _numberOfDegreeofFreedomContacts', e)
             r = np.nan
     #print "r=",r
     return r

@@ -1137,7 +1137,7 @@ class faf_solvers():
         all_solver_unstable = [ProxFB_fblsa]
         all_solvers.extend(all_solver_unstable)
 
-        all_solvers = filter(lambda s : s is not None, all_solvers)
+        all_solvers = list(filter(lambda s : s is not None, all_solvers))
 
         ###
         # specific studies of solvers.
