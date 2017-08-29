@@ -813,7 +813,7 @@ class Caller():
                 flpops = np.nan
                 mflops = np.nan
 
-                attrs.create('filename', filename)
+                attrs.create('filename', np.string_(filename))
                 attrs.create('nc',  numberOfDegreeofFreedomContacts(filename))
                 attrs.create('nds', numberOfDegreeofFreedom(filename))
                 attrs.create('cond_nc', cond_problem(filename))
@@ -845,10 +845,10 @@ class Caller():
                 print(list_print)
 
                 with open('report.txt', "a") as report_file:
-                    print   >> report_file , (filename, solver.name(), info, iter, err,
+                    print   ( (filename, solver.name(), info, iter, err,
                                               time_s, real_time, proc_time,
                                               flpops, mflops,
-                                              precision, utimeout)
+                                              precision, utimeout), end="", file=report_file)
 
 
 
@@ -884,15 +884,15 @@ class Caller():
             digest = hashlib.sha256(open(filename, 'rb').read()).digest()
 
             if psize is not None:
-                solver_problem_data.create_dataset('reactions',
+                solver_problem_data.create_dataset(np.string_('reactions'),
                                                    (0, psize),
                                                    maxshape=(None, psize))
 
-                solver_problem_data.create_dataset('velocities',
+                solver_problem_data.create_dataset(np.string_('velocities'),
                                                    (0, psize),
                                                    maxshape=(None, psize))
 
-                solver_problem_data.create_dataset('errors',
+                solver_problem_data.create_dataset(np.string_('errors'),
                                                    (0, 1),
                                                    maxshape=(None, 1))
 
@@ -1021,7 +1021,7 @@ class Caller():
                 flpops = np.nan
                 mflops = np.nan
 
-            attrs.create('filename', filename)
+            attrs.create('filename', np.string_(filename))
             attrs.create('nc', numberOfDegreeofFreedomContacts(filename))
             attrs.create('nds', numberOfDegreeofFreedom(filename))
             attrs.create('cond_nc', cond_problem(filename))
@@ -1316,7 +1316,7 @@ if __name__ == '__main__':
             for solvername in comp_data:
                 print("  ",solvername)
                 for filename in comp_data[solvername]:
-                    list_keys= comp_data[solvername][filename].attrs.keys()
+                    list_keys= list(comp_data[solvername][filename].attrs.keys())
                     if u'digest' in list_keys:
                         list_keys.remove(u'digest')
                     print("  ",solvername,   [comp_data[solvername][filename].attrs[item] for item in list_keys])
@@ -1448,7 +1448,7 @@ if __name__ == '__main__':
                     with open(filename, "w") as input_file:
                         for k, v in r.items():
                             line = '{}, {}'.format(k, v)
-                            print >> input_file, line
+                            print(line, end="", file=input_file)
 
                 out_data=np.empty([len(domain),len(comp_data)+1])
                 write_report(rhos,'rhos.txt')
