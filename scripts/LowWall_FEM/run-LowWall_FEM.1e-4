@@ -1,5 +1,6 @@
-#!/bin/sh -fx
+#!/bin/bash -fx
 
+export LC_ALL=C
 # specific variables to the test bench set
 example=LowWall_FEM
 precision=1e-4
@@ -8,6 +9,11 @@ timeout=1000
 solvers='--solvers-exact='NSN-JeanMoreau-NLS','NSN-AlartCurnier-NLS','NSN-NaturalMap-NLS','NSN-FischerBurmeister-NLS','NSN-JeanMoreau-Generated-NLS','NSN-AlartCurnier-Generated-NLS','NSN-AlartCurnier-NLS-HYBRID','NSGS-AC','NSGS-AC-GP','NSGS-PLI-100''
 max_problems=500
 
+with_mumps='--with_mumps'
+preload='LD_PRELOAD=/usr/lib/libmpi.so'
+
+with_mumps=''
+preload=''
 
 #OAR --project siconos
 #OAR --name siconos-comp
@@ -18,31 +24,4 @@ faf_dir=$HOME/faf
 faf_src_dir=$faf_dir/src
 faf_scripts_dir=$faf_dir/scripts
 
-fclib_library_dir=$HOME/fclib-library
-
-comp=$faf_src_dir/comp.py
-.
-
-example_name=${OAR_JOB_ID}_$example_$precision
-
-rundir=/nfs_scratch/$HOME/faf/$example_name
-mkdir -p $rundir
-cd $rundir
-. $rundir
-
-# 
-
-rsync -av $fclib_library_dir/$example .
-for d in $example; do
-    cd $d
-    $comp --max-problems=$max_problems --no-compute --no-collect # output problems.txt
-    cat problems.txt | LD_PRELOAD=/usr/lib/libmpi.so parallel $comp --timeout=$timeout --precision=$precision $solvers --no-collect --with-mumps --maxiterls=6 '--files={}'
-    $comp --just-collect --timeout=$timeout --precision=$precision --with-mumps --maxiterls=6
-    cd ..
-done
-#cat $HOME/faf/$examples/$0 > command
-cp $faf_scripts_dir/$example/$0 $rundir/$0
-tar zcvf comps-$example_name.tar.gz `find . -name comp.hdf5` $rundir/$0
-
-mkdir -p $faf_scripts_dir/results
-mv comps-$example_name.tar.gz $faf_scripts_dir/results
+source $faf_scripts_dir/faf-run.sh
