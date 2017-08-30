@@ -14,7 +14,16 @@ def _read_fclib_format(filename):
     #print FCL.fclib_merit_local(fc_problem, FCL.MERIT_1, solution)
     #problem = N.frictionContact_fclib_read(f)
     #    print '{0}: M.m={1}, numberOfContacts*3/dim = {2}'.format(f, problem.W.m, problem.numberOfContacts*3/problem.W.m)
+
+    # filename must be of string type to be read correctly
+    # if filename from an attribute in hdf5 file that have been encoded with np.string_
+    # it has to be decoded with np.decode
+    # print("_read_fclib_format, filename:", filename, type(filename))
+    # print("_read_fclib_format, filename.decode():", filename.decode(), type(filename.decode()))
+    # we do not prefer to force the conversion there
+    
     fclib_problem = FCL.fclib_read_local(filename)
+
     numerics_problem =  N.from_fclib_local(fclib_problem)
     return fclib_problem, numerics_problem
 
