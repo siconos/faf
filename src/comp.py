@@ -586,7 +586,7 @@ def dense_matrix_rank_estimate(A,tol):
 #@timeout(20)
 def _norm_cond(problem_filename):
     problem = read_fclib_format(problem_filename)[1]
-    A = csr_matrix(N.SBMtoSparse(problem.M)[1])
+    A = csr_matrix(N.SBM_to_sparse(problem.M)[1])
     #print "A=", A
     print("A.shape", A.shape)
     print("Computev lsmr ...")
@@ -868,7 +868,7 @@ class Caller():
                     print   ( (filename, solver.name(), info, iter, err,
                                               time_s, real_time, proc_time,
                                               flpops, mflops,
-                                              precision, utimeout), end="", file=report_file)
+                                              precision, utimeout), file=report_file)
 
 
 
@@ -1476,7 +1476,7 @@ if __name__ == '__main__':
                     with open(filename, "w") as input_file:
                         for k, v in r.items():
                             line = '{}, {}'.format(k, v)
-                            print(line, end="", file=input_file)
+                            print(line, file=input_file)
 
                 out_data=np.empty([len(domain),len(comp_data)+1])
                 write_report(rhos,'rhos.txt')
