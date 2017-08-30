@@ -5,8 +5,8 @@ export LC_ALL=C
 example=LowWall_FEM
 precision=1e-4
 timeout=1000
-#solvers=' ' 
-solvers='--solvers-exact='NSN-JeanMoreau-NLS','NSN-AlartCurnier-NLS','NSN-NaturalMap-NLS','NSN-FischerBurmeister-NLS','NSN-JeanMoreau-Generated-NLS','NSN-AlartCurnier-Generated-NLS','NSN-AlartCurnier-NLS-HYBRID','NSGS-AC','NSGS-AC-GP','NSGS-PLI-100''
+solvers=' ' 
+#solvers='--solvers-exact='NSN-JeanMoreau-NLS','NSN-AlartCurnier-NLS','NSN-NaturalMap-NLS','NSN-FischerBurmeister-NLS','NSN-JeanMoreau-Generated-NLS','NSN-AlartCurnier-Generated-NLS','NSN-AlartCurnier-NLS-HYBRID','NSGS-AC','NSGS-AC-GP','NSGS-PLI-100''
 max_problems=500
 
 with_mumps='--with_mumps'
