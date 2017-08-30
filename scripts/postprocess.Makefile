@@ -2,6 +2,9 @@
 #test_name=LMGC_AqueducPR
 #make -f ~/Work/faf/scripts/postprocess.Makefile -k test_name=LMGC_945_SP_Box_PL measure_name=flpops
 
+faf_dir=$(HOME)/Work/faf
+
+
 #all: vi nsgs_localtol nsgs_localsolver nsgs_shuffled psor_solvers nsn_solvers prox_solvers prox_series regul_series opti_solvers comp_solvers comp_solvers_large
 all:  nsgs_localsolver nsgs_shuffled psor_solvers nsn_solvers prox_solvers opti_solvers comp_solvers comp_solvers_large
 
@@ -305,4 +308,4 @@ clean :
 	rm -f *.tex *.gp *.aux *.dat *.txt *.log
 
 publish:
-	cp -r figure ~/Work/faf/TeX
+	cp -r figure $(faf_dir)/TeX
