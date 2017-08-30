@@ -9,6 +9,9 @@
 #
 #
 
+
+
+
 import re
 from glob import glob
 from itertools import product
@@ -232,6 +235,11 @@ def setFigLinesBW(fig):
 from SiconosSolver import *
 from faf_tools import *
 from faf_default_values import *
+
+
+#debugger
+#import pdb
+#pdb.set_trace()
 
 
 def usage():
@@ -1277,6 +1285,7 @@ class Results():
     def __call__(self, tpl):
         solver = tpl[0]
         problem_filename = os.path.splitext(tpl[1])[0]
+        #print("Results: problem_filename:", problem_filename, type(problem_filename) )
         try:
             r = self._result_file['data']['comp'][solver.name()][problem_filename]
             # if abs(r.attrs.get('precision') -  precision) >= 1e-16 :
@@ -1284,14 +1293,21 @@ class Results():
             # if abs(r.attrs.get('timeout') -  utimeout) >= 1e-16 :
             #    raise RuntimeError()
 
-            list_print =[r.attrs['filename'], cond_problem(r.attrs['filename']), solver.name(), r.attrs['info'],
-                                              r.attrs['iter'], r.attrs['err'], r.attrs['time'], r.attrs['real_time'], r.attrs['proc_time'],
-                                              r.attrs['flpops'], r.attrs['mflops'],r.attrs.get('precision'),r.attrs.get('timeout')]
-            if numerics_has_openmp_solvers :
-                list_print.append(r.attrs['n_threads'])
+            # list_print =[r.attrs['filename'], cond_problem(r.attrs['filename']), solver.name(), r.attrs['info'],
+            #                                   r.attrs['iter'], r.attrs['err'], r.attrs['time'], r.attrs['real_time'], r.attrs['proc_time'],
+            #                                   r.attrs['flpops'], r.attrs['mflops'],r.attrs.get('precision'),r.attrs.get('timeout')]
+            # if numerics_has_openmp_solvers :
+            #     list_print.append(r.attrs['n_threads'])
+            # print("Already in comp file : ", list_print)
 
 
-            print("Already in comp file : ", list_print)
+            list_keys= list(r.attrs.keys())
+            if u'digest' in list_keys:
+                list_keys.remove(u'digest')
+            print("Already in comp file : ", [r.attrs[item] for item in list_keys])
+
+
+            
             return False
         except:
             return True
