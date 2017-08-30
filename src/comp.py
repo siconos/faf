@@ -293,13 +293,25 @@ def usage():
    
    Usage examples:
 
-  comp.py   --display --time --domain='1:0.1:10'  comp.hdf5
+   1) running comparison
 
-  comp.py --display --measure=time --solvers=Gauss,Tresca,SOCLCP,ACLM --domain=1:0.1:100
+   comp.py --measure=time --precision=1e-4 --timeout=100 --solvers-exact='NSN-JeanMoreau-NLS','NSN-AlartCurnier-NLS','NSN-NaturalMap-NLS' --no-collect 
 
-  comp.py --thread-list=1,2,3,4,5 --solvers=NSGS-AC-OPENMP
+   2) collecting results
 
-  comp.py --display-speedup --measure=time
+   comp.py --measure=time --precision=1e-4 --timeout=100 --just-collect
+
+   3) displaying results
+
+   comp.py --display --measure=time  --domain='1:0.1:10'  comp.hdf5
+
+   comp.py --display --measure=time --solvers=Gauss,Tresca,SOCLCP,ACLM --domain=1:0.1:100
+
+   4) For openmp comparison:
+
+   comp.py --thread-list=1,2,3,4,5 --solvers=NSGS-AC-OPENMP
+
+   comp.py --display-speedup --measure=time
 
   """
   print(options_doc)
