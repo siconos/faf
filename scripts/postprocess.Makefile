@@ -128,13 +128,13 @@ ifeq ($(test_name),LMGC_LowWall_FEM)
 	echo "4" | cat >> domain.txt ;
 	echo "5" | cat >> domain.txt
 	echo "3" | cat >> domain.txt
-	echo "15" | cat >> domain.txt  # PSOR
+	echo "15" | cat >> domain.txt # PSOR
 	echo "20" | cat >> domain.txt # NSN
 	echo "20" | cat >> domain.txt # PROX
 	echo "20" | cat >> domain.txt # PROX 
 	echo "5" | cat >> domain.txt
-	echo "5" | cat >> domain.txt
-	echo "100" | cat >> domain.txt # comp large
+	echo "2" | cat >> domain.txt   # comp zoom
+	echo "10" | cat >> domain.txt # comp large
 endif
 ifeq ($(test_name),)
 echo "enter test_name=[name of the test]"
