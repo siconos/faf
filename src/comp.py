@@ -1,62 +1,33 @@
 #!/usr/bin/env python
-
 # parallel usage :
 # ls *.hdf5 | parallel comp.py --timeout=100 --no-collect '--files={}'
-
 #
 # comp.py --max-problems=10 --no-compute --no-collect # output problems.txt
 # cat problems.txt | parallel comp.py --timeout=100 --no-collect '--files={}'
 #
-#
-
-
 
 
 import re
 from glob import glob
 from itertools import product
-import numpy as np
-import random
-import siconos.numerics as N
-numerics_verbose=0
-N.numerics_set_verbose(numerics_verbose)
-import siconos.fclib as FCL
-
-from numpy.linalg import matrix_rank,svd
-
-try:
-    from scipy.linalg.interpolative import estimate_rank
-except:
-    pass
-
-from scipy.sparse import csr_matrix
-
-try:
-    from scipy.sparse.linalg import lsmr
-except:
-    def lsmr(*args):
-        print("lsmr undefined")
-
-try:
-    from scipy.sparse.linalg import svds
-except:
-    def svds(*args):
-        print("svds undefined")
-
 from subprocess import check_call
-
 import os
-
-import multiprocessing
-import multiprocessing.pool
-import time
-
-
 import h5py
 import getopt
 import sys
 import hashlib
-import shlex
+
+#from io import StringIO
+
+
+import numpy as np
+
+
+
+import siconos.numerics as N
+numerics_verbose=0
+N.numerics_set_verbose(numerics_verbose)
+import siconos.fclib as FCL
 
 #print os.path.join(os.path.dirname(sys.argv[0]), 'external/build')
 
@@ -69,173 +40,12 @@ except:
 #logger = multiprocessing.log_to_stderr()
 #logger.setLevel(logging.INFO)
 
-from contextlib import contextmanager
-from io import StringIO
-import select
-
-# to collect output from stdout
-# note : callback is much cleaner (no parsing) but is broken...
-@contextmanager
-def catch_stdout(really=True):
-    if really:
-        sys.stdout.write(' \b')
-        pipe_out, pipe_in = os.pipe()
-
-        def read_pipe():
-            def more():
-                r, _, _ = select.select([pipe_out], [], [], 0)
-                return bool(r)
-            out = ''
-            while more():
-                out += os.read(pipe_out, 1024)
-            return out
-
-        stdout = os.dup(1)
-        os.dup2(pipe_in, 1)
-
-        yield read_pipe
-
-        os.dup2(stdout, 1)
-    else:
-        def dummy():
-            return ''
-        yield dummy
-        pass
-
-class WithCriterium():
-
-    def __init__(self, condmin, condmax):
-        self._condmin = condmin
-        self._condmax = condmax
-
-    def __call__(self, filename):
-        r = cond_problem(filename)
-        return r > self._condmin and r < self._condmax
-
-def list_from_file(filename):
-    with open(filename, 'r') as f:
-        return f.read().lstrip().rstrip().split('\n')
-
-def subsample_problems(filenames, proba, maxp, cond, overwrite=False):
-
-
-    def addext(f):
-        if f.endswith('.hdf5'):
-            return f
-        else:
-            return '{0}.hdf5'.format(f)
-
-    _filenames = [addext(f) for f in filenames]
-
-    if proba is not None:
-        __r = random.sample(_filenames, int(len(_filenames) * proba))
-    else:
-        __r = _filenames
-
-    if maxp is not None:
-        _r = random.sample(__r, min(maxp, len(__r)))
-        print(_r)
-
-    else:
-        _r = __r
-
-    if cond is not None:
-        r = list(filter(WithCriterium(cond[0], cond[1]), _r))
-    else:
-        r = _r
-
-    # overwrite
-    if overwrite:
-        with open('problems.txt','w') as problems_txt:
-            problems_txt.write('{0}\n'.format('\n'.join(r)))
-
-    return r
-
-def extern_guess(problem_filename, solver_name, iteration, h5file):
-    data = h5file['data']
-    comp_data = data['comp']
-
-    reaction = comp_data[solver_name][problem_filename]['reactions'][iteration]
-    velocity = comp_data[solver_name][problem_filename]['velocities'][iteration]
-    return reaction, velocity
-
-
-def split(s, sep, maxsplit=-1):
-
-    try:
-        return [shlex.split(kw)[0]
-                 for kw in s.split(sep, maxsplit)]
-    except Exception:
-        sys.stderr.write('don\'t know how to split {0} with {1}\n'
-                         .format(s, sep))
-        return None
-def setAxLinesBW(ax):
-    """
-    Take each Line2D in the axes, ax, and convert the line style to be
-    suitable for black and white viewing.
-    """
-    MARKERSIZE = 5
-
-    COLORMAP = {
-        'b': {'marker': None, 'dash': (None,None)},
-        'g': {'marker': None, 'dash': [5,5]},
-        'r': {'marker': None, 'dash': [5,3,1,3]},
-        'c': {'marker': None, 'dash': [1,3]},
-        'm': {'marker': None, 'dash': [5,2,5,2,5,10]},
-        'y': {'marker': None, 'dash': [5,3,1,2,1,10]},
-        'k': {'marker': 'o',  'dash': [1,2,1,10]}
-        }
-
-    MARKER = [None, 'o', '+', '*']
-
-    lines_to_adjust = ax.get_lines()
-    print(lines_to_adjust)
-    count =1
-    for line in lines_to_adjust:
-        print(len(lines_to_adjust))
-        origColor = line.get_color()
-        line.set_color('black')
-        line.set_dashes(COLORMAP[origColor]['dash'])
-        print(count/7)
-        line.set_marker(MARKER[count/7])
-        count = count +1
-        line.set_markersize(MARKERSIZE)
-
-    try:
-        lines_legend_to_adjust = ax.get_legend().get_lines()
-        print(lines_legend_to_adjust)
-        count=1
-
-        for line in lines_legend_to_adjust:
-            print(len(lines_to_adjust))
-            origColor = line.get_color()
-            line.set_color('black')
-            line.set_dashes(COLORMAP[origColor]['dash'])
-            print(count/7)
-            line.set_marker(MARKER[count/7])
-            count = count +1
-            line.set_markersize(MARKERSIZE)
-
-
-
-
-    except AttributeError:
-        pass
-
-
-def setFigLinesBW(fig):
-    """
-    Take each axes in the figure, and for each line in the axes, make the
-    line viewable in black and white.
-    """
-    for ax in fig.get_axes():
-        setAxLinesBW(ax)
-
-
 from SiconosSolver import *
 from faf_tools import *
+from faf_timeout import *
+from faf_matrix_tools import *
+from faf_display_tools import *
 from faf_default_values import *
-
 
 #debugger
 #import pdb
@@ -504,239 +314,7 @@ try:
     dir(N).index('fc3d_nsgs_openmp')
     numerics_has_openmp_solvers=True
 except ValueError:
-    print("fc3d_nsgs_openmp is not in siconos numerics")
-
-
-## creation of solvers
-from faf_solvers import *
-fs = faf_solvers(maxiter, precision, maxiterls, with_guess, with_mumps, numerics_has_openmp_solvers)
-all_solvers = fs.create_solvers()
-
-
-class TimeoutException(Exception):
-    pass
-
-
-class RunableProcessing(multiprocessing.Process):
-    def __init__(self, func, *args, **kwargs):
-        self.queue = multiprocessing.Queue(maxsize=1)
-        args = (func,) + args
-        multiprocessing.Process.__init__(self, target=self.run_func, args=args, kwargs=kwargs)
-
-    def run_func(self, func, *args, **kwargs):
-        try:
-            result = func(*args, **kwargs)
-            self.queue.put((True, result))
-        except Exception as e:
-            self.queue.put((False, e))
-
-    def done(self):
-        return self.queue.full()
-
-    def result(self):
-        return self.queue.get()
-
-
-def timeout(seconds, force_kill=True):
-    if seconds==0:
-        def wrapper(function):
-            return function
-        return wrapper
-    else:
-        def wrapper(function):
-            def inner(*args, **kwargs):
-                now = time.time()
-                proc = RunableProcessing(function, *args, **kwargs)
-                proc.start()
-                proc.join(seconds)
-                if proc.is_alive():
-                    if force_kill:
-                        proc.terminate()
-                    runtime = int(time.time() - now)
-                    raise TimeoutException('timed out after {0} seconds'.format(runtime))
-                if not proc.done():
-                    proc.terminate()
-                assert proc.done()
-                success, result = proc.result()
-                if success:
-                    #return time.time() - now, result
-                    return result
-                else:
-                    #raise time.time() - now, result
-                    raise result
-            return inner
-        return wrapper
-
-@timeout(5)
-def dense_matrix_rank(M):
-    return matrix_rank(M)
-
-@timeout(900)
-def sparse_matrix_svd(A,k):
-    return svds(A,k)
-
-@timeout(900)
-def dense_matrix_rank_estimate(A,tol):
-    return (A,tol)
-
-
-
-# estimate of condition number and norm from lsmr
-# http://www.stanford.edu/group/SOL/software/lsmr/LSMR-SISC-2011.pdf
-#@timeout(20)
-def _norm_cond(problem_filename):
-    problem = read_fclib_format(problem_filename)[1]
-    A = csr_matrix(N.SBM_to_sparse(problem.M)[1])
-    #print "A=", A
-    print("A.shape", A.shape)
-    print("Computev lsmr ...")
-    r = lsmr(A, np.ones([A.shape[0], 1]))  # solve Ax = 1
-    norm_lsmr=r[5]
-    cond_lsmr=r[6]
-    print("norm_lsr=", norm_lsmr)
-    print("cond_lsr=", cond_lsmr)
-    #print "r=", r
-    try:
-        print ("Computev svds(A,1) ...")
-        _svd = svds(A,1)[1]
-        eps = sys.float_info.epsilon
-        tol = _svd.max() * max(A.shape) * eps
-    except Exception as e :
-        print ("-->   svds failed to compute the maximum singular value")
-        print ("-->" ,  e)
-        _svd = [1.0]
-        eps = sys.float_info.epsilon
-        tol = max(A.shape) * eps
-    #print tol
-    #print "============"
-    # from scipy.sparse.linalg import LinearOperator
-    # def mv(v):
-    #     return A.dot(v)
-    # A_LO = LinearOperator( A.shape, matvec=mv )
-    # print isinstance(A_LO, LinearOperator)
-    rank_estimate = np.nan
-    try:
-        print("Compute rank estimate ...")
-        rank_estimate=dense_matrix_rank_estimate(A.todense(),tol)
-        #rank_estimate=estimate_rank(A.todense(), tol)
-    except Exception as e :
-        print ("--> rank_estimate", e)
-    print("rank_estimate", rank_estimate)
-
-    #print "svd dense method", svd(A.todense())[1]
-
-    rank_dense = np.nan
-    try:
-        print("Compute rank dense ...")
-        rank_dense = dense_matrix_rank(A.todense())
-    except Exception as e :
-        print ("--> dense_matrix_rank", e)
-    print ("rank_dense", rank_dense)
-
-    if not np.isnan(rank_estimate):
-        k=min(rank_estimate,A.shape[0]-1)
-    else:
-        k = A.shape[0]-1
-    try:
-        print("Compute svds(A,k) for  ",k," singular values  ...")
-        _svd = sparse_matrix_svd(A,k)[1]
-        #print "_svd",_svd
-    except Exception as e :
-        print("--> sparse_matrix_svd  failed to compute ",k," singular values")
-        print("--> sparse_matrix_svd " ,  e)
-
-        _svd =[]
-    # compute rank with http://docs.scipy.org/doc/numpy-dev/reference/generated/numpy.linalg.matrix_rank.html
-    rank_svd=np.nan
-    nonzero_sv=[]
-    import math
-    for sv in _svd:
-        #print sv,tol
-        if (sv >=tol and (not math.isnan(sv))):
-            nonzero_sv.append(sv)
-    nonzero_sv.sort(reverse=True)
-    #print(nonzero_sv)
-    if (len(nonzero_sv) >0):
-        rank_svd = len(nonzero_sv)
-    else:
-        rank_svd = np.nan
-    #print "rank_svd", rank_svd
-
-    if not math.isnan(rank_dense):
-        rank=rank_dense
-    else:
-        if not math.isnan(rank_svd):
-            rank=rank_svd
-        else :
-            rank=rank_estimate
-
-    if not math.isnan(rank):
-        nonzero_sv = nonzero_sv[0:rank]
-
-    if (len(nonzero_sv) >0):
-        max_nonzero_sv= max(nonzero_sv)
-        min_nonzero_sv= min(nonzero_sv)
-        ratio_max_min_nonzero_sv =  max(nonzero_sv)/min(nonzero_sv)
-    else:
-        max_nonzero_sv= np.nan
-        min_nonzero_sv= np.nan
-        ratio_max_min_nonzero_sv =  np.nan
-    # http://personales.unican.es/beltranc/archivos/CNmatricesF.pdf
-    return norm_lsmr, cond_lsmr, max_nonzero_sv, min_nonzero_sv,  ratio_max_min_nonzero_sv, rank, rank_dense, rank_svd, rank_estimate
-
-norm_cond = Memoize(_norm_cond)
-
-
-
-
-# def _numberOfInvolvedDS(f):
-#     with h5py.File(f, 'r') as fclib_file:
-#         try:
-#             r = fclib_file['fclib_local']['info'].attrs['numberOfInvolvedDS']
-#         except:
-#             r = np.nan
-#     return r
-
-def _dimension(f):
-    with h5py.File(f, 'r') as fclib_file:
-        try:
-            r = fclib_file['fclib_local']['spacedim'][0]
-        except:
-            r = np.nan
-    return r
-
-
-def _cond_problem(filename):
-    problem = read_fclib_format(filename)[1]
-    return float(problem.numberOfContacts * 3) / float(numberOfDegreeofFreedom(filename))
-
-def _cond(f):
-    with h5py.File(f, 'r') as fclib_file:
-        try:
-            r = fclib_file['fclib_local']['W'].attrs['cond']
-        except:
-            r = np.nan
-    #print "r=",r
-    return r
-
-def _rank_dense(f):
-    with h5py.File(f, 'r') as fclib_file:
-        try:
-            r = fclib_file['fclib_local']['W'].attrs['rank_dense']
-        except:
-            r = np.nan
-    #print "r=",r
-    return r
-
-
-
-dimension = Memoize(_dimension)
-
-cond_problem = Memoize(_cond_problem)
-
-cond = Memoize(_cond)
-
-rank_dense = Memoize(_rank_dense)
+    print("warning : fc3d_nsgs_openmp is not in siconos numerics")
 
 
 
@@ -866,9 +444,9 @@ class Caller():
 
                 with open('report.txt', "a") as report_file:
                     print   ( (filename, solver.name(), info, iter, err,
-                                              time_s, real_time, proc_time,
-                                              flpops, mflops,
-                                              precision, utimeout), file=report_file)
+                                   time_s, real_time, proc_time,
+                                   flpops, mflops,
+                                   precision, utimeout), file=report_file)
 
 
 
@@ -1088,125 +666,7 @@ class Caller():
                     # comp_file.flush()
 
 
-if (os.path.isfile(os.path.join( os.path.dirname(__file__),'adhoc_solverlist.py'))):
-    execfile(os.path.join( os.path.dirname(__file__),'adhoc_solverlist.py'))
-    #print "execfile(",os.path.join( os.path.dirname(__file__),'adhoc_solverlist.py'), ")"
-if (os.path.isfile('adhoc_solverlist.py')):
-    execfile('adhoc_solverlist.py')
-    #print "execfile(adhoc_solverlist.py)"
 
-
-
-solvers=[]
-if user_solvers != []:
-    #print "user_solvers", user_solvers
-    solvers.extend(list(filter(lambda s: any(us in s._name for us in user_solvers), all_solvers)))
-
-    if solvers == []:
-        raise RuntimeError ("Cannot find any matching solver")
-
-elif user_solvers_exact != []:
-    #print "user_solvers_exact", user_solvers_exact
-    solvers.extend(list(filter(lambda s: any(us ==  s._name  for us in user_solvers_exact), all_solvers)))
-
-    if solvers == []:
-        raise RuntimeError("Cannot find any solvers in specified list")
-
-else:
-    solvers= all_solvers
-
-
-#solvers = [ProxFB]
-
-def is_fclib_file(filename):
-    r = False
-    try:
-        with h5py.File(filename, 'r') as f:
-            r = 'fclib_local' in f or 'fclib_global' in f
-    except Exception as e:
-        print(e)
-    #except :
-    #    pass
-
-    return r
-
-def read_numerics_format(f):
-    return N.frictionContactProblemFromFile(f)
-
-
-
-
-from numpy import eye, array
-keeper = []
-
-NC = 1
-
-M = eye(3*NC)
-
-
-q = array([-1., 1., 3.])
-
-mu = array([0.1]);
-
-z = array([0.,0.,0.])
-
-reactions = array([0.,0.,0.])
-
-velocities = array([0.,0.,0.])
-
-measure = dict()
-solver_r = dict()
-
-if not os.path.exists('problems.txt'):
-    with open('problems.txt', 'w') as problems_txt:
-        for f in glob('*.hdf5'):
-            problems_txt.write('{0}\n'.format(f))
-
-if user_filenames == []:
-    if file_filter == None:
-        all_filenames = list_from_file('problems.txt')
-    else:
-        all_filenames = list(filter(lambda f: any(uf in f for uf in file_filter), list_from_file('problems.txt')))
-
-else:
-
-        all_filenames = user_filenames
-
-#all_filenames=['BoxesStack1-i9841-33.hdf5']
-#ask_collect = False
-#print("all_filenames",all_filenames)
-_problem_filenames = list(filter(is_fclib_file,
-                            all_filenames))
-#print("_problems_filenames", _problem_filenames)
-__problem_filenames = subsample_problems(_problem_filenames,
-                                         random_sample_proba,
-                                         max_problems, None, overwrite = (not display and not ask_compute and not ask_collect))
-
-
-problem_filenames = subsample_problems(__problem_filenames,
-                                       None,
-                                       None, cond_nc)
-
-n_problems = len(problem_filenames)
-
-#problems = [read_fclib_format(f) for f in problem_filenames]
-
-
-
-min_measure = dict()
-
-for fileproblem in problem_filenames:
-    min_measure[fileproblem] = np.inf
-
-if clean:
-    h5mode = 'w'
-else:
-    h5mode = 'a'
-
-caller = Caller()
-
-
-#pool = MyPool(processes=8)
 
 
 def create_attrs_precision_in_comp_file(comp_file,precision_val):
@@ -1312,10 +772,102 @@ class Results():
         except:
             return True
 
+
+##################################
+## creation of solver list
+##################################
+print("1 -- Creation of solver list")
+from faf_solvers import *
+fs = faf_solvers(maxiter, precision, maxiterls, with_guess, with_mumps, numerics_has_openmp_solvers)
+all_solvers = fs.create_solvers()
+
+
+if (os.path.isfile(os.path.join( os.path.dirname(__file__),'adhoc_solverlist.py'))):
+    execfile(os.path.join( os.path.dirname(__file__),'adhoc_solverlist.py'))
+    #print "execfile(",os.path.join( os.path.dirname(__file__),'adhoc_solverlist.py'), ")"
+if (os.path.isfile('adhoc_solverlist.py')):
+    execfile('adhoc_solverlist.py')
+    #print "execfile(adhoc_solverlist.py)"
+
+solvers=[]
+if user_solvers != []:
+    #print "user_solvers", user_solvers
+    solvers.extend(list(filter(lambda s: any(us in s._name for us in user_solvers), all_solvers)))
+
+    if solvers == []:
+        raise RuntimeError ("Cannot find any matching solver")
+elif user_solvers_exact != []:
+    #print "user_solvers_exact", user_solvers_exact
+    solvers.extend(list(filter(lambda s: any(us ==  s._name  for us in user_solvers_exact), all_solvers)))
+
+    if solvers == []:
+        raise RuntimeError("Cannot find any solvers in specified list")
+else:
+    solvers= all_solvers
+
+##################################
+## creation of problems list
+##################################
+print("2 -- Creation of problem list")
+
+if not os.path.exists('problems.txt'):
+     with open('problems.txt', 'w') as problems_txt:
+         for f in filter(is_fclib_file, glob('*.hdf5')):
+             problems_txt.write('{0}\n'.format(f))
+
+if user_filenames == []:
+    if file_filter == None:
+        all_filenames = list_from_file('problems.txt')
+    else:
+        all_filenames = list(filter(lambda f: any(uf in f for uf in file_filter), list_from_file('problems.txt')))
+
+else:
+        all_filenames = user_filenames
+
+#all_filenames=['BoxesStack1-i9841-33.hdf5']
+#ask_collect = False
+#print("all_filenames",all_filenames)
+_problem_filenames = list(filter(is_fclib_file,
+                            all_filenames))
+#print("_problems_filenames", _problem_filenames)
+__problem_filenames = subsample_problems(_problem_filenames,
+                                         random_sample_proba,
+                                         max_problems, None, overwrite = (not display and not ask_compute and not ask_collect))
+
+
+problem_filenames = subsample_problems(__problem_filenames,
+                                       None,
+                                       None, cond_nc)
+
+n_problems = len(problem_filenames)
+
+#problems = [read_fclib_format(f) for f in problem_filenames]
+
+
+
+measure = dict()
+solver_r = dict()
+min_measure = dict()
+
+for fileproblem in problem_filenames:
+    min_measure[fileproblem] = np.inf
+
+if clean:
+    h5mode = 'w'
+else:
+    h5mode = 'a'
+
+caller = Caller()
+
+
+#pool = MyPool(processes=8)
+
+
+
+
 if __name__ == '__main__':
 
     if compute:
-
         all_tasks = [t for t in product(solvers, problem_filenames)]
         if os.path.exists('comp.hdf5'):
             with h5py.File('comp.hdf5', 'r') as comp_file:
@@ -1323,9 +875,8 @@ if __name__ == '__main__':
         else:
             tasks = all_tasks
 
-        print("Tasks will be run for solvers :", [ s._name for s in solvers])
+        print("3 -- Running computation and/or collecting tasks for solvers :", [ s._name for s in solvers])
         print(" on files ",problem_filenames)
-        
             
         if ask_compute:
             print(" with precision=", precision, " timeout=", utimeout, "and maxiter = ", maxiter)
@@ -1352,7 +903,7 @@ if __name__ == '__main__':
 
 
     if display:
-        print("Tasks will be run for solvers :", [ s._name for s in solvers])
+        print("3 -- Running display tasks for solvers :", [ s._name for s in solvers])
         filename=None
         with h5py.File('comp.hdf5', 'r') as comp_file:
 
@@ -1483,7 +1034,7 @@ if __name__ == '__main__':
                 write_report(solver_r,'solver_r.txt')
                 def long_substr(data):
                     substr = ''
-                    print("data=",data)
+                    #print("data=",data)
                     if len(data) > 0 and len(data[0]) > 0:
                         for i in range(len(data[0])):
                             for j in range(len(data[0])-i+1):
@@ -1505,8 +1056,8 @@ if __name__ == '__main__':
                     all_rhos = [ domain ] + [ rhos[solver.name()] for solver in filter(lambda s: s._name in comp_data, solvers) ]
                     np.savetxt('profile.dat', np.matrix(all_rhos).transpose())
                     gp.write('resultfile = "profile.dat"\n')
-                    print("filenames=",filenames)
-                    print("long_substr(filenames)=", long_substr(filenames))
+                    #print("filenames=",filenames)
+                    #print("long_substr(filenames)=", long_substr(filenames))
                     test_name = long_substr(filenames).partition('-')[0]
                     print("test_name=",test_name)
 
@@ -2222,7 +1773,7 @@ if __name__ == '__main__':
 
 
 
-    display_bw=False
+    display_bw=True
     if display or display_convergence or display_distrib or display_speedup:
         if not no_matplot:
             if (display_bw):
