@@ -1069,7 +1069,10 @@ if __name__ == '__main__':
                     gp.write('\n')
                     gp.write('term_choice_tikz=1\n')
                     gp.write('if (term_choice_tikz == 1) \\\n')
-                    gp.write('set term tikz standalone monochrome  size 5in,3in font \'\\scriptsize\\sf\';  \\\n')
+                    if (gnuplot_with_color):
+                        gp.write('set term tikz standalone size 5in,3in font \'\\scriptsize\\sf\';  \\\n')
+                    else:
+                        gp.write('set term tikz standalone monochrome  size 5in,3in font \'\\scriptsize\\sf\';  \\\n')
                     gp.write('extension = \'.tex\'; \\\n')
                     gp.write('extension_legend = \'_legend.tex\'; \\\n')
                     gp.write('set output basename.extension; \\\n')
@@ -1104,10 +1107,8 @@ if __name__ == '__main__':
                             gp.write('unset tics; \n \n')
                             gp.write('unset xlabel; \n \n')
                             gp.write('unset ylabel; \n \n')
-                            gp.write('set term tikz standalone monochrome  size 5in,1.5in font \'\\scriptsize\\sf\';  \\\n')
-
+                            gp.write('set term tikz standalone  size 5in,1.5in font \'\\scriptsize\\sf\';  \\\n')
                             gp.write('set key right inside vertical maxrows {0}\n'.format(maxrows))
-
                             gp.write('\n plot [0:1] [0:1]')
                             gp.write(
                                 ','.join([' NaN t "{1}" w l dashtype {2} linecolor {3}'.format(index + 2, solver.gnuplot_name(),index+1,index%6+1)
@@ -1117,8 +1118,23 @@ if __name__ == '__main__':
 
                         else:
                             gp.write(
-                                ','.join(['resultfile using 1:{0} t "{1}" w l dashtype {2} linecolor {3}'.format(index + 2, solver.gnuplot_name(),index+1,8)
+                                ','.join(['resultfile using 1:{0} notitle w l dashtype {1} linecolor {2}'.format(index + 2,index+1,8)
                                           for index, solver in enumerate(filter(lambda s: s._name in comp_data, solvers)) ]))
+
+                            gp.write('\n set output basename.extension_legend; \n')
+                            gp.write('print "output = ", basename.extension_legend; \n \n')
+                            gp.write('unset border; \n \n')
+                            gp.write('unset tics; \n \n')
+                            gp.write('unset xlabel; \n \n')
+                            gp.write('unset ylabel; \n \n')
+                            gp.write('set term tikz standalone monochrome  size 5in,1.5in font \'\\scriptsize\\sf\';  \\\n')
+                            gp.write('set key right inside vertical maxrows {0}\n'.format(maxrows))
+                            gp.write('\n plot [0:1] [0:1]')
+                            gp.write(
+                                ','.join([' NaN t "{1}" w l dashtype {2} linecolor {3}'.format(index + 2, solver.gnuplot_name(),index+1,8)
+                                          for index, solver in enumerate(filter(lambda s: s._name in comp_data, solvers)) ]))
+
+
                     else:
                         if (gnuplot_with_color):
                             gp.write(
