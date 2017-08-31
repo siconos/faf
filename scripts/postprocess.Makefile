@@ -217,7 +217,7 @@ psor_solvers: domain_value
 nsn_solvers: save_dir=figure/NSN/${measure_name}
 nsn_solvers: domain_max=$(shell sed '6q;d' domain.txt)
 nsn_solvers: domain_value
-	comp.py --measure=${measure_name} --display --no-matplot --solvers-exact='NSN-AlartCurnier','NSN-AlartCurnier-NLS','NSN-AlartCurnier-Generated','NSN-AlartCurnier-Generated-NLS','NSN-AlartCurnier-R','NSN-JeanMoreau','NSN-JeanMoreau-NLS','NSN-JeanMoreau-Generated','NSN-JeanMoreau-Generated-NLS','NSN-FischerBurmeister-GP','NSN-FischerBurmeister-NLS'  --domain=1.0:1.0:${domain_max}  --gnuplot-profile --gnuplot-separate-keys
+	comp.py --measure=${measure_name} --display --no-matplot --solvers-exact='NSN-AlartCurnier','NSN-AlartCurnier-NLS','NSN-AlartCurnier-Generated','NSN-AlartCurnier-Generated-NLS','NSN-AlartCurnier-R','NSN-AlartCurnier-FBLSA','NSN-JeanMoreau','NSN-JeanMoreau-NLS','NSN-JeanMoreau-Generated','NSN-JeanMoreau-Generated-NLS','NSN-JeanMoreau-FBLSA','NSN-FischerBurmeister-GP','NSN-FischerBurmeister-NLS','NSN-NaturalMap-GP','NSN-NaturalMap-NLS','NSN-AlartCurnier-NLS-HYBRID'  --domain=1.0:0.1:${domain_max}  --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-${test_name}.tex;
 	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;
@@ -230,7 +230,7 @@ nsn_solvers: domain_value
 prox_solvers: save_dir=figure/PROX/InternalSolvers/${measure_name}
 prox_solvers: domain_max=$(shell sed '7q;d' domain.txt)
 prox_solvers: domain_value
-	comp.py --measure=${measure_name} --display --no-matplot --solvers-exact='NSN-AlartCurnier','NSN-AlartCurnier-NLS','NSN-AlartCurnier-Generated','NSN-AlartCurnier-Generated-NLS','PROX-NSN-AC','PROX-NSN-AC-NLS','PROX-NSN-FB-GP','PROX-NSN-FB-NLS','PROX-NSGS-NSN-AC','PROX-NSN-FB-FBLSA','NSGS-AC'   --domain=1.0:1.0:${domain_max}  --gnuplot-profile --gnuplot-separate-keys
+	comp.py --measure=${measure_name} --display --no-matplot --solvers-exact='NSN-AlartCurnier','NSN-AlartCurnier-NLS','NSN-AlartCurnier-Generated','NSN-AlartCurnier-Generated-NLS','PROX-NSN-AC','PROX-NSN-AC-NLS','PROX-NSN-FB-GP','PROX-NSN-FB-NLS','PROX-NSGS-NSN-AC','PROX-NSN-FB-FBLSA','NSGS-AC'   --domain=1.0:0.1:${domain_max}  --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-${test_name}.tex;
 	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;
@@ -242,7 +242,7 @@ prox_solvers: domain_value
 prox_series: save_dir=figure/PROX/Parameters/${measure_name}
 prox_series: domain_max=$(shell sed '8q;d' domain.txt)
 prox_series: domain_value
-	comp.py --measure=${measure_name} --display --no-matplot --solvers='PROX-NSN-AC-'  --domain=1.0:1.0:${domain_max}  --gnuplot-profile --gnuplot-separate-keys
+	comp.py --measure=${measure_name} --display --no-matplot --solvers='PROX-NSN-AC-'  --domain=1.0:0.1:${domain_max}  --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-${test_name}.tex;
 	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;
@@ -254,7 +254,7 @@ prox_series: domain_value
 regul_series: save_dir=figure/REGUL/${measure_name}
 regul_series: domain_max=$(shell sed '8q;d' domain.txt)
 regul_series: domain_value
-	comp.py --measure=${measure_name} --display --no-matplot --solvers-exact='PROX-NSN-AC-regulVar-1e+03','PROX-NSN-AC-regul-1e+04','PROX-NSN-AC-regul-1e+04','PROX-NSN-AC-regul-1e+06','PROX-NSN-AC-regul-1e+08','PROX-NSN-AC-regul-1e+10','PROX-NSN-AC-NLS'  --domain=1.0:1.0:1000 --gnuplot-profile --gnuplot-separate-keys
+	comp.py --measure=${measure_name} --display --no-matplot --solvers-exact='PROX-NSN-AC-regulVar-1e+03','PROX-NSN-AC-regul-1e+04','PROX-NSN-AC-regul-1e+04','PROX-NSN-AC-regul-1e+06','PROX-NSN-AC-regul-1e+08','PROX-NSN-AC-regul-1e+10','PROX-NSN-AC-NLS'  --domain=1.0:0.1:1000 --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-${test_name}.tex;
 	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;
