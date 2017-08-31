@@ -1738,8 +1738,28 @@ The details of a possible computation of $\Phi$ can be found in Appendix~\ref{Se
 \subsection{Damped Newton and Line-search procedures}
 
 \begin{itemize}
-\item   (GP, Armijo, FBLSA, Non-monotone watch dogs)
+\item   (GP, Armijo, Non-monotone watch dogs)
 \end{itemize}
+
+
+\begin{algorithm}
+  \begin{algorithmic}
+    {\sf
+      \STATE $ $
+    }
+  \end{algorithmic}
+  \caption{Goldstein--Price (GP) line search}  \label{Algo:GP}
+\end{algorithm}
+\begin{algorithm}
+  \begin{algorithmic}
+    {\sf
+      \STATE $ $
+    }
+  \end{algorithmic}
+  \caption{Armijo(A) line search}  \label{Algo:A}
+\end{algorithm}
+
+
 
 \begin{ndroh}
  I believe we only do GP + Armijo. Do we want to do non-monotone LS? From my very limited experiments, it helps, but usually to convergence faster. I'm not sure it really helps to not get stuff in practice. But I may be wrong.\newline
@@ -1751,62 +1771,71 @@ The details of a possible computation of $\Phi$ can be found in Appendix~\ref{Se
 A nomenclature for the algorithms based on the nonsmooth Newton methods is given listed in Table~\ref{tab:NSN-algos}.
 \begin{table}[htbp]
   \centering
-  \begin{tabular}{|l|p{0.6\textwidth}|l|}
+  \begin{tabular}{|l|l|p{0.6\textwidth}|l|}
     \hline
-    { Algorithm}
+    { name}
+    & Algo. 
     & Description 
     & parameters\\
-    % \hline
-    % \sf NSN-NA-1
-    % &  Algorithm~\ref{Algo:NSN} with natural map for Problem~\ref{prob:I}
-    % & \\
     \hline
-    \sf NSN-NM 
-    &  Algorithm~\ref{Algo:NSN} with the natural map formulation~\eqref{eq:natural-II}
+    \sf NSN-NM
+    & \ref{Algo:NSN} 
+    & Natural map formulation~\eqref{eq:natural-II}
     &  $tol, \rho$\\
     \hline
-    % \sf NSN-AC-1 
-    % &  Algorithm~\ref{Algo:NSN} with Alart-Curnier formulation for Problem~\ref{prob:I}  
-    % & \\
-    % \hline
     \sf NSN-AC
-    &  Algorithm~\ref{Algo:NSN} with the Alart--Curnier formulation~\eqref{eq:AC-II}
-    &  $tol, \rho_\n, \rho_\t$\\
-    \hline
-    % \sf NSN-JM-1 
-    % &  Algorithm~\ref{Algo:NSN} with Jean--Moreau formulation for Problem~\ref{prob:I}
-    % & \\
-    % \hline
-    \sf NSN-JM 
-    &  Algorithm~\ref{Algo:NSN} with the Jean--Moreau formulation~\eqref{eq:MJ-II}
+    & \ref{Algo:NSN} 
+    & Alart--Curnier formulation~\eqref{eq:AC-II}
     & $tol, \rho_\n, \rho_\t$\\
     \hline
-    \sf NSN-FB 
-    &  Algorithm~\ref{Algo:NSN} with the Fischer-Burmeister formulation~\eqref{eq:FB-II}
+    \sf NSN-JM
+    & \ref{Algo:NSN} 
+    & Jean--Moreau formulation~\eqref{eq:MJ-II}
+    & $tol, \rho_\n, \rho_\t$\\
+    \hline
+    \sf NSN-FB
+    & \ref{Algo:NSN}
+    & Fischer-Burmeister formulation~\eqref{eq:FB-II}
     & $tol$\\
     \hline
-    \sf NSN-MJ-GP
-    &  ??
+    \sf NSN-NM-GP
+    & \ref{Algo:NSN} and \ref{Algo:GP}
+    &  Natural map formulation~\eqref{eq:natural-II} and the Goldstein--Price (GP) line search
     & \\
     \hline
     \sf NSN-AC-GP
-    &  Algorithm~\ref{Algo:NSN} with the Alart--Curnier formulation~\eqref{eq:AC-II} and the Goldstein--Price (GP) line search
+    & \ref{Algo:NSN} and \ref{Algo:GP}
+    &  Alart--Curnier formulation~\eqref{eq:AC-II} and the Goldstein--Price (GP) line search
     & \\
     \hline
-    \sf NSN-AC-FBLSA
-    &  Algorithm~\ref{Algo:NSN} with the Alart--Curnier formulation~\eqref{eq:AC-II} and the FBLSA line search
+    \sf NSN-JM-GP
+    & \ref{Algo:NSN} and \ref{Algo:GP}
+    & Jean--Moreau formulation~\eqref{eq:MJ-II} and the Goldstein--Price (GP) line search
     & \\
     \hline
-    \sf NSN-FB-GP 
-    &  Algorithm~\ref{Algo:NSN} with the Fischer-Burmeister formulation~\eqref{eq:FB-II} and the Goldstein--Price (GP) line search
+    \sf NSN-FB-GP
+    & \ref{Algo:NSN} and \ref{Algo:GP}
+    & Fischer-Burmeister formulation~\eqref{eq:FB-II} and the Goldstein--Price (GP) line search
     & \\
     \hline
-    \sf NSN-FB-FBLSA
-    &  Algorithm~\ref{Algo:NSN} with the Fischer-Burmeister formulation~\eqref{eq:FB-II} and the  FBLSA line search
+    \sf NSN-NM-A
+    & \ref{Algo:NSN} and \ref{Algo:A}
+    &  Natural map formulation~\eqref{eq:natural-II} and the Armijo(A) line search
     & \\
     \hline
-    \sf \ldots 
-    &  \ldots
+    \sf NSN-AC-A
+    & \ref{Algo:NSN} and \ref{Algo:A}
+    &  Alart--Curnier formulation~\eqref{eq:AC-II} and the Armijo(A) line search
+    & \\
+    \hline
+    \sf NSN-JM-A
+    & \ref{Algo:NSN} and \ref{Algo:A}
+    & Jean--Moreau formulation~\eqref{eq:MJ-II} and the Armijo(A) line search
+    & \\
+    \hline
+    \sf NSN-FB-A
+    & \ref{Algo:NSN} and \ref{Algo:A}
+    & Fischer-Burmeister formulation~\eqref{eq:FB-II} and the Armijo(A) line search
     & \\
     \hline
   \end{tabular}
