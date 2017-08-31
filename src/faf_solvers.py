@@ -1027,7 +1027,7 @@ class faf_solvers():
 
 
         ProxFB_fblsa = SiconosSolver(name="PROX-NSN-FB-FBLSA",
-                             gnuplot_name="PPA-NSN-FB-FBLSA  \$ \\\mu=1, \\\sigma=5.0\$",
+                             gnuplot_name="PPA-NSN-FB-A  \$ \\\mu=1, \\\sigma=5.0\$",
                              API=N.fc3d_proximal,
                              TAG=N.SICONOS_FRICTION_3D_PROX,
                              iparam_iter=7,
@@ -1042,7 +1042,7 @@ class faf_solvers():
         ProxFB_fblsa.SolverOptions().internalSolvers.iparam[3] = 1000000
 
         ProxFB_nls = SiconosSolver(name="PROX-NSN-FB-NLS",
-                             gnuplot_name="PPA-NSN-FB-NLS  \$ \\\mu=1, \\\sigma=5.0\$",
+                             gnuplot_name="PPA-NSN-FB  \$ \\\mu=1, \\\sigma=5.0\$",
                              API=N.fc3d_proximal,
                              TAG=N.SICONOS_FRICTION_3D_PROX,
                              iparam_iter=7,
@@ -1056,7 +1056,7 @@ class faf_solvers():
         ProxFB_nls.SolverOptions().internalSolvers.iparam[3] = 1000000
 
         ProxNSGS = SiconosSolver(name="PROX-NSGS-NSN-AC",
-                             gnuplot_name="PROX-NSGS-NSN-AC \$ \\\mu=1, \\\sigma=5.0\$",
+                             gnuplot_name="PPA-NSGS-NSN-AC \$ \\\mu=1, \\\sigma=5.0\$",
                              API=N.fc3d_proximal,
                              TAG=N.SICONOS_FRICTION_3D_PROX,
                              iparam_iter=7,
@@ -1091,11 +1091,12 @@ class faf_solvers():
 
 
         #
-        quartic = SiconosSolver(name="NSGS-Quartic",
-                                API=N.fc3d_nsgs,
-                                TAG=N.SICONOS_FRICTION_3D_NSGS,
+        quartic3x3 = SiconosSolver(name="NSGS-Quartic",
+                                       gnuplot_name="NSGS-EXACT",
+                                    API=N.fc3d_nsgs,
+                                    TAG=N.SICONOS_FRICTION_3D_NSGS,
                                 iparam_iter=7,
-                                dparam_err=1, maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                    dparam_err=1, maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
 
         quartic3x3 = N.SolverOptions(N.SICONOS_FRICTION_3D_ONECONTACT_QUARTIC_NU)
 
@@ -1164,7 +1165,7 @@ class faf_solvers():
         #nsgs_solvers.remove(nsgs_p)
         nsgs_solvers.remove(nsgs_pd)
         nsgs_solvers.remove(nsgs_pr)
-        nsgs_solvers.remove(quartic)
+        #nsgs_solvers.remove(quartic)
 
 
 
@@ -1187,10 +1188,10 @@ class faf_solvers():
 
         all_solvers.extend(VIFixedPointProjection_series)
         all_solvers.extend(VIExtraGrad_series)
-        #all_solvers.extend(psor_series)
-        #all_solvers.extend(prox_series)
+        all_solvers.extend(psor_series)
+        all_solvers.extend(prox_series)
         #all_solvers.extend(regul_series)
-        #all_solvers.extend(nsgs_series)
+        all_solvers.extend(nsgs_series)
 
         all_solvers.extend(nsgs_openmp_solvers)
         return all_solvers
