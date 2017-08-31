@@ -54,7 +54,7 @@ class faf_solvers():
 
         nsn_acSTD_fblsa.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION] = N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD;
         nsn_acSTD_fblsa.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_LINESEARCH] = N.SICONOS_FRICTION_3D_NSN_LINESEARCH_ARMIJO;
-        nsn_acSTD_fblsa.SolverOptions().iparam[12] = self._maxiterls;;
+        nsn_acSTD_fblsa.SolverOptions().iparam[12] = self._maxiterls;
         nsn_acSTD_fblsa.SolverOptions().iparam[13] = self._with_mumps;
         nsn_acSTD_fblsa.SolverOptions().iparam[3] = 10000000
 
