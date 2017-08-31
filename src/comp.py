@@ -151,7 +151,7 @@ try:
                                     'replace-solvers-exact=','replace-solvers=',
                                     'gnuplot-profile','gnuplot-distrib', 'logscale', 'gnuplot-separate-keys',
                                     'output-dat', 'with-mumps', 'file-filter=', 'remove-files=',
-                                    'list-contents','list-contents-solvers',
+                                    'list-contents','list-contents-solver',
                                     'add-precision-in-comp-file','add-timeout-in-comp-file',
                                     'compute-cond-rank','compute-hardness','adhoc',
                                     'display-speedup', 'thread-list='])
@@ -164,7 +164,7 @@ except getopt.GetoptError as err:
 for o, a in opts:
     if o == '--verbose':
         numerics_verbose=int(a)
-        N.setNumericsVerbose(int(a))
+        N.numerics_set_verbose(numerics_verbose)
     if o == '--help':
         usage()
         exit(2)
@@ -669,6 +669,11 @@ class Caller():
                     # ip += 1
 
                     # comp_file.flush()
+            with open('report.txt', "a") as report_file:
+                print   ( (filename, solver.name(), info, iter, err,
+                               time_s, real_time, proc_time,
+                               flpops, mflops,
+                               precision, utimeout), file=report_file)
 
 
 
@@ -899,7 +904,7 @@ if __name__ == '__main__':
             print("Solvers :")
             for solvername in comp_data:
                 print("  ",solvername)
-                if (list_contents_solver):
+                if (list_contents):
                     for filename in comp_data[solvername]:
                         list_keys= list(comp_data[solvername][filename].attrs.keys())
                         if u'digest' in list_keys:
