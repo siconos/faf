@@ -43,6 +43,24 @@ class faf_solvers():
         nsn_acSTD_nls.SolverOptions().iparam[13] = self._with_mumps;
         nsn_acSTD_nls.SolverOptions().iparam[3] = 10000000
 
+
+        nsn_acSTD_fblsa = SiconosSolver(name="NSN-AlartCurnier-FBLSA",
+                                       gnuplot_name="NSN-AC-A",
+                                       API=N.fc3d_nonsmooth_Newton_AlartCurnier,
+                                       TAG=N.SICONOS_FRICTION_3D_NSN_AC,
+                                       iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
+                                       dparam_err=1,
+                                       maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+
+        nsn_acSTD_fblsa.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION] = N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD;
+        nsn_acSTD_fblsa.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_LINESEARCH] = N.SICONOS_FRICTION_3D_NSN_LINESEARCH_ARMIJO;
+        nsn_acSTD_fblsa.SolverOptions().iparam[12] = self._maxiterls;;
+        nsn_acSTD_fblsa.SolverOptions().iparam[13] = self._with_mumps;
+        nsn_acSTD_fblsa.SolverOptions().iparam[3] = 10000000
+
+
+
+
         nsn_acJeanMoreau = SiconosSolver(name="NSN-JeanMoreau",
                                           gnuplot_name="NSN-JM-GP",
                                           API=N.fc3d_nonsmooth_Newton_AlartCurnier,
@@ -70,6 +88,20 @@ class faf_solvers():
         nsn_acJeanMoreau_nls.SolverOptions().iparam[12] = 0;
         nsn_acJeanMoreau_nls.SolverOptions().iparam[13] = self._with_mumps;
         nsn_acJeanMoreau_nls.SolverOptions().iparam[3] = 10000000
+
+        nsn_acJeanMoreau_fblsa = SiconosSolver(name="NSN-JeanMoreau-FBLSA",
+                                              gnuplot_name="NSN-JM-A",
+                                              API=N.fc3d_nonsmooth_Newton_AlartCurnier,
+                                              TAG=N.SICONOS_FRICTION_3D_NSN_AC,
+                                              iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
+                                              dparam_err=1,
+                                              maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+
+        nsn_acJeanMoreau_fblsa.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION] = N.SICONOS_FRICTION_3D_NSN_FORMULATION_JEANMOREAU_STD;
+        nsn_acJeanMoreau_fblsa.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_LINESEARCH] = N.SICONOS_FRICTION_3D_NSN_LINESEARCH_ARMIJO;
+        nsn_acJeanMoreau_fblsa.SolverOptions().iparam[12] = self._maxiterls;
+        nsn_acJeanMoreau_fblsa.SolverOptions().iparam[13] = self._with_mumps;
+        nsn_acJeanMoreau_fblsa.SolverOptions().iparam[3] = 10000000
 
         nsn_acSTDGenerated = SiconosSolver(name="NSN-AlartCurnier-Generated",
                                             gnuplot_name="NSN-AC-Generated-GP",
@@ -325,6 +357,42 @@ class faf_solvers():
                                        dparam_err=1,
                                        maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
         hnsn_ac.SolverOptions().iparam[3] = 10000000
+
+        nsn_ac_wrapped = SiconosSolver(name="NSN-AlartCurnier-Wrapped",
+                                        API=N.fc3d_nonsmooth_Newton_AlartCurnier,
+                                        TAG=N.SICONOS_FRICTION_3D_NSN_AC,
+                                        iparam_iter=1,
+                                        dparam_err=1,
+                                        maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+
+        def fc3d_nsn_ac_r(problem, reactions, velocities, _SO):
+            SO = N.SolverOptions(N.SICONOS_FRICTION_3D_VI_FPP)
+            SO.iparam[3] = 1000
+            N.fc3d_VI_FixedPointProjection(problem, reactions, velocities, SO)
+            #    print '->',SO.dparam[3]
+            nsn_ac_wrapped.SolverOptions().dparam[3] = SO.dparam[3]
+            return nsn_ac_wrapped(problem, reactions, velocities)
+
+        # flop measure only on nsn_ac
+        nsn_acr = SiconosWrappedSolver(name="NSN-AlartCurnier-R",
+                                       gnuplot_name="NSN-AC-GP-WRAP-FPP",
+                                       API=fc3d_nsn_ac_r,
+                                       TAG=N.SICONOS_FRICTION_3D_NSN_AC,
+                                       iparam_iter=1,
+                                       dparam_err=1,
+                                       maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+
+
+
+        nsn_solvers =  [nsn_acSTD, nsn_acSTD_nls, nsn_acSTDGenerated, nsn_acSTDGenerated_nls,  nsn_acr, nsn_acSTD_fblsa,
+                        nsn_acJeanMoreau, nsn_acJeanMoreau_nls, nsn_acJeanMoreauGenerated, nsn_acJeanMoreauGenerated_lusol, nsn_acJeanMoreau_fblsa,
+                        nsn_acJeanMoreauGenerated_nls, nsn_acJeanMoreauGenerated_nls_lusol,
+                        nsn_fb_gp, nsn_fb_gp_lusol, nsn_fb_nls, nsn_fb_nls_lusol, nsn_fb_fblsa,
+                        nsn_nm_gp, nsn_nm_gp_lusol, nsn_nm_nls, nsn_nm_nls_lusol, nsn_nm_fblsa,
+                        nsn_acSTD_nls_hybrid]
+
+
+
 
         ###### NSGS Family
 
@@ -1020,28 +1088,6 @@ class faf_solvers():
                 prox_solver.SolverOptions().dparam[5]=mu # nu
                 prox_series.append(prox_solver)
 
-        nsn_ac_wrapped = SiconosSolver(name="NSN-AlartCurnier-Wrapped",
-                                        API=N.fc3d_nonsmooth_Newton_AlartCurnier,
-                                        TAG=N.SICONOS_FRICTION_3D_NSN_AC,
-                                        iparam_iter=1,
-                                        dparam_err=1,
-                                        maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
-
-        def fc3d_nsn_ac_r(problem, reactions, velocities, _SO):
-            SO = N.SolverOptions(N.SICONOS_FRICTION_3D_VI_FPP)
-            SO.iparam[3] = 1000
-            N.fc3d_VI_FixedPointProjection(problem, reactions, velocities, SO)
-            #    print '->',SO.dparam[3]
-            nsn_ac_wrapped.SolverOptions().dparam[3] = SO.dparam[3]
-            return nsn_ac_wrapped(problem, reactions, velocities)
-
-        # flop measure only on nsn_ac
-        nsn_acr = SiconosWrappedSolver(name="NSN-AlartCurnier-R",
-                                        API=fc3d_nsn_ac_r,
-                                        TAG=N.SICONOS_FRICTION_3D_NSN_AC,
-                                        iparam_iter=1,
-                                        dparam_err=1,
-                                        maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
 
         #
         quartic = SiconosSolver(name="NSGS-Quartic",
@@ -1119,11 +1165,7 @@ class faf_solvers():
         nsgs_solvers.remove(nsgs_pr)
         nsgs_solvers.remove(quartic)
 
-        nsn_solvers =  [nsn_acSTD, nsn_acSTD_nls, nsn_acSTDGenerated, nsn_acSTDGenerated_nls,  nsn_acr, nsn_acJeanMoreau, nsn_acJeanMoreau_nls, nsn_acJeanMoreauGenerated, nsn_acJeanMoreauGenerated_lusol,
-                        nsn_acJeanMoreauGenerated_nls, nsn_acJeanMoreauGenerated_nls_lusol,
-                        nsn_fb_gp, nsn_fb_gp_lusol, nsn_fb_nls, nsn_fb_nls_lusol,
-                        nsn_nm_gp, nsn_nm_gp_lusol, nsn_nm_nls, nsn_nm_nls_lusol,
-                        nsn_acSTD_nls_hybrid]
+
 
         all_solvers = list(nsgs_solvers)
         all_solvers.extend(nsn_solvers)
