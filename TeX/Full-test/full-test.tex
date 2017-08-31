@@ -120,7 +120,10 @@
 %% \makeRT % cas d'un rapport technique.
 %% a partir d'ici, chacun fait comme il le souhaite
 
-\def\measurename{flpops}
+
+
+\tableofcontents
+\def\measurename{time}
 
 \def\figwidth{0.8\textwidth}
 
@@ -530,6 +533,87 @@
 \caption{\testnamechar{  } \measurename { }COMP/large}
 \end{figure}
 
+\clearpage
+\def\testname{Chain}
+\def\testnamechar{Chain}
+\section{\testnamechar}
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.6\textwidth]{../figure/VI/UpdateRule/\measurename/profile-\testname.pdf}
+  \includegraphics[width=0.6\textwidth]{../figure/VI/UpdateRule/\measurename/profile-\testname_legend.pdf}
+\caption{\testnamechar{  } \measurename{  } VI/UpdateRule}
+\end{figure}
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.6\textwidth]{../figure/NSGS/LocalSolver/\measurename/profile-\testname.pdf}
+  \includegraphics[width=0.6\textwidth]{../figure/NSGS/LocalSolver/\measurename/profile-\testname_legend.pdf}
+\caption{\testnamechar{  } \measurename { }NSGS/LocalSolver}
+\end{figure}
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.6\textwidth]{../figure/NSGS/LocalTol/\measurename/profile-\testname.pdf}
+  \includegraphics[width=0.6\textwidth]{../figure/NSGS/LocalTol/\measurename/profile-\testname_legend.pdf}
+\caption{\testnamechar{  } \measurename { }NSGS/LocalTol}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.6\textwidth]{../figure/NSGS/Shuffled/\measurename/profile-\testname.pdf}
+  \includegraphics[width=0.6\textwidth]{../figure/NSGS/Shuffled/\measurename/profile-\testname_legend.pdf}
+\caption{\testnamechar{  } \measurename { }NSGS/Shuffled}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.6\textwidth]{../figure/PSOR/\measurename/profile-\testname.pdf}
+  \includegraphics[width=0.6\textwidth]{../figure/PSOR/\measurename/profile-\testname_legend.pdf}
+\caption{\testnamechar{  } \measurename { }PSOR}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.6\textwidth]{../figure/NSN/\measurename/profile-\testname.pdf}
+  \includegraphics[width=0.6\textwidth]{../figure/NSN/\measurename/profile-\testname_legend.pdf}
+\caption{\testnamechar{  } \measurename { }NSN}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.6\textwidth]{../figure/OPTI/\measurename/profile-\testname.pdf}
+  \includegraphics[width=0.6\textwidth]{../figure/OPTI/\measurename/profile-\testname_legend.pdf}
+\caption{\testnamechar{  } \measurename { }OPTI}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.6\textwidth]{../figure/PROX/InternalSolvers/\measurename/profile-\testname.pdf}
+  \includegraphics[width=0.6\textwidth]{../figure/PROX/InternalSolvers/\measurename/profile-\testname_legend.pdf}
+\caption{\testnamechar{  } \measurename { }PROX/InternalSolvers}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.6\textwidth]{../figure/PROX/Parameters/\measurename/profile-\testname.pdf}
+  \includegraphics[width=0.6\textwidth]{../figure/PROX/Parameters/\measurename/profile-\testname_legend.pdf}
+\caption{\testnamechar{  } \measurename { }PROX/Parameters}
+\end{figure}
+
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.6\textwidth]{../figure/COMP/large/\measurename/profile-\testname.pdf}
+  \includegraphics[width=0.6\textwidth]{../figure/COMP/large/\measurename/profile-\testname_legend.pdf}
+\caption{\testnamechar{  } \measurename { }COMP/large}
+\end{figure}
+
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.6\textwidth]{../figure/COMP/zoom/\measurename/profile-\testname.pdf}
+  \includegraphics[width=0.6\textwidth]{../figure/COMP/zoom/\measurename/profile-\testname_legend.pdf}
+\caption{\testnamechar{  } \measurename { }COMP/large}
+\end{figure}
+
 
 \if0
 \clearpage
@@ -701,3 +785,8 @@
 \endinput
 %%
 %% End of file `squelette-rr.tex'.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
