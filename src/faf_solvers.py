@@ -820,11 +820,14 @@ class faf_solvers():
                                maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
 
         DeSaxceFixedPoint = SiconosSolver(name="FixedPoint-DeSaxce",
+                                          gnuplot_name = "FP-DS",
                                           API=N.fc3d_DeSaxceFixedPoint,
                                           TAG=N.SICONOS_FRICTION_3D_DSFP,
                                           iparam_iter=7,
                                           dparam_err=1,
                                           maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+
+        # old school VI solvers implemented in FC3D
 
         ExtraGrad = SiconosSolver(name="ExtraGradient",
                                   API=N.fc3d_ExtraGradient,
@@ -841,15 +844,12 @@ class faf_solvers():
                                              maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
 
         VIExtraGrad = SiconosSolver(name="ExtraGradient-VI",
+                                    gnuplot_name = "EG-VI-UPK",
                                     API=N.fc3d_VI_ExtraGradient,
                                     TAG=N.SICONOS_FRICTION_3D_VI_EG,
                                     iparam_iter=7,
                                     dparam_err=1,
                                     maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
-        # VIExtraGrad.SolverOptions().dparam[4]=0.6
-        # VIExtraGrad.SolverOptions().dparam[5]=1/0.7
-        # VIExtraGrad.SolverOptions().dparam[6]=0.9
-        # VIExtraGrad.SolverOptions().dparam[7]=0.3
 
         iparam1_values = [0,1]
 
@@ -892,6 +892,7 @@ class faf_solvers():
 
 
         VIFixedPointProjection = SiconosSolver(name="FixedPoint-VI",
+                                               gnuplot_name = "FP-VI-UPK",
                                                API=N.fc3d_VI_FixedPointProjection,
                                                TAG=N.SICONOS_FRICTION_3D_VI_FPP,
                                                iparam_iter=7,
@@ -1184,8 +1185,8 @@ class faf_solvers():
         ###
         # specific studies of solvers.
 
-        #all_solvers.extend(VIFixedPointProjection_series)
-        #all_solvers.extend(VIExtraGrad_series)
+        all_solvers.extend(VIFixedPointProjection_series)
+        all_solvers.extend(VIExtraGrad_series)
         #all_solvers.extend(psor_series)
         #all_solvers.extend(prox_series)
         #all_solvers.extend(regul_series)
