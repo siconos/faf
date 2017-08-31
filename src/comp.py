@@ -100,6 +100,8 @@ def usage():
    --display-distrib='from-files' 
    --list-contents
      list contents of comp.hdf5 file
+   --list-contents-solvers
+     list solvers contents of comp.hdf5 file
    --compute-cond-rank
      compute the rank (vairous numerical methods) and condition number of W and store it in the problem file
    --compute-hardness
@@ -149,7 +151,7 @@ try:
                                     'replace-solvers-exact=','replace-solvers=',
                                     'gnuplot-profile','gnuplot-distrib', 'logscale', 'gnuplot-separate-keys',
                                     'output-dat', 'with-mumps', 'file-filter=', 'remove-files=',
-                                    'list-contents',
+                                    'list-contents','list-contents-solvers',
                                     'add-precision-in-comp-file','add-timeout-in-comp-file',
                                     'compute-cond-rank','compute-hardness','adhoc',
                                     'display-speedup', 'thread-list='])
@@ -181,6 +183,9 @@ for o, a in opts:
         compute = False
     elif o == '--list-contents':
         list_contents = True
+        compute = False
+    elif o == '--list-contents-solver':
+        list_contents_solver = True
         compute = False
     elif o == '--display-convergence':
         display_convergence = True
@@ -884,7 +889,7 @@ if __name__ == '__main__':
         if ask_collect:
             list(map(collect, tasks))
 
-    if list_contents:
+    if list_contents or list_contents_solver:
         with h5py.File('comp.hdf5', 'r') as comp_file:
 
             data = comp_file['data']
@@ -894,11 +899,12 @@ if __name__ == '__main__':
             print("Solvers :")
             for solvername in comp_data:
                 print("  ",solvername)
-                for filename in comp_data[solvername]:
-                    list_keys= list(comp_data[solvername][filename].attrs.keys())
-                    if u'digest' in list_keys:
-                        list_keys.remove(u'digest')
-                    print("  ",solvername,   [comp_data[solvername][filename].attrs[item] for item in list_keys])
+                if (list_contents_solver):
+                    for filename in comp_data[solvername]:
+                        list_keys= list(comp_data[solvername][filename].attrs.keys())
+                        if u'digest' in list_keys:
+                            list_keys.remove(u'digest')
+                        print("  ",solvername,   [comp_data[solvername][filename].attrs[item] for item in list_keys])
 
 
 

@@ -46,6 +46,7 @@ file_filter=None
 remove_file=None
 gnuplot_separate_keys = False
 list_contents=False
+list_contents_solver = False
 compute_hardness = False
 compute_cond_rank = False
 adhoc= False
