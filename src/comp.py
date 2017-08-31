@@ -1773,7 +1773,7 @@ if __name__ == '__main__':
 
 
 
-    display_bw=True
+    display_bw=False
     if display or display_convergence or display_distrib or display_speedup:
         if not no_matplot:
             if (display_bw):
