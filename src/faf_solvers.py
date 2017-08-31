@@ -1091,7 +1091,7 @@ class faf_solvers():
 
 
         #
-        quartic3x3 = SiconosSolver(name="NSGS-Quartic",
+        quartic = SiconosSolver(name="NSGS-Quartic",
                                        gnuplot_name="NSGS-EXACT",
                                     API=N.fc3d_nsgs,
                                     TAG=N.SICONOS_FRICTION_3D_NSGS,
