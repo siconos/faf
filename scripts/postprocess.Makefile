@@ -25,10 +25,10 @@ endif
 ifeq ($(test_name),Chain)
 	echo "10" | cat > domain.txt ;
 	echo "2" | cat >> domain.txt ;
-	echo "4" | cat >> domain.txt
+	echo "10" | cat >> domain.txt
 	echo "5" | cat >> domain.txt
 	echo "5" | cat >> domain.txt
-	echo "15" | cat >> domain.txt
+	echo "35" | cat >> domain.txt
 	echo "100" | cat >> domain.txt
 	echo "100" | cat >> domain.txt
 	echo "10" | cat >> domain.txt
@@ -181,7 +181,7 @@ nsgs_localtol:	domain_value
 nsgs_localsolver: save_dir=figure/NSGS/LocalSolver/${measure_name}
 nsgs_localsolver: domain_max=$(shell sed '3q;d' domain.txt)
 nsgs_localsolver: domain_value
-	comp.py --measure=${measure_name} --display --no-matplot --solvers-exact='NSGS-AC','NSGS-AC-GP','NSGS-JM','NSGS-JM-GP','NSGS-PLI','NSGS-PLI-10','NSGS-P' --domain=1.0:.01:${domain_max} --gnuplot-profile --gnuplot-separate-keys
+	comp.py --measure=${measure_name} --display --no-matplot --solvers-exact='NSGS-AC','NSGS-AC-GP','NSGS-JM','NSGS-JM-GP','NSGS-PLI','NSGS-PLI-10','NSGS-P','NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-1','NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-10','NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-100','NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-10-1','NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-100-1','NSGS-AC-GP-HYBRID-NSN-PLI-NSN-LOOP-100','NSGS-AC-GP-HYBRID-NSN-PLI-NSN-LOOP-100-1' --domain=1.0:.01:${domain_max} --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-${test_name}.tex;
 	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;
@@ -200,6 +200,9 @@ nsgs_shuffled: domain_value
 	mkdir -p ${save_dir}
 	mv  profile-${test_name}.pdf ${save_dir}
 	mv  profile-${test_name}_legend.pdf ${save_dir}
+
+
+
 #PSOR solvers
 psor_solvers: save_dir=figure/PSOR/${measure_name}
 psor_solvers: domain_max=$(shell sed '5q;d' domain.txt)
@@ -217,7 +220,7 @@ psor_solvers: domain_value
 nsn_solvers: save_dir=figure/NSN/${measure_name}
 nsn_solvers: domain_max=$(shell sed '6q;d' domain.txt)
 nsn_solvers: domain_value
-	comp.py --measure=${measure_name} --display --no-matplot --solvers-exact='NSN-AlartCurnier','NSN-AlartCurnier-NLS','NSN-AlartCurnier-Generated','NSN-AlartCurnier-Generated-NLS','NSN-AlartCurnier-R','NSN-AlartCurnier-FBLSA','NSN-JeanMoreau','NSN-JeanMoreau-NLS','NSN-JeanMoreau-Generated','NSN-JeanMoreau-Generated-NLS','NSN-JeanMoreau-FBLSA','NSN-FischerBurmeister-GP','NSN-FischerBurmeister-NLS','NSN-NaturalMap-GP','NSN-NaturalMap-NLS','NSN-AlartCurnier-NLS-HYBRID'  --domain=1.0:0.1:${domain_max}  --gnuplot-profile --gnuplot-separate-keys
+	comp.py --measure=${measure_name} --display --no-matplot --solvers-exact='NSN-AlartCurnier','NSN-AlartCurnier-NLS','NSN-AlartCurnier-Generated','NSN-AlartCurnier-Generated-NLS','NSN-AlartCurnier-R','NSN-AlartCurnier-FBLSA','NSN-JeanMoreau','NSN-JeanMoreau-NLS','NSN-JeanMoreau-Generated','NSN-JeanMoreau-Generated-NLS','NSN-JeanMoreau-FBLSA','NSN-FischerBurmeister-GP','NSN-FischerBurmeister-NLS','NSN-FischerBurmeister-FBLSA','NSN-NaturalMap-GP','NSN-NaturalMap-NLS','NSN-NaturalMap-FBLSA','NSN-AlartCurnier-NLS-HYBRID'  --domain=1.0:0.1:${domain_max}  --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-${test_name}.tex;
 	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;
