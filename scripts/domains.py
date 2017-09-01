@@ -86,14 +86,14 @@ data=dict()
 for t in tests:
     data[t]=dict()
     i=0
-    
     for tt in list_target:
         data[t][tt]=dict()
-        data[t][tt]['precision'] =0.1
         data[t][tt]['domain'] = default_values[i]
         i=i+1
         
 
+
+        
 #specific values
 test= 'Chain'
 data[test]['nsgs_localsolver']['domain']=10
@@ -114,7 +114,7 @@ data[test]['opti_solvers']['domain']=5
 data[test]['comp_solvers']['domain']=5
 
 test = 'LMGC_Cubes_H8'
-data[test]['vi']=5
+data[test]['vi']['domain']=5
 data[test]['nsgs_localtol']['domain']=3
 data[test]['nsgs_localsolver']['domain']=5
 data[test]['nsgs_shuffled']['domain']=10
@@ -133,7 +133,7 @@ data[test]['comp_solvers']['domain']=15
 
 
 test = 'LMGC_100_PR_PerioBox'
-data[test]['vi']=4
+data[test]['vi']['domain']=4
 data[test]['psor_solvers']['domain']=15
 data[test]['nsn_solvers']['domain']=20
 data[test]['prox_solvers']['domain']=20
@@ -156,7 +156,14 @@ data[test]['prox_series']['domain']=20
 data[test]['comp_solvers']['domain']=2
 data[test]['comp_solvers_large']['domain']=10
 
-
+for t in tests:
+    for tt in list_target:
+        
+        #print(t,tt)
+        #print(data[t][tt])
+        #print(data[t][tt]['domain'])
+        data[t][tt]['precision'] =(data[t][tt]['domain'])/100.0
+        #print(data[t][tt]['precision'])
 
 
 
@@ -172,4 +179,4 @@ for o, a in opts:
       if (o == '--domain'):
             print(data[test_name][target]['domain'])
       if (o == '--precision'):
-            print(data[test_name][target]['precision'])
+            print("{0:.3f}".format(data[test_name][target]['precision']))
