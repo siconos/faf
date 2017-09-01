@@ -248,7 +248,7 @@ language={English}
 
 + usage
 
-  comp.py   --display --time --domain='1:0.1:10'  comp.hdf5
+  comp.py   --display --domain='1:0.1:10'  comp.hdf5
 
 
 comp.py --display --measure=time --solvers=Gauss,Tresca,SOCLCP,ACLM --domain=1:0.1:100
@@ -591,6 +591,42 @@ v%     \end{array}\right]
      + improvement of Tresca approach ? :VA:
      + debug proximal point algorithm :VA:
      + evaluate the effect of filtering local solution in NSGS
+
+
+
+
+* New campaign of compatisons <2017-09-01 Fri>
+
+** Estimating the timeout parameters
+*** method
+   For estimating, the timeout parameters, we use  comp.py --compute-hardness --measure=time on a comparison very a "large"
+timeout.
+
+   For instance for Chain with timeout=100 , we get:
+
+----- ~/Work/faf/benchs/Luke/3538793_Chain_1e-8_100/Chain -----                                                      [09:57:00][0]
+[acary@ohana]$ comp.py --compute-hardness --measure=time
+warning : fc3d_nsgs_openmp is not in siconos numerics
+1 -- Creation of solver list
+2 -- Creation of problem list
+nc_avg 18.9539748954
+Average min resolution measure (avg fastest solver measure) = 1.08750295e-03
+Std min resolution measure (std fastest solver measure) = 8.61037569e-04
+Average min resolution measure by contact = 5.73759837e-05
+Average max resolution measure (avg slowest suceeded solver measure) = 1.10524911e+01
+Std max resolution measure (std fastest solver measure) = 2.25526808e+01
+Average max resolution measure by contact = 5.83122599e-01
+
+The average time of the slowest solver is aroud 11s fwith a std deviation of 22s. We may choose 50 s a timeout
+
+*** results
+    + Chain 50 s
+    + Capsules 100s
+    + LowWall_FEM 1000s
+    +   
+
+	
+** On Chain example, Armijo line-search seems to slowest the convergence but the robutness is increased. To be confirmed
 
 
 
