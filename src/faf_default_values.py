@@ -52,4 +52,6 @@ compute_cond_rank = False
 adhoc= False
 thread_list = []
 
+compute_rho=False
+estimate_optimal_timeout=False
 numerics_has_openmp_solvers=False

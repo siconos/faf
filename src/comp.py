@@ -154,7 +154,7 @@ try:
                                     'list-contents','list-contents-solver',
                                     'add-precision-in-comp-file','add-timeout-in-comp-file',
                                     'compute-cond-rank','compute-hardness','adhoc',
-                                    'display-speedup', 'thread-list='])
+                                    'display-speedup', 'thread-list=','estimate-optimal-timeout'])
 
 
 except getopt.GetoptError as err:
@@ -178,8 +178,13 @@ for o, a in opts:
         precision = float(a)
     elif o == '--clean':
         clean = True
+    elif o == '--estimate-optimal-timeout':
+        compute_rho=True
+        estimate_optimal_timeout=True
+        compute = False
     elif o == '--display':
         display = True
+        compute_rho=True
         compute = False
     elif o == '--list-contents':
         list_contents = True
@@ -911,10 +916,8 @@ if __name__ == '__main__':
                             list_keys.remove(u'digest')
                         print("  ",solvername,   [comp_data[solvername][filename].attrs[item] for item in list_keys])
 
-
-
-    if display:
-        print("3 -- Running display tasks for solvers :", [ s._name for s in solvers])
+    if compute_rho:
+        print("3 -- Compute rho for solvers :", [ s._name for s in solvers])
         filename=None
         with h5py.File('comp.hdf5', 'r') as comp_file:
 
@@ -1034,7 +1037,36 @@ if __name__ == '__main__':
                     for itau in range(0, len(domain)):
                         rhos[solver_name][itau] = float(len(np.where( solver_r[solver_name] <= domain[itau] )[0])) / float(n_problems)
 
+        if estimate_optimal_timeout:
+            print("4 -- Estimate optimal timeout ")
+            max_rhos=dict()
+            with h5py.File('comp.hdf5', 'r') as comp_file:
+                data = comp_file['data']
+                comp_data = data['comp']
+                for solver in solvers:
+                    #print(solver)
+                    solver_name=solver.name()
+                    #print(rhos[solver_name])
+                    #print(rhos[solver_name])
+                    if solver_name in comp_data :
+                        max_rhos[solver_name]= np.max(rhos[solver_name])
+                #print(max_rhos)
+                level_of_success=0.5
+                nb_succeeded_solver= len(np.argwhere(np.array([max_rhos[solver_name] for solver_name in max_rhos.keys() ]) > level_of_success))
+                #print(nb_succeeded_solver, "solvers has rho_max over", level_of_success)
+                print("{0:2.0f} % solvers suceeded to reach rho max equal {1} ".format(nb_succeeded_solver/len(solvers)*100,level_of_success))
+                level_of_success=0.9
+                nb_succeeded_solver= len(np.argwhere(np.array([max_rhos[solver_name] for solver_name in max_rhos.keys() ]) > level_of_success))
+                #print(nb_succeeded_solver, "solvers has rho_max over", level_of_success)
+                print("{0:2.0f} % solvers suceeded to reach rho max equal {1} ".format(nb_succeeded_solver/len(solvers)*100,level_of_success))
+                level_of_success=0.99
+                nb_succeeded_solver= len(np.argwhere(np.array([max_rhos[solver_name] for solver_name in max_rhos.keys() ]) > level_of_success))
+                #print(nb_succeeded_solver, "solvers has rho_max over", level_of_success)
+                print("{0:2.0f} % solvers suceeded to reach rho max equal {1} ".format(nb_succeeded_solver/len(solvers)*100,level_of_success))
+                pass
 
+        if display:
+            print("4 -- Running display tasks ")
             if (gnuplot_profile and (filename != None)) :
                 def write_report(r, filename):
                     with open(filename, "w") as input_file:
