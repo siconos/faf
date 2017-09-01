@@ -1304,6 +1304,11 @@ if __name__ == '__main__':
         nc = []
         nds = []
         cond_nc = []
+        max_measure = dict()
+
+        for fileproblem in problem_filenames:
+            max_measure[fileproblem] = - np.inf
+
         for problem_filename in problem_filenames:
 
             try:
@@ -1319,7 +1324,7 @@ if __name__ == '__main__':
             except:
                 pass
         # compute other quantities
-        print(nc)
+        #print(nc)
         nc_avg = sum(nc)/float(len(nc))
         print("nc_avg", nc_avg)
         with h5py.File('comp.hdf5', 'r') as comp_file:
@@ -1347,20 +1352,30 @@ if __name__ == '__main__':
                             if comp_data[solver_name][pfilename].attrs['info'] == 0:
                                 measure[solver_name][ip] =  comp_data[solver_name][pfilename].attrs[measure_name]
                                 min_measure[filename] = min(min_measure[filename], measure[solver_name][ip])
+                                max_measure[filename] = max(max_measure[filename], measure[solver_name][ip])
                             else:
                                 measure[solver_name][ip] = np.inf
                         except:
                             measure[solver_name][ip] = np.nan
                         ip += 1
 
-            print("min_measure", min_measure)
-            avg_min_measure=0.0
-            for k,v in min_measure.items():
-                avg_min_measure +=v
+            #print("min_measure", min_measure)
+            #print("max_measure", max_measure)
 
-            avg_min_measure = avg_min_measure/float(len(min_measure))
-            #print         "avg_min_measure",avg_min_measure
+            min_measure_array=np.array([min_measure[key] for key in min_measure.keys()])
+            avg_min_measure = min_measure_array.mean()
+            std_min_measure = min_measure_array.std()                
+            print(         "Average min resolution measure (avg fastest solver measure) = {0:12.8e}".format(avg_min_measure))
+            print(         "Std min resolution measure (std fastest solver measure) = {0:12.8e}".format(std_min_measure))
             print(         "Average min resolution measure by contact = {0:12.8e}".format(avg_min_measure/nc_avg))
+            
+
+            max_measure_array=np.array([max_measure[key] for key in max_measure.keys()])
+            avg_max_measure = max_measure_array.mean()
+            std_max_measure = max_measure_array.std()    
+            print(         "Average max resolution measure (avg slowest suceeded solver measure) = {0:12.8e}".format(avg_max_measure))
+            print(         "Std max resolution measure (std fastest solver measure) = {0:12.8e}".format(std_max_measure))
+            print(         "Average max resolution measure by contact = {0:12.8e}".format(avg_max_measure/nc_avg))
 
 
 
