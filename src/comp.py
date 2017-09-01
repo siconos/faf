@@ -714,7 +714,7 @@ def collect(tpl):
         with h5py.File('comp.hdf5', 'r') as comp_file:
             comp_precision=comp_file['data']['comp'].attrs.get('precision')
             comp_utimeout=comp_file['data']['comp'].attrs.get('timeout')
-            comp_measure_name=comp_file['data']['comp'].attrs.get('mesaure_name')
+            comp_measure_name=comp_file['data']['comp'].attrs.get('measure_name')
             #print "comp_precision",comp_precision
             if comp_precision == None :
                 raise RuntimeError ("Warning. precision information is missing in existing comp.hdf5 file (old version)\n      you must add it with --add-precision-in-comp-file=<val> ")
@@ -725,7 +725,7 @@ def collect(tpl):
             create_attrs_in_comp_file(comp_file,precision,utimeout,measure_name)
             comp_precision=comp_file['data']['comp'].attrs.get('precision')
             comp_utimeout=comp_file['data']['comp'].attrs.get('timeout')
-            comp_measure_name=comp_file['data']['comp'].attrs.get('mesaure_name')
+            comp_measure_name=comp_file['data']['comp'].attrs.get('measure_name')
 
     if os.path.exists(results_filename) and not os.stat(results_filename).st_size == 0:
         try:
@@ -920,6 +920,8 @@ if __name__ == '__main__':
 
             data = comp_file['data']
             comp_data = data['comp']
+            comp_precision=comp_file['data']['comp'].attrs.get('precision')
+            comp_utimeout=comp_file['data']['comp'].attrs.get('timeout')
             # 1 n_problems
             n_problems = 0
 
@@ -1092,6 +1094,10 @@ if __name__ == '__main__':
                     gp.write('else \\\n')
                     gp.write('set term aqua;\\\n')
                     gp.write('\n')
+                    gp.write('set title\'{0} - precision: {1} - timeout: {2} \';; \n'.format(test_name,comp_precision,comp_utimeout))
+
+
+                    
                     gp.write('set xrange [{0}:{1}]\n'.format(domain[0]-0.01, domain[len(domain)-1]))
                     gp.write('set yrange [-0.01:1.01]\n')
                     gp.write('set ylabel \'$\\rho(\\tau)$ \' \n')
@@ -1115,6 +1121,7 @@ if __name__ == '__main__':
                             gp.write('\n set output basename.extension_legend; \n')
                             gp.write('print "output = ", basename.extension_legend; \n \n')
                             gp.write('unset border; \n \n')
+                            gp.write('unset title; \n \n')
                             gp.write('unset tics; \n \n')
                             gp.write('unset xlabel; \n \n')
                             gp.write('unset ylabel; \n \n')
@@ -1135,6 +1142,7 @@ if __name__ == '__main__':
                             gp.write('\n set output basename.extension_legend; \n')
                             gp.write('print "output = ", basename.extension_legend; \n \n')
                             gp.write('unset border; \n \n')
+                            gp.write('unset title; \n \n')
                             gp.write('unset tics; \n \n')
                             gp.write('unset xlabel; \n \n')
                             gp.write('unset ylabel; \n \n')
