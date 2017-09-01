@@ -799,6 +799,7 @@ class faf_solvers():
             psor_series.append(psor_solver)
 
         TrescaFixedPoint = SiconosSolver(name="TrescaFixedPoint-NSGS-PLI",
+                                             gnuplot_name='TRESCA-NSGS-FP-VI',
                                          API=N.fc3d_TrescaFixedPoint,
                                          TAG=N.SICONOS_FRICTION_3D_TFP,
                                          iparam_iter=7,
@@ -806,6 +807,7 @@ class faf_solvers():
                                          maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
 
         ACLMFixedPoint = SiconosSolver(name="ACLMFixedPoint-SOCLCP-NSGS-PLI",
+                                           gnuplot_name='ACLM-NSGS-FP-VI',
                                        API=N.fc3d_ACLMFixedPoint,
                                        TAG=N.SICONOS_FRICTION_3D_ACLMFP,
                                        iparam_iter=7,
