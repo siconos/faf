@@ -5,8 +5,8 @@
 faf_dir=$(HOME)/Work/faf
 
 
-#all: vi nsgs_localtol nsgs_localsolver nsgs_shuffled psor_solvers nsn_solvers prox_solvers prox_series regul_series opti_solvers comp_solvers comp_solvers_large
-all:  nsgs_localsolver nsgs_shuffled psor_solvers nsn_solvers prox_solvers opti_solvers comp_solvers comp_solvers_large
+all: vi nsgs_localtol nsgs_localsolver nsgs_shuffled psor_solvers nsn_solvers prox_solvers prox_series regul_series opti_solvers comp_solvers comp_solvers_large
+#all:  nsgs_localsolver nsgs_shuffled psor_solvers nsn_solvers prox_solvers opti_solvers comp_solvers comp_solvers_large
 
 domain_value :
 ifeq ($(test_name),Capsules)
@@ -233,7 +233,7 @@ nsn_solvers: domain_value
 prox_solvers: save_dir=figure/PROX/InternalSolvers/${measure_name}
 prox_solvers: domain_max=$(shell sed '7q;d' domain.txt)
 prox_solvers: domain_value
-	comp.py --measure=${measure_name} --display --no-matplot --solvers-exact='NSN-AlartCurnier','NSN-AlartCurnier-NLS','NSN-AlartCurnier-Generated','NSN-AlartCurnier-Generated-NLS','PROX-NSN-AC','PROX-NSN-AC-NLS','PROX-NSN-FB-GP','PROX-NSN-FB-NLS','PROX-NSGS-NSN-AC','PROX-NSN-FB-FBLSA','NSGS-AC'   --domain=1.0:0.1:${domain_max}  --gnuplot-profile --gnuplot-separate-keys
+	comp.py --measure=${measure_name} --display --no-matplot --solvers-exact='NSN-AlartCurnier','PROX-NSN-AC','PROX-NSN-AC-NLS','PROX-NSN-FB-GP','PROX-NSN-FB-NLS','PROX-NSGS-NSN-AC','PROX-NSN-FB-FBLSA','NSGS-AC'   --domain=1.0:0.1:${domain_max}  --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-${test_name}.tex;
 	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;
