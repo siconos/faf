@@ -365,7 +365,7 @@ class faf_solvers():
                                         dparam_err=1,
                                         maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
 
-        def fc3d_nsn_ac_r(problem, reactions, velocities, _SO):
+        def fc3d_nsn_ac_fpp(problem, reactions, velocities, _SO):
             SO = N.SolverOptions(N.SICONOS_FRICTION_3D_VI_FPP)
             SO.iparam[3] = 1000
             N.fc3d_VI_FixedPointProjection(problem, reactions, velocities, SO)
@@ -374,17 +374,33 @@ class faf_solvers():
             return nsn_ac_wrapped(problem, reactions, velocities)
 
         # flop measure only on nsn_ac
-        nsn_acr = SiconosWrappedSolver(name="NSN-AlartCurnier-R",
+        nsn_ac_fpp = SiconosWrappedSolver(name="NSN-AlartCurnier-WRAP-FPP",
                                        gnuplot_name="NSN-AC-GP-WRAP-FPP",
-                                       API=fc3d_nsn_ac_r,
+                                       API=fc3d_nsn_ac_fpp,
+                                       TAG=N.SICONOS_FRICTION_3D_NSN_AC,
+                                       iparam_iter=1,
+                                       dparam_err=1,
+                                       maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+
+        def fc3d_nsn_ac_eg(problem, reactions, velocities, _SO):
+            SO = N.SolverOptions(N.SICONOS_FRICTION_3D_VI_EG)
+            SO.iparam[3] = 1000
+            N.fc3d_VI_FixedPointProjection(problem, reactions, velocities, SO)
+            #    print '->',SO.dparam[3]
+            nsn_ac_wrapped.SolverOptions().dparam[3] = SO.dparam[3]
+            return nsn_ac_wrapped(problem, reactions, velocities)
+
+        # flop measure only on nsn_ac
+        nsn_ac_eg = SiconosWrappedSolver(name="NSN-AlartCurnier-WRAP-EG",
+                                       gnuplot_name="NSN-AC-GP-WRAP-EG",
+                                       API=fc3d_nsn_ac_eg,
                                        TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                        iparam_iter=1,
                                        dparam_err=1,
                                        maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
 
 
-
-        nsn_solvers =  [nsn_acSTD, nsn_acSTD_nls, nsn_acSTDGenerated, nsn_acSTDGenerated_nls,  nsn_acr, nsn_acSTD_fblsa,
+        nsn_solvers =  [nsn_acSTD, nsn_acSTD_nls, nsn_acSTDGenerated, nsn_acSTDGenerated_nls,  nsn_ac_fpp, nsn_ac_eg, nsn_acSTD_fblsa,
                         nsn_acJeanMoreau, nsn_acJeanMoreau_nls, nsn_acJeanMoreauGenerated, nsn_acJeanMoreauGenerated_lusol, nsn_acJeanMoreau_fblsa,
                         nsn_acJeanMoreauGenerated_nls, nsn_acJeanMoreauGenerated_nls_lusol,
                         nsn_fb_gp, nsn_fb_gp_lusol, nsn_fb_nls, nsn_fb_nls_lusol, nsn_fb_fblsa,

@@ -390,6 +390,7 @@ class Caller():
                 pass
 
         try:
+
             self._internal_call(solver, sproblem, filename, pfilename,
                                     output_filename)
             
@@ -405,8 +406,8 @@ class Caller():
             with h5py.File(output_filename, 'w') as output:
 
                 digest = hashlib.sha256(open(filename, 'rb').read()).digest()
-
-                create_attrs_in_comp_file(output,precision,utimeout,measure_name)
+               
+                create_attrs_in_comp_file(output,precision,utimeout,os.uname()[1],measure_name)
 
                 comp_data=output['data']['comp']
                 solver_data = comp_data.create_group(solver.name())
@@ -436,29 +437,21 @@ class Caller():
                 attrs.create('mflops', mflops)
                 attrs.create('precision', precision)
                 attrs.create('timeout', utimeout)
-
-                list_print = [filename, numberOfDegreeofFreedomContacts(filename), numberOfDegreeofFreedom(filename), cond_problem(filename), solver.name(), info, iter, err,
-                              time_s, real_time, proc_time,
-                              flpops, mflops,
-                              precision, utimeout]
-
                 if numerics_has_openmp_solvers :
                     try:
                         attrs.create('n_threads', solver.SolverOptions().iparam[10] )
-                        list_print.append(solver.SolverOptions().iparam[10])
                     except :
                         attrs.create('n_threads',-1)
-                        list_print.append(-1)
 
+                list_keys= list(attrs.keys())
+                if u'digest' in list_keys:
+                    list_keys.remove(u'digest')                
+                list_print=[solver.name()]
+                list_print.extend([attrs[item] for item in list_keys])
                 print(list_print)
-
+            
                 with open('report.txt', "a") as report_file:
-                    print   ( (filename, solver.name(), info, iter, err,
-                                   time_s, real_time, proc_time,
-                                   flpops, mflops,
-                                   precision, utimeout), file=report_file)
-
-
+                    print   (list_print, file=report_file)
 
 
     @timeout(utimeout)
@@ -469,8 +462,7 @@ class Caller():
 
         with h5py.File(output_filename, 'w') as output:
 
-            create_attrs_in_comp_file(output,precision,utimeout,measure_name)
-
+            create_attrs_in_comp_file(output,precision,utimeout,os.uname()[1],measure_name)
             comp_data=output['data']['comp']
 
             solver_data = comp_data.create_group(solver.name())
@@ -644,19 +636,19 @@ class Caller():
             attrs.create('mflops', mflops)
             attrs.create('precision', precision)
             attrs.create('timeout', utimeout)
-            # filename, solver name, revision svn, parameters, nb iter, err
 
-            list_print = [filename, numberOfDegreeofFreedomContacts(filename), numberOfDegreeofFreedom(filename), cond_problem(filename), solver.name(), info, iter, err,
-                          time_s, real_time, proc_time,
-                          flpops, mflops,
-                          precision, utimeout]
-
+            
             if numerics_has_openmp_solvers :
                 attrs.create('n_threads', solver.SolverOptions().iparam[10] )
-                list_print.append(solver.SolverOptions().iparam[10])
 
+
+            list_keys= list(attrs.keys())
+            if u'digest' in list_keys:
+                list_keys.remove(u'digest')                
+            list_print=[solver.name()]
+            list_print.extend([attrs[item] for item in list_keys])
             print(list_print)
-
+            
             # if info == 1:
                     #     measure_v = np.inf
                     # else:
@@ -675,10 +667,7 @@ class Caller():
 
                     # comp_file.flush()
             with open('report.txt', "a") as report_file:
-                print   ( (filename, solver.name(), info, iter, err,
-                               time_s, real_time, proc_time,
-                               flpops, mflops,
-                               precision, utimeout), file=report_file)
+                print   (list_print, file=report_file)
 
 
 
@@ -701,12 +690,33 @@ def create_attrs_timeout_in_comp_file(comp_file,utimeout_val):
     if comp_data == None:
         comp_data = data.create_group('comp')
     comp_data.attrs.create('timeout',utimeout_val)
+    
+def create_attrs_hostname_in_comp_file(comp_file,hostname_val):
+    data = comp_file.get('data')
+    if data == None :
+        data = comp_file.create_group('data')
+    comp_data = data.get('comp')
+    if comp_data == None:
+        comp_data = data.create_group('comp')
+    comp_data.attrs.create('hostname',np.string_(hostname_val))
+
+def create_attrs_measure_name_in_comp_file(comp_file,measure_name_val):
+    data = comp_file.get('data')
+    if data == None :
+        data = comp_file.create_group('data')
+    comp_data = data.get('comp')
+    if comp_data == None:
+        comp_data = data.create_group('comp')
+    comp_data.attrs.create('measure_name',np.string_(measure_name_val))
 
 
 
-def create_attrs_in_comp_file(comp_file,precision_val,utimeout_val,measure_name_val):
+
+def create_attrs_in_comp_file(comp_file,precision_val,utimeout_val,hostname_val,measure_name_val):
     create_attrs_precision_in_comp_file(comp_file,precision_val)
     create_attrs_timeout_in_comp_file(comp_file,utimeout_val)
+    create_attrs_hostname_in_comp_file(comp_file,hostname_val)
+    create_attrs_measure_name_in_comp_file(comp_file,measure_name_val)
 
 def collect(tpl):
 
@@ -720,17 +730,27 @@ def collect(tpl):
             comp_precision=comp_file['data']['comp'].attrs.get('precision')
             comp_utimeout=comp_file['data']['comp'].attrs.get('timeout')
             comp_measure_name=comp_file['data']['comp'].attrs.get('measure_name')
+            comp_hostname=comp_file['data']['comp'].attrs.get('hostname')
             #print "comp_precision",comp_precision
             if comp_precision == None :
                 raise RuntimeError ("Warning. precision information is missing in existing comp.hdf5 file (old version)\n      you must add it with --add-precision-in-comp-file=<val> ")
             if comp_utimeout == None :
                 raise RuntimeError ("Warning. timeout information is missing in existing comp.hdf5 file (old version)\n      you must add it with --add-timeout-in-comp-file=<val> ")
+            if comp_hostname == None :
+                raise RuntimeError ("Warning. hostname information is missing in existing comp.hdf5 file (old version)\n      you must add it with --add-hostname-in-comp-file=<val> ")
     else:
         with h5py.File('comp.hdf5', 'w') as comp_file:
-            create_attrs_in_comp_file(comp_file,precision,utimeout,measure_name)
+            # if  comp.hdf5 is not existing, we set the attributes precision, timeout, hostanme, measurename to the first file collected.
+            with h5py.File( results_filename, 'r+') as result_file:
+                    result_precision=result_file['data']['comp'].attrs.get('precision')
+                    result_utimeout=result_file['data']['comp'].attrs.get('timeout')
+                    result_hostname=result_file['data']['comp'].attrs.get('hostname')
+                    result_measure_name=result_file['data']['comp'].attrs.get('measure_name')
+            create_attrs_in_comp_file(comp_file,result_precision,result_utimeout,result_hostname,result_measure_name)
             comp_precision=comp_file['data']['comp'].attrs.get('precision')
             comp_utimeout=comp_file['data']['comp'].attrs.get('timeout')
             comp_measure_name=comp_file['data']['comp'].attrs.get('measure_name')
+            comp_hostname=comp_file['data']['comp'].attrs.get('hostname')
 
     if os.path.exists(results_filename) and not os.stat(results_filename).st_size == 0:
         try:
@@ -738,11 +758,16 @@ def collect(tpl):
                 with h5py.File( results_filename, 'r+') as result_file:
                     result_precision=result_file['data']['comp'].attrs.get('precision')
                     result_utimeout=result_file['data']['comp'].attrs.get('timeout')
+                    result_hostname=result_file['data']['comp'].attrs.get('hostname')
                     result_measure_name=result_file['data']['comp'].attrs.get('measure_name')
                     if comp_precision != result_precision:
                         raise RuntimeError ("Precision of the result in comp.hdf5 ({0}) are not consistent result with the new computed result ({1}) \nWe dot not collect it\nCreate a new comp.hdf5 file".format(comp_precision,result_precision))
                     if comp_utimeout != result_utimeout:
                         raise RuntimeError ("Timeout of the result in comp.hdf5 ({0}) are not consistent result with the new computed result ({1}) \nWe dot not collect it\nCreate a new comp.hdf5 file".format(comp_utimeout,result_utimeout))
+                    if comp_hostname != result_hostname:
+                        raise RuntimeError ("hostname of the result in comp.hdf5 ({0}) are not consistent result with the new computed result ({1}) \nWe dot not collect it\nCreate a new comp.hdf5 file".format(comp_hostname,result_hostname))
+                    if comp_measure_name != result_measure_name:
+                        raise RuntimeError ("Measure of the result in comp.hdf5 ({0}) are not consistent result with the new computed result ({1}) \nWe dot not collect it\nCreate a new comp.hdf5 file".format(comp_measure_name,result_measure_name))
 
             check_call(['h5copy','-p','-i', results_filename,
                         '-ocomp.hdf5','-s/data/comp/{0}/{1}'.format(solver.name(),pfilename),
@@ -878,8 +903,6 @@ caller = Caller()
 #pool = MyPool(processes=8)
 
 
-
-
 if __name__ == '__main__':
 
     if compute:
@@ -889,12 +912,15 @@ if __name__ == '__main__':
                 tasks = list(filter(Results(comp_file), all_tasks))
         else:
             tasks = all_tasks
-
+            
+            
         print("3 -- Running computation and/or collecting tasks")
-        print("     number of remaining tasks:", len(all_tasks))
+        print("     number of remaining tasks:", len(tasks))
         print("     for solvers :", [ s._name for s in solvers])
         print("     on files ",problem_filenames)
-            
+        #print(tasks)
+
+
         if ask_compute:
             print(" with precision=", precision, " timeout=", utimeout, "and maxiter = ", maxiter)
             outputs = list(map(caller, tasks))
@@ -1039,36 +1065,41 @@ if __name__ == '__main__':
                     for itau in range(0, len(domain)):
                         rhos[solver_name][itau] = float(len(np.where( solver_r[solver_name] <= domain[itau] )[0])) / float(n_problems)
 
-        if estimate_optimal_timeout:
-            print("4 -- Estimate optimal timeout ")
-            max_rhos=dict()
-            with h5py.File('comp.hdf5', 'r') as comp_file:
-                data = comp_file['data']
-                comp_data = data['comp']
-                for solver in solvers:
-                    #print(solver)
-                    solver_name=solver.name()
-                    #print(rhos[solver_name])
-                    #print(rhos[solver_name])
-                    if solver_name in comp_data :
-                        max_rhos[solver_name]= np.max(rhos[solver_name])
-                #print(max_rhos)
-                level_of_success=0.5
-                nb_succeeded_solver= len(np.argwhere(np.array([max_rhos[solver_name] for solver_name in max_rhos.keys() ]) > level_of_success))
-                #print(nb_succeeded_solver, "solvers has rho_max over", level_of_success)
-                print("{0:2.0f} % solvers suceeded to reach rho max equal {1} ".format(nb_succeeded_solver/len(solvers)*100,level_of_success))
-                level_of_success=0.9
-                nb_succeeded_solver= len(np.argwhere(np.array([max_rhos[solver_name] for solver_name in max_rhos.keys() ]) > level_of_success))
-                #print(nb_succeeded_solver, "solvers has rho_max over", level_of_success)
-                print("{0:2.0f} % solvers suceeded to reach rho max equal {1} ".format(nb_succeeded_solver/len(solvers)*100,level_of_success))
-                level_of_success=0.99
-                nb_succeeded_solver= len(np.argwhere(np.array([max_rhos[solver_name] for solver_name in max_rhos.keys() ]) > level_of_success))
-                #print(nb_succeeded_solver, "solvers has rho_max over", level_of_success)
-                print("{0:2.0f} % solvers suceeded to reach rho max equal {1} ".format(nb_succeeded_solver/len(solvers)*100,level_of_success))
-                pass
+    if estimate_optimal_timeout:
+        print("4 -- Estimate optimal timeout ")
+        max_rhos=dict()
+        with h5py.File('comp.hdf5', 'r') as comp_file:
+            data = comp_file['data']
+            comp_data = data['comp']
+            for solver in solvers:
+                #print(solver)
+                solver_name=solver.name()
+                #print(rhos[solver_name])
+                #print(rhos[solver_name])
+                if solver_name in comp_data :
+                    max_rhos[solver_name]= np.max(rhos[solver_name])
+            #print(max_rhos)
+            level_of_success=0.5
+            nb_succeeded_solver= len(np.argwhere(np.array([max_rhos[solver_name] for solver_name in max_rhos.keys() ]) > level_of_success))
+            #print(nb_succeeded_solver, "solvers has rho_max over", level_of_success)
+            print("{0:2.0f} % solvers suceeded to reach rho max equal {1} ".format(nb_succeeded_solver/len(solvers)*100,level_of_success))
+            level_of_success=0.9
+            nb_succeeded_solver= len(np.argwhere(np.array([max_rhos[solver_name] for solver_name in max_rhos.keys() ]) > level_of_success))
+            #print(nb_succeeded_solver, "solvers has rho_max over", level_of_success)
+            print("{0:2.0f} % solvers suceeded to reach rho max equal {1} ".format(nb_succeeded_solver/len(solvers)*100,level_of_success))
+            level_of_success=0.99
+            nb_succeeded_solver= len(np.argwhere(np.array([max_rhos[solver_name] for solver_name in max_rhos.keys() ]) > level_of_success))
+            #print(nb_succeeded_solver, "solvers has rho_max over", level_of_success)
+            print("{0:2.0f} % solvers suceeded to reach rho max equal {1} ".format(nb_succeeded_solver/len(solvers)*100,level_of_success))
+            pass
 
-        if display:
-            print("4 -- Running display tasks ")
+    if display:
+        print("4 -- Running display tasks ")
+        with h5py.File('comp.hdf5', 'r') as comp_file:
+            data = comp_file['data']
+            comp_data = data['comp']
+
+        
             if (gnuplot_profile and (filename != None)) :
                 def write_report(r, filename):
                     with open(filename, "w") as input_file:
@@ -1107,7 +1138,8 @@ if __name__ == '__main__':
                     #print("long_substr(filenames)=", long_substr(filenames))
                     test_name = long_substr(filenames).partition('-')[0]
                     print("test_name=",test_name)
-
+                    test_name_gnuplot = test_name.replace('_',' ')
+                    print("test_name_gnuplot=",test_name_gnuplot)
                     if test_name.endswith('_'):
                         test_name  = test_name[:-1]
                     gp.write('basename="profile-{0}"\n'.format(test_name))
@@ -1128,7 +1160,8 @@ if __name__ == '__main__':
                     gp.write('else \\\n')
                     gp.write('set term aqua;\\\n')
                     gp.write('\n')
-                    gp.write('set title\'{0} - precision: {1} - timeout: {2} \';; \n'.format(test_name,comp_precision,comp_utimeout))
+                    
+                    gp.write('set title\'{0} - precision: {1} - timeout: {2} \';; \n'.format(test_name_gnuplot,comp_precision,comp_utimeout))
 
 
                     
