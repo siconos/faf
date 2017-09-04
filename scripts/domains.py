@@ -75,7 +75,7 @@ with h5py.File('comp.hdf5','r+') as comp_file:
 #     print(test_name, file=report_file)
 
 #print([x for x in next(os.walk('/Users/acary/Work/fclib-library/'))[1]])
-tests= ['LMGC_100_PR_PerioBox', 'LMGC_945_SP_Box_PL', 'LMGC_Aqueduct_PR', 'BoxesStack', 'LMGC_Bridge_PR', 'Capsules', 'Chain', 'Chute_1000', 'Chute_4000', 'Chute_local_problems', 'LMGC_Cubes_H8', 'Global', 'KaplasTower', 'LMGC_LowWall_FEM']
+tests= ['LMGC_100_PR_PerioBox', 'LMGC_945_SP_Box_PL', 'LMGC_AqueducPR', 'BoxesStack', 'LMGC_Bridge_PR', 'Capsules', 'Chain', 'Chute_1000', 'Chute_4000', 'Chute_local_problems', 'LMGC_Cubes_H8', 'Global', 'KaplasTower', 'LMGC_LowWall_FEM']
 targets= 'vi nsgs_localtol nsgs_localsolver nsgs_shuffled psor_solvers nsn_solvers prox_solvers prox_series regul_series opti_solvers comp_solvers comp_solvers_large'
 list_target=targets.split(' ')
 
@@ -100,7 +100,7 @@ data[test]['nsgs_localsolver']['domain']=10
 data[test]['nsn_solvers']['domain']=35
 
 
-test= 'LMGC_Aqueduct_PR'
+test= 'LMGC_AqueducPR'
 data[test]['nsgs_localtol']['domain']=4
 data[test]['opti_solvers']['domain']=5
 data[test]['comp_solvers']['domain']=5
