@@ -890,8 +890,10 @@ if __name__ == '__main__':
         else:
             tasks = all_tasks
 
-        print("3 -- Running computation and/or collecting tasks for solvers :", [ s._name for s in solvers])
-        print(" on files ",problem_filenames)
+        print("3 -- Running computation and/or collecting tasks")
+        print("     number of remaining tasks:", len(all_tasks))
+        print("     for solvers :", [ s._name for s in solvers])
+        print("     on files ",problem_filenames)
             
         if ask_compute:
             print(" with precision=", precision, " timeout=", utimeout, "and maxiter = ", maxiter)
