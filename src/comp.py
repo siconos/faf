@@ -458,7 +458,7 @@ class Caller():
     def _internal_call(self, solver, problem, filename, pfilename, output_filename):
 
 
-        print("_internal_call")
+        #print("_internal_call")
 
         with h5py.File(output_filename, 'w') as output:
 
