@@ -2,7 +2,7 @@
 
 export LC_ALL=C
 # specific variables to the test bench set
-example=TolvaChute_1000
+example=Chute_1000
 precision=1e-4
 timeout=200
 solvers=' ' 
@@ -16,7 +16,7 @@ with_mumps=''
 preload=''
 
 #OAR --project siconos
-#OAR --name TolvaChute_1000
+#OAR --name Chute_1000
 ###OAR -p cpumarch != 'haswell'
 #OAR -l /nodes=1,walltime=48:00:00
 
