@@ -94,7 +94,7 @@ nsn_solvers : 	domain_max=$(shell $(domain) --target=nsn_solvers --domain)
 nsn_solvers : 	precision=$(shell $(domain) --target=nsn_solvers --precision)
 nsn_solvers : 	test_name=$(shell $(domain) --test_name)
 nsn_solvers :
-	$(comp) --measure=${measure_name} --display --no-matplot --solvers-exact='NSN-AlartCurnier','NSN-AlartCurnier-NLS','NSN-AlartCurnier-Generated','NSN-AlartCurnier-Generated-NLS','NSN-AlartCurnier-R','NSN-AlartCurnier-FBLSA','NSN-JeanMoreau','NSN-JeanMoreau-NLS','NSN-JeanMoreau-Generated','NSN-JeanMoreau-Generated-NLS','NSN-JeanMoreau-FBLSA','NSN-FischerBurmeister-GP','NSN-FischerBurmeister-NLS','NSN-FischerBurmeister-FBLSA','NSN-NaturalMap-GP','NSN-NaturalMap-NLS','NSN-NaturalMap-FBLSA','NSN-AlartCurnier-NLS-HYBRID'  --domain=1.0:$(precision):${domain_max}  --gnuplot-profile --gnuplot-separate-keys
+	$(comp) --measure=${measure_name} --display --no-matplot --solvers-exact='NSN-AlartCurnier','NSN-AlartCurnier-NLS','NSN-AlartCurnier-Generated','NSN-AlartCurnier-Generated-NLS','NSN-AlartCurnier-WRAP-FPP','NSN-AlartCurnier-WRAP-EG','NSN-AlartCurnier-FBLSA','NSN-JeanMoreau','NSN-JeanMoreau-NLS','NSN-JeanMoreau-Generated','NSN-JeanMoreau-Generated-NLS','NSN-JeanMoreau-FBLSA','NSN-FischerBurmeister-GP','NSN-FischerBurmeister-NLS','NSN-FischerBurmeister-FBLSA','NSN-NaturalMap-GP','NSN-NaturalMap-NLS','NSN-NaturalMap-FBLSA','NSN-AlartCurnier-NLS-HYBRID'  --domain=1.0:$(precision):${domain_max}  --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-${test_name}.tex;
 	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;
