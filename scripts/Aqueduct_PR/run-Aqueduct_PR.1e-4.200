@@ -2,7 +2,7 @@
 
 export LC_ALL=C
 # specific variables to the test bench set
-example=KaplasTower
+example=Aqueduct_PR
 precision=1e-4
 timeout=200
 solvers=' ' 
@@ -16,8 +16,8 @@ with_mumps=''
 preload=''
 
 #OAR --project siconos
-#OAR --name KaplasTower
-####OAR -p cpumarch != 'haswell'
+#OAR --name Aqueduct_PR
+###OAR -p cpumarch != 'haswell'
 #OAR -l /nodes=1,walltime=48:00:00
 
 faf_dir=$HOME/faf
