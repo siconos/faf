@@ -49,7 +49,7 @@ nsgs_localsolver : 	domain_max=$(shell $(domain) --target=nsgs_localsolver --dom
 nsgs_localsolver : 	precision=$(shell $(domain) --target=nsgs_localsolver --precision)
 nsgs_localsolver : 	test_name=$(shell $(domain) --test_name)
 nsgs_localsolver :
-	$(comp) --measure=${measure_name} --display --no-matplot --solvers-exact='NSGS-AC','NSGS-AC-GP','NSGS-JM','NSGS-JM-GP','NSGS-PLI','NSGS-PLI-10','NSGS-P','NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-1','NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-10','NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-100','NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-10-1','NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-100-1','NSGS-AC-GP-HYBRID-NSN-PLI-NSN-LOOP-100','NSGS-AC-GP-HYBRID-NSN-PLI-NSN-LOOP-100-1' --domain=1.0:$(precision):${domain_max} --gnuplot-profile --gnuplot-separate-keys
+	$(comp) --measure=${measure_name} --display --no-matplot --solvers-exact='NSGS-AC','NSGS-AC-GP','NSGS-JM','NSGS-JM-GP','NSGS-PLI-100','NSGS-PLI-10','NSGS-P','NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-10-1','NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-10-10','NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-100-1','NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-100-10','NSGS-AC-GP-HYBRID-NSN-PLI-NSN-LOOP-10-1','NSGS-AC-GP-HYBRID-NSN-PLI-NSN-LOOP-10-10','NSGS-AC-GP-HYBRID-NSN-PLI-NSN-LOOP-100-1','NSGS-AC-GP-HYBRID-NSN-PLI-NSN-LOOP-100-10','NSGS-Quartic' --domain=1.0:$(precision):${domain_max} --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-${test_name}.tex;
 	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;

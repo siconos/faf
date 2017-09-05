@@ -63,6 +63,8 @@ with h5py.File('comp.hdf5','r+') as comp_file:
         #print(filenames)
         test_names.append(long_substr(filenames).partition('-')[0])
     test_name=long_substr(test_names)
+    if test_name.endswith('_'):
+        test_name  = test_name[:-1]
 
 
 # print("domain : test_name", test_name)
@@ -138,6 +140,7 @@ data[test]['psor_solvers']['domain']=15
 data[test]['nsn_solvers']['domain']=20
 data[test]['prox_solvers']['domain']=20
 data[test]['prox_series']['domain']=20
+data[test]['nsgs_localsolver']['domain']=10
 
 
 
