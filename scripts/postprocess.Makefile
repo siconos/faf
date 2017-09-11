@@ -7,7 +7,7 @@ faf_dir=$(HOME)/Work/faf
 domain=python ~/Work/faf/scripts/domains.py
 comp=python ~/Work/faf/src/comp.py
 
-all: vi nsgs_localtol nsgs_localsolver nsgs_shuffled psor_solvers nsn_solvers prox_solvers prox_series regul_series opti_solvers comp_solvers comp_solvers_large
+all: vi nsgs_localtol nsgs_localsolver nsgs_localsolver_hybrid nsgs_shuffled psor_solvers nsn_solvers prox_solvers prox_series regul_series opti_solvers comp_solvers comp_solvers_large
 #all:  nsgs_localsolver nsgs_shuffled psor_solvers nsn_solvers prox_solvers opti_solvers comp_solvers comp_solvers_large
 
 
@@ -49,7 +49,7 @@ nsgs_localsolver : 	domain_max=$(shell $(domain) --target=nsgs_localsolver --dom
 nsgs_localsolver : 	precision=$(shell $(domain) --target=nsgs_localsolver --precision)
 nsgs_localsolver : 	test_name=$(shell $(domain) --test_name)
 nsgs_localsolver :
-	$(comp) --measure=${measure_name} --display --no-matplot --solvers-exact='NSGS-AC','NSGS-AC-GP','NSGS-JM','NSGS-JM-GP','NSGS-PLI-100','NSGS-PLI-10','NSGS-P','NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-10-1','NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-10-10','NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-100-1','NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-100-10','NSGS-AC-GP-HYBRID-NSN-PLI-NSN-LOOP-10-1','NSGS-AC-GP-HYBRID-NSN-PLI-NSN-LOOP-10-10','NSGS-AC-GP-HYBRID-NSN-PLI-NSN-LOOP-100-1','NSGS-AC-GP-HYBRID-NSN-PLI-NSN-LOOP-100-10','NSGS-Quartic' --domain=1.0:$(precision):${domain_max} --gnuplot-profile --gnuplot-separate-keys
+	$(comp) --measure=${measure_name} --display --no-matplot --solvers-exact='NSGS-AC','NSGS-AC-GP','NSGS-JM','NSGS-JM-GP','NSGS-PLI-100','NSGS-PLI-10','NSGS-P','NSGS-Quartic' --domain=1.0:$(precision):${domain_max} --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-${test_name}.tex;
 	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;
@@ -57,7 +57,21 @@ nsgs_localsolver :
 	mv  profile-${test_name}.pdf ${save_dir}
 	mv  profile-${test_name}_legend.pdf ${save_dir}
 
-# NSGS Local Shuffled
+# NSGS Local Solvers
+nsgs_localsolver_hybrid : save_dir=figure/NSGS/LocalSolverHybrid/${measure_name}
+nsgs_localsolver_hybrid : 	domain_max=$(shell $(domain) --target=nsgs_localsolver --domain)
+nsgs_localsolver_hybrid : 	precision=$(shell $(domain) --target=nsgs_localsolver --precision)
+nsgs_localsolver_hybrid : 	test_name=$(shell $(domain) --test_name)
+nsgs_localsolver_hybrid :
+	$(comp) --measure=${measure_name} --display --no-matplot --solvers-exact='NSGS-AC-GP','NSGS-PLI-100','NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-10-1','NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-10-10','NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-100-1','NSGS-AC-GP-HYBRID-PLI-NSN-LOOP-100-10','NSGS-AC-GP-HYBRID-NSN-PLI-NSN-LOOP-10-1','NSGS-AC-GP-HYBRID-NSN-PLI-NSN-LOOP-10-10','NSGS-AC-GP-HYBRID-NSN-PLI-NSN-LOOP-100-1','NSGS-AC-GP-HYBRID-NSN-PLI-NSN-LOOP-100-10' --domain=1.0:$(precision):${domain_max} --gnuplot-profile --gnuplot-separate-keys
+	gnuplot profile.gp ;
+	pdflatex -interaction=batchmode  profile-${test_name}.tex;
+	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;
+	mkdir -p ${save_dir}
+	mv  profile-${test_name}.pdf ${save_dir}
+	mv  profile-${test_name}_legend.pdf ${save_dir}
+
+# NSGS  Shuffled
 nsgs_shuffled: save_dir=figure/NSGS/Shuffled/${measure_name}
 nsgs_shuffled : 	domain_max=$(shell $(domain) --target=nsgs_shuffled --domain)
 nsgs_shuffled : 	precision=$(shell $(domain) --target=nsgs_shuffled --precision)

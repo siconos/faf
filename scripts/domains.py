@@ -77,12 +77,12 @@ with h5py.File('comp.hdf5','r+') as comp_file:
 #     print(test_name, file=report_file)
 
 #print([x for x in next(os.walk('/Users/acary/Work/fclib-library/'))[1]])
-tests= ['LMGC_100_PR_PerioBox', 'LMGC_945_SP_Box_PL', 'LMGC_AqueducPR', 'BoxesStack', 'LMGC_Bridge_PR', 'Capsules', 'Chain', 'Chute_1000', 'Chute_4000', 'Chute_local_problems', 'LMGC_Cubes_H8', 'Global', 'KaplasTower', 'LMGC_LowWall_FEM']
-targets= 'vi nsgs_localtol nsgs_localsolver nsgs_shuffled psor_solvers nsn_solvers prox_solvers prox_series regul_series opti_solvers comp_solvers comp_solvers_large'
+tests= ['LMGC_100_PR_PerioBox', 'LMGC_945_SP_Box_PL', 'LMGC_AqueducPR', 'BoxesStack1', 'LMGC_Bridge_PR', 'Capsules', 'Chain', 'Chute_1000', 'Chute_4000', 'Chute_local_problems', 'LMGC_Cubes_H8', 'Global', 'KaplasTower', 'LMGC_LowWall_FEM']
+targets= 'vi nsgs_localtol nsgs_localsolver nsgs_localsolver_hybrid nsgs_shuffled psor_solvers nsn_solvers prox_solvers prox_series regul_series opti_solvers comp_solvers comp_solvers_large'
 list_target=targets.split(' ')
 
 #default Values
-default_values = [10,2,4,5,5,15,100,100,100,10,20,100]
+default_values = [10,2,4,4,5,5,15,100,100,100,10,20,100]
 
 data=dict()
 for t in tests:
@@ -128,6 +128,7 @@ data[test]['comp_solvers']['domain']=5
 test= 'LMGC_945_SP_Box_PL'
 data[test]['nsgs_localtol']['domain']=4
 data[test]['nsgs_localsolver']['domain']=10
+data[test]['nsgs_localsolver_hybrid']['domain']=10
 data[test]['nsgs_shuffled']['domain']=3
 data[test]['psor_solvers']['domain']=10
 data[test]['opti_solvers']['domain']=5
