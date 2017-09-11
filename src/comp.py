@@ -1099,6 +1099,9 @@ if __name__ == '__main__':
             data = comp_file['data']
             comp_data = data['comp']
 
+            date_str =  time.ctime(creation_date('comp.hdf5'))
+            
+            #print('###########', time.ctime(creation_date('comp.hdf5')))
         
             if (gnuplot_profile and (filename != None)) :
                 def write_report(r, filename):
@@ -1161,7 +1164,7 @@ if __name__ == '__main__':
                     gp.write('set term aqua;\\\n')
                     gp.write('\n')
                     
-                    gp.write('set title\'{0} - precision: {1} - timeout: {2} \';; \n'.format(test_name_gnuplot,comp_precision,comp_utimeout))
+                    gp.write('set title\'{0} - precision: {1} - timeout: {2} -  {3}\';; \n'.format(test_name_gnuplot,comp_precision,comp_utimeout, date_str))
 
 
                     
