@@ -141,8 +141,8 @@ data[test]['psor_solvers']['domain']=15
 data[test]['nsn_solvers']['domain']=20
 data[test]['prox_solvers']['domain']=20
 data[test]['prox_series']['domain']=20
-data[test]['nsgs_localsolver']['domain']=10
-
+data[test]['nsgs_localsolver']['domain']=50
+data[test]['prox_series']['domain']=200
 
 
 
