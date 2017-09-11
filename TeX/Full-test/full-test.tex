@@ -117,6 +117,13 @@
 
 \begin{figure}[htbp]
   \centering
+  \includegraphics[width=\figwidth]{../figure/NSGS/LocalSolverHybrid/\measurename/profile-#1.pdf}
+  \includegraphics[width=\figwidth]{../figure/NSGS/LocalSolverHybrid/\measurename/profile-#1_legend.pdf}
+\caption{{#2}{  } \measurename { }NSGS/LocalSolverHybrid}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
   \includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/\measurename/profile-#1.pdf}
   \includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/\measurename/profile-#1_legend.pdf}
 \caption{{#2}{  } \measurename { }NSGS/LocalTol}
@@ -257,16 +264,21 @@
 \def\testnamechar{Chain}
 \test{\testname}{\testnamechar}
 
-\if0
+%\if0
 \clearpage
 \def\testname{BoxesStack1}
 \def\testnamechar{BoxesStack1}
 \test{\testname}{\testnamechar}
-\fi
+%\fi
 
 \clearpage
 \def\testname{KaplasTower}
 \def\testnamechar{KaplasTower}
+\test{\testname}{\testnamechar}
+
+\clearpage
+\def\testname{Chute_1000}
+\def\testnamechar{Chute\_1000}
 \test{\testname}{\testnamechar}
 
 \clearpage
