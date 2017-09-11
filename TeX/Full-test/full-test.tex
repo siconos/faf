@@ -225,6 +225,37 @@
 \def\testname{LMGC_100_PR_PerioBox}
 \def\testnamechar{LMGC\_100\_PR\_PerioBox}
 \test{\testname}{\testnamechar}
+\clearpage
+\subsection{Comments}
+
+\begin{enumerate}
+\item VI solvers:
+  \begin{enumerate}
+  \item The EG-VI solvers are better than FP-VI solvers.
+  \item The local update rule UPK vs. UPTS is not important
+  \item The update in the loop improves greatly the convergence rate.
+  \end{enumerate}
+\item NSGS Solvers:
+  \begin{enumerate}
+  \item Local solvers
+    \begin{enumerate}
+    \item NSN local solvers are the best solvers.
+    \item GP line-search method is slowing a lot the efficiency of the solver. Since we do need to improve to robustness of the solver, there is no interest in this set to use a line-search
+    \item Quite surprisingly, the local solvers based on FP-VI-UPK are also efficient, especially when we limit the number of iteration of the local algorithm.
+    \end{enumerate}
+  \item Local Tolerances: The study of the local tolerances of the local solvers shows that the local tolerance has to be lower than 1e-10 to get robustness and a good convergence rate of the NSGS solver. No other conlusion for the moment since NSGS-FP-VI-UPK are in reality NSGS-AC-GP solver with 100 iterations !!!.
+  \item Shuffling techniques: The shuffling of contact does not improve the convergence.
+  \end{enumerate}
+\end{enumerate}
+\item PSOR Solvers.
+  \begin{enumerate}
+  \item For the values of the relaxation parameters $\omega$ in $[1.3,1.5]$, the relaxation increases the efficiency of the  solver but decreases the robustness
+  \item For low values of the relaxation parameters $\omega$ in $[0.5, 0.8]$, the relaxation increases the  the robustness but decreases the efficiency
+  \end{enumerate}
+\item NSN and PROX solvers. The direct Newton techniques on such rigid-body test set are inefficient. (link to the distribution of ranks of the matrices)
+\item 
+\end{enumerate}
+
 
 \clearpage
 \def\testname{LMGC_945_SP_Box_PL}
