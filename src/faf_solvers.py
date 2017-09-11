@@ -421,7 +421,7 @@ class faf_solvers():
                              maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
         nsgs.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN
         nsgs.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
-
+        #nsgs.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSGS_FILTER_LOCAL_SOLUTION] == N.SICONOS_FRICTION_3D_NSGS_FILTER_LOCAL_SOLUTION_TRUE
 
         nsgs_ac_gp = SiconosSolver(name="NSGS-AC-GP",
                              API=N.fc3d_nsgs,
