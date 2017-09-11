@@ -707,7 +707,7 @@ class faf_solvers():
         nsgs_series=[]
         for local_tol in local_tol_values:
             str1 = "{0:1.0e}".format(local_tol).replace("1e","10\^{")+"}"
-            nsgs_solver = SiconosSolver(name="NSGS-AC-GP-"+str(local_tol),
+            nsgs_solver = SiconosSolver(name="NSGS-AC-GP-"+"{0:1.0e}".format(local_tol),
                                         gnuplot_name="NSGS-AC-GP \$tol\_{local}="+str1+"\$",
                                         API=N.fc3d_nsgs,
                                         TAG=N.SICONOS_FRICTION_3D_NSGS,
@@ -719,7 +719,7 @@ class faf_solvers():
 
         for local_tol in local_tol_values:
             str1 = "{0:1.0e}".format(local_tol).replace("1e","10\^{")+"}"
-            nsgs_solver = SiconosSolver(name="NSGS-PLI-"+str(local_tol),
+            nsgs_solver = SiconosSolver(name="NSGS-PLI-"+"{0:1.0e}".format(local_tol),
                                         gnuplot_name="NSGS-FP-VI-UPK \$tol\_{local}="+str1+"\$",
                                         API=N.fc3d_nsgs,
                                         TAG=N.SICONOS_FRICTION_3D_NSGS,
