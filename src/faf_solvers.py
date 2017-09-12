@@ -802,6 +802,10 @@ class faf_solvers():
             psor_solver.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY ] =  N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY_NO
             psor_series.append(psor_solver)
 
+
+        # OPTI solvers
+
+            
         TrescaFixedPoint = SiconosSolver(name="TrescaFixedPoint-NSGS-PLI",
                                              gnuplot_name='TRESCA-NSGS-FP-VI',
                                          API=N.fc3d_TrescaFixedPoint,
@@ -810,6 +814,26 @@ class faf_solvers():
                                          dparam_err=1,
                                          maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
 
+
+
+        
+        TrescaFixedPoint_pg = SiconosSolver(name="TRESCA-PG",
+                                             gnuplot_name='TRESCA-PG',
+                                         API=N.fc3d_TrescaFixedPoint,
+                                         TAG=N.SICONOS_FRICTION_3D_TFP,
+                                         iparam_iter=7,
+                                         dparam_err=1,
+                                         maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+        TrescaFixedPoint_pg.SolverOptions().internalSolvers.solverId=N.SICONOS_FRICTION_3D_PGoC
+        TrescaFixedPoint_pg.SolverOptions().internalSolvers.iparam[N.SICONOS_IPARAM_MAX_ITER]= 1000
+        TrescaFixedPoint_pg.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_PGOC_LINESEARCH_MAXITER]=10
+        TrescaFixedPoint_pg.SolverOptions().internalSolvers.dparam[N.SICONOS_DPARAM_TOL]= self._precision/10
+        TrescaFixedPoint_pg.SolverOptions().internalSolvers.dparam[N.SICONOS_FRICTION_3D_PGOC_RHO]= -1e-3
+        TrescaFixedPoint_pg.SolverOptions().internalSolvers.dparam[N.SICONOS_FRICTION_3D_PGOC_RHOMIN]= 1e-8
+        TrescaFixedPoint_pg.SolverOptions().internalSolvers.dparam[N.SICONOS_FRICTION_3D_PGOC_LINESEARCH_MU] =0.9
+        TrescaFixedPoint_pg.SolverOptions().internalSolvers.dparam[N.SICONOS_FRICTION_3D_PGOC_LINESEARCH_TAU] =0.5
+        
+        
         ACLMFixedPoint = SiconosSolver(name="ACLMFixedPoint-SOCLCP-NSGS-PLI",
                                            gnuplot_name='ACLM-NSGS-FP-VI',
                                        API=N.fc3d_ACLMFixedPoint,
@@ -1162,7 +1186,7 @@ class faf_solvers():
         all_solvers = list(nsgs_solvers)
         all_solvers.extend(nsn_solvers)
         all_solvers.extend( [ psor,
-                              TrescaFixedPoint, DeSaxceFixedPoint,
+                              TrescaFixedPoint, TrescaFixedPoint_pg, DeSaxceFixedPoint,
                               VIFixedPointProjection, VIExtraGrad,
                               SOCLCP,
                               Prox,  Prox_nls, ProxFB,  ProxFB_nls, ProxNSGS, Proxfixed, Regul_variable, regul_series[0],
