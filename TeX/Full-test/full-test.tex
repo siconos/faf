@@ -131,6 +131,13 @@
 
 \begin{figure}[htbp]
   \centering
+  \includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/\measurename/profile-#1.pdf}
+  \includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/\measurename/profile-#1_legend.pdf}
+\caption{{#2}{  } \measurename { }NSGS/LocalTol-VI}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
   \includegraphics[width=\figwidth]{../figure/NSGS/Shuffled/\measurename/profile-#1.pdf}
   \includegraphics[width=\figwidth]{../figure/NSGS/Shuffled/\measurename/profile-#1_legend.pdf}
 \caption{{#2}{  } \measurename { }NSGS/Shuffled}
@@ -225,9 +232,9 @@
 \def\testname{LMGC_100_PR_PerioBox}
 \def\testnamechar{LMGC\_100\_PR\_PerioBox}
 \test{\testname}{\testnamechar}
+
 \clearpage
 \subsection{Comments}
-
 \begin{enumerate}
 \item VI solvers:
   \begin{enumerate}
@@ -239,12 +246,14 @@
   \begin{enumerate}
   \item Local solvers
     \begin{enumerate}
-    \item NSN local solvers are the best solvers.
+    \item NSN local solvers without line-search are the best solvers.
     \item GP line-search method is slowing a lot the efficiency of the solver. Since we do need to improve to robustness of the solver, there is no interest in this set to use a line-search
-    \item Quite surprisingly, the local solvers based on FP-VI-UPK are also efficient, especially when we limit the number of iteration of the local algorithm.
+    \item Quite surprisingly, the local solvers based on FP-VI-UPK are also efficient, especially when we limit the number of iteration or the local tolerance of the local algorithm.
     \end{enumerate}
-  \item Local Tolerances: The study of the local tolerances of the local solvers shows that the local tolerance has to be lower than 1e-10 to get robustness and a good convergence rate of the NSGS solver. No other conlusion for the moment since NSGS-FP-VI-UPK are in reality NSGS-AC-GP solver with 100 iterations !!!.
-  \item Shuffling techniques: The shuffling of contact does not improve the convergence.
+  \item Local Tolerances:
+        The study of the local tolerances of the local solvers shows that the local tolerance has to be lower than 1e-10 to get robustness and a good convergence rate of the NSGS-AC-GP solver.
+        For the NSGS-FP-VI-UPK, a limited tolerance improves the efficiency without reducing the robustness
+      \item Shuffling techniques: The shuffling of contact does not improve the convergence.
   \end{enumerate}
 \end{enumerate}
 \item PSOR Solvers.
@@ -253,7 +262,8 @@
   \item For low values of the relaxation parameters $\omega$ in $[0.5, 0.8]$, the relaxation increases the  the robustness but decreases the efficiency
   \end{enumerate}
 \item NSN and PROX solvers. The direct Newton techniques on such rigid-body test set are inefficient. (link to the distribution of ranks of the matrices)
-\item 
+\item OPTI solvers. On this problem, the ACLM and TRESCA approaches do not improve the efficiency. The problems are also better solved by the SOCLCP technique. Convexification is working well.
+
 \end{enumerate}
 
 
@@ -261,12 +271,54 @@
 \def\testname{LMGC_945_SP_Box_PL}
 \def\testnamechar{LMGC\_945\_SP\_Box\_PL}
 \test{\testname}{\testnamechar}
-
+\begin{enumerate}
+\item VI solvers: difficult to draw conclusions since a lot of solvers are not able to converge within timeout
+\item NSGS Solvers:
+  \begin{enumerate}
+  \item Local solvers
+    \begin{enumerate}
+    \item NSGS-FP-VI-UPK are the best solvers.
+    \item NSGS-NSN suffers from huge robustness problem.
+    \item GP line-search method improves a bit  the efficiency of the solver
+    \item Hybrid solvers seems to succeed but it is difficult to say if the Newton method helps to improve results
+    \end{enumerate}
+  \item Local Tolerances:
+    For the NSGS-FP-VI-UPK, a limited tolerance improves the efficiency without reducing the robustness
+  \item Shuffling techniques: The shuffling of contact does not improve the convergence.
+  \end{enumerate}
+\end{enumerate}
+\item PSOR Solvers. No conclusion due to robustness problems
+\item NSN and PROX solvers. The direct Newton techniques on such rigid-body test set are inefficient. (link to the distribution of ranks of the matrices)
+\item OPTI solvers. On this problem, the TRESCA approach improves a lot the efficiency. The problems are also better solved by the SOCLCP technique/ Convexification is working well.
+\end{enumerate}
 
 \clearpage
 \def\testname{LMGC_AqueducPR}
 \def\testnamechar{LMGC Aqueduc PR }
 \test{\testname}{\testnamechar}
+\clearpage
+\subsection{Comments}
+\begin{enumerate}
+\item VI solvers: difficult to draw conclusions since a lot of solvers are not able to converge within timeout
+\item NSGS Solvers:
+  \begin{enumerate}
+  \item Local solvers
+    \begin{enumerate}
+    \item NSGS-NSN-*-GP are the best solvers. Line search improves efficiency of the solvers.
+    \item Hybrid solvers do not bring new advantages which is not surprising since NSGS-NSN solvers are the best
+    \end{enumerate}
+  \item Local Tolerances:
+
+  \item Shuffling techniques: The shuffling of contact does not improve the convergence.
+  \end{enumerate}
+\end{enumerate}
+\item PSOR Solvers. The relaxation is not interesting in this example
+\item NSN and PROX solvers. The direct Newton techniques on such rigid-body test set are inefficient. (link to the distribution of ranks of the matrices)
+\item OPTI solvers. On this problem, the ACLM approach improves a lot the efficiency and the robustness. The problems are also better solved by the SOCLCP technique. Convexification is working well.
+\end{enumerate}
+
+
+
 
 \clearpage
 \def\testname{LMGC_Bridge_PR}

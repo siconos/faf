@@ -78,11 +78,13 @@ with h5py.File('comp.hdf5','r+') as comp_file:
 
 #print([x for x in next(os.walk('/Users/acary/Work/fclib-library/'))[1]])
 tests= ['LMGC_100_PR_PerioBox', 'LMGC_945_SP_Box_PL', 'LMGC_AqueducPR', 'BoxesStack1', 'LMGC_Bridge_PR', 'Capsules', 'Chain', 'Chute_1000', 'Chute_4000', 'Chute_local_problems', 'LMGC_Cubes_H8', 'Global', 'KaplasTower', 'LMGC_LowWall_FEM']
-targets= 'vi nsgs_localtol nsgs_localsolver nsgs_localsolver_hybrid nsgs_shuffled psor_solvers nsn_solvers prox_solvers prox_series regul_series opti_solvers comp_solvers comp_solvers_large'
+targets= 'vi nsgs_localtol_ac_gp nsgs_localtol_vi  nsgs_localsolver nsgs_localsolver_hybrid nsgs_shuffled psor_solvers nsn_solvers prox_solvers prox_series regul_series opti_solvers comp_solvers comp_solvers_large'
 list_target=targets.split(' ')
 
+#print('len of targets', len(list_target))
 #default Values
-default_values = [10,2,4,4,5,5,15,100,100,100,10,20,100]
+default_values = [10,2,2,4,4,5,5,5,15,100,100,100,10,20,100]
+#print('len of default_values', len(default_values))
 
 data=dict()
 for t in tests:
@@ -103,12 +105,13 @@ data[test]['nsn_solvers']['domain']=35
 
 
 test= 'LMGC_AqueducPR'
-data[test]['nsgs_localtol']['domain']=4
-data[test]['opti_solvers']['domain']=5
+data[test]['nsgs_localtol_ac_gp']['domain']=4
+data[test]['opti_solvers']['domain']=10
 data[test]['comp_solvers']['domain']=5
+data[test]['comp_solvers_large']['domain']=30
 
 test= 'LMGC_Bridge_PR'
-data[test]['nsgs_localtol']['domain']=4
+data[test]['nsgs_localtol_ac_gp']['domain']=4
 data[test]['nsgs_localsolver']['domain']=5
 data[test]['nsgs_shuffled']['domain']=3
 data[test]['nsn_solvers']['domain']=100
@@ -117,7 +120,7 @@ data[test]['comp_solvers']['domain']=5
 
 test = 'LMGC_Cubes_H8'
 data[test]['vi']['domain']=5
-data[test]['nsgs_localtol']['domain']=3
+data[test]['nsgs_localtol_ac_gp']['domain']=3
 data[test]['nsgs_localsolver']['domain']=5
 data[test]['nsgs_shuffled']['domain']=10
 data[test]['psor_solvers']['domain']=20
@@ -126,7 +129,7 @@ data[test]['opti_solvers']['domain']=5
 data[test]['comp_solvers']['domain']=5
 
 test= 'LMGC_945_SP_Box_PL'
-data[test]['nsgs_localtol']['domain']=4
+data[test]['nsgs_localtol_ac_gp']['domain']=4
 data[test]['nsgs_localsolver']['domain']=10
 data[test]['nsgs_localsolver_hybrid']['domain']=10
 data[test]['nsgs_shuffled']['domain']=3
@@ -142,15 +145,18 @@ data[test]['nsn_solvers']['domain']=20
 data[test]['prox_solvers']['domain']=20
 data[test]['prox_series']['domain']=20
 data[test]['nsgs_localsolver']['domain']=50
+data[test]['nsgs_localtol_ac_gp']['domain']=8
+
+data[test]['nsgs_localsolver_hybrid']['domain']=25
 data[test]['prox_series']['domain']=200
 
 
 
 test = 'LMGC_LowWall_FEM'
 data[test]['vi']['domain']=4
-data[test]['nsgs_localtol']['domain']=4
+data[test]['nsgs_localtol_ac_gp']['domain']=4
 data[test]['nsgs_localsolver']['domain']=5
-data[test]['nsgs_localtol']['domain']=3
+data[test]['nsgs_localtol_ac_gp']['domain']=3
 data[test]['nsgs_localsolver']['domain']=5
 data[test]['nsgs_shuffled']['domain']=3
 data[test]['psor_solvers']['domain']=15
