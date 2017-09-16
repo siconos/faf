@@ -808,13 +808,41 @@ class faf_solvers():
         # OPTI solvers
         PanaFixedPoint = SiconosSolver(name="PANA-PGS-VI-FPP",
                                              gnuplot_name='PANA-PGS-VI-FPP',
-                                            API=N.fc3d_Panagiotopoulos_FixedPoint,
-                                            TAG=N.SICONOS_FRICTION_3D_PFP,
-                                            iparam_iter=7,
-                                         dparam_err=1,
-                                           maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                             API=N.fc3d_Panagiotopoulos_FixedPoint,
+                                             TAG=N.SICONOS_FRICTION_3D_PFP,
+                                             iparam_iter=7,
+                                             dparam_err=1,
+                                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
 
-            
+
+        
+        PanaFixedPoint_vi_eg = SiconosSolver(name="PANA-PGS-VI-EG",
+                                             gnuplot_name='PANA-PGS-VI-EG',
+                                             API=N.fc3d_Panagiotopoulos_FixedPoint,
+                                             TAG=N.SICONOS_FRICTION_3D_PFP,
+                                             iparam_iter=7,
+                                             dparam_err=1,
+                                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+        iso1=N.solver_options_get_internal_solver(PanaFixedPoint_vi_eg.SolverOptions(),1) 
+        N.solver_options_delete(iso1)
+        N.convexQP_VI_solver_setDefaultSolverOptions(iso1)
+        iso1.solverId = N.SICONOS_CONVEXQP_VI_EG
+
+        PanaFixedPoint_convexqp_pg = SiconosSolver(name="PANA-PGS-CONVEXQP-PG",
+                                             gnuplot_name='PANA-PGS-CONVEXQP-PG',
+                                             API=N.fc3d_Panagiotopoulos_FixedPoint,
+                                             TAG=N.SICONOS_FRICTION_3D_PFP,
+                                             iparam_iter=7,
+                                             dparam_err=1,
+                                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+        iso1=N.solver_options_get_internal_solver(PanaFixedPoint_convexqp_pg.SolverOptions(),1) 
+        N.solver_options_delete(iso1)
+        N.convexQP_ProjectedGradient_setDefaultSolverOptions(iso1)
+
+
+
+        
+       
         TrescaFixedPoint = SiconosSolver(name="TrescaFixedPoint-NSGS-PLI",
                                              gnuplot_name='TRESCA-NSGS-FP-VI',
                                          API=N.fc3d_TrescaFixedPoint,
@@ -830,7 +858,7 @@ class faf_solvers():
                                          iparam_iter=7,
                                          dparam_err=1,
                                          maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
-        TrescaFixedPoint_pg.SolverOptions().internalSolvers= N.SolverOptions(N.SICONOS_FRICTION_3D_PGoC) 
+        TrescaFixedPoint_pg.SolverOptions().internalSolvers= N.SolverOptions(N.SICONOS_FRICTION_3D_ConvexQP_PG_Cylinder) 
         TrescaFixedPoint_pg.SolverOptions().internalSolvers.iparam[N.SICONOS_IPARAM_MAX_ITER]= 1000
 
 
@@ -1196,7 +1224,7 @@ class faf_solvers():
         all_solvers = list(nsgs_solvers)
         all_solvers.extend(nsn_solvers)
         all_solvers.extend( [ psor,
-                              PanaFixedPoint,
+                              PanaFixedPoint, PanaFixedPoint_vi_eg, PanaFixedPoint_convexqp_pg,
                               TrescaFixedPoint, TrescaFixedPoint_pg, TrescaFixedPoint_vi_fpp, DeSaxceFixedPoint,
                               VIFixedPointProjection, VIExtraGrad,
                               SOCLCP,
