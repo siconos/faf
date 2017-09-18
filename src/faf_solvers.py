@@ -843,7 +843,7 @@ class faf_solvers():
 
         
        
-        TrescaFixedPoint = SiconosSolver(name="TrescaFixedPoint-NSGS-PLI",
+        TrescaFixedPoint = SiconosSolver(name="TRESCA-NSGS-PLI",
                                              gnuplot_name='TRESCA-NSGS-FP-VI',
                                          API=N.fc3d_TrescaFixedPoint,
                                          TAG=N.SICONOS_FRICTION_3D_TFP,
@@ -874,12 +874,31 @@ class faf_solvers():
         
         ACLMFixedPoint = SiconosSolver(name="ACLMFixedPoint-SOCLCP-NSGS-PLI",
                                            gnuplot_name='ACLM-NSGS-FP-VI',
-                                       API=N.fc3d_ACLMFixedPoint,
-                                       TAG=N.SICONOS_FRICTION_3D_ACLMFP,
-                                       iparam_iter=7,
-                                       dparam_err=1,
-                                       maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                        API=N.fc3d_ACLMFixedPoint,
+                                        TAG=N.SICONOS_FRICTION_3D_ACLMFP,
+                                        iparam_iter=7,
+                                        dparam_err=1,
+                                        maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
 
+        ACLMFixedPoint_vi_eg = SiconosSolver(name="ACLMFixedPoint-SOCLCP-VI-EG",
+                                           gnuplot_name='ACLM-VI-EG',
+                                        API=N.fc3d_ACLMFixedPoint,
+                                        TAG=N.SICONOS_FRICTION_3D_ACLMFP,
+                                        iparam_iter=7,
+                                        dparam_err=1,
+                                        maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+        ACLMFixedPoint_vi_eg.SolverOptions().internalSolvers = N.SolverOptions(N.SecondOrderConeLinearComplementarityProblem(), N.SICONOS_SOCLCP_VI_EG)
+        
+        ACLMFixedPoint_vi_fpp = SiconosSolver(name="ACLMFixedPoint-SOCLCP-VI-FPP",
+                                            gnuplot_name='ACLM-VI-FPP',
+                                            API=N.fc3d_ACLMFixedPoint,
+                                            TAG=N.SICONOS_FRICTION_3D_ACLMFP,
+                                            iparam_iter=7,
+                                            dparam_err=1,
+                                            maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+        ACLMFixedPoint_vi_fpp.SolverOptions().internalSolvers = N.SolverOptions(N.SecondOrderConeLinearComplementarityProblem(), N.SICONOS_SOCLCP_VI_FPP)
+              
+        
         SOCLCP = SiconosSolver(name="SOCLCP-NSGS-PLI",
                                API=N.fc3d_SOCLCP,
                                TAG=N.SICONOS_FRICTION_3D_SOCLCP,
@@ -1229,7 +1248,7 @@ class faf_solvers():
                               VIFixedPointProjection, VIExtraGrad,
                               SOCLCP,
                               Prox,  Prox_nls, ProxFB,  ProxFB_nls, ProxNSGS, Proxfixed, Regul_variable, regul_series[0],
-                              ACLMFixedPoint])
+                              ACLMFixedPoint, ACLMFixedPoint_vi_fpp, ACLMFixedPoint_vi_eg])
 
         all_solver_unstable = [ProxFB_fblsa]
         all_solvers.extend(all_solver_unstable)
