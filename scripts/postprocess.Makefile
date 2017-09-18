@@ -182,7 +182,7 @@ opti_solvers : 	domain_max=$(shell $(domain) --target=opti_solvers --domain)
 opti_solvers : 	precision=$(shell $(domain) --target=opti_solvers --precision)
 opti_solvers : 	test_name=$(shell $(domain) --test_name)
 opti_solvers :
-	$(comp) --measure=${measure_name} --display --no-matplot --solvers-exact='NSGS-PLI-1e-14','NSGS-PLI-10','TrescaFixedPoint-NSGS-PLI','SOCLCP-NSGS-PLI','ACLMFixedPoint-SOCLCP-NSGS-PLI' --domain=1.0:0.01:${domain_max} --gnuplot-profile --gnuplot-separate-keys
+	$(comp) --measure=${measure_name} --display --no-matplot --solvers-exact='NSGS-PLI-1e-14','NSGS-PLI-10','TrescaFixedPoint-NSGS-PLI','SOCLCP-NSGS-PLI','ACLMFixedPoint-SOCLCP-NSGS-PLI','PANA-PGS-VI-FPP' --domain=1.0:0.01:${domain_max} --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-${test_name}.tex;
 	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;
