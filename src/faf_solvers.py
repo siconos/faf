@@ -422,8 +422,18 @@ class faf_solvers():
                              maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
         nsgs.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN
         nsgs.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
-        
-        #nsgs.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSGS_FILTER_LOCAL_SOLUTION] == N.SICONOS_FRICTION_3D_NSGS_FILTER_LOCAL_SOLUTION_TRUE
+
+        nsgs_rho_given = SiconosSolver(name="NSGS-AC-RHO-GIVEN",
+                             gnuplot_name="NSGS-AC (fixed rho)",
+                             API=N.fc3d_nsgs,
+                             TAG=N.SICONOS_FRICTION_3D_NSGS,
+                             iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
+                             dparam_err=1,
+                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+        nsgs_rho_given.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN
+        nsgs_rho_given.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
+        nsgs_rho_given.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_RHO_STRATEGY] = N.SICONOS_FRICTION_3D_NSN_FORMULATION_RHO_STRATEGY_CONSTANT;
+
 
         nsgs_ac_gp = SiconosSolver(name="NSGS-AC-GP",
                                        gnuplot_name="NSGS-AC-GP (iter=10)",
@@ -457,6 +467,29 @@ class faf_solvers():
         nsgs_ac_gp_100.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_GP
         nsgs_ac_gp_100.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
         nsgs_ac_gp_100.SolverOptions().internalSolvers.iparam[0] = 100
+
+        nsgs_ac_gp_adaptive = SiconosSolver(name="NSGS-AC-GP-ADAPTIVE",
+                                            gnuplot_name="NSGS-AC-GP (Adaptive local tol)",
+                                API=N.fc3d_nsgs,
+                                TAG=N.SICONOS_FRICTION_3D_NSGS,
+                                iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
+                                dparam_err=1,
+                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+        nsgs_ac_gp_adaptive.SolverOptions().iparam[N.SICONOS_FRICTION_3D_IPARAM_INTERNAL_ERROR_STRATEGY] = N.SICONOS_FRICTION_3D_INTERNAL_ERROR_STRATEGY_ADAPTIVE;
+        nsgs_ac_gp_adaptive.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_GP
+        nsgs_ac_gp_adaptive.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
+
+        nsgs_ac_gp_adaptive2 = SiconosSolver(name="NSGS-AC-GP-ADAPTIVE2",
+                                                gnuplot_name="NSGS-AC-GP (Adaptive local tol contact )",
+                                        API=N.fc3d_nsgs,
+                                    TAG=N.SICONOS_FRICTION_3D_NSGS,
+                                    iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
+                                    dparam_err=1,
+                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+        nsgs_ac_gp_adaptive2.SolverOptions().iparam[N.SICONOS_FRICTION_3D_IPARAM_INTERNAL_ERROR_STRATEGY] = N.SICONOS_FRICTION_3D_INTERNAL_ERROR_STRATEGY_ADAPTIVE_N_CONTACT;
+        nsgs_ac_gp_adaptive2.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_GP
+        nsgs_ac_gp_adaptive2.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
+
 
 
 
@@ -504,7 +537,7 @@ class faf_solvers():
         #N.printSolverOptions(nsgs_sfull.SolverOptions())
 
 
-        nsgs_solvers = [nsgs, nsgs_ac_gp, nsgs_100, nsgs_ac_gp_100,  nsgs_jm, nsgs_jm_gp,
+        nsgs_solvers = [nsgs, nsgs_rho_given, nsgs_ac_gp, nsgs_100, nsgs_ac_gp_100, nsgs_ac_gp_adaptive, nsgs_ac_gp_adaptive2, nsgs_jm, nsgs_jm_gp,
                             nsgs_sfull, snsgs]
 
         for s in nsgs_solvers:
@@ -541,6 +574,27 @@ class faf_solvers():
         nsgs_pli_100.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithLocalIteration
         nsgs_pli_100.SolverOptions().internalSolvers.iparam[0] = 100
 
+        nsgs_pli_adaptive = SiconosSolver(name="NSGS-PLI-ADAPTIVE",
+                                 gnuplot_name="NSGS-FP-VI-UPK (Adaptive local tol)",
+                                 API=N.fc3d_nsgs,
+                                 TAG=N.SICONOS_FRICTION_3D_NSGS,
+                                 iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
+                                 dparam_err=1,
+                                 maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+        nsgs_pli_adaptive.SolverOptions().iparam[N.SICONOS_FRICTION_3D_IPARAM_INTERNAL_ERROR_STRATEGY] = N.SICONOS_FRICTION_3D_INTERNAL_ERROR_STRATEGY_ADAPTIVE;
+        nsgs_pli_adaptive.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithLocalIteration
+
+        nsgs_pli_adaptive2 = SiconosSolver(name="NSGS-PLI-ADAPTIVE2",
+                                 gnuplot_name="NSGS-FP-VI-UPK (Adaptive local tol contact )",
+                                 API=N.fc3d_nsgs,
+                                 TAG=N.SICONOS_FRICTION_3D_NSGS,
+                                 iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
+                                 dparam_err=1,
+                                 maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+        nsgs_pli_adaptive2.SolverOptions().iparam[N.SICONOS_FRICTION_3D_IPARAM_INTERNAL_ERROR_STRATEGY] = N.SICONOS_FRICTION_3D_INTERNAL_ERROR_STRATEGY_ADAPTIVE_N_CONTACT;
+        nsgs_pli_adaptive2.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithLocalIteration
+
+
 
 
 
@@ -572,7 +626,7 @@ class faf_solvers():
                                 maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
         nsgs_pr.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithRegularization
 
-        nsgs_solvers.extend([nsgs_pli, nsgs_pli_10, nsgs_pli_100, nsgs_p, nsgs_pd, nsgs_pr])
+        nsgs_solvers.extend([nsgs_pli, nsgs_pli_10, nsgs_pli_100, nsgs_pli_adaptive, nsgs_pli_adaptive2, nsgs_p, nsgs_pd, nsgs_pr])
 
 
 
@@ -807,7 +861,7 @@ class faf_solvers():
 
         # OPTI solvers
         PanaFixedPoint = SiconosSolver(name="PANA-PGS-VI-FPP",
-                                             gnuplot_name='PANA-PGS-VI-FPP',
+                                             gnuplot_name='PANA-PGS-FP-VI-UPK',
                                              API=N.fc3d_Panagiotopoulos_FixedPoint,
                                              TAG=N.SICONOS_FRICTION_3D_PFP,
                                              iparam_iter=7,
@@ -817,7 +871,7 @@ class faf_solvers():
 
         
         PanaFixedPoint_vi_eg = SiconosSolver(name="PANA-PGS-VI-EG",
-                                             gnuplot_name='PANA-PGS-VI-EG',
+                                             gnuplot_name='PANA-PGS-FP-VI-EG-UPK',
                                              API=N.fc3d_Panagiotopoulos_FixedPoint,
                                              TAG=N.SICONOS_FRICTION_3D_PFP,
                                              iparam_iter=7,
@@ -828,13 +882,29 @@ class faf_solvers():
         N.convexQP_VI_solver_setDefaultSolverOptions(iso1)
         iso1.solverId = N.SICONOS_CONVEXQP_VI_EG
 
-        PanaFixedPoint_convexqp_pg = SiconosSolver(name="PANA-PGS-CONVEXQP-PG",
+        PanaFixedPoint_pgs_convexqp_pg = SiconosSolver(name="PANA-PGS-CONVEXQP-PG",
                                              gnuplot_name='PANA-PGS-CONVEXQP-PG',
                                              API=N.fc3d_Panagiotopoulos_FixedPoint,
                                              TAG=N.SICONOS_FRICTION_3D_PFP,
                                              iparam_iter=7,
                                              dparam_err=1,
                                              maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+        iso1=N.solver_options_get_internal_solver(PanaFixedPoint_pgs_convexqp_pg.SolverOptions(),1)
+        N.solver_options_delete(iso1)
+        N.convexQP_ProjectedGradient_setDefaultSolverOptions(iso1)
+
+
+
+        PanaFixedPoint_convexqp_pg = SiconosSolver(name="PANA-CONVEXQP-PG",
+                                             gnuplot_name='PANA-CONVEXQP-PG',
+                                             API=N.fc3d_Panagiotopoulos_FixedPoint,
+                                             TAG=N.SICONOS_FRICTION_3D_PFP,
+                                             iparam_iter=7,
+                                             dparam_err=1,
+                                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+        iso0=N.solver_options_get_internal_solver(PanaFixedPoint_convexqp_pg.SolverOptions(),0)
+        N.solver_options_delete(iso0)
+        N.linearComplementarity_ConvexQP_ProjectedGradient_setDefaultSolverOptions(iso0)
         iso1=N.solver_options_get_internal_solver(PanaFixedPoint_convexqp_pg.SolverOptions(),1) 
         N.solver_options_delete(iso1)
         N.convexQP_ProjectedGradient_setDefaultSolverOptions(iso1)
@@ -844,7 +914,7 @@ class faf_solvers():
         
        
         TrescaFixedPoint = SiconosSolver(name="TRESCA-NSGS-PLI",
-                                             gnuplot_name='TRESCA-NSGS-FP-VI',
+                                             gnuplot_name='TRESCA-NSGS-FP-VI-UPK',
                                          API=N.fc3d_TrescaFixedPoint,
                                          TAG=N.SICONOS_FRICTION_3D_TFP,
                                          iparam_iter=7,
@@ -852,7 +922,7 @@ class faf_solvers():
                                          maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
 
         TrescaFixedPoint_pg = SiconosSolver(name="TRESCA-PG",
-                                             gnuplot_name='TRESCA-PG',
+                                             gnuplot_name='TRESCA-CONVEXQP-PG',
                                          API=N.fc3d_TrescaFixedPoint,
                                          TAG=N.SICONOS_FRICTION_3D_TFP,
                                          iparam_iter=7,
@@ -863,7 +933,7 @@ class faf_solvers():
 
 
         TrescaFixedPoint_vi_fpp = SiconosSolver(name="TRESCA-VI-FP",
-                                             gnuplot_name='TRESCA-VI-FP',
+                                             gnuplot_name='TRESCA-FP-VI-UPK',
                                          API=N.fc3d_TrescaFixedPoint,
                                          TAG=N.SICONOS_FRICTION_3D_TFP,
                                          iparam_iter=7,
@@ -871,6 +941,10 @@ class faf_solvers():
                                          maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
         TrescaFixedPoint_vi_fpp.SolverOptions().internalSolvers= N.SolverOptions(N.SICONOS_FRICTION_3D_VI_FPP_Cylinder)
         TrescaFixedPoint_vi_fpp.SolverOptions().internalSolvers.iparam[N.SICONOS_IPARAM_MAX_ITER]= 1000
+
+
+
+
         
         ACLMFixedPoint = SiconosSolver(name="ACLMFixedPoint-SOCLCP-NSGS-PLI",
                                            gnuplot_name='ACLM-NSGS-FP-VI',
@@ -1243,7 +1317,7 @@ class faf_solvers():
         all_solvers = list(nsgs_solvers)
         all_solvers.extend(nsn_solvers)
         all_solvers.extend( [ psor,
-                              PanaFixedPoint, PanaFixedPoint_vi_eg, PanaFixedPoint_convexqp_pg,
+                              PanaFixedPoint, PanaFixedPoint_vi_eg, PanaFixedPoint_convexqp_pg, PanaFixedPoint_pgs_convexqp_pg,
                               TrescaFixedPoint, TrescaFixedPoint_pg, TrescaFixedPoint_vi_fpp, DeSaxceFixedPoint,
                               VIFixedPointProjection, VIExtraGrad,
                               SOCLCP,
