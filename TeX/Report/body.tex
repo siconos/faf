@@ -38,6 +38,7 @@ The Euclidean projector on a set $X$ is denoted by $P_X$.
 \section{Introduction}
 
 
+
 More than thirty years after the pioneering work of~\cite{Panagiotopoulos_IA1975},~\cite{Necas.ea1980},~\cite{Haslinger1983,Haslinger1984,Haslinger.Panagiotopoulos_PRSE1984}, ~\cite{z-DelPieroMaceri_CISM1983,z-DelPieroMaceri_CISM1985},~\cite{Katona_IJNAMG1983},~\cite{Chaudhary.Bathe_CS1986},~\cite{Jean.Moreau1987},~\cite{Mitsopoulou.Doudoumis1988} on numerically solving mechanical problems with contact and friction, there are still active research activities on this subject in the computational mechanics and applied mathematics communities.  This can be explain by the fact that {problems from} mechanical systems with unilateral contact and Coulomb friction are difficult to numerically solve and the mathematical results of convergence of the numerical algorithms are rare and most of these require rather strong assumptions. In this article, we want to give some insights of the advantages and weaknesses of standard solvers found in the literature by comparing them on the large sets of examples coming from a wide range of mechanical systems.
 
 \subsection{Problem statement}
@@ -1616,38 +1617,23 @@ A nomenclature for the algorithms based on the VI formulation is given in Table~
 
 \clearpage
 \section{Newton based methods}
-\label{sec:newtonmethods}
-\begin{ndrva}
-  Objectives:
-  \begin{itemize}
-  \item Alart Curnier~\cite{Alart.Curnier1991}
-  \item Christensen et
-    al.\cite{Christensen.Klarbring.ea1998}~\cite{Christensen.Pang1998},
-  \item Newton sur De Saxce cf
-    P. Joly~\cite{Joli.Feng2008}. Equivalence natural map.
-  \item and others
-    ?~\cite{Stadler_SIOPT2004}~\cite{Hueber.ea_SJSC2008,Hueber.Wolhmuth_CMAME2005}\cite{Koziara.Bicanic_CMAME2008}\cite{Renard_CMAME2013}
-  \item Update the section with the substitution of $u$
-  \end{itemize}
-\end{ndrva}
 
 
 \subsection{Principle of the nonsmooth Newton methods}
 
-In Section~\ref{Sec:NonsmoothEquations}, several formulations of the frictional contact problem by means of nonsmooth equations  have been presented. These nonsmooth equations call for the use of nonsmooth Newton's methods.
-\tg{Remember that the standard Newton method is to solve}
+In Section~\ref{Sec:NonsmoothEquations}, several formulations of the frictional contact problem by means of nonsmooth equations  have been presented. These nonsmooth equations call for the use of nonsmooth Newton's methods. Remember that the standard Newton method is to solve
 \begin{equation}
   \label{eq:NSN1}
   G(z)=0
 \end{equation}
-\tg{by performing the following Newton iteration}
+by performing the following Newton iteration
 \begin{equation}
   \label{eq:NSN2}
   z_{k+1}  =  z_k -  J^{-1}(z_k) G(z_k).
 \end{equation}
 If the mapping $G$ is smooth enough, the matrix $J$ is the Jacobian matrix of $G$ with respect to $z$, that is $J(z) = \nabla^\top_z G(z)$.
-\tg{When the $G$ is nonsmooth but Lipschitz continuous, as it is the case in the equation reformulations of VIs, the Jacobian matrix is replaced by an element of the subdifferential at $z$ denoted by $ \Phi(z) \in \partial G(z)$.
-If $\Phi(z)$ is nonsingular, then an iteration of the nonsmooth Newton method is given by}
+When the $G$ is nonsmooth but Lipschitz continuous, as it is the case in the equation reformulations of VIs, the Jacobian matrix is replaced by an element of the subdifferential at $z$ denoted by $ \Phi(z) \in \partial G(z)$.
+If $\Phi(z)$ is nonsingular, then an iteration of the nonsmooth Newton method is given by
 \begin{equation}
   \label{eq:NSN3}
   z_{k+1}  =  z_k -  \Phi^{-1}(z_k) (G(z_k)).
@@ -1663,7 +1649,7 @@ The resulting nonsmooth Newton method is detailed in Algorithm~\ref{Algo:NSN}.
       \ENSURE  $\sf z$ solution of Problem~\eqref{eq:NSN1}
       \STATE   $\sf k \leftarrow 0$ 
       \WHILE {$\sf error > tol$} 
-      \STATE compute (\tg{select}) $\sf \Phi(z_k) \in \partial G(z_k)$
+      \STATE compute (select) $\sf \Phi(z_k) \in \partial G(z_k)$
       \STATE $\sf z_{k+1} \leftarrow   z_k -  \Phi^{-1}(z_k) (G(z_k))$
       \STATE Evaluate $\sf error$.
       \STATE $\sf k \leftarrow k+1$
@@ -1674,7 +1660,7 @@ The resulting nonsmooth Newton method is detailed in Algorithm~\ref{Algo:NSN}.
   \caption{Nonsmooth Newton method for~\eqref{eq:NSN1}}  \label{Algo:NSN}
 \end{algorithm}
 
-\textcolor{pink}{The convergence of nonsmooth Newton methods is based on the assumption of semi--smoothness of the nonsmooth function in (\ref{eq:NSN1}). For this reason that are often called semi--smooth Newton methods  (see \citep[Section 7.5]{Facchinei.Pang2003} and references therein)}
+The convergence of nonsmooth Newton methods is based on the assumption of semi--smoothness of the nonsmooth function in (\ref{eq:NSN1}). For this reason that are often called semi--smooth Newton methods  (see \citep[Section 7.5]{Facchinei.Pang2003} and references therein).
 \subsection{Application to  the discrete frictional contact problem}
 
 \paragraph{Nonsmooth newton based on the natural map }
@@ -1699,9 +1685,9 @@ Algorithm~\ref{Algo:NSN} is applied \tg{with}
 \paragraph{Newton method based on the Jean--Moreau and  Alart--Curnier functions}
 \label{Sec:NSN-AC}
 
-\textcolor{pink}{
+
 Let us consider now the Alart--Curnier function $F_{\actwo}(u,r)$ in~\eqref{eq:AC-II} or the Jean--Moreau function $F_{\mjtwo}(u,r)$ \eqref{eq:MJ-II} for Problem~\ref{prob:II}. 
-Algorithm~\ref{Algo:NSN} is applied \tg{with}
+Algorithm~\ref{Algo:NSN} is applied with
 \begin{equation}  \label{eq:phiphi-ac}
     \Phi(r) \in \partial F_{\actwo}(r)\quad\text{ or } \quad   \Phi(r) \in \partial F_{\mjtwo}(r).
 \end{equation}}
@@ -1721,25 +1707,17 @@ The details of a possible computation of $\Phi$ can be found in Appendix~\ref{Se
 
 \paragraph{Newton method based on  SOCC-function}
 \label{Sec:Num-SOCCP}
-\textcolor{pink}{
 Let us consider now the Fischer-Burmeister function $F_{FB}(u,r)$ in~\eqref{eq:FB-II} for Problem~\ref{prob:II}. 
 Algorithm~\ref{Algo:NSN} is applied \tg{with}
 \begin{equation}  \label{eq:phiphi-ac}
     \Phi(r) \in \partial F_{FB}(r).
 \end{equation}
-The details of a possible computation of $\Phi$ can be found in Appendix~\ref{Sec:Phi-FB-II}.}
-
-\begin{ndroh}
- Do we have ode with smoothing? Do we want to do it?
-
- VA: this smoothing is completely different because is is not included in the dynamics. TBD
-\end{ndroh}
+The details of a possible computation of $\Phi$ can be found in Appendix~\ref{Sec:Phi-FB-II}.
 
 \subsection{Damped Newton and Line-search procedures}
 
-\begin{itemize}
-\item   (GP, Armijo, Non-monotone watch dogs)
-\end{itemize}
+
+
 
 
 \begin{algorithm}
@@ -1759,6 +1737,23 @@ The details of a possible computation of $\Phi$ can be found in Appendix~\ref{Se
   \caption{Armijo(A) line search}  \label{Algo:A}
 \end{algorithm}
 
+\label{sec:newtonmethods}
+
+
+
+\begin{ndrva}
+  Objectives:
+  \begin{itemize}
+  \item Alart Curnier~\cite{Alart.Curnier1991}
+  \item Christensen et
+    al.\cite{Christensen.Klarbring.ea1998}~\cite{Christensen.Pang1998},
+  \item Newton sur De Saxce cf
+    P. Joly~\cite{Joli.Feng2008}. Equivalence natural map.
+  \item and others
+    ?~\cite{Stadler_SIOPT2004}~\cite{Hueber.ea_SJSC2008,Hueber.Wolhmuth_CMAME2005}\cite{Koziara.Bicanic_CMAME2008}\cite{Renard_CMAME2013}
+  \item Update the section with the substitution of $u$
+  \end{itemize}
+\end{ndrva}
 
 
 \begin{ndroh}
@@ -1847,9 +1842,8 @@ A nomenclature for the algorithms based on the nonsmooth Newton methods is given
 \section{Splitting techniques and proximal point algorithm}
 \label{Sec:SplittingTechniquesAndProx}
 
-
-\textcolor{pink}{Splitting techniques are standard techniques to solve $\mathrm{VI}(F,X)$ when the function $F$ is affine, that is $F(z) = Mz+q$.
-Usually, a block splitting of the matrix $M$ is performed and a Projected Successive Over Relaxation (PSOR) \tg{method} is used to solve the VI. \tg{Since the cone $K$ is a product of second-order cones in $\RR^3$, a natural way to split the problem is to form sub-problems by using single contact as a building block.} The sub-problems can be solved by any method for the VI that have been presented in the previous sections. In the same way, the proximal point algorithm can also be used which amounts to solving the original $\mathrm{VI}(F,X)$ by solving a sequence of $\mathrm{VI}(F_{c,x_k},X)$  problems such that $  F_{c,x_k}(z) = z - x_k + c F(z) , \quad c > 0$ and $\lim_ {k \rightarrow +\infty } \|x_k-z\| =0$.}
+Splitting techniques are standard techniques to solve $\mathrm{VI}(F,X)$ when the function $F$ is affine that is $F(z) = Mz+q$ and the set $X$ can decomposed in a Cartesian product of independent smaller sets $X = \Pi_{i} X_i$.
+Usually, a block splitting of the matrix $M$ is performed and a Projected Successive Over Relaxation (PSOR) method is used to solve the VI. Since the cone $K$ is a product of second-order cones in $\RR^3$, a natural way to split the problem is to form sub-problems by using single contact as a building block. The sub-problems can be solved by any method for the VI that have been presented in the previous sections. In the same way, the proximal point algorithm can also be used which amounts to solving the original $\mathrm{VI}(F,X)$ by solving a sequence of $\mathrm{VI}(F_{c,x_k},X)$  problems such that $  F_{c,x_k}(z) = z - x_k + c F(z) , \quad c > 0$ and $\lim_ {k \rightarrow +\infty } \|x_k-z\| =0$.
 
 
 \subsection{Splitting techniques}
@@ -1866,9 +1860,9 @@ is split along each contact as follows
   \label{eq:delassus-ter}
   u^\alpha = W^{\alpha\alpha} r^\alpha + \sum_{\beta\neq \alpha}W^{\alpha\beta} r^\beta +  q^\alpha, \text{ for all } \alpha \in 1\ldots n_c,
 \end{equation}
-\tg{where the matrices $\alpha$ and $\beta$ are used to label the variable for each contact.
- The matrices $W^{\alpha\beta}$ with $\alpha \in 1,\ldots, n_c$ and $\beta \in 1,\ldots, n_c $ are easily identified from~\eqref{eq:delassus-bis}.}
- From~\eqref{eq:delassus-ter}, a projected Gauss--Seidel (PGS) method \tg{is obtained} by using the following update rule at the $k$-th iterate:
+where the matrices $\alpha$ and $\beta$ are used to label the variable for each contact.
+ The matrices $W^{\alpha\beta}$ with $\alpha \in 1,\ldots, n_c$ and $\beta \in 1,\ldots, n_c $ are easily identified from~\eqref{eq:delassus-bis}.
+ From~\eqref{eq:delassus-ter}, a projected Gauss--Seidel (PGS) method is obtained by using the following update rule at the $k$-th iterate:
 \begin{equation}
   \label{eq:pgs-1}
   u^{\alpha}_{k+1} = W^{\alpha\alpha} r^{\alpha}_{k+1} + \sum_{\beta < \alpha}W^{\alpha\beta} r^{\beta}_{k+1} + \sum_{\beta > \alpha}W^{\alpha\beta} r^{\beta}_{k} +  q^\alpha, \text{ for all } \alpha \in 1\ldots n_c.
@@ -1900,7 +1894,9 @@ where
 , \text{ for all } \alpha \in 1\ldots n_c.
 \end{equation}
 The problem~\eqref{eq:psor-3} has exactly the same structure as Problem~\ref{prob:II}, but is of lower size since it is only for one contact.
-It is solved by a \emph{local solver}, which can be any of the algorithms presented in this article or even an analytical method \tg{(enumerating all the possible cases)}.
+It is solved by a \emph{local solver}, which can be any of the algorithms presented in this article or even an analytical method (enumerating all the possible cases as in \citep{bonnefon:inria-00553859}).
+
+
 The PSOR algorithm is summarized in Algorithm~\ref{Algo:PSOR-II} and the PGS can be recovered by setting $\omega=1$.
 %
 \begin{algorithm}
@@ -2122,9 +2118,9 @@ A nomenclature for the algorithms based on the projection/splitting approach is 
 
 \subsection{Alternating optimization problem}
 
-\textcolor{pink}{The Panagiotopoulos approach described in Section~\ref{Sec:OptimisationProblems} generates a family of solvers by choosing a particular solver for the normal contact problem~(\ref{eq:AO-3}) and the tangential contact problem~(\ref{eq:AO-4}). More precisely, the following choices may be made}
+The Panagiotopoulos approach described in Section~\ref{Sec:OptimisationProblems} generates a family of solvers by choosing a particular solver for the normal contact problem~(\ref{eq:AO-3}) and the tangential contact problem~(\ref{eq:AO-4}). More precisely, the following choices may be made.
 
-\textcolor{pink}{The normal contact problem
+The normal contact problem
  \begin{equation}
   \label{eq:AO-3-bis}
   \begin{cases}
@@ -2133,12 +2129,58 @@ A nomenclature for the algorithms based on the projection/splitting approach is 
     \text{s.t.} & r_\n \geq 0
   \end{array}\end{cases} \text{ with }   \tilde q_\n =  q_\n + W_{\n\t}r_{\t,k},
 \end{equation}
- is a convex quadratic program with simple bound constraints that can be solved with any dedicated solver. In this work, we solve it with a) an active set strategy, b) a conjugate gradient approach with projection as it is developed in \citep{More.Toraldo1991} or c) an adaptation of one of the splitting techniques detailed in Section~\ref{Sec:SplittingTechniquesAndProx}. It is clear that we can also use semi-smooth Newton methods but our experience has shown that such methods are not efficient when $\ker (W_{\n\n}) \neq \{0\}$. Note that there exists also a bunch of methods in the literature that improves the method of \cite{More.Toraldo1991} for large--scale systems. Unfortunately,  to keep the article in a reasonable size, we leave these improvements for further studies.}
+is a convex quadratic program with simple bound constraints.
+%
+In the literature, a bunch of solvers has been developed to solver such problems. Among others, we might cite the active set strategy solvers \cite{Fletcher1987,Nocedal.Wright1999} that are mainly dedicated to  small--scale systems and the projected gradient \cite{Calamai.More1987} and projected conjugate gradient methods~\citep{More.Toraldo_NM1989,More.Toraldo1991} that are more dedicated to large--scale systems. Note that there exists also a bunch of methods in the literature that improves the methods of \cite{More.Toraldo1991} for large--scale systems. For the reader interested in deeper details, we refer to the book of \cite{Dostal.ea_AMM2016}. (see especially \cite{Dostal.ea_AMM2016}, Section 8.7 for a review of the different approaches).
+%
+It is clear that we might also use semi-smooth Newton methods or interior point methods but our experience has shown that such methods are not efficient when $\ker (W_{\n\n}) \neq \{0\}$. The optimality conditions of this quadratic reduced to a linear complementarity problem with a semi-definite matrix. In that case, it is also possible to solve the problem with PSOR techniques with line-searches.
+%
+In order to keep the article in a reasonable size, we decided in this work to use the projected gauss-seidel (PGS) algorithm and the projected gradient algorithm of   ~\cite{Calamai.More1987} to solve the normal problem described. The projected gradient algorithm solved
+the following QP for a convex set $C$
+ \begin{equation}
+  \label{eq:ConvexQP}
+  \begin{cases}
+    \min\, q(r) \coloneqq \Frac 1 2 r^\top  W r + r ^\top \tilde b \\
+    \begin{array}{ll}
+    \text{s.t.} & r \in C
+  \end{array}\end{cases}
+\end{equation}
+with the algorithm described in  Algorithm~\ref{Algo:ConvexQP}.
+
+\begin{algorithm}
+  \begin{algorithmic}
+    {\sf
+      \STATE $ $
+      \REQUIRE $\sf W,b$ that defines $q(r)$
+      \REQUIRE $\sf C$ a convex set
+      \REQUIRE $\sf r_0$ initial values and $\sf tol >0$ a tolerance
+      \REQUIRE $\sf\rho_0>0$, $l,\sigma\in(0,1)$
+      \REQUIRE $\sf i_{lsmax}$ maximum number of line-search iterations
+      \ENSURE  $\sf r$ solution of Problem~\ref{eq:ConvexQP}
+      \STATE $\sf r_{k} \leftarrow r_0 $ ; $\sf \theta_0  \leftarrow  q(r_0)$ ; $\sf k \leftarrow 0$
+      \WHILE {$\sf error > tol$}
+      \STATE \textit{Armijo like--search procedure}
+      \STATE $\sf i_{ls}  \leftarrow 0$
+      \WHILE {$\sf criterion > 0$ and $i_{ls} < i_{lsmax}$}
+      \STATE $\sf \rho \leftarrow \rho_0 l^{i_{ls}}$
+      \STATE $\sf r \leftarrow  P_C(r_k - \rho (M r_k +b))$
+      \STATE $\sf \theta \leftarrow  q(r)$
+      \STATE $\sf criterion \leftarrow \theta - \theta_k - \sigma (Mr_k+b)^\top(r-r_k)$
+      \STATE $i_{ls} \leftarrow i_{ls}+1$
+      \ENDWHILE
+      \STATE $\sf r_{k} \leftarrow r $ ; $\sf \theta_k \leftarrow  q(r)$;
+      \STATE evaluate $\sf error$.
+      \ENDWHILE
+    }
+  \end{algorithmic}
+  \caption{Projected gradient algorithm for QP~\refeq{eq:ConvexQP}}
+  \label{Algo:ConvexQP}
+\end{algorithm}
 
 
 
 
-\textcolor{pink}{ The tangential problem,
+The tangential problem,
 \begin{equation}
   \label{eq:AO-4-bis}
   \begin{cases}
@@ -2148,9 +2190,11 @@ A nomenclature for the algorithms based on the projection/splitting approach is 
   \end{array}
 \end{cases} \text{ with } \tilde q_\t = q_\t + W_{\t\n}r_{\n,k+1},
 \end{equation}
-is also a convex program but with a more complex structure since the constraints are quadratic one. Although it exists also some dedicated methods to solve this specific problem, we will use an adaptation of one of the splitting techniques detailed in Section~\ref{Sec:SplittingTechniquesAndProx}. The method in~\cite{Dostal.Kozubek_MP2012} (an extension of~\citep{More.Toraldo1991}) which is  an algorithm  for solving QP over convex constraints (disk constraint for instance) could be used.}
+is also a convex program but with a more complex structure since the constraints are quadratic one. It exists also some dedicated methods to solve this specific problem as the method in~\cite{Dostal.Kozubek_MP2012} (an extension of~\citep{More.Toraldo1991}) which is  an algorithm  for solving QP over convex constraints (disk constraint for instance). In the article, we will use a) a reformulation of the optimality conditions of this problem as a variational inequality and we apply the fixed point algorithm and the extra gradient algorithm of Section~\ref{sec:numericalmethods,vi} or b) an adaptation of one of the splitting techniques detailed in Section~\ref{Sec:SplittingTechniquesAndProx}.
 
-\textcolor{pink}{In Table~\ref{tab:OPTI-algos}, we detailed the algorithms we use in the present study. The algorithm in Algorithm~\ref{Algo:Panagiotopoulos} shows that this method may be viewed as a two-block Gauss-Seidel method as it has been pointed out by \cite{Tzaferopoulos_CS1993}.}
+ The algorithm is described in Algorithm~\ref{Algo:Panagiotopoulos}. This method may be viewed as a two-block Gauss-Seidel method as it has been pointed out by \cite{Tzaferopoulos_CS1993}.
+
+In Table~\ref{tab:OPTI-algos}, we detailed the algorithms we use in the present study.
 
 \begin{algorithm}
   \begin{algorithmic}
@@ -2181,7 +2225,7 @@ is also a convex program but with a more complex structure since the constraints
 
 \subsection{Successive approximation  method}
 \label{Sec:Tresca-solver}
-\textcolor{pink}{The methods of successive approximation successive approximations is a natural tool for the numerical realization of Problem~\ref{prob:II}. It is based on the Tresca approximation of the Coulomb cone as it is described in Section~\ref{Sec:OptimisationProblems} and the work of the celebrated Czech school which summarizes the seminal work of the Czech school~\cite{Necas.ea1980,Haslinger1983,Haslinger1984,Haslinger.ea1996}.   Each iterative step is represented by an auxiliary contact problem with given friction described by quadratic program over a cylinder~(\ref{eq:Haslinger-2}), that we recall there:
+The methods of successive approximation successive approximations is a natural tool for the numerical realization of Problem~\ref{prob:II}. It is based on the Tresca approximation of the Coulomb cone as it is described in Section~\ref{Sec:OptimisationProblems} and the work of the celebrated Czech school which summarizes the seminal work of the Czech school~\cite{Necas.ea1980,Haslinger1983,Haslinger1984,Haslinger.ea1996}.   Each iterative step is represented by an auxiliary contact problem with given friction described by quadratic program over a cylinder~(\ref{eq:Haslinger-2}), that we recall there:
 \begin{equation}
   \label{eq:Haslinger-2-bis}
   \begin{cases}
@@ -2211,32 +2255,32 @@ The radius of the cylinder is then updated in a iterative procedure.  The algori
       \STATE $\sf u \leftarrow W r + q$ 
     }
   \end{algorithmic}
-  \caption{Tresca approximation algorithm for Problem~\ref{prob:II}} 
-\end{algorithm}}
+  \caption{Tresca approximation algorithm for Problem~\ref{prob:II}}
+  \label{Algo:Tresca}
+\end{algorithm}
 
- \textcolor{pink}{In the literature, the successive approximation technique has been used in the bidimensional case in~\citep{Haslinger.ea_CMAME2002} \&~\citep{Dostal_JCAM2002} with improved and dedicated QP solvers overs box-constraints. Two strategies are implemented : a) the classical Tresca iteration (called FPMI) and  b) the Panagiotopoulos decomposition plus a Fixed point (called FPMII). They use  a specific QP solver for box constraint~\cite{Dostal_SIOPT1997} that is an improvement of Mor\'e--Toraldo method~\citep{More.Toraldo1991}. This technique has been direcltly extended in the three-dimensional case with a faceting of the cone in~\cite{Haslinger.ea_JCAM2004}. In the latter case, the problem is still a  box constrained QP since it contains only polyhedral constraints. }
+In the literature, the successive approximation technique has been used in the bidimensional case in~\citep{Haslinger.ea_CMAME2002} \&~\citep{Dostal_JCAM2002} with improved and dedicated QP solvers overs box-constraints. Two strategies are implemented : a) the classical Tresca iteration (called FPMI) and  b) the Panagiotopoulos decomposition plus a Fixed point (called FPMII). They use  a specific QP solver for box constraint~\cite{Dostal_SIOPT1997} that is an improvement of Mor\'e--Toraldo method~\citep{More.Toraldo1991}. This technique has been direcltly extended in the three-dimensional case with a faceting of the cone in~\cite{Haslinger.ea_JCAM2004}. In the latter case, the problem is still a  box constrained QP since it contains only polyhedral constraints.
+
+\cite{Haslinger.ea_MCS2012} propose a successive approximation technique in 3D with the special solver of~\cite{Kucera_OMS2007,Kucera_SIOPT2008} which is itself an extension to disk constraints of the Polyak method (conjugate gradient with active set on the bounds constraint) and its improvements~\cite{Dostal_SIOPT1997,Dostal.Schoberl_COA2005}.
 
 
-
- \textcolor{pink}{\cite{Haslinger.ea_MCS2012} propose a successive approximation technique in 3D with the special solver of~\cite{Kucera_OMS2007,Kucera_SIOPT2008} which is itself an extension to disk constraints of the Polyak method (conjugate gradient with active set on the bounds constraint) and its improvements~\cite{Dostal_SIOPT1997,Dostal.Schoberl_COA2005}.}
-
-
+\begin{ndrva}
 \cite{Dostal.Kozubek_MP2012} An algorithm (extension of MPGP) for solving QP over convex constraint (disk constraint for instance). Application to frictional contact. 
 
 
 \cite{Dostal.Kucera_SIOPT2010} last improvement of the method in~\cite{Dostal.Kozubek_MP2012} and~\cite{Kucera_SIOPT2008}
 
-
+Book of Dostal  ~\cite{Dostal.ea_AMM2016}
+\end{ndrva}
 
 
 \subsection{ACLM approach}
 
-\subsection{SOCCP approach}
+\subsection{Convex relation and the SOCCP approach}
 
 
 \subsection{Nomenclature}
 A nomenclature for the algorithms based on the optimisation approach is given in Table~\ref{tab:OPTI-algos}.
-
 \begin{table}
   \centering
   \begin{tabular}{|l|l|p{0.6\textwidth}|l|}
@@ -2246,37 +2290,53 @@ A nomenclature for the algorithms based on the optimisation approach is given in
     & Additional informations
     & parameters\\
     \hline
-    \sf PANA-NSGS-NSN-FB
+    \sf PANA-PGS-FP-VI-UPK
     & \ref{Algo:Panagiotopoulos}
-    &  NSGS-NSN-FB for both normal and tangent problem
-    & $tol, tol_{local}$\\
+    &  The normal problem is solved by a PGS algorithm and the tangent problem is solved with the {\sf FP-VI-UPK} algorithm
+    & $tol$\\
     \hline
-    \sf PANA-QP-NSGS-NSN
+    \sf PANA-PGS-EG-VI-UPK
     & \ref{Algo:Panagiotopoulos}
-    &  Active set strategy for normal contact problem and NSGS with NSN for tangential problem
-    & $tol, tol_{local}$\\
+    &  The normal problem is solved by a PGS algorithm and the tangent problem is solved with the  {\sf EG-VI-UPK} algorithm
+    & $tol$\\
     \hline
-    \sf PANA-VI-EG
-    & \ref{Algo:Panagiotopoulos}
-    & VI-EG for both normal and tangent problem
-    & $tol, tol_{local}$\\
+    \sf PANA-PGS-CONVEXQP-PG
+    & \ref{Algo:Panagiotopoulos} \&\ref{Algo:ConvexQP}
+    &  The normal problem is solved by a PGS algorithm and the tangent problem is solved with Algorithm~\ref{Algo:ConvexQP}
+    & $tol$\\
     \hline
-    \sf PANA-\ldots
-    & \ref{Algo:Panagiotopoulos}
-    & 
-    & $tol, tol_{local}$\\
+    \sf PANA-CONVEXQP-PG
+    & \ref{Algo:Panagiotopoulos}\&\ref{Algo:ConvexQP}
+    &  Both normal and tangent problems are solved  with Algorithm~\ref{Algo:ConvexQP}
+    & $tol$\\
     \hline
     \hline
-    \sf TRESCA-NSGS-FP-VI
-    &
-    & 
-    & $tol, tol_{local}$\\
+    \sf TRESCA-NSGS-FP-VI-UPK
+    & \ref{Algo:Tresca}
+    & The problem~\ref{eq:Haslinger-2-bis} is solved with the {\sf FP-VI-UPK} algorithm
+    & $tol$\\
+    \hline
+    \sf TRESCA-FP-VI-UPK
+    & \ref{Algo:Tresca}
+    & The problem~\ref{eq:Haslinger-2-bis} is solved with the {\sf FP-VI-UPK} algorithm
+    & $tol$\\
+    \hline
+    \sf TRESCA-EG-VI-UPK
+    & \ref{Algo:Tresca}
+    & The problem~\ref{eq:Haslinger-2-bis} is solved with the {\sf EG-VI-UPK} algorithm
+    & $tol$\\
+    \hline
+    \sf TRESCA-CONVEXQP-PG
+    & \ref{Algo:Tresca} \&\ref{Algo:ConvexQP}
+    & The problem~\ref{eq:Haslinger-2-bis} is solved with Algorithm~\ref{Algo:ConvexQP}
+    & $tol$\\
+    \hline
     \hline
     \sf ACLM-NSGS-FP-VI
     & 
     &
     & $tol, tol_{local}$\\
-    \hline
+
     \hline
   \end{tabular}
   \caption{Naming convention for optimization based  algorithms}
@@ -2549,8 +2609,8 @@ Analyze the quickest one and the more robust one.
 
 \addcontentsline{toc}{section}{References}
 \bibliographystyle{plainnat}
-%\bibliography{./biblio/String,./biblio/NonSmooth,./biblio/Math,./biblio/Multibody,./biblio/Fem.bib,./biblio/Dae.bib,./biblio/Meca,./biblio/AnaNum.bib,./biblio/Math-Impact,./biblio/Contact,./biblio/Optim,./biblio/Cp}
-\bibliography{biblio-extract}
+\bibliography{./biblio/String,./biblio/NonSmooth,./biblio/Math,./biblio/Multibody,./biblio/Fem.bib,./biblio/Dae.bib,./biblio/Meca,./biblio/AnaNum.bib,./biblio/Math-Impact,./biblio/Contact,./biblio/Optim,./biblio/Cp}
+%\bibliography{biblio-extract}
 
 
 
