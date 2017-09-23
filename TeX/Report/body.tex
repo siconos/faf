@@ -2054,36 +2054,36 @@ A nomenclature for the algorithms based on the projection/splitting approach is 
     & parameters\\
     \hline
     \sf NSGS-AC
-    & Algorithm~\ref{Algo:PSOR-II} with $\omega=1$ with the local solver NSN-AC with tolerance $tol_{local}$
-    & $tol, tol_{local},  \rho_\n, \rho_\t$\\
+    & Algorithm~\ref{Algo:PSOR-II} with $\omega=1$ with the local solver NSN-AC with tolerance $\sf tol_{local}$
+    & $\sf tol, tol_{local},  \rho_\n, \rho_\t$\\
     \hline
     \sf NSGS-JM
-    & Algorithm~\ref{Algo:PSOR-II} with $\omega=1$ with the local solver NSN-JM with tolerance $tol_{local}$
-    & $tol, tol_{local}, \rho_\n, \rho_\t$\\
+    & Algorithm~\ref{Algo:PSOR-II} with $\omega=1$ with the local solver NSN-JM with tolerance $\sf tol_{local}$
+    & $\sf tol, tol_{local}, \rho_\n, \rho_\t$\\
     \hline
     \sf NSGS-AC-GP
-    & Algorithm~\ref{Algo:PSOR-II} with $\omega=1$ with the local solver NSN-AC-GP with tolerance $tol_{local}$
-    & $tol, tol_{local}, \rho_\n, \rho_\t$\\
+    & Algorithm~\ref{Algo:PSOR-II} with $\omega=1$ with the local solver NSN-AC-GP with tolerance $\sf tol_{local}$
+    & $\sf tol, tol_{local}, \rho_\n, \rho_\t$\\
     \hline
     \sf NSGS-JM-GP
-    & Algorithm~\ref{Algo:PSOR-II} with $\omega=1$ with the local solver NSN-JM=GP with tolerance $tol_{local}$
-    & $tol, tol_{local}, \rho_\n, \rho_\t$\\
+    & Algorithm~\ref{Algo:PSOR-II} with $\omega=1$ with the local solver NSN-JM=GP with tolerance $\sf tol_{local}$
+    & $\sf tol, tol_{local}, \rho_\n, \rho_\t$\\
     \hline
     \sf NSGS-FP-DS-One
     & Algorithm~\ref{Algo:PSOR-II} with $\omega=1$ with one iteration of FP-DS for the local solver
-    & $tol$\\
+    & $\sf tol$\\
     \hline
     \sf NSGS-FP-VI-UPK
-    & Algorithm~\ref{Algo:PSOR-II} with $\omega=1$ with FP-VI-UPK for the local solver with tolerance $tol_{local}$
-    & $tol, tol_{local}, $\\
+    & Algorithm~\ref{Algo:PSOR-II} with $\omega=1$ with FP-VI-UPK for the local solver with tolerance $\sf tol_{local}$
+    & $\sf tol, tol_{local}, $\\
     \hline
     \sf NSGS-EXACT
     & Algorithm~\ref{Algo:PSOR-II} with $\omega=1$ with the exact local solver.
-    & $tol$\\
+    & $\sf tol$\\
     \hline
     \hline
     \sf PSOR-AC 
-    &  Algorithm~\ref{Algo:PSOR-II} with the local solver NSN-AC with tolerance $tol_{local}$
+    &  Algorithm~\ref{Algo:PSOR-II} with the local solver NSN-AC with tolerance $\sf tol_{local}$
     & $\omega, tol,  tol_{local}$\\
     \hline
     \hline
@@ -2118,7 +2118,7 @@ A nomenclature for the algorithms based on the projection/splitting approach is 
 
 \subsection{Alternating optimization problem}
 
-The Panagiotopoulos approach described in Section~\ref{Sec:OptimisationProblems} generates a family of solvers by choosing a particular solver for the normal contact problem~(\ref{eq:AO-3}) and the tangential contact problem~(\ref{eq:AO-4}). More precisely, the following choices may be made.
+The Panagiotopoulos approach described in Section~\ref{Sec:OptimisationProblems} generates a family of solvers by choosing a particular solver for the normal contact problem~(\ref{eq:AO-3}) and the tangential contact problem~(\ref{eq:AO-4}). This method may be viewed as a two-block Gauss-Seidel method as it has been pointed out by \cite{Tzaferopoulos_CS1993}. More precisely, the following choices may be made for the normal and tangent problems.
 
 The normal contact problem
  \begin{equation}
@@ -2190,9 +2190,9 @@ The tangential problem,
   \end{array}
 \end{cases} \text{ with } \tilde q_\t = q_\t + W_{\t\n}r_{\n,k+1},
 \end{equation}
-is also a convex program but with a more complex structure since the constraints are quadratic one. It exists also some dedicated methods to solve this specific problem as the method in~\cite{Dostal.Kozubek_MP2012} (an extension of~\citep{More.Toraldo1991}) which is  an algorithm  for solving QP over convex constraints (disk constraint for instance). In the article, we will use a) a reformulation of the optimality conditions of this problem as a variational inequality and we apply the fixed point algorithm and the extra gradient algorithm of Section~\ref{sec:numericalmethods,vi} or b) an adaptation of one of the splitting techniques detailed in Section~\ref{Sec:SplittingTechniquesAndProx}.
+is also a convex program but with a more complex structure since the constraints are quadratic one. It exists also some dedicated methods to solve this specific problem as the method in~\cite{Dostal.Kozubek_MP2012} (an extension of~\citep{More.Toraldo1991}) which is  an algorithm  for solving QP over convex constraints (disk constraint for instance). Earlier application of projected gradient and projected gradient techniques for the frictionless problem can also be found in \cite{Barbosa.ea1997} with comparison with PSOR techniques.
 
- The algorithm is described in Algorithm~\ref{Algo:Panagiotopoulos}. This method may be viewed as a two-block Gauss-Seidel method as it has been pointed out by \cite{Tzaferopoulos_CS1993}.
+In the article, we will use a) a reformulation of the optimality conditions of this problem as a variational inequality and we apply the fixed point algorithm and the extra gradient algorithm of Section~\ref{sec:numericalmethods,vi} or b) an adaptation of one of the splitting techniques detailed in Section~\ref{Sec:SplittingTechniquesAndProx}. The algorithm is described in Algorithm~\ref{Algo:Panagiotopoulos}.
 
 In Table~\ref{tab:OPTI-algos}, we detailed the algorithms we use in the present study.
 
@@ -2219,9 +2219,6 @@ In Table~\ref{tab:OPTI-algos}, we detailed the algorithms we use in the present 
   \caption{Panagiotopoulos decomposition algorithm for Problem~\ref{prob:II}}  \label{Algo:Panagiotopoulos}
 \end{algorithm}
 
-\begin{ndrva}
-  cite [11, 13, 14] and [25-29]  of \cite{Tzaferopoulos_CS1993}.
-\end{ndrva}
 
 \subsection{Successive approximation  method}
 \label{Sec:Tresca-solver}
@@ -2246,8 +2243,8 @@ The radius of the cylinder is then updated in a iterative procedure.  The algori
       \ENSURE  $\sf r,u$ solution of Problem~\ref{prob:II}
       \STATE $\sf r_{k} \leftarrow r_0 $ ; $\sf k \leftarrow 0$ 
       \WHILE {$\sf error > tol$} 
-      \STATE $\theta \rightarrow h(r_{\n,k})$ 
-      \STATE solve~\ref{eq:Haslinger-2-bis} for $r_{\n,k+1},r_{\t,k+1}$
+      \STATE $\theta \leftarrow h(r_{\n,k})$ 
+      \STATE solve~(\ref{eq:Haslinger-2-bis}) for $r_{\n,k+1},r_{\t,k+1}$
       \STATE $\sf k \leftarrow k+1$
       \STATE evaluate $\sf error$.
       \ENDWHILE
@@ -2259,14 +2256,12 @@ The radius of the cylinder is then updated in a iterative procedure.  The algori
   \label{Algo:Tresca}
 \end{algorithm}
 
-In the literature, the successive approximation technique has been used in the bidimensional case in~\citep{Haslinger.ea_CMAME2002} \&~\citep{Dostal_JCAM2002} with improved and dedicated QP solvers overs box-constraints. Two strategies are implemented : a) the classical Tresca iteration (called FPMI) and  b) the Panagiotopoulos decomposition plus a Fixed point (called FPMII). They use  a specific QP solver for box constraint~\cite{Dostal_SIOPT1997} that is an improvement of Mor\'e--Toraldo method~\citep{More.Toraldo1991}. This technique has been direcltly extended in the three-dimensional case with a faceting of the cone in~\cite{Haslinger.ea_JCAM2004}. In the latter case, the problem is still a  box constrained QP since it contains only polyhedral constraints.
+In the literature, the successive approximation technique has been used in the bidimensional case in~\citep{Haslinger.ea_CMAME2002} \&~\citep{Dostal_JCAM2002} with improved and dedicated QP solvers overs box-constraints. Two strategies are implemented : a) the classical Tresca iteration (called FPMI) and  b) the Panagiotopoulos decomposition plus a Fixed point (called FPMII). They use  a specific QP solver for box constraint~\cite{Dostal_SIOPT1997} that is an improvement of Mor\'e--Toraldo method~\citep{More.Toraldo1991}. This technique has been directly extended in the three-dimensional case with a faceting of the cone in~\cite{Haslinger.ea_JCAM2004}. In the latter case, the problem is still a  box constrained QP since it contains only polyhedral constraints. In~\cite{Haslinger.ea_MCS2012} the authors propose a successive approximation technique in 3D with the special solver of~\cite{Kucera_OMS2007,Kucera_SIOPT2008} which is itself an extension to disk constraints of the Polyak method (conjugate gradient with active set on the bounds constraint) and its improvements~\cite{Dostal_SIOPT1997,Dostal.Schoberl_COA2005}. 
 
-\cite{Haslinger.ea_MCS2012} propose a successive approximation technique in 3D with the special solver of~\cite{Kucera_OMS2007,Kucera_SIOPT2008} which is itself an extension to disk constraints of the Polyak method (conjugate gradient with active set on the bounds constraint) and its improvements~\cite{Dostal_SIOPT1997,Dostal.Schoberl_COA2005}.
 
 
 \begin{ndrva}
 \cite{Dostal.Kozubek_MP2012} An algorithm (extension of MPGP) for solving QP over convex constraint (disk constraint for instance). Application to frictional contact. 
-
 
 \cite{Dostal.Kucera_SIOPT2010} last improvement of the method in~\cite{Dostal.Kozubek_MP2012} and~\cite{Kucera_SIOPT2008}
 
@@ -2276,8 +2271,48 @@ Book of Dostal  ~\cite{Dostal.ea_AMM2016}
 
 \subsection{ACLM approach}
 
-\subsection{Convex relation and the SOCCP approach}
+In the convex SOCCP approach described in Section~\ref{Sec:OptimisationProblems}, we have to solve for a given value the following problem
+\begin{equation}\label{eq:ACLM-4}
+  \left\{
+    \begin{array}{ll}
+      \min\,&\Frac 1 2 r^\top W r + r^\top (q + s)  \\
+      \text{s.t. } & r \in K.
+    \end{array}
+  \right.
+\end{equation}
+which is a again a convex quadratic program over second--order cone. The approach listed below could again be used to solve this problem. In this work, we solve it by three different ways: a) an adaptation of one of the splitting techniques detailed in Section~\ref{Sec:SplittingTechniquesAndProx}, b) using the projected gradient algorithm dedicated to convex QP described in~\ref{Algo:ConvexQP} or c) the fixed point algorithm and the extra gradient algorithm of Section~\ref{sec:numericalmethods,vi} . The algorithm is described in Algorithm~\ref{Algo:ACLM} and we detailed the algorithms we use in the present study in Table~\ref{tab:OPTI-algos}.
 
+\begin{algorithm}
+  \begin{algorithmic}
+    {\sf
+      \STATE $ $ 
+      \REQUIRE $\sf W,q,\mu$
+      \REQUIRE $\sf r_0$ initial values and $\sf tol >0$ a tolerance
+      \ENSURE  $\sf r,u$ solution of Problem~\ref{prob:II}
+      \STATE $\sf u_{0} \leftarrow W r_0 + q $ ; $\sf k \leftarrow 0$ 
+      \WHILE {$\sf error > tol$} 
+      \STATE $\sf s \leftarrow g(u_{k})$ 
+      \STATE solve~(\ref{eq:ACLM-4}) for $r_{k+1}$
+      \STATE $\sf u_{k+1} \leftarrow W r_{k+1} + q$ 
+      \STATE $\sf k \leftarrow k+1$
+      \STATE evaluate $\sf error$.
+      \ENDWHILE
+      \STATE $\sf r \leftarrow r_{k}$ 
+      \STATE $\sf u \leftarrow u_k$ 
+    }
+  \end{algorithmic}
+  \caption{ACLM approximation algorithm for Problem~\ref{prob:II}}
+  \label{Algo:ACLM}
+\end{algorithm}
+
+
+\subsection{Convex relaxation and the SOCCP approach}
+
+
+
+\subsection{Control of the tolerance of internal solvers in optimization approach}
+
+The 
 
 \subsection{Nomenclature}
 A nomenclature for the algorithms based on the optimisation approach is given in Table~\ref{tab:OPTI-algos}.
@@ -2293,50 +2328,64 @@ A nomenclature for the algorithms based on the optimisation approach is given in
     \sf PANA-PGS-FP-VI-UPK
     & \ref{Algo:Panagiotopoulos}
     &  The normal problem is solved by a PGS algorithm and the tangent problem is solved with the {\sf FP-VI-UPK} algorithm
-    & $tol$\\
+    & $\sf tol$\\
     \hline
     \sf PANA-PGS-EG-VI-UPK
     & \ref{Algo:Panagiotopoulos}
     &  The normal problem is solved by a PGS algorithm and the tangent problem is solved with the  {\sf EG-VI-UPK} algorithm
-    & $tol$\\
+    & $\sf tol$\\
     \hline
     \sf PANA-PGS-CONVEXQP-PG
     & \ref{Algo:Panagiotopoulos} \&\ref{Algo:ConvexQP}
     &  The normal problem is solved by a PGS algorithm and the tangent problem is solved with Algorithm~\ref{Algo:ConvexQP}
-    & $tol$\\
+    & $\sf tol$\\
     \hline
     \sf PANA-CONVEXQP-PG
     & \ref{Algo:Panagiotopoulos}\&\ref{Algo:ConvexQP}
     &  Both normal and tangent problems are solved  with Algorithm~\ref{Algo:ConvexQP}
-    & $tol$\\
+    & $\sf tol$\\
     \hline
     \hline
     \sf TRESCA-NSGS-FP-VI-UPK
     & \ref{Algo:Tresca}
     & The problem~\ref{eq:Haslinger-2-bis} is solved with the {\sf FP-VI-UPK} algorithm
-    & $tol$\\
+    & $\sf tol$\\
     \hline
     \sf TRESCA-FP-VI-UPK
-    & \ref{Algo:Tresca}
+    & \ref{Algo:Tresca} \& \ref{Algo:FP-vi}
     & The problem~\ref{eq:Haslinger-2-bis} is solved with the {\sf FP-VI-UPK} algorithm
-    & $tol$\\
+    & $\sf tol$\\
     \hline
     \sf TRESCA-EG-VI-UPK
-    & \ref{Algo:Tresca}
+    & \ref{Algo:Tresca} \& \ref{Algo:ExtraGradient-vi}
     & The problem~\ref{eq:Haslinger-2-bis} is solved with the {\sf EG-VI-UPK} algorithm
-    & $tol$\\
+    & $\sf tol$\\
     \hline
     \sf TRESCA-CONVEXQP-PG
     & \ref{Algo:Tresca} \&\ref{Algo:ConvexQP}
     & The problem~\ref{eq:Haslinger-2-bis} is solved with Algorithm~\ref{Algo:ConvexQP}
-    & $tol$\\
+    & $\sf tol$\\
     \hline
     \hline
-    \sf ACLM-NSGS-FP-VI
-    & 
-    &
-    & $tol, tol_{local}$\\
-
+    \sf ACLM-NSGS-FP-VI-UPK
+    &   \ref{Algo:ACLM}
+    &  The problem~\ref{eq:ACLM-4} is solved with the {\sf NSGS-FP-VI-UPK} algorithm
+    & $\sf tol$\\
+    \hline
+    \sf ACLM-FP-VI-UPK
+    & \ref{Algo:ACLM}\& \ref{Algo:FP-vi}
+    & The problem~\ref{eq:ACLM-4} is solved with the {\sf FP-VI-UPK} algorithm
+    & $\sf tol$\\
+    \hline
+    \sf ACLM-EG-VI-UPK \& \ref{Algo:ExtraGradient-vi}
+    & \ref{Algo:ACLM}
+    & The problem~\ref{eq:ACLM-4} is solved with the {\sf EG-VI-UPK} algorithm
+    & $\sf tol$\\
+    \hline
+    \sf ACLM-CONVEXQP-PG
+    &   \ref{Algo:ACLM}
+    &  The problem~\ref{eq:ACLM-4} is solved with the Algorithm~\ref{Algo:ConvexQP}
+    & $\sf tol$\\
     \hline
   \end{tabular}
   \caption{Naming convention for optimization based  algorithms}
