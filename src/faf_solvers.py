@@ -423,16 +423,6 @@ class faf_solvers():
         nsgs.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN
         nsgs.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
 
-        nsgs_rho_given = SiconosSolver(name="NSGS-AC-RHO-GIVEN",
-                             gnuplot_name="NSGS-AC (fixed rho)",
-                             API=N.fc3d_nsgs,
-                             TAG=N.SICONOS_FRICTION_3D_NSGS,
-                             iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
-                             dparam_err=1,
-                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
-        nsgs_rho_given.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN
-        nsgs_rho_given.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
-        nsgs_rho_given.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_RHO_STRATEGY] = N.SICONOS_FRICTION_3D_NSN_FORMULATION_RHO_STRATEGY_CONSTANT;
 
 
         nsgs_ac_gp = SiconosSolver(name="NSGS-AC-GP",
@@ -536,8 +526,47 @@ class faf_solvers():
         #nsgs_sfull.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithLocalIteration
         #N.printSolverOptions(nsgs_sfull.SolverOptions())
 
+        
+        nsgs_rho_given = SiconosSolver(name="NSGS-AC-RHO-GIVEN",
+                                           gnuplot_name='NSGS-AC (\$\\\\rho\_\{\\\\hbox\{\\\\tiny N \}\} =\\\\rho\_T =1\$ )',
+                             API=N.fc3d_nsgs,
+                             TAG=N.SICONOS_FRICTION_3D_NSGS,
+                             iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
+                             dparam_err=1,
+                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+        nsgs_rho_given.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN
+        nsgs_rho_given.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
+        nsgs_rho_given.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_RHO_STRATEGY] = N.SICONOS_FRICTION_3D_NSN_FORMULATION_RHO_STRATEGY_CONSTANT;
 
-        nsgs_solvers = [nsgs, nsgs_rho_given, nsgs_ac_gp, nsgs_100, nsgs_ac_gp_100, nsgs_ac_gp_adaptive, nsgs_ac_gp_adaptive2, nsgs_jm, nsgs_jm_gp,
+        nsgs_rho_spectral_norm = SiconosSolver(name="NSGS-AC-RHO-SPECTRAL-NORM",
+                                           gnuplot_name='NSGS-AC (\$\\\\rho\_\{\\\\hbox\{\\\\tiny N \}\} =\\\\rho\_T =1\$ )',
+                             API=N.fc3d_nsgs,
+                             TAG=N.SICONOS_FRICTION_3D_NSGS,
+                             iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
+                             dparam_err=1,
+                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+        nsgs_rho_spectral_norm.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN
+        nsgs_rho_spectral_norm.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
+        nsgs_rho_spectral_norm.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_RHO_STRATEGY] = N.SICONOS_FRICTION_3D_NSN_FORMULATION_RHO_STRATEGY_SPECTRAL_NORM;
+        
+        nsgs_rho_split_spectral_norm = SiconosSolver(name="NSGS-AC-RHO-SPLIT-SPECTRAL-NORM",
+                                           gnuplot_name='NSGS-AC (\$\\\\rho\_\{\\\\hbox\{\\\\tiny N \}\} =\\\\rho\_T =1\$ )',
+                             API=N.fc3d_nsgs,
+                             TAG=N.SICONOS_FRICTION_3D_NSGS,
+                             iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
+                             dparam_err=1,
+                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+        nsgs_rho_split_spectral_norm.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN
+        nsgs_rho_split_spectral_norm.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
+        nsgs_rho_split_spectral_norm.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_RHO_STRATEGY] = N.SICONOS_FRICTION_3D_NSN_FORMULATION_RHO_STRATEGY_SPLIT_SPECTRAL_NORM;
+
+
+
+
+
+
+        
+        nsgs_solvers = [nsgs, nsgs_rho_given,nsgs_rho_spectral_norm,nsgs_rho_split_spectral_norm, nsgs_ac_gp, nsgs_100, nsgs_ac_gp_100, nsgs_ac_gp_adaptive, nsgs_ac_gp_adaptive2, nsgs_jm, nsgs_jm_gp,
                             nsgs_sfull, snsgs]
 
         for s in nsgs_solvers:
@@ -1125,35 +1154,37 @@ class faf_solvers():
         Proxfixed.SolverOptions().internalSolvers.iparam[3] = 100
 
 
-        regul_value=1e03
-        str1 = "{0:1.0e}".format(regul_value).replace("1e","10\^{")+"}"
-        str2 = "{0:1.0e}".format(regul_value)
-        Regul_variable = SiconosSolver(name="PROX-NSN-AC-regulVar-"+str2,
-                             gnuplot_name="PPA-NSN-AC-GP   \$ \\\mu=1, \\\sigma=5.0\$ regulVar \$"+str1+"\$",
-                             API=N.fc3d_proximal,
-                             TAG=N.SICONOS_FRICTION_3D_PROX,
-                             iparam_iter=7,
-                             dparam_err=1,
-                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
-        Regul_variable.SolverOptions().dparam[3] = regul_value
-        Regul_variable.SolverOptions().iparam[9] = 1
-        Regul_variable.SolverOptions().internalSolvers.iparam[3] = 100
-
-
+        regul_values= [1e3, 1e4, 1e6]
+        regul_series_variable =[]
+        for rr in regul_values:
+            str1 = "{0:1.0e}".format(rr).replace("1e","10\\^{")+"}"
+            str2 = "{0:1.0e}".format(rr)
+            regul_solver  = SiconosSolver(name="PROX-NSN-AC-regulVar-"+str2,
+                                          gnuplot_name="PPA-NSN-AC-GP adaptive \$ \\\mu="+str1+"\$",
+                                          API=N.fc3d_proximal,
+                                          TAG=N.SICONOS_FRICTION_3D_PROX,
+                                          iparam_iter=7,
+                                          dparam_err=1,
+                                          maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+            regul_solver.SolverOptions().dparam[3] = rr
+            regul_solver.SolverOptions().iparam[N.SICONOS_FRICTION_3D_PROXIMAL_IPARAM_STRATEGY] = N.SICONOS_FRICTION_3D_PROXIMAL_REGULARIZATION
+            regul_solver.SolverOptions().internalSolvers.iparam[3] = 100
+            regul_series_variable.append(regul_solver)
+            
         regul_values= [ 1e4, 1e6, 1e8, 1e10]
         regul_series =[]
         for rr in regul_values:
-            str1 = "{0:1.0e}".format(rr).replace("1e","10\^{")+"}"
+            str1 = "{0:1.0e}".format(rr).replace("1e","10\\^{")+"}"
             str2 = "{0:1.0e}".format(rr)
             regul_solver  = SiconosSolver(name="PROX-NSN-AC-regul-"+str2,
-                                          gnuplot_name="PPA-NSN-AC-GP  \$ \\\mu="+str1+"\$",
+                                          gnuplot_name="PPA-NSN-AC-GP fixed \$ \\\mu="+str1+"\$",
                                           API=N.fc3d_proximal,
                                           TAG=N.SICONOS_FRICTION_3D_PROX,
                                           iparam_iter=7,
                                           dparam_err=1,
                                           maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
             regul_solver.SolverOptions().dparam[3] = - rr
-            regul_solver.SolverOptions().iparam[9] = 1
+            regul_solver.SolverOptions().iparam[N.SICONOS_FRICTION_3D_PROXIMAL_IPARAM_STRATEGY] = N.SICONOS_FRICTION_3D_PROXIMAL_REGULARIZATION
             regul_solver.SolverOptions().internalSolvers.iparam[3] = 100
             regul_series.append(regul_solver)
 
@@ -1321,9 +1352,9 @@ class faf_solvers():
                               TrescaFixedPoint, TrescaFixedPoint_pg, TrescaFixedPoint_vi_fpp, DeSaxceFixedPoint,
                               VIFixedPointProjection, VIExtraGrad,
                               SOCLCP,
-                              Prox,  Prox_nls, ProxFB,  ProxFB_nls, ProxNSGS, Proxfixed, Regul_variable, regul_series[0],
+                              Prox,  Prox_nls, ProxFB,  ProxFB_nls, ProxNSGS, Proxfixed,regul_series[0],
                               ACLMFixedPoint, ACLMFixedPoint_vi_fpp, ACLMFixedPoint_vi_eg])
-
+        all_solvers.extend(regul_series_variable)
         all_solver_unstable = [ProxFB_fblsa]
         all_solvers.extend(all_solver_unstable)
 
