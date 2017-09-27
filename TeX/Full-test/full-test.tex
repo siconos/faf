@@ -159,13 +159,6 @@
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\figwidth]{../figure/OPTI/\measurename/profile-#1.pdf}
-  \includegraphics[width=\figwidth]{../figure/OPTI/\measurename/profile-#1_legend.pdf}
-\caption{{#2}{  } \measurename { }OPTI}
-\end{figure}
-
-\begin{figure}[htbp]
-  \centering
   \includegraphics[width=\figwidth]{../figure/PROX/InternalSolvers/\measurename/profile-#1.pdf}
   \includegraphics[width=\figwidth]{../figure/PROX/InternalSolvers/\measurename/profile-#1_legend.pdf}
 \caption{{#2}{  } \measurename { }PROX/InternalSolvers}
@@ -173,9 +166,38 @@
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\figwidth]{../figure/PROX/Parameters/\measurename/profile-#1.pdf}
-  \includegraphics[width=\figwidth]{../figure/PROX/Parameters/\measurename/profile-#1_legend.pdf}
-\caption{{#2}{  } \measurename { }PROX/Parameters}
+  \includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/\measurename/profile-#1.pdf}
+  \includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/\measurename/profile-#1_legend.pdf}
+\caption{{#2}{  } \measurename { }PROX/Parametric studies $\nu=0.5$}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/\measurename/profile-#1.pdf}
+  \includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/\measurename/profile-#1_legend.pdf}
+\caption{{#2}{  } \measurename { }PROX/Parametric studies $\nu=1.0$}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/\measurename/profile-#1.pdf}
+  \includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/\measurename/profile-#1_legend.pdf}
+\caption{{#2}{  } \measurename { }PROX/Parametric studies $\nu=2.0$}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\figwidth]{../figure/REGUL/\measurename/profile-#1.pdf}
+  \includegraphics[width=\figwidth]{../figure/REGUL/\measurename/profile-#1_legend.pdf}
+\caption{{#2}{  } \measurename { }PROX/Regularized problem}
+\end{figure}
+
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\figwidth]{../figure/OPTI/\measurename/profile-#1.pdf}
+  \includegraphics[width=\figwidth]{../figure/OPTI/\measurename/profile-#1_legend.pdf}
+\caption{{#2}{  } \measurename { }OPTI}
 \end{figure}
 
 
@@ -246,16 +268,20 @@
   \begin{enumerate}
   \item Local solvers
     \begin{enumerate}
-    \item NSN local solvers without line-search are the best solvers.
-    \item GP line-search method is slowing a lot the efficiency of the solver. Since we do need to improve to robustness of the solver, there is no interest in this set to use a line-search
+    \item NSN local solvers without line-search are the best solvers. Note that the choice of $\rho_N=\rho_T=1$ does not degrade the performance.
+    \item GP line-search method is slowing a bit the efficiency of the solver. Since all the problems are solved without line-search procedure, there is no interest in that case to use it to improve the robustness of the NSN local solvers. 
     \item Quite surprisingly, the local solvers based on FP-VI-UPK are also efficient, especially when we limit the number of iteration or the local tolerance of the local algorithm.
+    \item The exact solver is the efficient solver but not robust at all.
+    \item The use of hybrid solvers are also not very attractive since all the problems are solved by NSN methods.
     \end{enumerate}
   \item Local Tolerances:
-        The study of the local tolerances of the local solvers shows that the local tolerance has to be lower than 1e-10 to get robustness and a good convergence rate of the NSGS-AC-GP solver.
-        For the NSGS-FP-VI-UPK, a limited tolerance improves the efficiency without reducing the robustness
-      \item Shuffling techniques: The shuffling of contact does not improve the convergence.
+    The study of the local tolerances of the local solvers shows two differents tendancies for two classes of solvers:
+    \begin{enumerate}
+    \item NSN local solvers are not influenced by the local tolerances. We guessed that the problems are sufficiently easy such that the Newton solver converge to tight tolerances in few iterations.
+    \item For the NSGS-FP-VI-UPK, a limited tolerance improves the   efficiency without reducing the robustness
   \end{enumerate}
-\end{enumerate}
+  \item Shuffling techniques: The shuffling of contact does not improve the convergence.
+  \end{enumerate}
 \item PSOR Solvers.
   \begin{enumerate}
   \item For the values of the relaxation parameters $\omega$ in $[1.3,1.5]$, the relaxation increases the efficiency of the  solver but decreases the robustness
@@ -263,7 +289,6 @@
   \end{enumerate}
 \item NSN and PROX solvers. The direct Newton techniques on such rigid-body test set are inefficient. (link to the distribution of ranks of the matrices)
 \item OPTI solvers. On this problem, the ACLM and TRESCA approaches do not improve the efficiency. The problems are also better solved by the SOCLCP technique. Convexification is working well.
-
 \end{enumerate}
 
 
@@ -289,7 +314,6 @@
     For the NSGS-FP-VI-UPK, a limited tolerance improves the efficiency without reducing the robustness
   \item Shuffling techniques: The shuffling of contact does not improve the convergence.
   \end{enumerate}
-\end{enumerate}
 \item PSOR Solvers. No conclusion due to robustness problems
 \item NSN and PROX solvers. The direct Newton techniques on such rigid-body test set are inefficient. (link to the distribution of ranks of the matrices)
 \item OPTI solvers. On this problem, the TRESCA approach improves a lot the efficiency. The problems are also better solved by the SOCLCP technique/ Convexification is working well.
@@ -314,7 +338,6 @@
 
   \item Shuffling techniques: The shuffling of contact does not improve the convergence.
   \end{enumerate}
-\end{enumerate}
 \item PSOR Solvers. The relaxation is not interesting in this example
 \item NSN and PROX solvers. The direct Newton techniques on such rigid-body test set are inefficient. (link to the distribution of ranks of the matrices)
 \item OPTI solvers. On this problem, the ACLM approach improves a lot the efficiency and the robustness. The problems are also better solved by the SOCLCP technique. Convexification is working well.
@@ -365,6 +388,16 @@
 \clearpage
 \def\testname{Chute_1000}
 \def\testnamechar{Chute\_1000}
+\test{\testname}{\testnamechar}
+
+\clearpage
+\def\testname{Chute_4000}
+\def\testnamechar{Chute\_4000}
+\test{\testname}{\testnamechar}
+
+\clearpage
+\def\testname{Chute_local_problems}
+\def\testnamechar{Chute\_local\_problems}
 \test{\testname}{\testnamechar}
 
 \clearpage
