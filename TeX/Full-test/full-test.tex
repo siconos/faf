@@ -99,120 +99,120 @@
 \fancyfoot[C]{}
 \fancyfoot[R]{\texttt{file rr.tex -- \isodayandtime}}
 
-\newcommand{\test}[2]{
-\section{{#2}}
+\newcommand{\test}[4]{
+\section{{#2} precision {#3} timeout {#4}}
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\figwidth]{../figure/VI/UpdateRule/\measurename/profile-#1.pdf}
-  \includegraphics[width=\figwidth]{../figure/VI/UpdateRule/\measurename/profile-#1_legend.pdf}
+  \includegraphics[width=\figwidth]{../figure/VI/UpdateRule/{#3}/{#4}/\measurename/profile-#1.pdf}
+  \includegraphics[width=\figwidth]{../figure/VI/UpdateRule/{#3}/{#4}/\measurename/profile-#1_legend.pdf}
 \caption{{#2}{  } \measurename{  } VI/UpdateRule}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/\measurename/profile-#1.pdf}
-  \includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/\measurename/profile-#1_legend.pdf}
+  \includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/{#3}/{#4}/\measurename/profile-#1.pdf}
+  \includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/{#3}/{#4}/\measurename/profile-#1_legend.pdf}
 \caption{{#2}{  } \measurename { }NSGS/LocalSolver}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\figwidth]{../figure/NSGS/LocalSolverHybrid/\measurename/profile-#1.pdf}
-  \includegraphics[width=\figwidth]{../figure/NSGS/LocalSolverHybrid/\measurename/profile-#1_legend.pdf}
+  \includegraphics[width=\figwidth]{../figure/NSGS/LocalSolverHybrid/{#3}/{#4}/\measurename/profile-#1.pdf}
+  \includegraphics[width=\figwidth]{../figure/NSGS/LocalSolverHybrid/{#3}/{#4}/\measurename/profile-#1_legend.pdf}
 \caption{{#2}{  } \measurename { }NSGS/LocalSolverHybrid}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/\measurename/profile-#1.pdf}
-  \includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/\measurename/profile-#1_legend.pdf}
+  \includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/{#3}/{#4}/\measurename/profile-#1.pdf}
+  \includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/{#3}/{#4}/\measurename/profile-#1_legend.pdf}
 \caption{{#2}{  } \measurename { }NSGS/LocalTol}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/\measurename/profile-#1.pdf}
-  \includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/\measurename/profile-#1_legend.pdf}
+  \includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/{#3}/{#4}/\measurename/profile-#1.pdf}
+  \includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/{#3}/{#4}/\measurename/profile-#1_legend.pdf}
 \caption{{#2}{  } \measurename { }NSGS/LocalTol-VI}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\figwidth]{../figure/NSGS/Shuffled/\measurename/profile-#1.pdf}
-  \includegraphics[width=\figwidth]{../figure/NSGS/Shuffled/\measurename/profile-#1_legend.pdf}
+  \includegraphics[width=\figwidth]{../figure/NSGS/Shuffled/{#3}/{#4}/\measurename/profile-#1.pdf}
+  \includegraphics[width=\figwidth]{../figure/NSGS/Shuffled/{#3}/{#4}/\measurename/profile-#1_legend.pdf}
 \caption{{#2}{  } \measurename { }NSGS/Shuffled}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\figwidth]{../figure/PSOR/\measurename/profile-#1.pdf}
-  \includegraphics[width=\figwidth]{../figure/PSOR/\measurename/profile-#1_legend.pdf}
+  \includegraphics[width=\figwidth]{../figure/PSOR/{#3}/{#4}/\measurename/profile-#1.pdf}
+  \includegraphics[width=\figwidth]{../figure/PSOR/{#3}/{#4}/\measurename/profile-#1_legend.pdf}
 \caption{{#2}{  } \measurename { }PSOR}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\figwidth]{../figure/NSN/\measurename/profile-#1.pdf}
-  \includegraphics[width=\figwidth]{../figure/NSN/\measurename/profile-#1_legend.pdf}
+  \includegraphics[width=\figwidth]{../figure/NSN/{#3}/{#4}/\measurename/profile-#1.pdf}
+  \includegraphics[width=\figwidth]{../figure/NSN/{#3}/{#4}/\measurename/profile-#1_legend.pdf}
 \caption{{#2}{  } \measurename { }NSN}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\figwidth]{../figure/PROX/InternalSolvers/\measurename/profile-#1.pdf}
-  \includegraphics[width=\figwidth]{../figure/PROX/InternalSolvers/\measurename/profile-#1_legend.pdf}
+  \includegraphics[width=\figwidth]{../figure/PROX/InternalSolvers/{#3}/{#4}/\measurename/profile-#1.pdf}
+  \includegraphics[width=\figwidth]{../figure/PROX/InternalSolvers/{#3}/{#4}/\measurename/profile-#1_legend.pdf}
 \caption{{#2}{  } \measurename { }PROX/InternalSolvers}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/\measurename/profile-#1.pdf}
-  \includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/\measurename/profile-#1_legend.pdf}
+  \includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/{#3}/{#4}/\measurename/profile-#1.pdf}
+  \includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/{#3}/{#4}/\measurename/profile-#1_legend.pdf}
 \caption{{#2}{  } \measurename { }PROX/Parametric studies $\nu=0.5$}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/\measurename/profile-#1.pdf}
-  \includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/\measurename/profile-#1_legend.pdf}
+  \includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/{#3}/{#4}/\measurename/profile-#1.pdf}
+  \includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/{#3}/{#4}/\measurename/profile-#1_legend.pdf}
 \caption{{#2}{  } \measurename { }PROX/Parametric studies $\nu=1.0$}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/\measurename/profile-#1.pdf}
-  \includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/\measurename/profile-#1_legend.pdf}
+  \includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/{#3}/{#4}/\measurename/profile-#1.pdf}
+  \includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/{#3}/{#4}/\measurename/profile-#1_legend.pdf}
 \caption{{#2}{  } \measurename { }PROX/Parametric studies $\nu=2.0$}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\figwidth]{../figure/REGUL/\measurename/profile-#1.pdf}
-  \includegraphics[width=\figwidth]{../figure/REGUL/\measurename/profile-#1_legend.pdf}
+  \includegraphics[width=\figwidth]{../figure/REGUL/{#3}/{#4}/\measurename/profile-#1.pdf}
+  \includegraphics[width=\figwidth]{../figure/REGUL/{#3}/{#4}/\measurename/profile-#1_legend.pdf}
 \caption{{#2}{  } \measurename { }PROX/Regularized problem}
 \end{figure}
 
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\figwidth]{../figure/OPTI/\measurename/profile-#1.pdf}
-  \includegraphics[width=\figwidth]{../figure/OPTI/\measurename/profile-#1_legend.pdf}
+  \includegraphics[width=\figwidth]{../figure/OPTI/{#3}/{#4}/\measurename/profile-#1.pdf}
+  \includegraphics[width=\figwidth]{../figure/OPTI/{#3}/{#4}/\measurename/profile-#1_legend.pdf}
 \caption{{#2}{  } \measurename { }OPTI}
 \end{figure}
 
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\figwidth]{../figure/COMP/large/\measurename/profile-#1.pdf}
-  \includegraphics[width=\figwidth]{../figure/COMP/large/\measurename/profile-#1_legend.pdf}
+  \includegraphics[width=\figwidth]{../figure/COMP/large/{#3}/{#4}/\measurename/profile-#1.pdf}
+  \includegraphics[width=\figwidth]{../figure/COMP/large/{#3}/{#4}/\measurename/profile-#1_legend.pdf}
 \caption{{#2}{  } \measurename { }COMP/large}
 \end{figure}
 
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\figwidth]{../figure/COMP/zoom/\measurename/profile-#1.pdf}
-  \includegraphics[width=\figwidth]{../figure/COMP/zoom/\measurename/profile-#1_legend.pdf}
+  \includegraphics[width=\figwidth]{../figure/COMP/zoom/{#3}/{#4}/\measurename/profile-#1.pdf}
+  \includegraphics[width=\figwidth]{../figure/COMP/zoom/{#3}/{#4}/\measurename/profile-#1_legend.pdf}
 \caption{{#2}{  } \measurename { }COMP/zoom}
 \end{figure}
 
@@ -253,7 +253,7 @@
 \clearpage
 \def\testname{LMGC_100_PR_PerioBox}
 \def\testnamechar{LMGC\_100\_PR\_PerioBox}
-\test{\testname}{\testnamechar}
+\test{\testname}{\testnamechar}{1.0e-04}{100}
 
 \clearpage
 \subsection{Comments}
@@ -295,7 +295,7 @@
 \clearpage
 \def\testname{LMGC_945_SP_Box_PL}
 \def\testnamechar{LMGC\_945\_SP\_Box\_PL}
-\test{\testname}{\testnamechar}
+\test{\testname}{\testnamechar}{1.0e-04}{100}
 \clearpage
 \subsection{Comments}
 
@@ -322,7 +322,7 @@
 \clearpage
 \def\testname{LMGC_AqueducPR}
 \def\testnamechar{LMGC Aqueduc PR }
-\test{\testname}{\testnamechar}
+\test{\testname}{\testnamechar}{1.0e-04}{200}
 \clearpage
 \subsection{Comments}
 \begin{enumerate}
@@ -349,56 +349,56 @@
 \clearpage
 \def\testname{LMGC_Bridge_PR}
 \def\testnamechar{LMGC Bridge PR }
-\test{\testname}{\testnamechar}
+\test{\testname}{\testnamechar}{1.0e-04}{100}
 
 
 \clearpage
 \def\testname{LMGC_LowWall_FEM}
 \def\testnamechar{LMGC LowWall FEM}
-\test{\testname}{\testnamechar}
+\test{\testname}{\testnamechar}{1.0e-04}{400}
 
 \clearpage
 \def\testname{LMGC_Cubes_H8}
 \def\testnamechar{LMGC Cubes H8}
-\test{\testname}{\testnamechar}
+\test{\testname}{\testnamechar}{1.0e-04}{100}
 
 \clearpage
 \def\testname{Capsules}
 \def\testnamechar{Capsules}
-\test{\testname}{\testnamechar}
+\test{\testname}{\testnamechar}{1.0e-08}{100}
 
 
 \clearpage
 \def\testname{Chain}
 \def\testnamechar{Chain}
-\test{\testname}{\testnamechar}
+\test{\testname}{\testnamechar}{1.0e-08}{50}
 
 %\if0
 \clearpage
 \def\testname{BoxesStack1}
 \def\testnamechar{BoxesStack1}
-\test{\testname}{\testnamechar}
+\test{\testname}{\testnamechar}{1.0e-08}{100}
 %\fi
 
 \clearpage
 \def\testname{KaplasTower}
 \def\testnamechar{KaplasTower}
-\test{\testname}{\testnamechar}
+\test{\testname}{\testnamechar}{1.0e-04}{400}
 
 \clearpage
 \def\testname{Chute_1000}
 \def\testnamechar{Chute\_1000}
-\test{\testname}{\testnamechar}
+\test{\testname}{\testnamechar}{1.0e-04}{200}
 
 \clearpage
 \def\testname{Chute_4000}
 \def\testnamechar{Chute\_4000}
-\test{\testname}{\testnamechar}
+\test{\testname}{\testnamechar}{1.0e-04}{200}
 
 \clearpage
 \def\testname{Chute_local_problems}
 \def\testnamechar{Chute\_local\_problems}
-\test{\testname}{\testnamechar}
+\test{\testname}{\testnamechar}{1.0e-04}{10}
 
 \clearpage
 \end{document}

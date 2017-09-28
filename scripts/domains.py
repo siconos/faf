@@ -41,7 +41,7 @@ def is_substr(find, data):
     return True
 try:
     opts, args = getopt.gnu_getopt(sys.argv[1:], '',
-                                   ['help','target=', 'test_name', 'domain', 'precision'])
+                                   ['help','target=', 'test_name', 'domain', 'precision', 'timeout', 'step'])
 
 
     
@@ -142,13 +142,14 @@ test = 'LMGC_100_PR_PerioBox'
 data[test]['vi']['domain']=4
 data[test]['psor_solvers']['domain']=15
 data[test]['nsn_solvers']['domain']=20
-data[test]['prox_solvers']['domain']=20
+data[test]['prox_solvers']['domain']=2
 data[test]['prox_series']['domain']=20
-data[test]['nsgs_localsolver']['domain']=50
+data[test]['nsgs_localsolver']['domain']=15
 data[test]['nsgs_localtol_ac_gp']['domain']=8
 
 data[test]['nsgs_localsolver_hybrid']['domain']=25
 data[test]['prox_series']['domain']=200
+data[test]['regul_series']['domain']=50
 
 
 
@@ -166,13 +167,26 @@ data[test]['prox_series']['domain']=20
 data[test]['comp_solvers']['domain']=2
 data[test]['comp_solvers_large']['domain']=10
 
+
+test = 'Chute_local_problems'
+data[test]['prox_solvers']['domain']=3
+data[test]['prox_series']['domain']=3
+data[test]['comp_solvers']['domain']=10
+data[test]['comp_solvers_large']['domain']=50
+data[test]['regul_series']['domain']=15
+data[test]['nsn_solvers']['domain']=4
+
+test = 'Chute_1000'
+#data[test]['nsgs_shuffled']['domain']=
+data[test]['psor_solvers']['domain']=10
+
 for t in tests:
     for tt in list_target:
         
         #print(t,tt)
         #print(data[t][tt])
         #print(data[t][tt]['domain'])
-        data[t][tt]['precision'] =(data[t][tt]['domain'])/100.0
+        data[t][tt]['step'] =(data[t][tt]['domain'])/100.0
         #print(data[t][tt]['precision'])
 
 
@@ -188,5 +202,9 @@ for o, a in opts:
 for o, a in opts:
       if (o == '--domain'):
             print(data[test_name][target]['domain'])
+      if (o == '--step'):
+            print("{0:.3f}".format(data[test_name][target]['step']))
       if (o == '--precision'):
-            print("{0:.3f}".format(data[test_name][target]['precision']))
+            print("{0:.1e}".format(precision))
+      if (o == '--timeout'):
+            print("{0:d}".format(int(timeout)))
