@@ -733,15 +733,35 @@ This yields
   In the literature of computational mechanics~\cite{Curnier.Alart88,Simo.Laursen1992,Alart.Curnier1991}, very similar expressions are obtained using the concept of augmented Lagrangian functions. This concept introduced in the general framework of Optimization by \cite{Hestenes1969} and developed and popularized by \cite{Rockafellar1974,Rockafellar1993} is a strong theoretical  tool for analyzing existence and regularity of solutions of constrained optimization problems. Its numerical interest is still a subject of intense debate in the mathematical programming community. In the nonconvex  nonsmooth context of problems of frictional contact problems, its invocation is not so clear, but it has enables the design of robust numerical techniques. Nevertheless, it is worth to note that some of these methods appear as variants of the methods developed to solve variational inequalities in other contexts. The method developed by \cite{Simo.Laursen1992} is a dedicated version of fixed point with projection for VI (see Section~\ref{Algo:FP-vi}) and the method of \cite{Alart.Curnier1991} is a tailored version of semi--smooth Newton methods (see Section~\ref{sec:newtonmethods}). Nevertheless, the concept of augmented Lagrangian have never been used in the optimization literature for this purpose.
 \end{remark}
 
+\paragraph{Xuewen-Soh-Wanji functions}
+Following earlier work of \cite{Park.Kwak1994} and \cite{Leung.ea1998}, the following function is proposed in \citep{Xuewen.ea2000} as follows
+\begin{equation}
+  \label{eq:XSW-II}
+  F_{\xswtwo}(r) \coloneqq \left[
+    \begin{array}{c}
+      \min(u_\n,r_n)\\
+      \min(\|u_\t\|, \mu r_\n - \|r_\t\|)=0\\
+      | u_{\t_1} r_{\t_2} -  u_{\t_2} r_{\t_1} + \max(0,u_{\t_1} r_{\t_1} ) =0
+  \end{array}\right] =0.
+\end{equation}
+In \citep{Xuewen.ea2000}, the system is solved by a generalized Newton method with a line-search procedure.
 
-\begin{ndrva}
-  + understand the continuity comment of Alart ?
-  + [12, 30 , 31] of \cite{Tzaferopoulos_CS1993}.
-  + check \ref{eq:qvi-proj}
-  \tb{  + discussion on $(r_\n)_+$ in \ref{eq:diskR-prod} (cf. Olivier comment)} To be Discussed
-\end{ndrva}
+\paragraph{H\"{u}eber--Stadler--Wolhmuth functions}
 
-%In~\cite{Leung.ea1998} and~\cite{Xuewen.ea2000}, alternative equations reformulations are proposed mainly based on the reformulation of the problem in the plane of sliding.
+In \citep{Hueber.ea_SJSC2008}, and subsequently in~\citep{Koziara.Bicanic_CMAME2008}, another function is used to reformulate the problem~\ref{prob:II}:
+\begin{equation}
+  \label{eq:HSW-II}
+    F_{\hswtwo}(r) \coloneqq \left[ \begin{array}{c}
+    r_\n - P_{\RR^{n_c}_+}(r_\n - \rho_\n (W r +  q)_\n) \\
+    \max(\mu(r_\n-\rho_\n u_\n),\|r_t-\rho_tu_\t\|)r_\t - \mu \max(0,r_n-\rho_\n u_\n)(r_t-\rho_\t u_\t)
+  \end{array}\right] =0.
+\end{equation}
+In \citep{Hueber.ea_SJSC2008}, this function is used considering the problem written at the velocity level rather than in~\citep{Koziara.Bicanic_CMAME2008} is stated at the velocity level.
+
+
+
+
+
 
 
 \paragraph{General SOCC-functions}
@@ -960,6 +980,13 @@ Finally,  Problem~\ref{prob:II} is then reformulated as
 %   \end{cases}
 % \end{equation}
 % The fact that the SOCCP is linear is quite attractive but the strong rank deficiency \tg{make} the design of robust numerical algorithms \tg{difficult}. In~\cite{Zhang.ea_CMAME2011}, this formulation is used with the help of a normal and tangential penalization of the contact.
+
+\begin{ndrva}
+  + understand the continuity comment of Alart ?
+  + [12, 30 , 31] of \cite{Tzaferopoulos_CS1993}.
+  + check \ref{eq:qvi-proj}
+  \tb{  + discussion on $(r_\n)_+$ in \ref{eq:diskR-prod} (cf. Olivier comment)} To be Discussed
+\end{ndrva}
 
 
 \subsection{Optimization problems}
@@ -1617,6 +1644,7 @@ A nomenclature for the algorithms based on the VI formulation is given in Table~
 
 \clearpage
 \section{Newton based methods}
+\label{sec:newtonmethods}
 
 
 \subsection{Principle of the nonsmooth Newton methods}
@@ -1714,8 +1742,57 @@ Algorithm~\ref{Algo:NSN} is applied \tg{with}
 \end{equation}
 The details of a possible computation of $\Phi$ can be found in Appendix~\ref{Sec:Phi-FB-II}.
 
-\subsection{Damped Newton and Line-search procedures}
 
+\subsection{Convergence and robustness issues.}
+
+Recall general results of Qi Sun.
+
+
+\paragraph{Estimation of $\rho, \rho_\n, \rho_t$ parameters}
+
+One of the key parameters in the efficiency of the nonsmooth Newton methods are the choice of the parameter $\rho$ in the parameterized natural map in (\ref{eq:parametrized-naturalnormalmap}) and the parameters  $\rho_\n$ and $\rho_\t$ in the Jean--Moreau and Alart-Curnier functions (\ref{eq:MJ-II}) and (\ref{eq:AC-II}). The default choice is to set these parameters equal to $1$ but the numerical practice shows  that the convergence of the nonsmooth solvers is drastically deteriorated, especially  if the norm or the conditioning of the matrix $W$ is far from this unit value. There is no theoretical rules to size this parameters, but some heuristics may be found in the literature for a single contact problem that we expose in the sequel.
+
+\paragraph{Inverse of a norm of $W$} A first simple choice is to consider the inverse of a norm of the matrix $W$. With this heuristics, we set the $\rho$ parameter before the Newton loop as follows:
+\begin{equation}
+  \label{eq:rho-1}
+  \rho = \frac 1 {\|W\|}, \quad  \rho_\n =  \rho_\t = \frac 1 {\|W\|}.
+\end{equation}
+This choice is mainly based on a guess of the inverse of the local Lipschitz constant of the operator $Wr+q$. In the case of the natural map, it amounts to neglecting the nonlinear contribution of $g$. Naturally, this choice depends on the choice of the matrix norm. If we assume that the matrix is a symmetric definite positive matrix, a possibility is to choose a 2-norm based on the spectral radius $\|W\|_2 = \rho(W) =\lambda_{\max}(W)$ of the matrix:
+\begin{equation}
+  \label{eq:rho-2}
+  \rho = \frac 1 {\lambda_{\max}(W)}, \quad  \rho_\n = \rho_\t = \frac 1 {\lambda_{\max}(W)}.
+\end{equation}
+
+\paragraph{Estimation based on the splitting  $W_{\n\n}$ and $W_{\t\t}$} A second possible choice for the map  (\ref{eq:MJ-II}) and (\ref{eq:AC-II}) is to use the fact that the problem is split with respect to the normal and the tangent directions. In that case, we compute a value of $\rho_\n$ that is based on the eigenvalues of $W_{\n\n}$ and a value of $\rho_\t$ based on the eigenvalue of $W_{\t\t}$. For a single contact, we set
+\begin{equation}
+  \label{eq:rho-3}
+  \rho_\n = \frac 1 {W_{\n\n}}, \quad \rho_\t = \frac{1}{\lambda_{\max}(W_{\t\t})}
+\end{equation}
+A third option it also to take into account the conditioning of the matrix $W_{\t\t}$ by choosing
+\begin{equation}
+  \label{eq:rho-4}
+  \rho_\n = \frac 1 {W_{\n\n}}, \quad \rho_\t = \frac{\lambda_{\min}(W_{\n\n})}{\lambda^2_{\max}(W_{\t\t})}
+\end{equation}
+
+\paragraph{Adaptive estimation of the parameters}
+
+see \cite{Koziara.Bicanic_CMAME2008}.
+
+\paragraph{Default choices} By default, we use the rule~(\ref{eq:rho-4}) for the mapping  (\ref{eq:MJ-II}) and (\ref{eq:AC-II}) and the rule  (\ref{eq:rho-2}) for the natural. When other rules are chosen in the comparison, they are specified.
+
+\subsection{Robustness issues in semismooth Newton methods.}
+\begin{ndrva}
+\begin{itemize}
+\item semi--smoothness ok.
+\item semismooth locally convergent provided the all the generalized gradient are regular at solution. degeneracy in $W$
+\item far from the solution the iteration matrix may ill conditionned or irregular.
+\item choice of good rho parameters helps a lot but not sufficient.
+\item work of Hueber et al. in that direction
+\item analsis of Alart and Jourdan Alrt with respect to the rho parameters and the coefficient of friction
+\end{itemize}
+\end{ndrva}
+
+\subsection{Damped Newton and line-search procedures}
 These line-searches algorithms follow the presentation done in chapter 3 of
 \cite{Bonnans.ea2003}, where one may find notably all the mathematical
 explanations of why they terminate. However, despite the mathematical proofs,
@@ -1725,7 +1802,9 @@ during extrapolation and interpolation phases to avoid infinite loops.
 The choice of the values for the parameters $m_1$, $m_2$ for the
 Goldstein-Price line-search is also discussed and it is advised to choose
 $m_1 < \frac{1}{2}$ and $m_2 > \frac{1}{2}$.
+\paragraph{Merit functions}
 
+\paragraph{Armijo line--search}
 
 \begin{algorithm}
   \begin{algorithmic}
@@ -1758,8 +1837,10 @@ $m_1 < \frac{1}{2}$ and $m_2 > \frac{1}{2}$.
       \ENDWHILE
     }
   \end{algorithmic}
-  \caption{Goldstein--Price (GP) line search}  \label{Algo:GP}
+  \caption{Armijo(A) line search}  \label{Algo:A}
 \end{algorithm}
+
+\paragraph{Goldstein--Price (GP) line search}
 \begin{algorithm}
   \begin{algorithmic}
     {\sf
@@ -1780,32 +1861,12 @@ $m_1 < \frac{1}{2}$ and $m_2 > \frac{1}{2}$.
       
     }
   \end{algorithmic}
-  \caption{Armijo(A) line search}  \label{Algo:A}
+  \caption{Goldstein--Price (GP) line search}  \label{Algo:GP}
 \end{algorithm}
 
-\label{sec:newtonmethods}
+\paragraph{Non-monotone line--search}
 
-
-
-\begin{ndrva}
-  Objectives:
-  \begin{itemize}
-  \item Alart Curnier~\cite{Alart.Curnier1991}
-  \item Christensen et
-    al.\cite{Christensen.Klarbring.ea1998}~\cite{Christensen.Pang1998},
-  \item Newton sur De Saxce cf
-    P. Joly~\cite{Joli.Feng2008}. Equivalence natural map.
-  \item and others
-    ?~\cite{Stadler_SIOPT2004}~\cite{Hueber.ea_SJSC2008,Hueber.Wolhmuth_CMAME2005}\cite{Koziara.Bicanic_CMAME2008}\cite{Renard_CMAME2013}
-  \item Update the section with the substitution of $u$
-  \end{itemize}
-\end{ndrva}
-
-
-\begin{ndroh}
- I believe we only do GP + Armijo. Do we want to do non-monotone LS? From my very limited experiments, it helps, but usually to convergence faster. I'm not sure it really helps to not get stuff in practice. But I may be wrong.\newline
- I'm not sure that FBLSA make sense here? What is AC-FBLSA? In siconos, when I used the term FBLSA, it is for FB + line search algo, based on the algorithm name given in F\& Pang. What is AC-FBLSA? Whouldn't it be ACLSA or AC-LSA?
-\end{ndroh}
+see \cite{Koziara.Bicanic_CMAME2008} based on \cite{Ferris.Lucidi_JOTA1994,Grippo.ea_SJNAAM1986}
 
 
 \subsection{Nomenclature}
@@ -1883,6 +1944,19 @@ A nomenclature for the algorithms based on the nonsmooth Newton methods is given
   \caption{Naming convention for the algorithms based on nonsmooth Newton (NSN) method}
   \label{tab:NSN-algos}
 \end{table}
+
+
+\begin{ndrva}
+  \begin{itemize}
+  \item and others ?~\cite{Stadler_SIOPT2004}~\cite{Hueber.ea_SJSC2008,Hueber.Wolhmuth_CMAME2005}\cite{Koziara.Bicanic_CMAME2008}\cite{Renard_CMAME2013}
+  \end{itemize}
+\end{ndrva}
+
+
+% \begin{ndroh}
+%  I believe we only do GP + Armijo. Do we want to do non-monotone LS? From my very limited experiments, it helps, but usually to convergence faster. I'm not sure it really helps to not get stuff in practice. But I may be wrong.\newline
+%  I'm not sure that FBLSA make sense here? What is AC-FBLSA? In siconos, when I used the term FBLSA, it is for FB + line search algo, based on the algorithm name given in F\& Pang. What is AC-FBLSA? Whouldn't it be ACLSA or AC-LSA?
+% \end{ndroh}
 
 \clearpage
 \section{Splitting techniques and proximal point algorithm}
