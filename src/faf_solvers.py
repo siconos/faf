@@ -43,6 +43,19 @@ class faf_solvers():
         nsn_acSTD_nls.SolverOptions().iparam[13] = self._with_mumps;
         nsn_acSTD_nls.SolverOptions().iparam[3] = 10000000
 
+        nsn_acSTD_nls_given = SiconosSolver(name="NSN-AlartCurnier-NLS-RHO-GIVEN",
+                                       gnuplot_name="NSN-AC fixed rho",
+                                       API=N.fc3d_nonsmooth_Newton_AlartCurnier,
+                                       TAG=N.SICONOS_FRICTION_3D_NSN_AC,
+                                       iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
+                                       dparam_err=1,
+                                       maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+
+        nsn_acSTD_nls_given.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION] = N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD;
+        nsn_acSTD_nls_given.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_LINESEARCH] = N.SICONOS_FRICTION_3D_NSN_LINESEARCH_NO;
+        nsn_acSTD_nls_given.SolverOptions().iparam[12] = 0;
+        nsn_acSTD_nls_given.SolverOptions().iparam[13] = self._with_mumps;
+        nsn_acSTD_nls_given.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_RHO_STRATEGY] = N.SICONOS_FRICTION_3D_NSN_FORMULATION_RHO_STRATEGY_CONSTANT;
 
         nsn_acSTD_fblsa = SiconosSolver(name="NSN-AlartCurnier-FBLSA",
                                        gnuplot_name="NSN-AC-A",
@@ -400,7 +413,7 @@ class faf_solvers():
                                        maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
 
 
-        nsn_solvers =  [nsn_acSTD, nsn_acSTD_nls, nsn_acSTDGenerated, nsn_acSTDGenerated_nls,  nsn_ac_fpp, nsn_ac_eg, nsn_acSTD_fblsa,
+        nsn_solvers =  [nsn_acSTD, nsn_acSTD_nls, nsn_acSTD_nls_given, nsn_acSTDGenerated, nsn_acSTDGenerated_nls,  nsn_ac_fpp, nsn_ac_eg, nsn_acSTD_fblsa,
                         nsn_acJeanMoreau, nsn_acJeanMoreau_nls, nsn_acJeanMoreauGenerated, nsn_acJeanMoreauGenerated_lusol, nsn_acJeanMoreau_fblsa,
                         nsn_acJeanMoreauGenerated_nls, nsn_acJeanMoreauGenerated_nls_lusol,
                         nsn_fb_gp, nsn_fb_gp_lusol, nsn_fb_nls, nsn_fb_nls_lusol, nsn_fb_fblsa,
@@ -539,7 +552,7 @@ class faf_solvers():
         nsgs_rho_given.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_RHO_STRATEGY] = N.SICONOS_FRICTION_3D_NSN_FORMULATION_RHO_STRATEGY_CONSTANT;
 
         nsgs_rho_spectral_norm = SiconosSolver(name="NSGS-AC-RHO-SPECTRAL-NORM",
-                                           gnuplot_name='NSGS-AC (\$\\\\rho\_\{\\\\hbox\{\\\\tiny N \}\} =\\\\rho\_T =1\$ )',
+                                           gnuplot_name='NSGS-AC (\$\\\\rho\_\{\\\\hbox\{\\\\tiny N \}\} =\\\\rho\_T = \\\\frac\{1\}\{\\\\lambda\_\{\\\\max\}(W)\}\$ )',
                              API=N.fc3d_nsgs,
                              TAG=N.SICONOS_FRICTION_3D_NSGS,
                              iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
@@ -550,7 +563,7 @@ class faf_solvers():
         nsgs_rho_spectral_norm.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_RHO_STRATEGY] = N.SICONOS_FRICTION_3D_NSN_FORMULATION_RHO_STRATEGY_SPECTRAL_NORM;
         
         nsgs_rho_split_spectral_norm = SiconosSolver(name="NSGS-AC-RHO-SPLIT-SPECTRAL-NORM",
-                                           gnuplot_name='NSGS-AC (\$\\\\rho\_\{\\\\hbox\{\\\\tiny N \}\} =\\\\rho\_T =1\$ )',
+                                            gnuplot_name='NSGS-AC (\$\\\\rho\_\{\\\\hbox\{\\\\tiny N \}\} =\\\\frac\{1\}\{\\\\lambda\_\{\\\\max\}(W\_\{NN\})\}, \\\\quad \\\\rho\_T = \\\\frac\{1\}\{\\\\lambda\_\{\\\\max\}(W\_\{TT\})\}\$ )',
                              API=N.fc3d_nsgs,
                              TAG=N.SICONOS_FRICTION_3D_NSGS,
                              iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
@@ -1134,7 +1147,7 @@ class faf_solvers():
                     VIFixedPointProjection_series.append(VIFixedPointProjection_solver)
 
         Prox = SiconosSolver(name="PROX-NSN-AC",
-                             gnuplot_name="PPA-NSN-AC-GP  \$ \\\mu=1, \\\sigma=5.0\$",
+                             gnuplot_name="PPA-NSN-AC-GP  \$ \\\\nu=1, \\\sigma=5.0\$",
                              API=N.fc3d_proximal,
                              TAG=N.SICONOS_FRICTION_3D_PROX,
                              iparam_iter=7,
@@ -1144,7 +1157,7 @@ class faf_solvers():
 
 
         Proxfixed = SiconosSolver(name="PROX-NSN-AC-fixed",
-                             gnuplot_name="PPA-NSN-AC-GP  \$ \\\mu=1, \\\sigma=5.0\$ fixed",
+                             gnuplot_name="PPA-NSN-AC-GP  \$ \\\\nu=1, \\\sigma=5.0\$ fixed",
                              API=N.fc3d_proximal,
                              TAG=N.SICONOS_FRICTION_3D_PROX,
                              iparam_iter=7,
@@ -1160,7 +1173,7 @@ class faf_solvers():
             str1 = "{0:1.0e}".format(rr).replace("1e","10\\^{")+"}"
             str2 = "{0:1.0e}".format(rr)
             regul_solver  = SiconosSolver(name="PROX-NSN-AC-regulVar-"+str2,
-                                          gnuplot_name="PPA-NSN-AC-GP adaptive \$ \\\mu="+str1+"\$",
+                                          gnuplot_name="PPA-NSN-AC-GP adaptive \$ \\\\nu\_0="+str1+"\$",
                                           API=N.fc3d_proximal,
                                           TAG=N.SICONOS_FRICTION_3D_PROX,
                                           iparam_iter=7,
@@ -1177,7 +1190,7 @@ class faf_solvers():
             str1 = "{0:1.0e}".format(rr).replace("1e","10\\^{")+"}"
             str2 = "{0:1.0e}".format(rr)
             regul_solver  = SiconosSolver(name="PROX-NSN-AC-regul-"+str2,
-                                          gnuplot_name="PPA-NSN-AC-GP fixed \$ \\\mu="+str1+"\$",
+                                          gnuplot_name="PPA-NSN-AC-GP fixed \$ \\\\nu\_0="+str1+"\$",
                                           API=N.fc3d_proximal,
                                           TAG=N.SICONOS_FRICTION_3D_PROX,
                                           iparam_iter=7,
@@ -1189,7 +1202,7 @@ class faf_solvers():
             regul_series.append(regul_solver)
 
         Prox_nls = SiconosSolver(name="PROX-NSN-AC-NLS",
-                             gnuplot_name="PPA-NSN-AC  \$ \\\mu=1, \\\sigma=5.0\$",
+                             gnuplot_name="PPA-NSN-AC  \$ \\\\nu=1, \\\sigma=5.0\$",
                              API=N.fc3d_proximal,
                              TAG=N.SICONOS_FRICTION_3D_PROX,
                              iparam_iter=7,
@@ -1198,7 +1211,7 @@ class faf_solvers():
         Prox_nls.SolverOptions().internalSolvers.iparam[11] = -1
 
         ProxFB = SiconosSolver(name="PROX-NSN-FB-GP",
-                             gnuplot_name="PPA-NSN-FB-GP  \$ \\\mu=1, \\\sigma=5.0\$",
+                             gnuplot_name="PPA-NSN-FB-GP  \$ \\\\nu=1, \\\sigma=5.0\$",
                              API=N.fc3d_proximal,
                              TAG=N.SICONOS_FRICTION_3D_PROX,
                              iparam_iter=7,
@@ -1219,7 +1232,7 @@ class faf_solvers():
 
 
         ProxFB_fblsa = SiconosSolver(name="PROX-NSN-FB-FBLSA",
-                             gnuplot_name="PPA-NSN-FB-A  \$ \\\mu=1, \\\sigma=5.0\$",
+                             gnuplot_name="PPA-NSN-FB-A  \$ \\\\nu=1, \\\sigma=5.0\$",
                              API=N.fc3d_proximal,
                              TAG=N.SICONOS_FRICTION_3D_PROX,
                              iparam_iter=7,
@@ -1234,7 +1247,7 @@ class faf_solvers():
         ProxFB_fblsa.SolverOptions().internalSolvers.iparam[3] = 1000000
 
         ProxFB_nls = SiconosSolver(name="PROX-NSN-FB-NLS",
-                             gnuplot_name="PPA-NSN-FB  \$ \\\mu=1, \\\sigma=5.0\$",
+                             gnuplot_name="PPA-NSN-FB  \$ \\\\nu=1, \\\sigma=5.0\$",
                              API=N.fc3d_proximal,
                              TAG=N.SICONOS_FRICTION_3D_PROX,
                              iparam_iter=7,
@@ -1248,7 +1261,7 @@ class faf_solvers():
         ProxFB_nls.SolverOptions().internalSolvers.iparam[3] = 1000000
 
         ProxNSGS = SiconosSolver(name="PROX-NSGS-NSN-AC",
-                             gnuplot_name="PPA-NSGS-NSN-AC \$ \\\mu=1, \\\sigma=5.0\$",
+                             gnuplot_name="PPA-NSGS-NSN-AC \$ \\\\nu=1, \\\sigma=5.0\$",
                              API=N.fc3d_proximal,
                              TAG=N.SICONOS_FRICTION_3D_PROX,
                              iparam_iter=7,
@@ -1258,19 +1271,13 @@ class faf_solvers():
         ProxNSGS.SolverOptions().internalSolvers = local_nsgs_inprox
         ProxNSGS.SolverOptions().internalSolvers.iparam[0] = 10000
 
-
-
-
-
-
-
-        sigmavalues= [0.5, 1.0, 4.0, 5.0, 50, 100.0, 1000.0 ]
+        sigmavalues= [0.5, 1.0, 5.0, 100.0, 1000.0 ]
         muvalues= [0.5, 1.0, 2.0]
         prox_series =[]
         for mu in muvalues:
             for sigma in sigmavalues:
                 prox_solver  = SiconosSolver(name="PROX-NSN-AC-nu"+str(mu)+"-sigma"+str(sigma),
-                                             gnuplot_name="PPA-NSN-AC-GP  \$ \\\mu="+str(mu)+", \\\sigma="+str(sigma)+"\$",
+                                             gnuplot_name="PPA-NSN-AC-GP  \$ \\\\nu="+str(mu)+", \\\sigma="+str(sigma)+"\$",
                                              API=N.fc3d_proximal,
                                              TAG=N.SICONOS_FRICTION_3D_PROX,
                                              iparam_iter=7,
