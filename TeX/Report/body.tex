@@ -1800,7 +1800,7 @@ in practice, is is recommended that some emergency tests should be added
 during extrapolation and interpolation phases to avoid infinite loops.
 
 The choice of the values for the parameters $m_1$, $m_2$ for the
-Goldstein-Price line-search is also discussed and it is advised to choose
+Goldstein-Price line-search and the parameter $m_1$ alone for the Armijo line-search is also discussed and it is advised to choose
 $m_1 < \frac{1}{2}$ and $m_2 > \frac{1}{2}$.
 \paragraph{Merit functions}
 
@@ -1812,7 +1812,7 @@ $m_1 < \frac{1}{2}$ and $m_2 > \frac{1}{2}$.
       \REQUIRE $x$, the starting point of the line-search.
       \REQUIRE $d$, the direction of search.
       \REQUIRE $t$, an initial stepsize-value.
-      \REQUIRE $t \to q(t)$, for $t \geq 0$, with $q'(0) < 0$ a merit function representing $f(x + t d)$
+      \REQUIRE $t \to q(t)$, for $t \geq 0$, with $q \in C^1$ bounded from below and $q'(0) < 0$, a merit function representing $f(x + t d)$
       \REQUIRE $m_1$, $m_2$, parameters with $0 < m_1 < m_2 < 1$
       \REQUIRE $a$, with $a > 1$, parameter for extrapolation
       \ENSURE a finite line-search
@@ -1847,10 +1847,11 @@ $m_1 < \frac{1}{2}$ and $m_2 > \frac{1}{2}$.
       \REQUIRE $x$, the starting point of the line-search.
       \REQUIRE $d$, the direction of search.
       \REQUIRE $t$, an initial stepsize-value.
-      \REQUIRE $t \to q(t)$, for $t \geq 0$, with $q'(0) < 0$ a merit function representing $f(x + t d)$
-      \REQUIRE $m$, a parameter with $0 < m < 1$
+      \REQUIRE $t \to q(t)$, for $t \geq 0$, with $q \in C^1$ bounded from below and $q'(0) < 0$, a merit function representing $f(x + t d)$
+      \REQUIRE $m_1$, a parameter with $0 < m_1 < 1$
+      \REQUIRE $a$, with $a > 1$, parameter for extrapolation
       \ENSURE a finite line-search
-      \WHILE {$m q'(0) < \frac{q(t)-q(0)}{t}$}
+      \WHILE {$m_1 q'(0) < \frac{q(t)-q(0)}{t}$}
       \IF{$t_R = 0$}
       \STATE{$t \leftarrow a t$}
       \ELSE
