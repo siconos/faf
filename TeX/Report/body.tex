@@ -4,6 +4,14 @@
 \newcommand{\moh}[1]{\textcolor{applegreen}{#1}}
 \newcommand{\MM}[0]{\rightrightarrows}
 
+
+
+
+
+
+
+
+
 \section*{Notation}
 
 The following notation is used throughout the article: the 2-norm for a function $g$ is denoted  by $\|g\|$ and for a vector $x\in\RR^n$ by $\|x\|$. 
@@ -2591,12 +2599,44 @@ Other studies.
 
 \section{Comparison of methods by family}
 
+
+
+
+
+
 \subsection{Numerical methods for VI}
 
-\def\performance{flpops}
+
+
+\def\measurename{time}
+\def\performance{time}
 \def\widthfigure{0.6}
+\def\figwidth{0.3\textwidth}
+\def\legendwidth{0.6\textwidth}
+
 \paragraph{Evaluation of the influence of the self--adaptive procedure for step length}
 \label{Sec:Comparison,VI,step-length}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf} 
+\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf} 
+\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf} 
+\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf} 
+\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf} 
+\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf} 
+\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/400/time/profile-KaplasTower.pdf} 
+%\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/10/time/profile-Chute_local_problems.pdf} 
+\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/200/time/profile-Chute_4000.pdf} 
+\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/200/time/profile-Chute_1000.pdf} 
+\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-08/50/time/profile-Chain.pdf} 
+\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-08/100/time/profile-Capsules.pdf} 
+\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-08/100/time/profile-BoxesStack1.pdf}\\
+\includegraphics[width=\legendwidth]{../figure/VI/UpdateRule/1.0e-08/100/time/profile-BoxesStack1_legend.pdf}
+\caption{{  } \measurename{  } VI/UpdateRule}
+\end{figure}
+
+
 
 \begin{figure}
   \centering
@@ -2633,7 +2673,20 @@ TODO list
 \begin{figure}
   \centering
   \vspace{-1cm}
-  
+  \includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf} 
+  \includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf} 
+  \includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf} 
+  \includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf} 
+  \includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf} 
+  \includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf} 
+  \includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/400/time/profile-KaplasTower.pdf} 
+  \includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/10/time/profile-Chute_local_problems.pdf} 
+  \includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/200/time/profile-Chute_4000.pdf} 
+  \includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/200/time/profile-Chute_1000.pdf} 
+  \includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-08/50/time/profile-Chain.pdf} 
+  \includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-08/100/time/profile-Capsules.pdf} 
+  \includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-08/100/time/profile-BoxesStack1.pdf} 
+  \includegraphics[width=\legendwidth]{../figure/NSGS/LocalSolver/1.0e-08/100/time/profile-BoxesStack1_legend.pdf} 
   \caption{Influence of the local solver in NSGS algorithms.}
   \label{fig:NSGS/LocalSolver/time}
 \end{figure}
@@ -2642,8 +2695,39 @@ TODO list
 
 \begin{figure}
   \centering\vspace{-0.5cm}
-  
-  \caption{Influence of the tolerance of the local solver $tol_{local}$ in NSGS algorithms.} 
+  \includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf} 
+\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf} 
+\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf} 
+\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf} 
+\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf} 
+\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf} 
+\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/400/time/profile-KaplasTower.pdf} 
+\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/10/time/profile-Chute_local_problems.pdf} 
+\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/200/time/profile-Chute_4000.pdf} 
+\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/200/time/profile-Chute_1000.pdf} 
+\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-08/50/time/profile-Chain.pdf} 
+\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-08/100/time/profile-Capsules.pdf} 
+\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-08/100/time/profile-BoxesStack1.pdf} 
+\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-08/100/time/profile-BoxesStack1_legend.pdf} 
+  \caption{Influence of the tolerance of the local solver $tol_{local}$ in NSGS-FP-VI-UPK algorithms.} 
+\end{figure}
+\begin{figure}
+  \centering\vspace{-0.5cm}
+  \includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf} 
+\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf} 
+\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf} 
+\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf} 
+\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf} 
+\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf} 
+\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/1.0e-04/400/time/profile-KaplasTower.pdf} 
+\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/1.0e-04/10/time/profile-Chute_local_problems.pdf} 
+\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/1.0e-04/200/time/profile-Chute_4000.pdf} 
+\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/1.0e-04/200/time/profile-Chute_1000.pdf} 
+\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/1.0e-08/50/time/profile-Chain.pdf} 
+\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/1.0e-08/100/time/profile-Capsules.pdf} 
+\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/1.0e-08/100/time/profile-BoxesStack1.pdf} 
+\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/1.0e-08/100/time/profile-BoxesStack1_legend.pdf} 
+  \caption{Influence of the tolerance of the local solver $tol_{local}$ in NSGS-FP-NSN-AC-GP algorithms.} 
 \end{figure}
 
 
