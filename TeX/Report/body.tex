@@ -2046,7 +2046,7 @@ The problem~\eqref{eq:psor-3} has exactly the same structure as Problem~\ref{pro
 It is solved by a \emph{local solver}, which can be any of the algorithms presented in this article or even an analytical method (enumerating all the possible cases as in \citep{bonnefon:inria-00553859}).
 
 
-The PSOR algorithm is summarized in Algorithm~\ref{Algo:PSOR-II} and the PGS can be recovered by setting $\omega=1$.
+The PSOR algorithm is summarized in Algorithm~\ref{Algo:PSOR-II} and the NSGS can be recovered by setting $\omega=1$.
 %
 \begin{algorithm}
   \begin{algorithmic}
@@ -2562,9 +2562,257 @@ In Algorithms~\ref{Algo:Panagiotopoulos},~\ref{Algo:Tresca} and~\ref{Algo:ACLM},
 \clearpage
 \section{Comparison framework}
 \label{sec:numericalcomparisons}
+In this section, we present our comparison framework. Especially, we specify how we measure performance and how the performance profile are built.
+
 \subsection{Measuring errors}
 \label{Sec:MeasuringErrors}
 
+A key parameter in the measurement of performance of the solver is the definition of errors. The absolute error is given by the  norm of the natural map. A relative error is computed with respect to the norm of the vector $q$. More precisely, the error is given by
+\begin{equation}
+  \label{eq:error-1}
+  \mbox{error} = \frac{\|F^\nat_\vitwo(r)\|}{\|q\|}.
+\end{equation}
+This error is used as the  final error measurement for all solvers.
+
+For some iterative solvers such as {\sf VI-FP}, {\sf VI-EG}, {\sf NSGS} and {\sf PSOR}, the computation of the error at each iteration penalizes the performance of the solver  since it amounts to computing a matrix-vector product that costs more that one iteration. This is the reason why  a cheaper error measurement is used inside the main loop in Algorithms~\ref{Algo:FP-vi}, \ref{Algo:ExtraGradient-vi} and ~\ref{Algo:PSOR-II}. This cheaper error measurement is  based on
+\begin{equation}
+  \label{eq:error-2}
+  \mbox{error}_{\mbox{cheap}} = \frac{\|r_{k+1}-r_{k}\|}{\|r_k\|}.
+\end{equation}
+The tolerance of solver is then self-adapted in the loop to meet the required tolerance based on the error given by (\ref{eq:error-1}).
+
+\subsection{Performance profiles}
+
+The concept of performance profiles was introduced in \citep{Dolan.More_MP2002} for bench-marking optimization solvers. It enables to comparison of several solvers on a large set of problems. For a set $P$ of $n_p$ problems, and a set $S$ of $n_s$ solvers, we define a performance criterion for a solver $s$ and a problem $p$ by
+\begin{equation}
+  \label{eq:measure}
+ t_{p,s} = \text{computing time required for solver}\, \,  s\, \,  \text{to solve problem}\, \,  p \, ,
+\end{equation}
+and a performance ratio over all the solvers
+\begin{equation}
+ r_{p, s} = \frac{t_{p,s}}{\text{min}\, \{t_{p,s}, \, \, s \in S\}} \geq 1 \, .
+\end{equation}
+For $\tau \geq 1$, we define a  distribution function $\rho_s$ for the performance ratio for a solver $s$ as
+\begin{equation}
+ \rho_s(\tau) = \frac{1}{n_p} \text{size} \{p \in P, \, \, r_{p, s} \leq \tau\} \leq 1.
+\end{equation}
+This distribution computes the number of problems $p$ that are solved with a performance ratio below a given threshold $\tau$. In other words, $\rho_s(\tau)$ represents the probability that the solver $s$ has a performance ratio not larger than a factor $\tau$ of the best solver. It is worth noting that $\rho_s(1)$ represents the probability that the solver $s$ beats the other solvers, and $\rho_s(\infty)$ characterizes the robustness of the method.
+The higher $\rho_s$ is, the better the method is. The term \textit{performance profile} will be used in the sequel for this graph of the functions $\rho_s(\tau), \tau \geq 1$.
+
+In (\ref{eq:measure}), the computational time is used to measure performance. Other criterion can be used. The number of floating point operations (flops) is a better measure of performance since it is independent of the computer. Unfortunately, it is usually difficult to measure automatically it in a robust over various platform. This is the reason why we prefer use the computational time. In our experiments, we decided to fix the required accuracy with the tolerance of each solver. Another performance criteria could be also used. For instance, we can fix a given computational time and measure to obtained error of the solver. This a way to measure the ability of solver to give a solution in a given time that may be interesting for real-time applications. Another way to measure performance may also to divide the computational time by the number of contacts in order to judge of the ability of the solver to be scalable. For the sake of conciseness, this has not been done in this article.
+
+\subsection{Benchmarks presentation}
+
+
+To perform the comparison of the solvers on a fair basis, we use a large set of problems that comes from various applications. This collection is FCLib (Frictional Contact libraries)  which is an open collection of problems in a hdf5 format described in \citep{acary:hal-00945820} and more information can be found at \href{https://frictionalcontactlibrary.github.io}{https://frictionalcontactlibrary.github.io}. The whole collection of problems can be found at \href{https://github.com/FrictionalContactLibrary/fclib-library}{https://github.com/FrictionalContactLibrary/fclib-library} and we used the version $\tt v1.0$ for the comparisons. The test set are illustrated in Figure~\ref{fig:fclib}
+
+\def\figillus{0.15\textheight}
+\begin{figure}
+  \centering
+  \subfloat[Cubes\_H8]{\includegraphics[height=\figillus]{../figure/Cubes_H8_5.png}$\quad$}
+  \subfloat[LowWall\_FEM]{\includegraphics[height=\figillus]{../figure/LowWall_FEM.png}}\\
+  \subfloat[Aqueduct\_PR]{\includegraphics[height=\figillus]{../figure/Aqueduc_PR.png}$\quad$}
+  \subfloat[Bridge\_PR]{\includegraphics[height=\figillus]{../figure/Bridge_PR_1.png}}\\
+  \subfloat[100\_PR\_Periobox]{\includegraphics[height=\figillus]{../figure/100_PR_Periobox.png}$\quad$}
+  \subfloat[945\_SP\_Box\_PL]{\includegraphics[height=\figillus]{../figure/945_SP_Box_PL.png}}\\
+  \subfloat[Capsules]{\includegraphics[height=\figillus]{../figure/Capsules.png}$\quad$}
+  \subfloat[Chain]{\includegraphics[height=\figillus]{../figure/Chains.png}$\quad$}
+  \subfloat[KaplasTower]{\includegraphics[height=\figillus]{../figure/KaplasTower.png}$\quad$}
+  \subfloat[BoxesStack]{$\quad$$\quad$\includegraphics[height=\figillus]{../figure/BoxesStack.png}$\quad$$\quad$}\\
+  \subfloat[Chute\_1000, Chute\_4000, Chute\_local\_problems]{$\quad$$\quad$$\quad$$\quad$\includegraphics[height=\figillus]{../figure/Chute_1000_light.jpg}$\quad$$\quad$$\quad$$\quad$}
+  \caption{Illustrations of the FClib test problems}
+  \label{fig:fclib}
+\end{figure}
+{
+\begin{sidewaystable}
+\centering
+\begin{tabular}{|l|l|l|l|l|l|l|l|l|l|l|}
+  \hline
+  test set
+  &code
+  & \parbox[t]{2mm}{\rotatebox[origin=c]{90}{  friction coefficient $\mu$  }}
+  & \parbox[t]{2mm}{\rotatebox[origin=c]{90}{ \# of problems }}
+  & \# of d.o.f.
+  & \# of contacts
+  & \parbox[t]{2mm}{\rotatebox[origin=c]{90}{contact density}}
+  %& \parbox[t]{2mm}{\rotatebox[origin=c]{90}{rank(W)}}
+  & \parbox[t]{2mm}{\rotatebox[origin=c]{90}{rank ratio(W)}}
+  & \parbox[t]{2mm}{\rotatebox[origin=c]{90}{cond(W)}}
+  & \parbox[t]{2mm}{\rotatebox[origin=c]{90}{cond(W) LSMR}}
+  \\
+  \hline
+  \hline
+  Cubes\_H8\_2
+  & LMGC90
+  & 0.3
+  & 15
+  & 162
+  & [3:5]
+  & [0.02:0.09]
+%  & [6:15]
+  & 1
+  & $[2.2.10^{1},1.3.10^{3}]$\\
+   \hline
+  Cubes\_H8\_5
+  & LMGC90
+  & 0.3
+  & 50
+  & 1296
+  & [17:36]
+  & [0.02:0.09]
+%  & [48:108]
+  & 1
+  &  $[2.3.10^{4}, 7.2.10^{4} ]$ \\
+   \hline
+  Cubes\_H8\_20
+  & LMGC90
+  & 0.3
+  & 50
+  & 55566
+  & [361:388]
+  & [0.019:0.021]
+%  & [1083:1164]
+  & 1
+  & $[2.4.10^{5}, 2.5.10^{5} ]$ \\
+  \hline
+  LowWall\_FEM
+   & LMGC90
+  & 0.83
+  & 50
+  & \{7212\}
+  & [624:688]
+  & [0.28:0.29]
+%  & [1873:2064]
+  & 1
+  & $[9.3.10^{2},5.0.10^{5}]$\\
+  \hline
+  Aqueduct\_PR
+  & LMGC90
+  & 0.8
+  & 10
+  & \{1932\}
+  & [4337:4811]
+  & [6.81:7.47]
+%  & $[1934]$
+  & [6.80:7.46]
+  & $[4.7.10^{7},3.4.10^{8}]$
+  & $[6.7.10^{1},1.5.10^{2}]$\\
+  \hline
+  Bridge\_PR
+  & LMGC90
+  & 0.9
+  & 50
+  & \{138\}
+  & [70:108]
+  & [1.5:2.3]
+%  & [87:132]
+  & [2.27,2.45]
+  & $[8.3.10^{4},1.1.10^{5}]$\\
+  \hline
+  100\_PR\_Periobox
+  & LMGC90
+  & 0.8
+  & 106
+  & \{606\}
+  & [14:578]
+  & [0.2:3]
+%  & [23:600]
+  & [1.76:3.215]
+  & $[4.3.10^{2},1.0.10^{6}]$ \\
+  \hline
+  945\_SP\_Box\_PL
+  & LMGC90
+  & 0.8
+  & 60
+  & \{5700\}
+  & [2322:5037]
+  & [1.22:2.65]
+%  & $[5333:7617]$
+  & $[1.0,2.66]$
+  & $[2.2.10^{4},4.4.10^{5}]$
+  & $[2.9.10^{1},9.2.10^{2}]$\\
+  \hline
+  Capsules
+  & Siconos
+  & 0.7
+  & 249
+  & \{300\}
+  & [1:200]
+  & [1.2:1.5]
+%  & [47:587]
+  & [1.08:1.55]
+  & $[1.2.10^{6},7.5.10^{9}]$\\
+  \hline
+  Chain
+  & Siconos
+  & 0.3
+  & 242
+  & \{60\}
+  & [8:28]
+  & [0.5:1.3]
+%  & 53
+  & [1.05:1.6]
+  & $[7.4.10^{4},4.0.10^{9}]$\\
+  \hline
+  KaplasTower
+  & Siconos
+  & 0.7
+  & 201
+  & [72:792]
+  & [48:933]
+  & [3.0:3.6]
+%  & [72:792]
+  & [2.0:3.53]
+  & $[67:2174]$\\
+  \hline
+  BoxesStack
+  & Siconos
+  & 0.7
+  & 255
+  & [6:300]
+  & [1:200]
+  & [1.86:2.00]
+%  & [54:300]
+  & [1.875,2.0]
+  & $[3.8.10^{4},2.5.10^{7}]$\\
+  \hline
+  Chute\_1000
+  & Siconos
+  & 1.0
+  & 156
+  & [276:5508]
+  & [74:5056]
+  & [0.69:2.95]
+%  & --
+  & --
+  & --\\
+  \hline
+  Chute\_4000
+  & Siconos
+  & 1.0
+  & 40
+  & [17280:20034]
+  & [15965:19795]
+  & [2.51:3.06]
+  & --
+%  & --
+  & --\\
+  \hline
+  Chute\_local\_problems
+  & Siconos
+  & 1.0
+  & 834
+  & 3
+  & 1
+  & 1
+%  & 3
+  & 1
+  & [1.04:4.66]\\
+  \hline
+\end{tabular}
+\caption{Table 2}
+\end{sidewaystable}
+}
 \subsection{Parameters}
 
 \begin{itemize}
@@ -2580,18 +2828,6 @@ In Algorithms~\ref{Algo:Panagiotopoulos},~\ref{Algo:Tresca} and~\ref{Algo:ACLM},
 \end{itemize}
 
 
-\subsection{Measure of performance}
-\begin{itemize}
-\item CPU time and memory or better flops (papi) for a fixed user tolerance
-\item Reached accuracy for a given CPU effort
-\end{itemize}
-Other studies.
-\begin{itemize}
-\item Convergence rate (error w.r.t. flop within the iteration process)
-\item Scalable properties () study with a set of large size ?
-\end{itemize}
-
-\subsection{Benchmarks presentation}
 
 \subsection{Sofware \& implementation details}
 \clearpage
