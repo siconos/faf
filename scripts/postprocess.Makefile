@@ -20,7 +20,7 @@ vi : 	test_name=$(shell $(domain) --test_name)
 vi : 	save_dir=figure/VI/UpdateRule/${precision}/${timeout}/${measure_name}
 vi :	
 	echo "VI solvers Update rule"
-	$(comp) --measure=${measure_name} --display --no-matplot --solvers=FixedPoint-VI-,ExtraGrad-VI --domain=1.0:$(step):${domain_max} --gnuplot-profile --gnuplot-separate-keys
+	$(comp) --measure=${measure_name} --display --no-matplot --solvers=FixedPoint-DeSaxce,FixedPoint-VI-,ExtraGrad-VI --domain=1.0:$(step):${domain_max} --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-$(test_name).tex;
 	pdflatex -interaction=batchmode  profile-$(test_name)_legend.tex;

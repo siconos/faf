@@ -2873,12 +2873,9 @@ All the solvers that are used in this article are implemented in standard C in t
 
 \section{Comparison of methods by family}
 
+In this section, we perform a comparison of the solvers by family in order to study the influence of the various possible parameters on the performance of the solvers.
 
-
-
-
-
-\subsection{Numerical methods for VI}
+\subsection{Numerical methods for VI: {\sf FP-DS, FP-VI-$\star$} and {\sf FP-EG-$\star$}}
 
 
 
@@ -2889,44 +2886,42 @@ All the solvers that are used in this article are implemented in standard C in t
 \def\legendwidth{0.6\textwidth}
 
 \paragraph{Evaluation of the influence of the self--adaptive procedure for step length}
-\label{Sec:Comparison,VI,step-length}
+
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf} 
-\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf} 
-\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf} 
-\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf} 
-\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf} 
-\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf} 
-\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/400/time/profile-KaplasTower.pdf} 
-%\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/10/time/profile-Chute_local_problems.pdf} 
-\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/200/time/profile-Chute_4000.pdf} 
-\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/200/time/profile-Chute_1000.pdf} 
-\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-08/50/time/profile-Chain.pdf} 
-\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-08/100/time/profile-Capsules.pdf} 
-\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-08/100/time/profile-BoxesStack1.pdf}\\
-\includegraphics[width=\legendwidth]{../figure/VI/UpdateRule/1.0e-08/100/time/profile-BoxesStack1_legend.pdf}
-\caption{{  } \measurename{  } VI/UpdateRule}
+% \subfloat[\scriptsize LMGC\_LowWall\_FEM  precision $10^{{-04}}$ timeout $400$]{\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}} 
+\subfloat[\scriptsize LMGC\_Cubes\_H8  precision $10^{{-04}}$ timeout $100$]{\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} 
+\subfloat[\scriptsize LMGC\_Bridge\_PR  precision $10^{{-04}}$ timeout $100$]{\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}} 
+% \subfloat[\scriptsize LMGC\_AqueducPR  precision $10^{{-04}}$ timeout $200$]{\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} 
+% \subfloat[\scriptsize LMGC\_945\_SP\_Box\_PL  precision $10^{{-04}}$ timeout $100$]{\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}} 
+\subfloat[\scriptsize LMGC\_100\_PR\_PerioBox  precision $10^{{-04}}$ timeout $100$]{\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
+\subfloat[\scriptsize KaplasTower  precision $10^{{-04}}$ timeout $400$]{\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/400/time/profile-KaplasTower.pdf}} 
+% \subfloat[\scriptsize Chute\_local\_problems  precision $10^{{-04}}$ timeout $10$]{\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/10/time/profile-Chute_local_problems.pdf}} 
+% \subfloat[\scriptsize Chute\_4000  precision $10^{{-04}}$ timeout $200$]{\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/200/time/profile-Chute_4000.pdf}} \\
+% \subfloat[\scriptsize Chute\_1000  precision $10^{{-04}}$ timeout $200$]{\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/200/time/profile-Chute_1000.pdf}} 
+\subfloat[\scriptsize Chain  precision $10^{{-08}}$ timeout $50$]{\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-08/50/time/profile-Chain.pdf}} 
+\subfloat[\scriptsize Capsules  precision $10^{{-08}}$ timeout $100$]{\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-08/100/time/profile-Capsules.pdf}} \\
+\subfloat[\scriptsize BoxesStack1  precision $10^{{-08}}$ timeout $100$]{\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-08/100/time/profile-BoxesStack1.pdf}} \\
+{\includegraphics[width=\legendwidth]{../figure/VI/UpdateRule/1.0e-08/50/time/profile-Chain_legend.pdf}} 
+\label{fig:VI/UpdateRule}
 \end{figure}
 
 
 
-\begin{figure}
-  \centering
-  \vspace{-0.5cm}
-
-  \caption{Evaluation of the influence of the self--adaptive procedure for step length.}
-  \label{fig:VI/UpdateRule/profile-Capsules}
-\end{figure}
-In Figure~\ref{fig:VI/UpdateRule/profile-Capsules}, we study the effect of the self--adaptive procedure in Algorithm~\ref{Algo:Up1} on the convergence of the of the fixed point method in Algorithm~\ref{Algo:FP-vi}.
 
 
-\paragraph{Comparison between fixed point, extragradient and projection--contraction method.}
+In Figure~\ref{fig:VI/UpdateRule}, we compare the different numerical solver for VI. Only the test sets for which the solvers are reached the precicion before timeout are presented. The solvers are quite low in practice for a large number of contacts and they failed to meet the required tolerance in time for the examples that are not depicted in Figure~\ref{fig:VI/UpdateRule}. The main conclusions are as follows:
+\begin{enumerate}
+\item The solver {\sf FP-DS} suffers from robustness problems and a lot of divergence has been observed in practice. The self-adaptive rule for size the paramater $\rho_k$ is of utmost importance.
+\item The solvers {\sf FP-VI-$\star$} and {\sf FP-EG-$\star$} are really robust but slow. They are able to solve all the problems but they require a lot of time and we didn't observe divergence issues.
+\item The difference performance between {\sf FP-VI-$\star$} and {\sf FP-EG-$\star$} solvers are difficult to predict. Sometimes  {\sf FP-EG-$\star$} solvers performs better but is is not always the case
+\item The difference between the {\sf UPK} and {\sf UPTS} is very small in all the examples and the choice of the update rule is not fundamentally important. 
+\item The update into the loop of the solution may play an important role, but this role seems to vary in a unpredictable way over the test sets.
+\end{enumerate}
 
 
-
-\subsection{Splitting based algorithms}
+\subsection{Splitting based algorithms: {\sf NSGS-$\star$} and {\sf PSOR-$\star$}}
 
 \begin{ndrva}
 TODO list
@@ -2969,20 +2964,20 @@ TODO list
 
 \begin{figure}
   \centering\vspace{-0.5cm}
-  \includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf} 
-\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf} 
-\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf} 
-\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf} 
-\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf} 
-\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf} 
-\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/400/time/profile-KaplasTower.pdf} 
-\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/10/time/profile-Chute_local_problems.pdf} 
-\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/200/time/profile-Chute_4000.pdf} 
-\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/200/time/profile-Chute_1000.pdf} 
-\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-08/50/time/profile-Chain.pdf} 
-\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-08/100/time/profile-Capsules.pdf} 
-\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-08/100/time/profile-BoxesStack1.pdf} 
-\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-08/100/time/profile-BoxesStack1_legend.pdf} 
+\subfloat[\scriptsize LMGC\_LowWall\_FEM  precision $10^{{-04}}$ timeout $400$]{\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}} 
+\subfloat[\scriptsize LMGC\_Cubes\_H8  precision $10^{{-04}}$ timeout $100$]{\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} 
+\subfloat[\scriptsize LMGC\_Bridge\_PR  precision $10^{{-04}}$ timeout $100$]{\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}} \\
+\subfloat[\scriptsize LMGC\_AqueducPR  precision $10^{{-04}}$ timeout $200$]{\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} 
+\subfloat[\scriptsize LMGC\_945\_SP\_Box\_PL  precision $10^{{-04}}$ timeout $100$]{\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}} 
+\subfloat[\scriptsize LMGC\_100\_PR\_PerioBox  precision $10^{{-04}}$ timeout $100$]{\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
+\subfloat[\scriptsize KaplasTower  precision $10^{{-04}}$ timeout $400$]{\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/400/time/profile-KaplasTower.pdf}} 
+\subfloat[\scriptsize Chute\_local\_problems  precision $10^{{-04}}$ timeout $10$]{\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/10/time/profile-Chute_local_problems.pdf}} 
+\subfloat[\scriptsize Chute\_4000  precision $10^{{-04}}$ timeout $200$]{\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/200/time/profile-Chute_4000.pdf}} \\
+\subfloat[\scriptsize Chute\_1000  precision $10^{{-04}}$ timeout $200$]{\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/200/time/profile-Chute_1000.pdf}} 
+\subfloat[\scriptsize Chain  precision $10^{{-08}}$ timeout $50$]{\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-08/50/time/profile-Chain.pdf}} 
+\subfloat[\scriptsize Capsules  precision $10^{{-08}}$ timeout $100$]{\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-08/100/time/profile-Capsules.pdf}} \\
+\subfloat[\scriptsize BoxesStack1  precision $10^{{-08}}$ timeout $100$]{\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-08/100/time/profile-BoxesStack1.pdf}}
+\includegraphics[width=\legendwidth]{../figure/NSGS/LocalTol/VI/1.0e-08/100/time/profile-BoxesStack1_legend.pdf}
   \caption{Influence of the tolerance of the local solver $tol_{local}$ in NSGS-FP-VI-UPK algorithms.} 
 \end{figure}
 \begin{figure}
