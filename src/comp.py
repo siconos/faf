@@ -1313,6 +1313,7 @@ if __name__ == '__main__':
                     print("Rank info already not  in", problem_filename)
                 else:
                     print("Rank info already in", problem_filename)
+                    print("fclib_file['fclib_local']['W'].attrs.get('rank')", fclib_file['fclib_local']['W'].attrs.get('rank'))
                     no_rank_info=False
             if no_rank_info:
                 try:
@@ -1465,8 +1466,11 @@ if __name__ == '__main__':
             nds = []
             cond_nc = []
             cond_W = []
+            cond_W_lsmr = []
             rank_dense_W=[]
+            rank_estimate_W=[]
             rank_ratio =[]
+            rank_estimate_ratio =[]
             for problem_filename in problem_filenames:
 
                 try:
@@ -1486,18 +1490,60 @@ if __name__ == '__main__':
                 except:
                     pass
                 try:
+                    cond_W_lsmr.append(cond_lsmr(problem_filename))
+                except:
+                    pass
+                try:
                     rank_dense_W.append(rank_dense(problem_filename))
                 except:
                     pass
                 try:
-                    rank_ratio.append(numberOfDegreeofFreedomContacts(problem_filename)/float(rank_dense(problem_filename)))
+                    rank_estimate_W.append(rank_estimate(problem_filename))
                 except:
                     pass
+                try:
+                    rank_ratio.append(numberOfDegreeofFreedomContacts(problem_filename)/float(rank_dense(problem_filename)))
+                    rank_estimate_ratio.append(numberOfDegreeofFreedomContacts(problem_filename)/float(rank_estimate(problem_filename)))
+                except:
+                    pass
+            print("number of problems", len(nds))
             print("nds", nds)
+            print("max ndof", max(nds))
+            print("min ndof", min(nds))
+            print("max nc", max(nc))
+            print("min nc", min(nc))
+
+            
             print("rank_dense_W",  rank_dense_W)
             print("cond_nc", cond_nc)
-            print("cond_W", cond_W)
 
+            print("cond_W", cond_W)
+            if (len(cond_W) >0):
+                print("max cond_W", max(cond_W))
+                print("min cond_W", min(cond_W))
+
+
+            print("cond_W_lsmr", cond_W_lsmr)
+            print("max cond_W_lsmr", max(cond_W_lsmr))
+            print("min cond_W_lsmr", min(cond_W_lsmr))
+            print("max cond_nc", max(cond_nc))
+            print("min cond_nc", min(cond_nc))
+
+            print("max rank_dense_W", max(rank_dense_W))
+            print("min rank_dense_W", min(rank_dense_W))
+            
+            print("max rank_estimate_W", max(rank_estimate_W))
+            print("min rank_estimate_W", min(rank_estimate_W))
+
+            print("max rank_ratio", max(rank_ratio))
+            print("min rank_ratio", min(rank_ratio))
+
+            print("max rank_estimate_ratio", max(rank_estimate_ratio))
+            print("min rank_estimate_ratio", min(rank_estimate_ratio))
+
+ 
+            if (len(cond_W) == 0):
+                cond_W = cond_W_lsmr
 
             figure()
             subplot(311)

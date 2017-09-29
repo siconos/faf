@@ -30,11 +30,11 @@ except:
 def dense_matrix_rank(M):
     return matrix_rank(M)
 
-@timeout(3)
+@timeout(1)
 def sparse_matrix_svd(A,k):
     return svds(A,k)
 
-@timeout(3)
+@timeout(900)
 def dense_matrix_rank_estimate(A,tol):
     return estimate_rank(A,tol)
 
@@ -76,7 +76,10 @@ def _norm_cond(problem_filename):
     rank_estimate = np.nan
     try:
         print("Compute rank estimate ...")
-        rank_estimate=dense_matrix_rank_estimate(A.todense(),tol)
+        print("dense ...")
+        B= A.todense()
+        print("dense ...")
+        rank_estimate=dense_matrix_rank_estimate(B,tol)
         #rank_estimate=estimate_rank(A.todense(), tol)
     except Exception as e :
         print ("--> rank_estimate", e)
@@ -158,10 +161,19 @@ def _cond(f):
             r = fclib_file['fclib_local']['W'].attrs['cond']
         except:
             r = np.nan
-    #print "r=",r
+    print ("cond=",r)
     return r
 
 cond = Memoize(_cond)
+def _cond_lsmr(f):
+    with h5py.File(f, 'r') as fclib_file:
+        try:
+            r = fclib_file['fclib_local']['W'].attrs['cond_lsmr']
+        except:
+            r = np.nan
+    print ("cond_lsmr=",r)
+    return r
+cond_lsmr = Memoize(_cond_lsmr)
 
 def _rank_dense(f):
     with h5py.File(f, 'r') as fclib_file:
@@ -169,7 +181,18 @@ def _rank_dense(f):
             r = fclib_file['fclib_local']['W'].attrs['rank_dense']
         except:
             r = np.nan
-    #print "r=",r
+    print ("rank_dense=",r)
     return r
 
 rank_dense = Memoize(_rank_dense)
+
+def _rank_estimate(f):
+    with h5py.File(f, 'r') as fclib_file:
+        try:
+            r = fclib_file['fclib_local']['W'].attrs['rank_estimate']
+        except:
+            r = np.nan
+    print ("rank_estimate=",r)
+    return r
+
+rank_estimate = Memoize(_rank_estimate)

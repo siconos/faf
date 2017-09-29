@@ -427,7 +427,7 @@ class faf_solvers():
 
 
         nsgs = SiconosSolver(name="NSGS-AC",
-                             gnuplot_name="NSGS-AC (iter=10)",
+                             gnuplot_name="NSGS-AC",
                              API=N.fc3d_nsgs,
                              TAG=N.SICONOS_FRICTION_3D_NSGS,
                              iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
@@ -439,7 +439,7 @@ class faf_solvers():
 
 
         nsgs_ac_gp = SiconosSolver(name="NSGS-AC-GP",
-                                       gnuplot_name="NSGS-AC-GP (iter=10)",
+                                       gnuplot_name="NSGS-AC-GP",
                              API=N.fc3d_nsgs,
                              TAG=N.SICONOS_FRICTION_3D_NSGS,
                              iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
@@ -449,7 +449,7 @@ class faf_solvers():
         nsgs_ac_gp.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
 
         nsgs_100 = SiconosSolver(name="NSGS-AC-100",
-                                     gnuplot_name="NSGS-AC (iter=100)",
+                                     gnuplot_name="NSGS-AC (\$\\\\sf iter\_\{\\\\max\}=100\$)",
                              API=N.fc3d_nsgs,
                              TAG=N.SICONOS_FRICTION_3D_NSGS,
                              iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
@@ -461,7 +461,7 @@ class faf_solvers():
 
 
         nsgs_ac_gp_100 = SiconosSolver(name="NSGS-AC-GP-100",
-                                           gnuplot_name="NSGS-AC-GP (iter=100)",
+                                           gnuplot_name="NSGS-AC-GP (\$ \\\\sf iter\_\{\\\\max\}=100\$)",
                              API=N.fc3d_nsgs,
                              TAG=N.SICONOS_FRICTION_3D_NSGS,
                              iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
@@ -472,7 +472,7 @@ class faf_solvers():
         nsgs_ac_gp_100.SolverOptions().internalSolvers.iparam[0] = 100
 
         nsgs_ac_gp_adaptive = SiconosSolver(name="NSGS-AC-GP-ADAPTIVE",
-                                            gnuplot_name="NSGS-AC-GP (Adaptive local tol)",
+                                            gnuplot_name="NSGS-AC-GP (\\\\sf adaptive \$\\\sf tol\_\{local\}\$)",
                                 API=N.fc3d_nsgs,
                                 TAG=N.SICONOS_FRICTION_3D_NSGS,
                                 iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
@@ -483,7 +483,7 @@ class faf_solvers():
         nsgs_ac_gp_adaptive.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
 
         nsgs_ac_gp_adaptive2 = SiconosSolver(name="NSGS-AC-GP-ADAPTIVE2",
-                                                gnuplot_name="NSGS-AC-GP (Adaptive local tol contact )",
+                                                gnuplot_name="NSGS-AC-GP (adaptive \$\\\\sf tol\_\{local\}\$ contact )",
                                         API=N.fc3d_nsgs,
                                     TAG=N.SICONOS_FRICTION_3D_NSGS,
                                     iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
@@ -541,7 +541,7 @@ class faf_solvers():
 
         
         nsgs_rho_given = SiconosSolver(name="NSGS-AC-RHO-GIVEN",
-                                           gnuplot_name='NSGS-AC (\$\\\\rho\_\{\\\\hbox\{\\\\tiny N \}\} =\\\\rho\_T =1\$ )',
+                                           gnuplot_name='NSGS-AC (\$\\\\rho\_\{\\\\hbox\{\\\\tiny N \}\} =\\\\rho\_T =1\$)',
                              API=N.fc3d_nsgs,
                              TAG=N.SICONOS_FRICTION_3D_NSGS,
                              iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
@@ -597,7 +597,7 @@ class faf_solvers():
 
         
         nsgs_pli_10 = SiconosSolver(name="NSGS-PLI-10",
-                                    gnuplot_name="NSGS-FP-VI-UPK iter=10",
+                                    gnuplot_name="NSGS-FP-VI-UPK (\$ \\\\sf iter\_\{\\\\max\}=10\$)",
                                     API=N.fc3d_nsgs,
                                     TAG=N.SICONOS_FRICTION_3D_NSGS,
                                     iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
@@ -607,7 +607,7 @@ class faf_solvers():
         nsgs_pli_10.SolverOptions().internalSolvers.iparam[0] = 10
 
         nsgs_pli_100 = SiconosSolver(name="NSGS-PLI-100",
-                                 gnuplot_name="NSGS-FP-VI-UPK iter=100",
+                                 gnuplot_name="NSGS-FP-VI-UPK (\$ \\\\sf iter\_\{\\\\max\}=100\$)",
                                  API=N.fc3d_nsgs,
                                  TAG=N.SICONOS_FRICTION_3D_NSGS,
                                  iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
@@ -617,7 +617,7 @@ class faf_solvers():
         nsgs_pli_100.SolverOptions().internalSolvers.iparam[0] = 100
 
         nsgs_pli_adaptive = SiconosSolver(name="NSGS-PLI-ADAPTIVE",
-                                 gnuplot_name="NSGS-FP-VI-UPK (Adaptive local tol)",
+                                 gnuplot_name="NSGS-FP-VI-UPK  (\\\\sf adaptive \$\\\\sf tol\_\{local\}\$)",
                                  API=N.fc3d_nsgs,
                                  TAG=N.SICONOS_FRICTION_3D_NSGS,
                                  iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
@@ -627,7 +627,7 @@ class faf_solvers():
         nsgs_pli_adaptive.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithLocalIteration
 
         nsgs_pli_adaptive2 = SiconosSolver(name="NSGS-PLI-ADAPTIVE2",
-                                 gnuplot_name="NSGS-FP-VI-UPK (Adaptive local tol contact )",
+                                 gnuplot_name="NSGS-FP-VI-UPK (\\\\sf adaptive \$\\\\sf tol\_\{local\}\$ contact)",
                                  API=N.fc3d_nsgs,
                                  TAG=N.SICONOS_FRICTION_3D_NSGS,
                                  iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
@@ -806,7 +806,7 @@ class faf_solvers():
         for local_tol in local_tol_values:
             str1 = "{0:1.0e}".format(local_tol).replace("1e","10\^{")+"}"
             nsgs_solver = SiconosSolver(name="NSGS-AC-GP-"+"{0:1.0e}".format(local_tol),
-                                        gnuplot_name="NSGS-AC-GP \$tol\_{local}="+str1+"\$",
+                                        gnuplot_name="NSGS-AC-GP \$(\\\\sf tol\_{local}="+str1+")\$",
                                         API=N.fc3d_nsgs,
                                         TAG=N.SICONOS_FRICTION_3D_NSGS,
                                         iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
@@ -818,7 +818,7 @@ class faf_solvers():
         for local_tol in local_tol_values:
             str1 = "{0:1.0e}".format(local_tol).replace("1e","10\^{")+"}"
             nsgs_solver = SiconosSolver(name="NSGS-PLI-"+"{0:1.0e}".format(local_tol),
-                                        gnuplot_name="NSGS-FP-VI-UPK \$tol\_{local}="+str1+"\$",
+                                        gnuplot_name="NSGS-FP-VI-UPK \$(\\\\sf tol\_{local}="+str1+")\$",
                                         API=N.fc3d_nsgs,
                                         TAG=N.SICONOS_FRICTION_3D_NSGS,
                                         iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
