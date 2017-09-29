@@ -38,7 +38,7 @@ nsgs_localtol_ac_gp : 	test_name=$(shell $(domain) --test_name)
 nsgs_localtol_ac_gp :	save_dir=figure/NSGS/LocalTol/${precision}/${timeout}/${measure_name}
 nsgs_localtol_ac_gp :
 	echo "NSGS Local tolerances"
-	$(comp) --measure=${measure_name} --display --no-matplot --solvers=NSGS-AC-GP-1e --domain=1.0:$(step):${domain_max} --gnuplot-profile --gnuplot-separate-keys
+	$(comp) --measure=${measure_name} --display --no-matplot --solvers='NSGS-AC-GP-1e','NSGS-AC-GP-ADAPTIVE' --domain=1.0:$(step):${domain_max} --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-${test_name}.tex;
 	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;
@@ -55,7 +55,7 @@ nsgs_localtol_vi : 	test_name=$(shell $(domain) --test_name)
 nsgs_localtol_vi :	save_dir=figure/NSGS/LocalTol/VI/${precision}/${timeout}/${measure_name}
 nsgs_localtol_vi :
 	echo "NSGS Local tolerances"
-	$(comp) --measure=${measure_name} --display --no-matplot --solvers=NSGS-PLI-1e --domain=1.0:$(step):${domain_max} --gnuplot-profile --gnuplot-separate-keys
+	$(comp) --measure=${measure_name} --display --no-matplot --solvers='NSGS-PLI-1e','NSGS-PLI-ADAPTIVE' --domain=1.0:$(step):${domain_max} --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-${test_name}.tex;
 	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;
@@ -76,6 +76,7 @@ nsgs_localsolver :
 	'NSGS-AC-GP-ADAPTIVE','NSGS-AC-GP-ADAPTIVE2',\
 	'NSGS-AC-100','NSGS-AC-GP-100','NSGS-JM','NSGS-JM-GP',\
 	'NSGS-PLI-1e-14','NSGS-PLI-1e-06','NSGS-PLI-100','NSGS-PLI-10',\
+	'NSGS-PLI-ADAPTIVE','NSGS-PLI-ADAPTIVE2',\
 	'NSGS-P','NSGS-Quartic' --domain=1.0:$(step):${domain_max} --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-${test_name}.tex;

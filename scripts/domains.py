@@ -83,7 +83,7 @@ list_target=targets.split(' ')
 
 #print('len of targets', len(list_target))
 #default Values
-default_values = [10,2,2,4,4,5,5,5,15,100,100,100,10,20,100]
+default_values = [5,2,2,4,4,5,5,5,15,100,100,100,10,20,100]
 #print('len of default_values', len(default_values))
 
 data=dict()
