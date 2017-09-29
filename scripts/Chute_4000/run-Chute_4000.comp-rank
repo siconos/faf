@@ -1,0 +1,28 @@
+#!/bin/bash -fx
+
+export LC_ALL=C
+# specific variables to the test bench set
+example=Chute_4000
+precision=1e-4
+timeout=200
+solvers=' ' 
+#solvers='--solvers-exact='NSN-JeanMoreau-NLS','NSN-AlartCurnier-NLS','NSN-NaturalMap-NLS','NSN-FischerBurmeister-NLS','NSN-JeanMoreau-Generated-NLS','NSN-AlartCurnier-Generated-NLS','NSN-AlartCurnier-NLS-HYBRID','NSGS-AC','NSGS-AC-GP','NSGS-PLI-100''
+max_problems=500
+
+with_mumps='--with_mumps'
+preload='LD_PRELOAD=/usr/lib/libmpi.so'
+
+with_mumps=''
+preload=''
+
+#OAR --project siconos
+#OAR --name Chute_4000CR
+###OAR -p cpumarch != 'haswell'
+#OAR -l /nodes=1,walltime=48:00:00
+
+faf_dir=$HOME/faf
+faf_src_dir=$faf_dir/src
+faf_scripts_dir=$faf_dir/scripts
+
+source $faf_scripts_dir/faf-run-cond-rank.sh
+
