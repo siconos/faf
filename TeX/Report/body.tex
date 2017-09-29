@@ -2604,7 +2604,16 @@ In (\ref{eq:measure}), the computational time is used to measure performance. Ot
 \subsection{Benchmarks presentation}
 
 
-To perform the comparison of the solvers on a fair basis, we use a large set of problems that comes from various applications. This collection is FCLib (Frictional Contact libraries)  which is an open collection of problems in a hdf5 format described in \citep{acary:hal-00945820} and more information can be found at \href{https://frictionalcontactlibrary.github.io}{https://frictionalcontactlibrary.github.io}. The whole collection of problems can be found at \href{https://github.com/FrictionalContactLibrary/fclib-library}{https://github.com/FrictionalContactLibrary/fclib-library} and we used the version $\tt v1.0$ for the comparisons. The test set are illustrated in Figure~\ref{fig:fclib}
+To perform the comparison of the solvers on a fair basis, we use a large set of problems that comes from various applications. This collection is FCLib (Frictional Contact libraries)  which is an open collection of problems in a hdf5 format described in \citep{acary:hal-00945820} and more information can be found at \href{https://frictionalcontactlibrary.github.io}{https://frictionalcontactlibrary.github.io}. The whole collection of problems can be found at \href{https://github.com/FrictionalContactLibrary/fclib-library}{https://github.com/FrictionalContactLibrary/fclib-library} and we used the version $\tt v1.0$ for the comparisons that contains $2368$ problems.
+
+The test sets are illustrated in Figure~\ref{fig:fclib} ans some details on their contents are given in Table~\ref{Tab:fclib}. All the problems has been generated thanks to the software codes LMGC90 and Siconos. In Table~\ref{Tab:fclib}, the number of degrees of freedom $n$ corresponds to the degrees of freedom of the systems before its condensation to local variables. In other words, the number of rows of the matrix $M$ and $H$ in  (\ref{eq:soccp1-intro}). The contact density $c$ is the ratio of the number of contact unknowns over the number of degrees of freedom:
+\begin{equation}
+  \label{eq:fclib-1}
+  c= \frac {3 n_c }{ n} = \frac {m} {n}.
+\end{equation}
+ The coefficient $c$ corresponds also to the ratio between the number of rows of $H$ over its number of columns. If this number is larger than $1$, the matrix $H$ can not be full row rank and then the matrix $W$ is also rank deficient. In the case that $m >n$, we can observe in Table~\ref{Tab:fclib} that  this number $c$ is a good approximation of the rank ratio of the matrix $W$ in our applications. The estimation of the rank of matrix $W$ shows that is is very close to the number of degrees of freedom of the system when $c>1$. For $c >> 1$, the contact density is really high and the system suffers from hyperstaticity as we discussed in Section~\ref{sec:existence}. In Table~\ref{Tab:fclib}, we also give an estimation of the conditioning of the matrix $W$. When is was possible from a computational point of view, we perform a singular value decomposition (SVD) of the matrix $W$ to estimate the spectral radius and then the conditioning by cutting the small eigenvalues. This process has two drawbacks. Firstly, the computation of the SVD decomposition can ba really expensive for large dense matrix. Secondly, the value of the condition number of the matrix is very sensitive to the threshold for cutting off the small eigenvalues renders. This is we also use LSMR~\citep{Fong.Saunders_SISC2011} algorithm to give an better approximation of the condition number of rank deficient matrix. 
+
+The four first tests in~\ref{Tab:fclib} are examples that involve flexible elastic bodies meshed by element methods. The matrix $W$ is that case is full rank. We will call this set of examples the flexible test set in the sequel.
 
 \def\figillus{0.15\textheight}
 \begin{figure}
@@ -2634,7 +2643,7 @@ To perform the comparison of the solvers on a fair basis, we use a large set of 
   & \parbox[t]{2mm}{\rotatebox[origin=c]{90}{ \# of problems }}
   & \# of d.o.f.
   & \# of contacts
-  & \parbox[t]{2mm}{\rotatebox[origin=c]{90}{contact density}}
+  & \parbox[t]{2mm}{\rotatebox[origin=c]{90}{contact density $c$}}
   %& \parbox[t]{2mm}{\rotatebox[origin=c]{90}{rank(W)}}
   & \parbox[t]{2mm}{\rotatebox[origin=c]{90}{rank ratio(W)}}
   & \parbox[t]{2mm}{\rotatebox[origin=c]{90}{cond(W)}}
@@ -2651,7 +2660,8 @@ To perform the comparison of the solvers on a fair basis, we use a large set of 
   & [0.02:0.09]
 %  & [6:15]
   & 1
-  & $[2.2.10^{1},1.3.10^{3}]$\\
+  & $[2.2.10^{1},1.3.10^{3}]$
+  & $[8.1.10^{5},1.5.10^{6}]$\\
    \hline
   Cubes\_H8\_5
   & LMGC90
@@ -2662,7 +2672,8 @@ To perform the comparison of the solvers on a fair basis, we use a large set of 
   & [0.02:0.09]
 %  & [48:108]
   & 1
-  &  $[2.3.10^{4}, 7.2.10^{4} ]$ \\
+  & $[3.3.10^{4}, 7.2.10^{4} ]$
+  & $[1.3.10^{6}, 3.1.10^{6} ]$\\
    \hline
   Cubes\_H8\_20
   & LMGC90
@@ -2673,7 +2684,8 @@ To perform the comparison of the solvers on a fair basis, we use a large set of 
   & [0.019:0.021]
 %  & [1083:1164]
   & 1
-  & $[2.4.10^{5}, 2.5.10^{5} ]$ \\
+  & $[2.4.10^{5}, 2.5.10^{5} ]$
+  & $[1.3.10^{6}, 5.2.10^{6} ]$\\
   \hline
   LowWall\_FEM
    & LMGC90
@@ -2684,6 +2696,7 @@ To perform the comparison of the solvers on a fair basis, we use a large set of 
   & [0.28:0.29]
 %  & [1873:2064]
   & 1
+  & --
   & $[9.3.10^{2},5.0.10^{5}]$\\
   \hline
   Aqueduct\_PR
@@ -2707,7 +2720,8 @@ To perform the comparison of the solvers on a fair basis, we use a large set of 
   & [1.5:2.3]
 %  & [87:132]
   & [2.27,2.45]
-  & $[8.3.10^{4},1.1.10^{5}]$\\
+  & $[8.3.10^{4},1.1.10^{5}]$
+  & $[1.9.10^{3},2.6.10^{4}]$\\
   \hline
   100\_PR\_Periobox
   & LMGC90
@@ -2718,7 +2732,8 @@ To perform the comparison of the solvers on a fair basis, we use a large set of 
   & [0.2:3]
 %  & [23:600]
   & [1.76:3.215]
-  & $[4.3.10^{2},1.0.10^{6}]$ \\
+  & $[4.3.10^{2},1.0.10^{6}]$
+  & $[6.3.10^{5},3.5.10^{6}]$ \\
   \hline
   945\_SP\_Box\_PL
   & LMGC90
@@ -2741,7 +2756,8 @@ To perform the comparison of the solvers on a fair basis, we use a large set of 
   & [1.2:1.5]
 %  & [47:587]
   & [1.08:1.55]
-  & $[1.2.10^{6},7.5.10^{9}]$\\
+  & $[1.2.10^{6},7.5.10^{9}]$
+  & -- \\
   \hline
   Chain
   & Siconos
@@ -2752,7 +2768,8 @@ To perform the comparison of the solvers on a fair basis, we use a large set of 
   & [0.5:1.3]
 %  & 53
   & [1.05:1.6]
-  & $[7.4.10^{4},4.0.10^{9}]$\\
+  & $[7.4.10^{4},4.0.10^{9}]$
+  & $[1.5.10^{1},4.7.10^{5}]$\\
   \hline
   KaplasTower
   & Siconos
@@ -2763,7 +2780,8 @@ To perform the comparison of the solvers on a fair basis, we use a large set of 
   & [3.0:3.6]
 %  & [72:792]
   & [2.0:3.53]
-  & $[67:2174]$\\
+  & $[67:2174]$
+  & $[8:67]$\\
   \hline
   BoxesStack
   & Siconos
@@ -2774,7 +2792,8 @@ To perform the comparison of the solvers on a fair basis, we use a large set of 
   & [1.86:2.00]
 %  & [54:300]
   & [1.875,2.0]
-  & $[3.8.10^{4},2.5.10^{7}]$\\
+  & $[3.8.10^{4},2.5.10^{7}]$
+  & $[9.0,5.4.10^{3}]$\\
   \hline
   Chute\_1000
   & Siconos
@@ -2783,9 +2802,10 @@ To perform the comparison of the solvers on a fair basis, we use a large set of 
   & [276:5508]
   & [74:5056]
   & [0.69:2.95]
-%  & --
-  & --
-  & --\\
+%  & [222,8133]
+  & [1.0:2.95]
+  & $[2.1.10^{1},1.9.10^{3}]$
+  & \\
   \hline
   Chute\_4000
   & Siconos
@@ -2795,8 +2815,9 @@ To perform the comparison of the solvers on a fair basis, we use a large set of 
   & [15965:19795]
   & [2.51:3.06]
   & --
-%  & --
-  & --\\
+  % & [222,8133]
+  & --
+  & $[5.5.10^{1},9.0.10^{3}]$\\
   \hline
   Chute\_local\_problems
   & Siconos
@@ -2807,29 +2828,46 @@ To perform the comparison of the solvers on a fair basis, we use a large set of 
   & 1
 %  & 3
   & 1
-  & [1.04:4.66]\\
+  & [1.04:4.66]
+  & $[2.6,2.6.10^{1}]$\\
   \hline
 \end{tabular}
-\caption{Table 2}
+\caption{Description of the test sets of FCLib library (v1.0)}
+\label{Tab:fclib}
 \end{sidewaystable}
 }
-\subsection{Parameters}
-
-\begin{itemize}
-\item size (n, m), sparsity,
-\item matrix storage
-\item conditionning $M$ $W$
-\item rank of $H$ or $W$ on active contact
-\item parameter $\nu = m_c/n$
-\end{itemize}
-
-\begin{itemize}
-\item algorithms parameters ($\rho$)
-\end{itemize}
 
 
+\begin{ndrva}
+  Can we say more on the description of the examples ?
+\end{ndrva}
+% \subsection{Parameters}
+
+% \begin{itemize}
+% \item size (n, m), sparsity,
+% \item matrix storage
+% \item conditionning $M$ $W$
+% \item rank of $H$ or $W$ on active contact
+% \item parameter $\nu = m_c/n$
+% \end{itemize}
+
+% \begin{itemize}
+% \item algorithms parameters ($\rho$)
+% \end{itemize}
 
 \subsection{Sofware \& implementation details}
+
+All the solvers that are used in this article are implemented in standard C in the component of Siconos called Siconos/Numerics. The aim of Siconos is to provide a common platform for the modeling, simulation, analysis and control of general nonsmooth dynamical systems. More information on the software is available at \href{http://siconos.gforge.inria.fr}{http://siconos.gforge.inria.fr} and the software can be downloaded at  \href{https://github.com/siconos/siconos}{https://github.com/siconos/siconos}. The algebraic manipulations are based on BLAS/LAPACK and we use SuiteSparse for the implementation of sparse matrices. The algorithm {\sf VI-FP}, {\sf VI-EG}, {\sf NSGS} and {\sf PSOR} uses the sparse block structure of the matrix $W$. The {\sf NSN} solvers relies on a standard sparse implementation.
+
+
+\begin{ndrva}
+ something more ?
+\end{ndrva}
+
+
+
+
+
 \clearpage
 
 
