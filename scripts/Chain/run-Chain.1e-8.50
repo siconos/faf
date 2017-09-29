@@ -16,7 +16,7 @@ with_mumps=''
 preload=''
 
 #OAR --project siconos
-#OAR --name siconos-comp
+#OAR --name Chain
 ###OAR -p cpumarch != 'haswell'
 #OAR -l /nodes=1,walltime=48:00:00
 
