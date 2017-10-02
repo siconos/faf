@@ -20,7 +20,9 @@ list_f= glob('../figure/NSGS/rho/**/*.pdf', recursive=True)
 #list_f= glob('../figure/PSOR/**/*.pdf', recursive=True)
 #list_f= glob('../figure/NSN/**/*.pdf', recursive=True)
 #list_f= glob('../figure/PROX/InternalSolvers/**/*.pdf', recursive=True)
-
+#list_f= glob('../figure/PROX/Parameters/nu05/**/*.pdf', recursive=True)
+list_f= glob('../figure/OPTI/**/*.pdf', recursive=True)
+#list_f= glob('../figure/COMP/**/*.pdf', recursive=True)
 print('list_f=',list_f)
 dict_f={}
 
