@@ -2191,7 +2191,7 @@ VA OK we can discuss this point. It is difficult to do a (European) perfect line
 \end{ndroh}
 
 \subsection{Control of the tolerance of internal solvers $\sf tol_{{int}}$ and $\sf tol_{{local}}$ in the splitting and proximal approaches}
-
+\label{Sec:NSGS-LocalTol}
 In Algorithms~\ref{Algo:PPA-vi} and~\ref{Algo:PSOR-II}, an internal tolerance is used to control the accuracy of the internal solver. It is generally not useful to solve the internal problem at the accuracy of the global one. In the comparison study, we set the internal tolerance $\sf tol_{{int}}$ to a fraction of the error $\sf error/10.0$ for the Algorithm~\ref{Algo:PPA-vi}. For Algorithm~\ref{Algo:PSOR-II}, the local tolerance  $\sf tol_{{local}}$ is  set by default to a very low value of $10^{-14}$. When it is specified, an adaptive local tolerance is set to $\sf error/10.0$.
 
 \subsection{Nomenclature}
@@ -3072,7 +3072,7 @@ All the solvers that are used in this article are implemented in standard C in t
 \label{Tab:fclib-simulation}
 \end{table}
 
-In Sections~\ref{Sec:ComparisonFamily} and~\ref{Sec:Comparison}, we report the results for the simulation campaign. Since the large amount of dataand the numerous of performance profiles for each test sets that are generated, we do not report any profiles  when a list of solvers fails or is not able to meet the required tolerance within the prescribed time defined by the timeout values. Nevertheless, the reader may have access to the complete list of performance profiles at \href{https://github.com/siconos/faf/blob/master/TeX/Full-test/full-test_current.pdf}{https://github.com/siconos/faf/blob/master/TeX/Full-test/full-test\_current.pdf}.
+In Sections~\ref{Sec:ComparisonFamily} and~\ref{Sec:Comparison}, we report the results for the simulation campaign. Since the large amount of data and the numerous of performance profiles for each test sets that are generated, we do not report any profiles  when a list of solvers fails or is not able to meet the required tolerance within the prescribed time defined by the timeout values. Nevertheless, the reader may have access to the complete list of performance profiles at \href{https://github.com/siconos/faf/blob/master/TeX/Full-test/full-test_current.pdf}{https://github.com/siconos/faf/blob/master/TeX/Full-test/full-test\_current.pdf}.
 
 
 \begin{ndrva}
@@ -3083,13 +3083,6 @@ In Sections~\ref{Sec:ComparisonFamily} and~\ref{Sec:Comparison}, we report the r
 
 \clearpage
 
-
-\section{Comparison of methods by family}
-\label{Sec:ComparisonFamily}
-In this section, we perform a comparison of the solvers by family in order to study the influence of the various possible parameters on the performance of the solvers.
-
-\subsection{Numerical methods for VI: {\sf FP-DS, FP-VI-$\star$} and {\sf FP-EG-$\star$}}
-\label{Sec:Comparison,VI,step-length}
 %\newcommand\commentedfigure[1]{#1}
 \newcommand\commentedfigure[1]{}
 
@@ -3109,12 +3102,21 @@ In this section, we perform a comparison of the solvers by family in order to st
 \def\legendwidth{0.6\textwidth}
 \def\legendheight{0.15\textheight}
 
-In Figure~\ref{fig:VI/UpdateRule}, we compare the different numerical solver for VI. Only the test sets for which the solvers are reached the precicion before timeout are presented. For that reason, the results for the test sets LowWall\_FEM,  Cubes\_H8, Bridge\_PR, AqueducPR, 945\_SP\_Box\_PL, 100\_PR\_PerioBox, Chute\_4000  and Chute\_1000  are not presented. The solvers are quite low in practice for a large number of contacts and they failed to meet the required tolerance in time for the examples that are not depicted in Figure~\ref{fig:VI/UpdateRule}. The main conclusions are as follows:
+\section{Comparison of methods by family}
+\label{Sec:ComparisonFamily}
+In this section, we perform a comparison of the solvers by family in order to study the influence of the various possible parameters on the performance of the solvers.
+
+\subsection{Numerical methods for VI: {\sf FP-DS, FP-VI-$\star$} and {\sf FP-EG-$\star$}}
+\label{Sec:Comparison,VI,step-length}
+
+
+In Figure~\ref{fig:VI/UpdateRule}, we compare the different numerical solvers for VI described in Section~\ref{sec:numericalmethods,vi}. Only the test sets for which the solvers are reached the precicion before the prescribed time (timeout) are presented. For that reason, the results for the test sets LowWall\_FEM,  Cubes\_H8, Bridge\_PR, AqueducPR, 945\_SP\_Box\_PL, 100\_PR\_PerioBox, Chute\_4000  and Chute\_1000  are not depicted. The solvers are quite slow to converge in practice for large problems although they are robust except for {\sf FP-DS}. 
+The main conclusions are as follows:
 \begin{enumerate}
-\item The solver {\sf FP-DS} suffers from robustness problems and a lot of divergence has been observed in practice. The self-adaptive rule for size the paramater $\rho_k$ is of utmost importance.
-\item The solvers {\sf FP-VI-$\star$} and {\sf FP-EG-$\star$} are really robust but slow. They are able to solve all the problems but they require a lot of time and we didn't observe divergence issues.
+\item The solver {\sf FP-DS} suffers from robustness problems and a lot of divergence has been observed. 
+\item The solvers {\sf FP-VI-$\star$} and {\sf FP-EG-$\star$} are really robust but slow. They are able to solve all the problems but they require a lot of time and we didn't observe divergence issues. Comparing to {\sf FP-DS}, the self-adaptive rule for size the paramater $\rho_k$ is of utmost importance for robustness.
 \item Except for the test set KaplasTower II, the  {\sf FP-EG-$\star$} performs better than  {\sf FP-VI-$\star$}.
-\item The difference between the {\sf UPK} and {\sf UPTS} is very small in all the examples and the choice of the update rule is not fundamentally important.
+\item The difference between the adaptive strategy for sizing $\rho_k$, {\sf UPK} and {\sf UPTS} is very small in all the examples and the choice of the update rule is not fundamentally important.
 \end{enumerate}
 
 
@@ -3170,14 +3172,16 @@ Again the results on the test sets Bridge\_PR, 100\_PR\_PerioBox, Chute\_local\_
 
 \paragraph{Effect and influence of the local solver in {\sf NSGS-$\star$}  algorithms} In Figure~\ref{fig:NSGS/LocalSolver}, we report the performance profiles of the  {\sf NSGS-$\star$} for the different local solvers.  The main conclusions are as follows:
 \begin{enumerate}
-\item When the timeout value is sufficiently large, we observe the {\sf NSGS-$\star$} are quite robust solvers. In other words, the convergence is slow but robust. Indeed, we are able to find to local solver for each test sets that is able to give a solution at the required accuracy. One of the problem is the fact that there is no universal efficient local solver and the global efficiency depends on the local solver in various ways depending on the test sets.
+\item When the timeout value is sufficiently large, we observe the {\sf NSGS-$\star$} solvers are quite robust. In other words, the convergence is slow but robust. Indeed, we are able to find to a local solver for each test sets that is able to give a solution at the required accuracy. Nervetheless, there is no universal efficient local solver that outperforms the other ones and the global efficiency depends on the local solver in various ways according to  the test sets.
 \item Except for the test sets KaplasTower II and BoxesStack, the solver {\sf NSGS-EXACT} behaves poorly. This is mainly due to the fact that the solver is not robust to find a solution for one contact when we are far from the solutions for all the contacts. This behavior was already reported in~\citep{Daviet.ea_SIGGRAPH2011} where another solver based a nonsmooth Newton technique was used when  the exact solution was not satisfactory.
-\item  The solver  {\sf NSGS-FP-DS-One} is most efficient on the test sets Bridge\_PR II, KaplasTower II, Chain and BoxesStack. These tests sets seem to be among the easiest one the solve. Nevertheless, the solver seems slow or suffers from robustness issues for other test sets.
-\item On the flexible test sets and 945\_SP\_Box\_PL, the best solver is {\sf NSGS-FP-VI-UPK} for a relatively low required tolerance ($\sf tol_{local} =10^{-06}$). For these test sets, an approximate solution of the single contact problems seems sufficient to ensure a efficient convergence towards the solution without entailing robustness.
-\item On the test sets 100\_PR\_PerioBox II, KaplasTower,  Chain, Capsules, the solver {\sf NSGS-NSN-$\star$} are the best solvers and behave very well on Bridge\_PR II. It seems that when a tight accuracy is required, the use of  {\sf NSGS-NSN-$\star$} are useful.
-\item For the Chute\_1000, Chute\_4000 test sets, we observe large difference between the local formulation of the nonsmooth equations for the Newton solvers. The solver $\sf NSGS-NSN-JM$ is the best solver and really better than $\sf NSGS-NSN-AC$ although their theoretical formulation are very close. Theses two test sets are characterized by difficult local problems where the matrix $W$ is asymmetric.
+\item  The solver  {\sf NSGS-FP-DS-One} is most efficient on the test sets Bridge\_PR II, KaplasTower II, Chain and BoxesStack. These tests sets seem to be among the easiest one the solve (see Table~\ref{Tab:fclib-simulation}). Nevertheless, this local solver seems slow or suffers from robustness issues for other test sets.
+\item On the flexible test sets and 945\_SP\_Box\_PL, the best solver is {\sf NSGS-FP-VI-UPK} for a relatively low required tolerance ($\sf tol_{local} =10^{-06}$). For these test sets, an approximate solution of the single contact problems seems sufficient to ensure an efficient convergence towards the solution without entailing robustness.
+\item On the test sets 100\_PR\_PerioBox II, KaplasTower,  Chain, Capsules, the solver {\sf NSGS-NSN-$\star$} are the best solvers and behave very well on Bridge\_PR II. It seems that when a tight accuracy is required, the solvers {\sf NSGS-NSN-$\star$} are useful and helps with a tight local tolerance to speed-up the convergence.
+\item For the Chute\_1000, Chute\_4000 test sets, we observe large differences between the local formulations of the nonsmooth equations for the Newton solvers ({\sf NSGS-NSN-AC} or {\sf NSGS-NSN-JM}). The solver {\sf NSGS-NSN-JMx} is the best solver and really better than {\sf NSGS-NSN-AC} although their theoretical formulation are very close. Theses two test sets are characterized by difficult local problems where the matrix $W$ is asymmetric.
 \item {\tt Comment on the line searches method}
 \end{enumerate}
+
+
 
 \def\widthfigure{0.6}
 \begin{figure}
@@ -3201,7 +3205,7 @@ Again the results on the test sets Bridge\_PR, 100\_PR\_PerioBox, Chute\_local\_
 \subfloat[\scriptsize 100\_PR\_PerioBox II]
    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}} 
 % \subfloat[\scriptsize 100\_PR\_PerioBox]
-%    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-08/100/time/profile-LMGC_100_PR_PerioBox.pdf}}
+%    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-08/200/time/profile-LMGC_100_PR_PerioBox.pdf}}
 \subfloat[\scriptsize KaplasTower II]
    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/400/time/profile-KaplasTower.pdf}} 
 \subfloat[\scriptsize KaplasTower]
@@ -3225,13 +3229,13 @@ Again the results on the test sets Bridge\_PR, 100\_PR\_PerioBox, Chute\_local\_
   \label{fig:NSGS/LocalSolver}
 \end{figure}
 
-\paragraph{Influence of the tolerance of the local solver $tol_{local}$ in {\sf NSGS-FP-VI-UPK} algorithms}
-In this section, the tolerance of the local solver is varied and its effect on the global convergence of the solver is reported. In Figure~\ref{fig:NSGS/LocalTol/VI},  we report the performance profile of {\sf NSGS-FP-VI-UPK} algorithms for the $\sf tol_{local}$ in the range $[10^{-04}, 10^{-16}]$. We also report the efficiency of the adaptive value of the local tolerance. The main observations are
+\paragraph{Influence of the tolerance of the local solver $\sf tol_{local}$ in {\sf NSGS-FP-VI-UPK} algorithms}
+In this paragraph, the tolerance of the local solver is varied and its effect on the global convergence of the solver is reported. In Figure~\ref{fig:NSGS/LocalTol/VI},  we report the performance profiles of {\sf NSGS-FP-VI-UPK} algorithms for the $\sf tol_{local}$ in the range $[10^{-04}, 10^{-16}]$. We also report the efficiency of the adaptive strategy for setting the value of the local tolerance (see Section~\ref{Sec:NSGS-LocalTol}). The main observations are
 \begin{enumerate}
-\item For the test sets that are solved a a quicker way, such as BoxesStack,  Capsules, Chain, Chute\_local\_problems, KaplasTower, KaplasTower II,  a tight tolerance on the local solver $10^{-16}$ improves the efficiency and the global convergence of the {\sf NSGS-FP-VI-UPK} solver. It seems that these problems correspond to the problem that are solved quite quickly (see Table~\ref{Tab:fclib-simulation})
-\item For the other problems that are longer to solve, that is when we expect more iterations of the  {\sf NSGS-FP-VI-UPK} solver, the adaptive rule or low local tolerances are better.
+\item For the test sets that are quickly solved (see Table~\ref{Tab:fclib-simulation}), such as BoxesStack,  Capsules, Chain, Chute\_local\_problems, KaplasTower, KaplasTower II,  a tight tolerance on the local solver $10^{-16}$ improves the efficiency  of the {\sf NSGS-FP-VI-UPK} solver. 
+\item For the other problems that are longer to solve, that is, when we expect more iterations of the  {\sf NSGS-FP-VI-UPK} solver, the adaptive rule or tight local tolerances are better.
 \end{enumerate}
-From these results, it is quite difficult to guess in advance the internal dynamics of the solver. Note that the range of $\tau$ that we used in the graph is quite small so the difference in performance between the solvers are not crucial.
+From these results, it is quite difficult to guess in advance the internal dynamics of the solver. Note that the range of $\tau$ that we used in the graph is quite small so the difference in performance between the solvers is not crucial.
 
 \begin{figure}
   \centering\vspace{-0.5cm}
@@ -3277,8 +3281,8 @@ From these results, it is quite difficult to guess in advance the internal dynam
  \label{fig:NSGS/LocalTol/VI}
 \end{figure}
 
-\paragraph{Influence of the tolerance of the local solver $tol_{local}$ in {\sf NSGS-NSN-AC-GP} algorithms}
-In Figure~\ref{fig:NSGS/LocalTol},  we report the performance profile of {\sf NSGS-NSN-AC-GP} algorithms for the $\sf tol_{local}$ in the range $[10^{-04}, 10^{-16}]$. We also report the efficiency of the adaptive value of the local tolerance. Except for the test set Chute\_local\_problems,  the main observation is that the local tolerance does not change fundamentally the convergence of the solver. For the test set Chute\_local\_problems, the is no internal dynamics of convergence of the loop on the contact since we have only one contact. It is therefore normal to see that adaptive performs better that the other.
+\paragraph{Influence of the tolerance of the local solver $\sf tol_{local}$ in {\sf NSGS-AC-GP} algorithms.}
+In Figure~\ref{fig:NSGS/LocalTol},  we report the performance profile of {\sf NSGS-AC-GP} algorithms for the $\sf tol_{local}$ in the range $[10^{-04}, 10^{-16}]$. We also test the  adaptive strategy value for the local tolerance. Except for the test set Chute\_local\_problems,  the main observation is that the local tolerance does not change fundamentally the convergence of the solver. For the test set Chute\_local\_problems, there is no internal dynamics of the main loop of the {\sf NSGS} since there is only one contact. It is therefore reasonable to see that adaptive performs better that the other.
 
 
 
@@ -3326,14 +3330,14 @@ In Figure~\ref{fig:NSGS/LocalTol},  we report the performance profile of {\sf NS
 \label{fig:NSGS/LocalTol}
 \end{figure}
 
-\paragraph{Influence of the choice of the parameters $\rho_\n, \rho_\t$ in the local solver of {\sf NSGS-NSN-$\star$} algorithms}
+\paragraph{Influence of the choice of the parameters $\rho_\n, \rho_\t$ in the local solver of the {\sf NSGS-AC} algorithms}
 
 In Figure~\ref{fig:NSGS/rho}, we evaluate the influence of the choice of the parameters $\rho_\n, \rho_\t$ on the convergence of the solver. The main conclusion are:
 \begin{enumerate}
-\item For the test sets 945\_SP\_Box\_PL, 100\_PR\_PerioBox, KaplasTower II, KaplasTower, Chute\_local\_problems, Chute\_local\_problems II, Chute\_4000, Chute\_1000, Capsules, a fixed value of $\rho_\n=\rho_\t=1$ has a dramatic effect on the convergence of the algorithm. The scaling of $\rho$ is of utmost importance for the efficiency and the robustness of the solver. Note that the rule  \eqref{eq:rho-4} that takes into account the condition number of the local matrix $w$ deteriorates the performance for $Chute\_local\_problems, Chute\_local\_problems II, Chute\_4000, Chute\_1000$. In this problem, the local matrix is asymmetric due to large Coriolis effects in the simulation.
+\item For the test sets 945\_SP\_Box\_PL, 100\_PR\_PerioBox, KaplasTower II, KaplasTower, Chute\_local\_problems, Chute\_local\_problems II, Chute\_4000, Chute\_1000, Capsules, a fixed value of $\rho_\n=\rho_\t=1$ has a dramatic effect on the convergence of the algorithm. The scaling of $\rho$ is of utmost importance for the efficiency and the robustness of the solver. Note that the rule  \eqref{eq:rho-4} that takes into account the condition number of the local matrix $W$ deteriorates the performance for Chute\_local\_problems, Chute\_local\_problems II, Chute\_4000, Chute\_1000. In these problems, the local matrix is asymmetric due to large Coriolis effects.
 \item For the other tests, the choice of $\rho_\n,\rho_\t$ does not really change the results, mainly due the fact that the order of magnitude of the chosen $\rho$ with the rules \eqref{eq:rho-2}, \eqref{eq:rho-3} or \eqref{eq:rho-4} is around $1$.
 \end{enumerate}
-One of the conclusion of this study is as follows, the rules \eqref{eq:rho-2}, \eqref{eq:rho-3} improves a lot some simulations without increasing the computational tie for the others. Therefore, we advise to use it.
+One of the conclusion of this study is as follows, the rules \eqref{eq:rho-2}, \eqref{eq:rho-3} improves a lot some simulations without increasing the computational cost for the others. Therefore, it is strongly advised to use it.
 \begin{figure}
   \centering\vspace{-0.5cm}
     \subfiglayout
@@ -3385,7 +3389,7 @@ One of the conclusion of this study is as follows, the rules \eqref{eq:rho-2}, \
 
 
 
-In this section, we study the influence of the contact order within the loop of the {\sf NSGS-AC-QP} solver. We reproduce in Figure~\ref{fig:NSGS/Shuffled} the result of the solvers with the original contact list of the problem {\sf NSGS-AC-GP} with two other ways of iterating over the contacts. The solver {\sf NSGS-AC-GP Shuffled} to a first randomization of the list of contacts at the beginning of the algorithm. In the solver  {\sf NSGS-AC-GP Fully shuffled}, the is shuffled at each iteration.
+In this section, we study the influence of the contact order within the loop of the {\sf NSGS-AC-GP} solver. We reproduce in Figure~\ref{fig:NSGS/Shuffled} the result of the solvers with the original contact list of the problem ({\sf NSGS-AC-GP}) and with two other ways of iterating over the contacts. The solver {\sf NSGS-AC-GP Shuffled} corresponds to a single randomization of the list of contacts at the beginning of the algorithm. In the solver  {\sf NSGS-AC-GP Fully shuffled}, the  list is shuffled at each iteration.
 \begin{enumerate}
 \item The solver  {\sf NSGS-AC-GP Fully shuffled} performs really better on the flexible test sets
 \item For the rigid test sets, we reproduce here only the test set  100\_PR\_PerioBox II because the other test sets behave identically. The  {\sf NSGS-AC-GP Fully shuffled} has a really bad influence on the convergence of the solver. It seems that is modify the internal dynamics of the solver in a way the rate of convergence is really decreased.
@@ -3438,12 +3442,12 @@ In this section, we study the influence of the contact order within the loop of 
 
 \paragraph{Comparison of PSOR algorithm with respect to  the relaxation parameter $\omega$}
 
-In Figure~\ref{fig:PSOR}, we study the effect of the relaxation parameter $\omega$ ranging from $[0.5,1.8]$ on the performance.  Two conclusions can be drawn
+In Figure~\ref{fig:PSOR}, we study the effect  on the performance of the relaxation parameter $\omega$ ranging from $[0.5,1.8]$.  Two conclusions can be drawn:
 \begin{enumerate}
-\item For the flexible tests, the efficiency of the solver is really improved as we decreased the value of $\omega$. Moreover, this is done without destroyig the robustness of the solver.
-\item for the rigid tests, the effect of the relaxation is not clear. For values of $\omega$ greater than $1.0$, the efficiency is improved but the robustness deteriorates and we observe the contrary for the  $\omega$  less than $1.0$
+\item For the flexible tests, the efficiency of the solver is really improved as we decreased the value of $\omega$. Moreover, this is done without destroying the robustness of the solver.
+\item For the rigid tests, the effect of the relaxation is not so clear. For values of $\omega$ greater than $1.0$, the efficiency is improved but the robustness deteriorates and we observe the contrary for the  $\omega$  less than $1.0$
 \end{enumerate}
-To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$. If it accelerates drastically the rate of convergence of the algorithm for some problems it deteriorates the convergence for other. Further studies would be needed to design self--adaptive schemes for the choice of $\omega$.
+To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$. If it accelerates drastically the rate of convergence of the algorithm for some problems it deteriorates the convergence for others. Further studies would be needed to design self--adaptive schemes for the choice of $\omega$.
 
 % \begin{ndrva}
 %   \item redo this comparison on a set of mixed examples
