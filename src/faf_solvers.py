@@ -471,7 +471,7 @@ class faf_solvers():
         nsgs_ac_gp_100.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
         nsgs_ac_gp_100.SolverOptions().internalSolvers.iparam[0] = 100
 
-        nsgs_ac_gp_adaptive = SiconosSolver(name="NSGS-AC-GP-ADAPTIVE",
+        nsgs_ac_gp_adaptive = SiconosSolver(name="NSGS-AC-GP-ADAPTIVE1",
                                             gnuplot_name="NSGS-AC-GP (\\\\sf adaptive \$\\\sf tol\_\{local\}\$)",
                                 API=N.fc3d_nsgs,
                                 TAG=N.SICONOS_FRICTION_3D_NSGS,
@@ -552,7 +552,7 @@ class faf_solvers():
         nsgs_rho_given.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_RHO_STRATEGY] = N.SICONOS_FRICTION_3D_NSN_FORMULATION_RHO_STRATEGY_CONSTANT;
 
         nsgs_rho_spectral_norm = SiconosSolver(name="NSGS-AC-RHO-SPECTRAL-NORM",
-                                           gnuplot_name='NSGS-AC (\$\\\\rho\_\{\\\\hbox\{\\\\tiny N \}\} =\\\\rho\_T = \\\\frac\{1\}\{\\\\lambda\_\{\\\\max\}(W)\}\$ )',
+                                           gnuplot_name='NSGS-AC (\$\\\\rho\_\{\\\\hbox\{\\\\tiny N \}\} =\\\\rho\_T =  1/  \{\\\\lambda\_\{\\\\max\}(W)\}\$ )',
                              API=N.fc3d_nsgs,
                              TAG=N.SICONOS_FRICTION_3D_NSGS,
                              iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
@@ -563,7 +563,7 @@ class faf_solvers():
         nsgs_rho_spectral_norm.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_RHO_STRATEGY] = N.SICONOS_FRICTION_3D_NSN_FORMULATION_RHO_STRATEGY_SPECTRAL_NORM;
         
         nsgs_rho_split_spectral_norm = SiconosSolver(name="NSGS-AC-RHO-SPLIT-SPECTRAL-NORM",
-                                            gnuplot_name='NSGS-AC (\$\\\\rho\_\{\\\\hbox\{\\\\tiny N \}\} =\\\\frac\{1\}\{\\\\lambda\_\{\\\\max\}(W\_\{NN\})\}, \\\\quad \\\\rho\_T = \\\\frac\{1\}\{\\\\lambda\_\{\\\\max\}(W\_\{TT\})\}\$ )',
+                                            gnuplot_name='NSGS-AC (\$\\\\rho\_\{\\\\hbox\{\\\\tiny N \}\} =1/\{\\\\lambda\_\{\\\\max\}(W\_\{NN\})\}, \\\\quad \\\\rho\_T = 1/\{\\\\lambda\_\{\\\\max\}(W\_\{TT\})\}\$ )',
                              API=N.fc3d_nsgs,
                              TAG=N.SICONOS_FRICTION_3D_NSGS,
                              iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
@@ -573,13 +573,26 @@ class faf_solvers():
         nsgs_rho_split_spectral_norm.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
         nsgs_rho_split_spectral_norm.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_RHO_STRATEGY] = N.SICONOS_FRICTION_3D_NSN_FORMULATION_RHO_STRATEGY_SPLIT_SPECTRAL_NORM;
 
+        nsgs_rho_split_spectral_norm_cond = SiconosSolver(name="NSGS-AC-RHO-SPLIT-SPECTRAL-NORM-COND",
+                                            gnuplot_name='NSGS-AC (\$\\\\rho\_\{\\\\hbox\{\\\\tiny N \}\} =1/\{\\\\lambda\_\{\\\\max\}(W\_\{NN\})\}, \\\\quad \\\\rho\_T = \\\\frac\{ \\\\lambda\_\{\\\\min\}(W\_\{TT\})   \}\{\\\\lambda^2\_\{\\\\max\}(W\_\{TT\})\}\$ )',
+                             API=N.fc3d_nsgs,
+                             TAG=N.SICONOS_FRICTION_3D_NSGS,
+                             iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
+                             dparam_err=1,
+                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+        nsgs_rho_split_spectral_norm_cond.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN
+        nsgs_rho_split_spectral_norm_cond.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
+        nsgs_rho_split_spectral_norm_cond.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_RHO_STRATEGY] = N.SICONOS_FRICTION_3D_NSN_FORMULATION_RHO_STRATEGY_SPLIT_SPECTRAL_NORM_COND;
+
 
 
 
 
 
         
-        nsgs_solvers = [nsgs, nsgs_rho_given,nsgs_rho_spectral_norm,nsgs_rho_split_spectral_norm, nsgs_ac_gp, nsgs_100, nsgs_ac_gp_100, nsgs_ac_gp_adaptive, nsgs_ac_gp_adaptive2, nsgs_jm, nsgs_jm_gp,
+        nsgs_solvers = [nsgs,
+                            nsgs_rho_given,nsgs_rho_spectral_norm,nsgs_rho_split_spectral_norm, nsgs_rho_split_spectral_norm_cond,
+                            nsgs_ac_gp, nsgs_100, nsgs_ac_gp_100, nsgs_ac_gp_adaptive, nsgs_ac_gp_adaptive2, nsgs_jm, nsgs_jm_gp,
                             nsgs_sfull, snsgs]
 
         for s in nsgs_solvers:
@@ -616,7 +629,7 @@ class faf_solvers():
         nsgs_pli_100.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithLocalIteration
         nsgs_pli_100.SolverOptions().internalSolvers.iparam[0] = 100
 
-        nsgs_pli_adaptive = SiconosSolver(name="NSGS-PLI-ADAPTIVE",
+        nsgs_pli_adaptive = SiconosSolver(name="NSGS-PLI-ADAPTIVE1",
                                  gnuplot_name="NSGS-FP-VI-UPK  (\\\\sf adaptive \$\\\\sf tol\_\{local\}\$)",
                                  API=N.fc3d_nsgs,
                                  TAG=N.SICONOS_FRICTION_3D_NSGS,
@@ -1056,7 +1069,7 @@ class faf_solvers():
 
         iparam1_values = [0,1]
 
-        iparam2_values = [0,1]
+        iparam2_values = [0]
 
         iparam3_values = [0]
 
@@ -1072,7 +1085,8 @@ class faf_solvers():
                         g_name="EG-VI-UPHS"
 
                     if i2 == 0:
-                        g_name = g_name + " False"
+                        #g_name = g_name + " False"
+                        g_name = g_name
                     elif i2 == 1:
                         g_name = g_name + " True"
 
@@ -1105,8 +1119,8 @@ class faf_solvers():
         iparam1_values = [0,1,2]
         iparam1_values = [0,1]
 
+        iparam2_values = [0,1]
         iparam2_values = [0]
-        iparam2_values = [0,1 ]
 
 
         iparam3_values = [0,1]
@@ -1123,7 +1137,7 @@ class faf_solvers():
                         g_name="FP-VI-UPHS"
 
                     if i2 == 0:
-                        g_name = g_name + " False"
+                        g_name = g_name 
                     elif i2 == 1:
                         g_name = g_name + " True"
                     elif i2 == 2:
