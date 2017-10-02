@@ -1,0 +1,93 @@
+\select@language {english}
+\select@language {english}
+\contentsline {section}{\numberline {1}Introduction}{5}{section.1}
+\contentsline {subsection}{\numberline {1.1}Problem statement}{6}{subsection.1.1}
+\contentsline {paragraph}{Abstract problem}{6}{section*.3}
+\contentsline {paragraph}{A Second Order Cone Complementarity Problem (SOCCP).}{6}{section*.4}
+\contentsline {paragraph}{Range of applicability.}{7}{section*.5}
+\contentsline {subsection}{\numberline {1.2}Objectives and outline of the article}{8}{subsection.1.2}
+\contentsline {section}{\numberline {2}Description of the 3D frictional contact problems}{10}{section.2}
+\contentsline {subsection}{\numberline {2.1}Signorini's condition and Coulomb's friction.}{10}{subsection.2.1}
+\contentsline {paragraph}{Disjunctive formulation of the Signorini-Coulomb model}{11}{section*.7}
+\contentsline {paragraph}{Inclusion into normal cones}{12}{section*.8}
+\contentsline {paragraph}{SOCCP formulation of the Signorini-Coulomb model}{12}{section*.9}
+\contentsline {subsection}{\numberline {2.2}Frictional contact discrete problems}{12}{subsection.2.2}
+\contentsline {subsection}{\numberline {2.3}Existence of solutions}{15}{subsection.2.3}
+\contentsline {section}{\numberline {3}Alternative formulations}{16}{section.3}
+\contentsline {subsection}{\numberline {3.1}Variational Inequalities (VI) formulations}{16}{subsection.3.1}
+\contentsline {paragraph}{{Uniqueness} properties.}{16}{section*.11}
+\contentsline {subsection}{\numberline {3.2}Quasi-Variational Inequalities (QVI)}{17}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}Nonsmooth Equations}{17}{subsection.3.3}
+\contentsline {paragraph}{Natural and normal maps for the VI formulations}{18}{section*.12}
+\contentsline {paragraph}{Jean--Moreau's and Alart-Curnier's functions}{19}{section*.13}
+\contentsline {paragraph}{Xuewen-Soh-Wanji functions}{20}{section*.14}
+\contentsline {paragraph}{H\"{u}eber--Stadler--Wolhmuth functions}{20}{section*.15}
+\contentsline {paragraph}{General SOCC-functions}{21}{section*.16}
+\contentsline {subsection}{\numberline {3.4}Optimization problems}{23}{subsection.3.4}
+\contentsline {paragraph}{The Panagiotopoulos alternating optimization approach}{24}{section*.17}
+\contentsline {paragraph}{The successive approximation}{24}{section*.18}
+\contentsline {paragraph}{The convex SOCP}{25}{section*.19}
+\contentsline {section}{\numberline {4}Numerical methods for VIs}{26}{section.4}
+\contentsline {subsection}{\numberline {4.1}Fixed point and projection methods for VI}{26}{subsection.4.1}
+\contentsline {paragraph}{Extragradient methods}{27}{section*.20}
+\contentsline {subsection}{\numberline {4.2}Self-adaptive step-size rules}{27}{subsection.4.2}
+\contentsline {subsection}{\numberline {4.3}Nomenclature}{28}{subsection.4.3}
+\contentsline {section}{\numberline {5}Newton based methods}{30}{section.5}
+\contentsline {subsection}{\numberline {5.1}Principle of the nonsmooth Newton methods}{30}{subsection.5.1}
+\contentsline {subsection}{\numberline {5.2}Application to the discrete frictional contact problem}{30}{subsection.5.2}
+\contentsline {paragraph}{Nonsmooth newton based on the natural map }{30}{section*.22}
+\contentsline {paragraph}{Newton method based on the Jean--Moreau and Alart--Curnier functions}{31}{section*.23}
+\contentsline {paragraph}{Newton method based on SOCC-function}{31}{section*.24}
+\contentsline {paragraph}{Lipschitz continuity properties}{31}{section*.25}
+\contentsline {subsection}{\numberline {5.3}Convergence and robustness issues.}{31}{subsection.5.3}
+\contentsline {subsection}{\numberline {5.4}Estimation of $\rho , \rho _{\hbox {\relax \fontsize {5}{6}\selectfont {N}}}, \rho _{\hbox {\relax \fontsize {5}{6}\selectfont {T}}}$ parameters}{32}{subsection.5.4}
+\contentsline {paragraph}{Inverse of a norm of $W$}{32}{section*.26}
+\contentsline {paragraph}{Estimation based on the splitting $W_{{\hbox {\relax \fontsize {5}{6}\selectfont {N}}}{\hbox {\relax \fontsize {5}{6}\selectfont {N}}}}$ and $W_{{\hbox {\relax \fontsize {5}{6}\selectfont {T}}}{\hbox {\relax \fontsize {5}{6}\selectfont {T}}}}$}{33}{section*.27}
+\contentsline {paragraph}{Adaptive estimation of the parameters}{33}{section*.28}
+\contentsline {paragraph}{Default choices}{33}{section*.29}
+\contentsline {subsection}{\numberline {5.5}Damped Newton and line-search procedures}{33}{subsection.5.5}
+\contentsline {paragraph}{Merit functions}{33}{section*.30}
+\contentsline {paragraph}{Armijo line--search}{33}{algorithm.5}
+\contentsline {paragraph}{Goldstein--Price (GP) line search}{33}{algorithm.6}
+\contentsline {paragraph}{Non-monotone line--search}{35}{section*.33}
+\contentsline {subsection}{\numberline {5.6}Nomenclature}{35}{subsection.5.6}
+\contentsline {section}{\numberline {6}Splitting techniques and proximal point algorithm}{37}{section.6}
+\contentsline {subsection}{\numberline {6.1}Splitting techniques}{37}{subsection.6.1}
+\contentsline {subsection}{\numberline {6.2}Proximal points techniques}{38}{subsection.6.2}
+\contentsline {subsection}{\numberline {6.3}Control of the tolerance of internal solvers $tol_{{int}}$ and $tol_{{local}}$ in the splitting and proximal approaches}{41}{subsection.6.3}
+\contentsline {subsection}{\numberline {6.4}Nomenclature}{41}{subsection.6.4}
+\contentsline {section}{\numberline {7}Optimization based methods}{42}{section.7}
+\contentsline {subsection}{\numberline {7.1}Alternating optimization problem}{42}{subsection.7.1}
+\contentsline {subsection}{\numberline {7.2}Successive approximation method}{44}{subsection.7.2}
+\contentsline {subsection}{\numberline {7.3}ACLM approach}{46}{subsection.7.3}
+\contentsline {subsection}{\numberline {7.4}Convex relaxation and the SOCCP approach}{46}{subsection.7.4}
+\contentsline {subsection}{\numberline {7.5}Control of the tolerance of internal solvers $\sf tol_{{int}}$ in optimization approach}{47}{subsection.7.5}
+\contentsline {section}{\numberline {8}Comparison framework}{48}{section.8}
+\contentsline {subsection}{\numberline {8.1}Measuring errors}{48}{subsection.8.1}
+\contentsline {subsection}{\numberline {8.2}Performance profiles}{48}{subsection.8.2}
+\contentsline {subsection}{\numberline {8.3}Benchmarks presentation}{49}{subsection.8.3}
+\contentsline {subsection}{\numberline {8.4}Sofware \& implementation details}{50}{subsection.8.4}
+\contentsline {subsection}{\numberline {8.5}Simulation campaign}{50}{subsection.8.5}
+\contentsline {section}{\numberline {9}Comparison of methods by family}{54}{section.9}
+\contentsline {subsection}{\numberline {9.1}Numerical methods for VI: {\sf FP-DS, FP-VI-$\star $} and {\sf FP-EG-$\star $}}{54}{subsection.9.1}
+\contentsline {paragraph}{Evaluation of the influence of the self--adaptive procedure for step length}{54}{figure.caption.41}
+\contentsline {subsection}{\numberline {9.2}Splitting based algorithms: {\sf NSGS-$\star $} and {\sf PSOR-$\star $}}{55}{subsection.9.2}
+\contentsline {paragraph}{Effect and influence of the local solver in {\sf NSGS-$\star $} algorithms}{55}{figure.caption.43}
+\contentsline {paragraph}{Influence of the tolerance of the local solver $tol_{local}$ in NSGS algorithms}{55}{figure.caption.46}
+\contentsline {paragraph}{Influence of the contacts order in NSGS algorithms}{59}{section*.47}
+\contentsline {paragraph}{Comparison of PSOR algorithm with respect to the relaxation parameter $\omega $}{60}{figure.caption.50}
+\contentsline {subsection}{\numberline {9.3}Comparison of{\sf NSN-$\star $} algorithms}{60}{subsection.9.3}
+\contentsline {subsection}{\numberline {9.4}Comparison of PPA-NSN-AC algorithm with respect to the step-size parameter $\sigma $, $\mu $}{60}{subsection.9.4}
+\contentsline {section}{\numberline {10}Comparison of different families of solvers.}{60}{section.10}
+\contentsline {subsection}{\numberline {10.1}CPU and memory efforts for a given tolerance}{60}{subsection.10.1}
+\contentsline {subsection}{\numberline {10.2}Analyze reached accuracy for a given time}{60}{subsection.10.2}
+\contentsline {section}{References}{60}{subsection.10.2}
+\contentsline {section}{\numberline {A}Basics in Convex Analysis}{75}{appendix.A}
+\contentsline {subsection}{\numberline {A.1}Euclidean projection on the disk in $\ensuremath {\mathrm {I\tmspace -\thinmuskip {.1667em}R}}^2$.}{75}{subsection.A.1}
+\contentsline {subsection}{\numberline {A.2}Euclidean projection on the second order cone of $\ensuremath {\mathrm {I\tmspace -\thinmuskip {.1667em}R}}^3$.}{76}{subsection.A.2}
+\contentsline {paragraph}{Direct computation of an element of the subdifferential}{76}{section*.55}
+\contentsline {paragraph}{Computation of the subdifferential using the spectral decomposition}{76}{section*.56}
+\contentsline {section}{\numberline {B}Computation of Generalized Jacobians for Nonsmooth Newton methods}{77}{appendix.B}
+\contentsline {subsection}{\numberline {B.1}Computation of components of subgradient of $F_{{\hbox {\relax \fontsize {5}{6}\selectfont {vi}}}}^{\hbox {\sf \relax \fontsize {5}{6}\selectfont {nat}}}$}{77}{subsection.B.1}
+\contentsline {subsection}{\numberline {B.2}Alart--Curnier function and its variants}{78}{subsection.B.2}
+\contentsline {subsection}{\numberline {B.3}Fischer-Burmeister function}{79}{subsection.B.3}

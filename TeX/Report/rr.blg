@@ -1,0 +1,57 @@
+This is BibTeX, Version 0.99d (TeX Live 2016/MacPorts 2016_5)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: rr.aux
+The style file: plainnat.bst
+Database file #1: ./biblio/String.bib
+Database file #2: ./biblio/NonSmooth.bib
+Database file #3: ./biblio/Math.bib
+Database file #4: ./biblio/Multibody.bib
+Database file #5: ./biblio/Fem.bib.bib
+Database file #6: ./biblio/Dae.bib.bib
+Database file #7: ./biblio/Meca.bib
+Database file #8: ./biblio/AnaNum.bib.bib
+Database file #9: ./biblio/Math-Impact.bib
+Database file #10: ./biblio/Contact.bib
+Database file #11: ./biblio/Optim.bib
+Database file #12: ./biblio/Cp.bib
+You've used 113 entries,
+            2773 wiz_defined-function locations,
+            1673 strings with 34192 characters,
+and the built_in function-call counts, 52093 in all, are:
+= -- 5017
+> -- 2458
+< -- 103
++ -- 836
+- -- 721
+* -- 4302
+:= -- 8077
+add.period$ -- 497
+call.type$ -- 113
+change.case$ -- 560
+chr.to.int$ -- 111
+cite$ -- 226
+duplicate$ -- 2345
+empty$ -- 4377
+format.name$ -- 944
+if$ -- 10995
+int.to.chr$ -- 3
+int.to.str$ -- 1
+missing$ -- 119
+newline$ -- 724
+num.names$ -- 463
+pop$ -- 892
+preamble$ -- 1
+purify$ -- 464
+quote$ -- 0
+skip$ -- 1727
+stack$ -- 0
+substring$ -- 2361
+swap$ -- 190
+text.length$ -- 21
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 1169
+warning$ -- 0
+while$ -- 489
+width$ -- 0
+write$ -- 1787
