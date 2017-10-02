@@ -1739,10 +1739,10 @@ The details of a possible computation of $\Phi$ can be found in Appendix~\ref{Se
 \label{Sec:Num-SOCCP}
 Let us consider now the Fischer-Burmeister function $F_{\fb}(u,r)$ in~\eqref{eq:FB-II} for Problem~\ref{prob:II}.
 Algorithm~\ref{Algo:NSN} is applied \tg{with}
-\begin{equation}  \label{eq:phiphi-ac}
+\begin{equation}  \label{eq:phiphi-soccp}
     \Phi(r) \in \partial F_{\fb}(r).
 \end{equation}
-The details of a possible computation of $\Phi$ can be found in Appendix~\ref{Sec:Phi-FB-II}.
+%The details of a possible computation of $\Phi$ can be found in Appendix~\ref{Sec:Phi-FB-II}.
 
 \paragraph{Nonsmooth newton based on the natural map }
 Let us consider the natural map $F_{\vitwo}^\nat$ in~\eqref{eq:natural-II} that enables to write Problem~\ref{prob:II} \tg{as} a nonsmooth equation.
@@ -2171,9 +2171,10 @@ or equivalently
 Searching for a solution $z_{k+1}$ of~\eqref{eq:PPA-VI2} yields
 \begin{equation}
   \label{eq:PPA-VI3}
-  z_{k+1} = P_{X}( z_k - \alpha_k F(z_{k+1}))
+  z_{k+1} = P_{X}( z_k - \alpha_k F(z_{k+1})).
 \end{equation}
-which can be viewed as an implicit version of the basic fixed point iteration based on~\eqref{eq:skew-fixed-point-qvi}. A prediction--correction method based may be written as 
+%which can be viewed as an implicit version of the basic fixed point iteration based on~\eqref{eq:skew-fixed-point-qvi}.
+A prediction--correction method based may be written as
 \begin{equation}
   \label{eq:PPA-VI4}
   \begin{array}{lcl}
@@ -3088,7 +3089,7 @@ In Sections~\ref{Sec:ComparisonFamily} and~\ref{Sec:Comparison}, we report the r
 In this section, we perform a comparison of the solvers by family in order to study the influence of the various possible parameters on the performance of the solvers.
 
 \subsection{Numerical methods for VI: {\sf FP-DS, FP-VI-$\star$} and {\sf FP-EG-$\star$}}
-
+\label{Sec:Comparison,VI,step-length}
 %\newcommand\commentedfigure[1]{#1}
 \newcommand\commentedfigure[1]{}
 
@@ -3108,7 +3109,7 @@ In this section, we perform a comparison of the solvers by family in order to st
 \def\legendwidth{0.6\textwidth}
 \def\legendheight{0.15\textheight}
 
-\paragraph{Evaluation of the influence of the self--adaptive procedure for step length} In Figure~\ref{fig:VI/UpdateRule}, we compare the different numerical solver for VI. Only the test sets for which the solvers are reached the precicion before timeout are presented. For that reason, the results for the test sets LowWall\_FEM,  Cubes\_H8, Bridge\_PR, AqueducPR, 945\_SP\_Box\_PL, 100\_PR\_PerioBox, Chute\_4000  and Chute\_1000  are not presented. The solvers are quite low in practice for a large number of contacts and they failed to meet the required tolerance in time for the examples that are not depicted in Figure~\ref{fig:VI/UpdateRule}. The main conclusions are as follows:
+In Figure~\ref{fig:VI/UpdateRule}, we compare the different numerical solver for VI. Only the test sets for which the solvers are reached the precicion before timeout are presented. For that reason, the results for the test sets LowWall\_FEM,  Cubes\_H8, Bridge\_PR, AqueducPR, 945\_SP\_Box\_PL, 100\_PR\_PerioBox, Chute\_4000  and Chute\_1000  are not presented. The solvers are quite low in practice for a large number of contacts and they failed to meet the required tolerance in time for the examples that are not depicted in Figure~\ref{fig:VI/UpdateRule}. The main conclusions are as follows:
 \begin{enumerate}
 \item The solver {\sf FP-DS} suffers from robustness problems and a lot of divergence has been observed in practice. The self-adaptive rule for size the paramater $\rho_k$ is of utmost importance.
 \item The solvers {\sf FP-VI-$\star$} and {\sf FP-EG-$\star$} are really robust but slow. They are able to solve all the problems but they require a lot of time and we didn't observe divergence issues.
@@ -3431,7 +3432,8 @@ In this section, we study the influence of the contact order within the loop of 
 % \subfloat[\scriptsize BoxesStack1]
 %    {\includegraphics[width=\figwidth]{../figure/NSGS/Shuffled/time/profile-BoxesStack1.pdf}} \\
 {\includegraphics[height=\legendheight]{../figure/NSGS/Shuffled/time/profile-BoxesStack1_legend.pdf}} 
-  \caption{Influence of the contacts order in NSGS algorithms.}
+\caption{Influence of the contacts order in NSGS algorithms.}
+\label{fig:NSGS/Shuffled}
 \end{figure}
 
 \paragraph{Comparison of PSOR algorithm with respect to  the relaxation parameter $\omega$}
@@ -3826,37 +3828,6 @@ To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$
  \caption{Comparison of the solvers between families}
   \label{fig:COMP}
 \end{figure}
-
-% \subsection{Rigid bodies applications}
-% \begin{figure}
-%   \centering
-%   \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Bridge_PR-time_0_100.pdf}
-%   \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Bridge_PR_legend-time_0_100.pdf}
-%   \caption{Bridge\_PR tests. $timeout=50s, tol = 10^{[-4} $ performance (time). }
-%   \label{fig:profile-LMGC_Bridge_PR-time}
-% \end{figure}
-
-
-
-% \subsection{Finite Element applications}
-
-% \begin{figure}
-%   \centering
-%   \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Cubes_H8-time_0_100.pdf}
-%   \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Cubes_H8-time_0_5000.pdf}
-%   \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Cubes_H8_legend-time.pdf}
-%   \caption{Cubes H8\_5 tests. $timeout=50s $ performance (time). }
-%   \label{fig:profile-LMGC_Cubes_H8-time}
-% \end{figure}
-
-% \begin{figure}
-%   \centering
-%   \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Cubes_H8-time_0_100.pdf}
-%   \includegraphics[width=\widthfigure\textwidth]{../figure/profile-LMGC_Cubes_H8_legend-time.pdf}
-%   \caption{Cubes H8\_20 tests. $timeout=50s $ performance (time). }
-%   \label{fig:profile-LMGC_Cubes_H8-time}
-% \end{figure}
-
 
 % \subsection{CPU and memory efforts for a given tolerance}
 
