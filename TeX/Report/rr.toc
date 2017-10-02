@@ -35,9 +35,9 @@
 \contentsline {section}{\numberline {5}Newton based methods}{30}{section.5}
 \contentsline {subsection}{\numberline {5.1}Principle of the nonsmooth Newton methods}{30}{subsection.5.1}
 \contentsline {subsection}{\numberline {5.2}Application to the discrete frictional contact problem}{30}{subsection.5.2}
-\contentsline {paragraph}{Nonsmooth newton based on the natural map }{30}{section*.22}
-\contentsline {paragraph}{Newton method based on the Jean--Moreau and Alart--Curnier functions}{31}{section*.23}
-\contentsline {paragraph}{Newton method based on SOCC-function}{31}{section*.24}
+\contentsline {paragraph}{Newton method based on the Jean--Moreau and Alart--Curnier functions}{30}{section*.22}
+\contentsline {paragraph}{Newton method based on SOCC-function}{31}{section*.23}
+\contentsline {paragraph}{Nonsmooth newton based on the natural map }{31}{section*.24}
 \contentsline {paragraph}{Lipschitz continuity properties}{31}{section*.25}
 \contentsline {subsection}{\numberline {5.3}Convergence and robustness issues.}{31}{subsection.5.3}
 \contentsline {subsection}{\numberline {5.4}Estimation of $\rho , \rho _{\hbox {\relax \fontsize {5}{6}\selectfont {N}}}, \rho _{\hbox {\relax \fontsize {5}{6}\selectfont {T}}}$ parameters}{32}{subsection.5.4}
@@ -47,14 +47,14 @@
 \contentsline {paragraph}{Default choices}{33}{section*.29}
 \contentsline {subsection}{\numberline {5.5}Damped Newton and line-search procedures}{33}{subsection.5.5}
 \contentsline {paragraph}{Merit functions}{33}{section*.30}
-\contentsline {paragraph}{Armijo line--search}{33}{algorithm.5}
-\contentsline {paragraph}{Goldstein--Price (GP) line search}{33}{algorithm.6}
+\contentsline {paragraph}{Goldstein--Price (GP) line search}{33}{algorithm.5}
+\contentsline {paragraph}{Armijo line--search}{33}{algorithm.6}
 \contentsline {paragraph}{Non-monotone line--search}{35}{section*.33}
 \contentsline {subsection}{\numberline {5.6}Nomenclature}{35}{subsection.5.6}
 \contentsline {section}{\numberline {6}Splitting techniques and proximal point algorithm}{37}{section.6}
 \contentsline {subsection}{\numberline {6.1}Splitting techniques}{37}{subsection.6.1}
 \contentsline {subsection}{\numberline {6.2}Proximal points techniques}{38}{subsection.6.2}
-\contentsline {subsection}{\numberline {6.3}Control of the tolerance of internal solvers $tol_{{int}}$ and $tol_{{local}}$ in the splitting and proximal approaches}{41}{subsection.6.3}
+\contentsline {subsection}{\numberline {6.3}Control of the tolerance of internal solvers $\sf tol_{{int}}$ and $\sf tol_{{local}}$ in the splitting and proximal approaches}{41}{subsection.6.3}
 \contentsline {subsection}{\numberline {6.4}Nomenclature}{41}{subsection.6.4}
 \contentsline {section}{\numberline {7}Optimization based methods}{42}{section.7}
 \contentsline {subsection}{\numberline {7.1}Alternating optimization problem}{42}{subsection.7.1}
@@ -70,24 +70,25 @@
 \contentsline {subsection}{\numberline {8.5}Simulation campaign}{50}{subsection.8.5}
 \contentsline {section}{\numberline {9}Comparison of methods by family}{54}{section.9}
 \contentsline {subsection}{\numberline {9.1}Numerical methods for VI: {\sf FP-DS, FP-VI-$\star $} and {\sf FP-EG-$\star $}}{54}{subsection.9.1}
-\contentsline {paragraph}{Evaluation of the influence of the self--adaptive procedure for step length}{54}{figure.caption.41}
-\contentsline {subsection}{\numberline {9.2}Splitting based algorithms: {\sf NSGS-$\star $} and {\sf PSOR-$\star $}}{55}{subsection.9.2}
-\contentsline {paragraph}{Effect and influence of the local solver in {\sf NSGS-$\star $} algorithms}{55}{figure.caption.43}
-\contentsline {paragraph}{Influence of the tolerance of the local solver $tol_{local}$ in NSGS algorithms}{55}{figure.caption.46}
-\contentsline {paragraph}{Influence of the contacts order in NSGS algorithms}{59}{section*.47}
-\contentsline {paragraph}{Comparison of PSOR algorithm with respect to the relaxation parameter $\omega $}{60}{figure.caption.50}
-\contentsline {subsection}{\numberline {9.3}Comparison of{\sf NSN-$\star $} algorithms}{60}{subsection.9.3}
-\contentsline {subsection}{\numberline {9.4}Comparison of PPA-NSN-AC algorithm with respect to the step-size parameter $\sigma $, $\mu $}{60}{subsection.9.4}
-\contentsline {section}{\numberline {10}Comparison of different families of solvers.}{60}{section.10}
-\contentsline {subsection}{\numberline {10.1}CPU and memory efforts for a given tolerance}{60}{subsection.10.1}
-\contentsline {subsection}{\numberline {10.2}Analyze reached accuracy for a given time}{60}{subsection.10.2}
-\contentsline {section}{References}{60}{subsection.10.2}
-\contentsline {section}{\numberline {A}Basics in Convex Analysis}{75}{appendix.A}
-\contentsline {subsection}{\numberline {A.1}Euclidean projection on the disk in $\ensuremath {\mathrm {I\tmspace -\thinmuskip {.1667em}R}}^2$.}{75}{subsection.A.1}
-\contentsline {subsection}{\numberline {A.2}Euclidean projection on the second order cone of $\ensuremath {\mathrm {I\tmspace -\thinmuskip {.1667em}R}}^3$.}{76}{subsection.A.2}
-\contentsline {paragraph}{Direct computation of an element of the subdifferential}{76}{section*.55}
-\contentsline {paragraph}{Computation of the subdifferential using the spectral decomposition}{76}{section*.56}
-\contentsline {section}{\numberline {B}Computation of Generalized Jacobians for Nonsmooth Newton methods}{77}{appendix.B}
-\contentsline {subsection}{\numberline {B.1}Computation of components of subgradient of $F_{{\hbox {\relax \fontsize {5}{6}\selectfont {vi}}}}^{\hbox {\sf \relax \fontsize {5}{6}\selectfont {nat}}}$}{77}{subsection.B.1}
-\contentsline {subsection}{\numberline {B.2}Alart--Curnier function and its variants}{78}{subsection.B.2}
-\contentsline {subsection}{\numberline {B.3}Fischer-Burmeister function}{79}{subsection.B.3}
+\contentsline {paragraph}{Evaluation of the influence of the self--adaptive procedure for step length}{54}{section*.40}
+\contentsline {subsection}{\numberline {9.2}Splitting based algorithms: {\sf NSGS-$\star $} and {\sf PSOR-$\star $}}{54}{subsection.9.2}
+\contentsline {paragraph}{Effect and influence of the local solver in {\sf NSGS-$\star $} algorithms}{54}{section*.42}
+\contentsline {paragraph}{Influence of the tolerance of the local solver $tol_{local}$ in {\sf NSGS-FP-VI-UPK} algorithms}{56}{section*.44}
+\contentsline {paragraph}{Influence of the tolerance of the local solver $tol_{local}$ in {\sf NSGS-NSN-AC-GP} algorithms}{58}{section*.46}
+\contentsline {paragraph}{Influence of the choice of the parameters $\rho _{\hbox {\relax \fontsize {5}{6}\selectfont {N}}}, \rho _{\hbox {\relax \fontsize {5}{6}\selectfont {T}}}$ in the local solver of {\sf NSGS-NSN-$\star $} algorithms}{58}{section*.48}
+\contentsline {paragraph}{Influence of the contacts order in NSGS algorithms}{58}{section*.50}
+\contentsline {paragraph}{Comparison of PSOR algorithm with respect to the relaxation parameter $\omega $}{62}{section*.52}
+\contentsline {subsection}{\numberline {9.3}Comparison of {\sf NSN-$\star $} algorithms}{64}{subsection.9.3}
+\contentsline {subsection}{\numberline {9.4}Comparison of PPA-NSN-AC algorithm with respect to the step-size parameter $\sigma $, $\mu $}{64}{subsection.9.4}
+\contentsline {section}{\numberline {10}Comparison of different families of solvers.}{64}{section.10}
+\contentsline {section}{\numberline {11}General conclusions}{64}{section.11}
+\contentsline {section}{References}{64}{Item.27}
+\contentsline {section}{\numberline {A}Basics in Convex Analysis}{77}{appendix.A}
+\contentsline {subsection}{\numberline {A.1}Euclidean projection on the disk in $\ensuremath {\mathrm {I\tmspace -\thinmuskip {.1667em}R}}^2$.}{77}{subsection.A.1}
+\contentsline {subsection}{\numberline {A.2}Euclidean projection on the second order cone of $\ensuremath {\mathrm {I\tmspace -\thinmuskip {.1667em}R}}^3$.}{78}{subsection.A.2}
+\contentsline {paragraph}{Direct computation of an element of the subdifferential}{78}{section*.58}
+\contentsline {paragraph}{Computation of the subdifferential using the spectral decomposition}{78}{section*.59}
+\contentsline {section}{\numberline {B}Computation of Generalized Jacobians for Nonsmooth Newton methods}{79}{appendix.B}
+\contentsline {subsection}{\numberline {B.1}Computation of components of subgradient of $F_{{\hbox {\relax \fontsize {5}{6}\selectfont {vi}}}}^{\hbox {\sf \relax \fontsize {5}{6}\selectfont {nat}}}$}{79}{subsection.B.1}
+\contentsline {subsection}{\numberline {B.2}Alart--Curnier function and its variants}{80}{subsection.B.2}
+\contentsline {subsection}{\numberline {B.3}Fischer-Burmeister function}{81}{subsection.B.3}

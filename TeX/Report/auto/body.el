@@ -4,12 +4,15 @@
    (TeX-run-style-hooks
     "../figure/cone1-b")
    (TeX-add-symbols
+    '("commentedfigure" 1)
     '("MM" 0)
     '("moh" 1)
     '("tg" 1)
     '("tb" 1)
     "nlength"
     "figillus"
+    "subfigcounter"
+    "subfiglayout"
     "measurename"
     "performance"
     "figwidth"
@@ -133,16 +136,16 @@
     "eq:NSN6"
     "eq:NSN3"
     "Algo:NSN"
-    "eq:phiphi"
     "Sec:NSN-AC"
     "eq:phiphi-ac"
     "Sec:Num-SOCCP"
+    "eq:phiphi"
     "eq:rho-1"
     "eq:rho-2"
     "eq:rho-3"
     "eq:rho-4"
-    "Algo:A"
     "Algo:GP"
+    "Algo:A"
     "tab:NSN-algos"
     "Sec:SplittingTechniquesAndProx"
     "Sec:SplittingTechniques"
@@ -185,12 +188,17 @@
     "fig:fclib"
     "Tab:fclib"
     "Tab:fclib-simulation"
+    "Sec:ComparisonFamily"
     "fig:VI/UpdateRule"
-    "fig:NSGS/LocalSolver/time"
+    "fig:NSGS/LocalSolver"
+    "fig:NSGS/LocalTol/VI"
+    "fig:NSGS/LocalTol"
+    "fig:NSGS/rho"
     "fig:PSOR"
     "fig:NSN"
     "fig:PROX/InternalSolvers"
-    "fig:profile-Capsules-reduced-PPA-NSN-AC-1_10-time")
+    "fig:profile-Capsules-reduced-PPA-NSN-AC-1_10-time"
+    "Sec:Comparison")
    (LaTeX-add-bibliographies
     "./biblio/String"
     "./biblio/NonSmooth"

@@ -16,9 +16,10 @@ list_f= glob('../figure/NSGS/LocalSolver/**/*.pdf', recursive=True)
         
 #list_f= glob('../figure/NSGS/LocalSolverHybrid/**/*.pdf', recursive=True)
 #list_f= glob('../figure/NSGS/Shuffled/**/*.pdf', recursive=True)
-list_f= glob('../figure/PSOR/**/*.pdf', recursive=True)
-list_f= glob('../figure/NSN/**/*.pdf', recursive=True)
-list_f= glob('../figure/PROX/InternalSolvers/**/*.pdf', recursive=True)
+list_f= glob('../figure/NSGS/rho/**/*.pdf', recursive=True)
+#list_f= glob('../figure/PSOR/**/*.pdf', recursive=True)
+#list_f= glob('../figure/NSN/**/*.pdf', recursive=True)
+#list_f= glob('../figure/PROX/InternalSolvers/**/*.pdf', recursive=True)
 
 print('list_f=',list_f)
 dict_f={}

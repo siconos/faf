@@ -123,10 +123,10 @@
 \backcite {Solodov.Tseng1996}{{28}{4.2}{equation.4.98}}
 \backcite {Wang_JCAM2010}{{28}{4.2}{equation.4.99}}
 \backcite {Facchinei.Pang2003}{{30}{5.1}{algorithm.4}}
-\backcite {Joli.Feng2008}{{30}{5.2}{equation.5.106}}
+\backcite {Joli.Feng2008}{{31}{1.2}{equation.5.108}}
 \backcite {Sun.Sun_MP2005}{{31}{1.2}{section*.25}}
-\backcite {Qi.Sun1993}{{31}{5.3}{subsection.5.3}}
-\backcite {Qi.ea_Book2018}{{31}{5.3}{subsection.5.3}}
+\backcite {Qi.Sun1993}{{32}{5.3}{subsection.5.3}}
+\backcite {Qi.ea_Book2018}{{32}{5.3}{subsection.5.3}}
 \backcite {Christensen.Pang1998}{{32}{5.3}{subsection.5.3}}
 \backcite {Hueber.ea_SJSC2008}{{32}{5.3}{subsection.5.3}}
 \backcite {Sun.Sun_MP2005}{{32}{5.3}{subsection.5.3}}
@@ -189,7 +189,8 @@
 \backcite {Dolan.More_MP2002}{{48}{8.2}{subsection.8.2}}
 \backcite {acary:hal-00945820}{{49}{8.3}{subsection.8.3}}
 \backcite {Fong.Saunders_SISC2011}{{50}{8.3}{equation.8.138}}
-\backcite {z-DelPieroMaceri_CISM1985}{{65}{10.2}{section*.54}}
-\backcite {Rockafellar.Wets1997}{{75}{1}{definition.1}}
-\backcite {Hayashi.ea_SIOPT2005}{{76}{A.2}{section*.56}}
-\backcite {Hayashi.ea_SIOPT2005}{{77}{B.1}{ndr1va.B.1}}
+\backcite {Daviet.ea_SIGGRAPH2011}{{56}{2}{Item.10}}
+\backcite {z-DelPieroMaceri_CISM1985}{{67}{11}{section*.57}}
+\backcite {Rockafellar.Wets1997}{{77}{1}{definition.1}}
+\backcite {Hayashi.ea_SIOPT2005}{{78}{A.2}{section*.59}}
+\backcite {Hayashi.ea_SIOPT2005}{{79}{B.1}{ndr1va.B.1}}
