@@ -1384,9 +1384,15 @@ if __name__ == '__main__':
         nds = []
         cond_nc = []
         max_measure = dict()
+        max_measure_by_contact = dict()
+        min_measure_by_contact = dict()
 
         for fileproblem in problem_filenames:
             max_measure[fileproblem] = - np.inf
+            max_measure_by_contact[fileproblem] = - np.inf
+            min_measure_by_contact[fileproblem] =  np.inf
+
+
 
         for problem_filename in problem_filenames:
 
@@ -1419,39 +1425,66 @@ if __name__ == '__main__':
                                                    max_problems, None, overwrite=False)
                     assert len(filenames) <= n_problems
                     measure[solver_name] = np.inf * np.ones(n_problems)
-                    solver_r[solver_name] = np.inf * np.ones(n_problems)
 
                     ip = 0
 
                     for filename in filenames:
                         if filename not in min_measure:
                             min_measure[filename] = np.inf
-                        try:
-                            pfilename = os.path.splitext(filename)[0]
-                            if comp_data[solver_name][pfilename].attrs['info'] == 0:
-                                measure[solver_name][ip] =  comp_data[solver_name][pfilename].attrs[measure_name]
-                                min_measure[filename] = min(min_measure[filename], measure[solver_name][ip])
-                                max_measure[filename] = max(max_measure[filename], measure[solver_name][ip])
-                            else:
-                                measure[solver_name][ip] = np.inf
-                        except:
-                            measure[solver_name][ip] = np.nan
+                        #try:
+                        pfilename = os.path.splitext(filename)[0]
+                        print(' pfilename',pfilename)
+                        print(solver_name,pfilename,comp_data[solver_name][pfilename].attrs['info'])
+                        if comp_data[solver_name][pfilename].attrs['info'] == 0:
+                            n_contact=numberOfDegreeofFreedomContacts(filename)/3
+                            #print(' filename n_contact',filename,n_contact)
+                            measure[solver_name][ip] =  comp_data[solver_name][pfilename].attrs[measure_name]
+                            min_measure[filename] = min(min_measure[filename], measure[solver_name][ip])
+                            max_measure[filename] = max(max_measure[filename], measure[solver_name][ip])
+                            min_measure_by_contact[filename] = min(min_measure_by_contact[filename], measure[solver_name][ip]/n_contact)
+                            max_measure_by_contact[filename] = max(max_measure_by_contact[filename], measure[solver_name][ip]/n_contact)
+                        else:
+                            measure[solver_name][ip] = np.inf
+                        #except:
+                        #    measure[solver_name][ip] = np.nan
                         ip += 1
 
-            #print("min_measure", min_measure)
+            print("min_measure", min_measure)
             #print("max_measure", max_measure)
-
-            min_measure_array=np.array([min_measure[key] for key in min_measure.keys()])
-            avg_min_measure = min_measure_array.mean()
-            std_min_measure = min_measure_array.std()                
+            unsolved =0
+            min_measure_list=[]
+            min_measure_by_contact_list=[]
+            for key in min_measure.keys():
+                if min_measure[key] ==np.inf:
+                    unsolved += 1
+                else:
+                    min_measure_list.append(min_measure[key])
+                    min_measure_by_contact_list.append(min_measure_by_contact[key])
+            print('number of unsolved problems', unsolved)
+            #min_measure_array=np.array([min_measure[key] for key in min_measure.keys()])
+            #min_measure_by_contact_array=np.array([min_measure_by_contact[key] for key in min_measure_by_contact.keys()])
+            
+            avg_min_measure = np.array(min_measure_list).mean()
+            std_min_measure = np.array(min_measure_list).std()                
+            avg_min_measure_by_contact = np.array(min_measure_by_contact_list).mean()
+            std_min_measure_by_contact = np.array(min_measure_by_contact_list).std()                
             print(         "Average min resolution measure (avg fastest solver measure) = {0:12.8e}".format(avg_min_measure))
             print(         "Std min resolution measure (std fastest solver measure) = {0:12.8e}".format(std_min_measure))
-            print(         "Average min resolution measure by contact = {0:12.8e}".format(avg_min_measure/nc_avg))
-            
+            print(         "Average min resolution measure by contact = {0:12.8e}".format(avg_min_measure_by_contact))
+            print(         "Std min resolution measure by contact = {0:12.8e}".format(std_min_measure_by_contact))
 
-            max_measure_array=np.array([max_measure[key] for key in max_measure.keys()])
-            avg_max_measure = max_measure_array.mean()
-            std_max_measure = max_measure_array.std()    
+
+            max_measure_list=[]
+            max_measure_by_contact_list=[]
+            for key in min_measure.keys():
+                if max_measure[key] == -np.inf:
+                    unsolved += 1
+                else:
+                    max_measure_list.append(max_measure[key])
+                    max_measure_by_contact_list.append(max_measure_by_contact[key])
+            
+            avg_max_measure = np.array(max_measure_list).mean()
+            std_max_measure = np.array(max_measure_list).std()    
             print(         "Average max resolution measure (avg slowest suceeded solver measure) = {0:12.8e}".format(avg_max_measure))
             print(         "Std max resolution measure (std fastest solver measure) = {0:12.8e}".format(std_max_measure))
             print(         "Average max resolution measure by contact = {0:12.8e}".format(avg_max_measure/nc_avg))
