@@ -15,13 +15,13 @@ list_f= glob('../figure/NSGS/LocalSolver/**/*.pdf', recursive=True)
 # list_f=list_f_copy
         
 #list_f= glob('../figure/NSGS/LocalSolverHybrid/**/*.pdf', recursive=True)
-#list_f= glob('../figure/NSGS/Shuffled/**/*.pdf', recursive=True)
-list_f= glob('../figure/NSGS/rho/**/*.pdf', recursive=True)
+list_f= glob('../figure/NSGS/Shuffled/**/*.pdf', recursive=True)
+#list_f= glob('../figure/NSGS/rho/**/*.pdf', recursive=True)
 #list_f= glob('../figure/PSOR/**/*.pdf', recursive=True)
 #list_f= glob('../figure/NSN/**/*.pdf', recursive=True)
 #list_f= glob('../figure/PROX/InternalSolvers/**/*.pdf', recursive=True)
 #list_f= glob('../figure/PROX/Parameters/nu05/**/*.pdf', recursive=True)
-list_f= glob('../figure/OPTI/**/*.pdf', recursive=True)
+#list_f= glob('../figure/OPTI/**/*.pdf', recursive=True)
 #list_f= glob('../figure/COMP/**/*.pdf', recursive=True)
 print('list_f=',list_f)
 dict_f={}
@@ -43,6 +43,9 @@ for f in list_f:
         precision = f_s[-4].replace('1.0e','10^{{')+ '}}'
         example_name = (os.path.basename(f).partition('-')[2]).partition('.')[0]
 
+        if example_name == 'BoxesStack1' :
+            example_name = 'BoxesStack'
+            
         #print("precision=",float(f_s[-4]))
         #print("example_name",example_name)
         

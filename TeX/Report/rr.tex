@@ -125,7 +125,12 @@
 \newpage
 \input{body.tex}
 
-\input{appendix.tex}
+\addcontentsline{toc}{section}{References}
+\bibliographystyle{plainnat}
+\bibliography{./biblio/String,./biblio/NonSmooth,./biblio/Math,./biblio/Multibody,./biblio/Fem.bib,./biblio/Dae.bib,./biblio/Meca,./biblio/AnaNum.bib,./biblio/Math-Impact,./biblio/Contact,./biblio/Optim,./biblio/Cp}
+%\bibliography{biblio-extract}
+
+
 
 \end{document}
 \endinput
