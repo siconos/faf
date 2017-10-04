@@ -1152,9 +1152,9 @@ if __name__ == '__main__':
                     gp.write('term_choice_tikz=1\n')
                     gp.write('if (term_choice_tikz == 1) \\\n')
                     if (gnuplot_with_color):
-                        gp.write('set term tikz standalone size 5in,3in font \'\\scriptsize\\sf\';  \\\n')
+                        gp.write('set term tikz standalone size 5in,3in font \'\\small\\sf\';  \\\n')
                     else:
-                        gp.write('set term tikz standalone monochrome  size 5in,3in font \'\\scriptsize\\sf\';  \\\n')
+                        gp.write('set term tikz standalone monochrome  size 5in,3in font \'\\small\\sf\';  \\\n')
                     gp.write('extension = \'.tex\'; \\\n')
                     gp.write('extension_legend = \'_legend.tex\'; \\\n')
                     gp.write('set output basename.extension; \\\n')
@@ -1164,7 +1164,7 @@ if __name__ == '__main__':
                     gp.write('set term aqua;\\\n')
                     gp.write('\n')
                     
-                    gp.write('set title\'{0} - precision: {1} - timeout: {2} -  {3}\';; \n'.format(test_name_gnuplot,comp_precision,comp_utimeout, date_str))
+                    #gp.write('set title\'{0} - precision: {1} - timeout: {2} -  {3}\';; \n'.format(test_name_gnuplot,comp_precision,comp_utimeout, date_str))
 
 
                     
@@ -1174,12 +1174,15 @@ if __name__ == '__main__':
                     maxrows=len(solvers)/2+1
                     gp.write('set key below right vertical maxrows {0}\n'.format(maxrows))
 
-                    if logscale:
-                        gp.write('set logscale x\n')
-                        gp.write('set xlabel \'$\\tau$ ({0}) (logscale)\' \n'.format(measure_name))
-                    else:
-                        gp.write('set xlabel \'$\\tau$ ({0})\' \n'.format(measure_name))
 
+                    x_label=False
+                    if x_label:
+                        if logscale:
+                            gp.write('set logscale x\n')
+                            gp.write('set xlabel \'$\\tau$ ({0}) (logscale)\' \n'.format(measure_name))
+                        else:
+                            gp.write('set xlabel \'$\\tau$ ({0})\' \n'.format(measure_name))
+                            
                     #gp.write('set title \'{0}\'\n'.format(filename.partition('-')[0]));
                     gp.write('plot ')
                     if gnuplot_separate_keys:
@@ -1195,7 +1198,7 @@ if __name__ == '__main__':
                             gp.write('unset tics; \n \n')
                             gp.write('unset xlabel; \n \n')
                             gp.write('unset ylabel; \n \n')
-                            gp.write('set term tikz standalone  size 5in,1.5in font \'\\scriptsize\\sf\';  \\\n')
+                            gp.write('set term tikz standalone  size 5in,1.5in font \'\\small\\sf\';  \\\n')
                             gp.write('set key right inside vertical maxrows {0}\n'.format(maxrows))
                             gp.write('\n plot [0:1] [0:1]')
                             gp.write(
@@ -1216,7 +1219,7 @@ if __name__ == '__main__':
                             gp.write('unset tics; \n \n')
                             gp.write('unset xlabel; \n \n')
                             gp.write('unset ylabel; \n \n')
-                            gp.write('set term tikz standalone monochrome  size 5in,1.5in font \'\\scriptsize\\sf\';  \\\n')
+                            gp.write('set term tikz standalone monochrome  size 5in,1.5in font \'\\small\\sf\';  \\\n')
                             gp.write('set key right inside vertical maxrows {0}\n'.format(maxrows))
                             gp.write('\n plot [0:1] [0:1]')
                             gp.write(
@@ -1433,8 +1436,8 @@ if __name__ == '__main__':
                             min_measure[filename] = np.inf
                         #try:
                         pfilename = os.path.splitext(filename)[0]
-                        print(' pfilename',pfilename)
-                        print(solver_name,pfilename,comp_data[solver_name][pfilename].attrs['info'])
+                        #print(' pfilename',pfilename)
+                        #print(solver_name,pfilename,comp_data[solver_name][pfilename].attrs['info'])
                         if comp_data[solver_name][pfilename].attrs['info'] == 0:
                             n_contact=numberOfDegreeofFreedomContacts(filename)/3
                             #print(' filename n_contact',filename,n_contact)
