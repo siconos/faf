@@ -152,8 +152,6 @@ on one hand}, the algorithms based on Newton methods for nonsmooth equations sol
 iterative methods dedicated to solving variational inequalities are quite robust but with an extremely slow rate of convergence. To sum up, as far as we know there is no option that combines time efficiency and robustness.
 {The set of problems used here are from the FCLIB collection\footnote{\url{https://frictionalcontactlibrary.github.io/index.html}, which aims at providing many problems to compare algorithms on a fair basis}.  In this work, this collection is solved with the software {\sc Siconos} and its component {\sc Siconos/Numerics}\footnote{\url{http://siconos.gforge.inria.fr}}\citep{Acary.Bremond.Huber.Perignon2015}.
 
-
-\clearpage
 \section{Description of the 3D frictional contact problems}
 \label{sec:description}
 \subsection{Signorini's condition and Coulomb's friction.}
@@ -476,7 +474,6 @@ From the mechanical point of view, the rank deficiency of $H$ and the amount of 
 
 %~\cite{Moreau1998,Moreau1994,Moreau1999}
 
-\clearpage
 %----------------------------------------------------------------------------------%
 \section{Alternative formulations}
 %----------------------------------------------------------------------------------%
@@ -1179,7 +1176,6 @@ Since $W$ is a positive semi-definite matrix, a new convex optimization sub-prob
 \end{equation} 
 This formulation introduced in~\cite{Cadoux2009} and developed in~\cite{Acary.Cadoux2013,Acary.ea_ZAMM2011} has been used to give an existence criteria to the discrete frictional contact problems. Furthermore, this existence criteria can be numerically checked by solving a linear program of second-order cone (SOCLP).
 
-\clearpage
 \section{Numerical methods for VIs}
 \label{sec:numericalmethods,vi}
 
@@ -1647,7 +1643,7 @@ A nomenclature for the algorithms based on the VI formulation is given in Table~
 \end{table}
 
 
-\clearpage
+
 \section{Newton based methods}
 \label{sec:newtonmethods}
 
@@ -1665,7 +1661,7 @@ by performing the following Newton iteration
   z_{k+1}  =  z_k -  J^{-1}(z_k) G(z_k).
 \end{equation}
 If the mapping $G$ is smooth enough, the matrix $J$ is the Jacobian matrix of $G$ with respect to $z$, that is $J(z) = \nabla^\top_z G(z)$.
-When the $G$ is nonsmooth but locally Lipschitz continuous,  the Jacobian matrix is replaced by an element of the generalized Jacobian at $z$ denoted by $ \Phi(z) \in \partial G(z)$. Let us recall the definition of the generalized Jacobian. By Rademacher's Theorem, if $G$ is ocally Lipschitz continuous, then $G$ is almost everywhere differentiable and let us define the set $D_G$ by
+When the $G$ is nonsmooth but locally Lipschitz continuous,  the Jacobian matrix is replaced by an element of the generalized Jacobian at $z$ denoted by $ \Phi(z) \in \partial G(z)$. Let us recall the definition of the generalized Jacobian. By Rademacher's Theorem, if $G$ is locally Lipschitz continuous, then $G$ is almost everywhere differentiable and let us define the set $D_G$ by
 \begin{equation}
   \label{eq:NSN4}
   D_G \coloneqq \{z \mid G \text{ is differentiable at } z\}.
@@ -1988,7 +1984,7 @@ A nomenclature for the algorithms based on the nonsmooth Newton methods is given
 %  I'm not sure that FBLSA make sense here? What is AC-FBLSA? In siconos, when I used the term FBLSA, it is for FB + line search algo, based on the algorithm name given in F\& Pang. What is AC-FBLSA? Whouldn't it be ACLSA or AC-LSA?
 % \end{ndroh}
 
-\clearpage
+
 \section{Splitting techniques and proximal point algorithm}
 \label{Sec:SplittingTechniquesAndProx}
 
@@ -3190,7 +3186,6 @@ Again the results on the test sets Bridge\_PR, 100\_PR\_PerioBox, Chute\_local\_
 \end{enumerate}
 
 
-\def\widthfigure{0.6}
 \begin{figure}
   \centering
     \subfiglayout
@@ -3479,7 +3474,7 @@ To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$
 \subfloat[\scriptsize KaplasTower]
    {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-08/200/time/profile-KaplasTower.pdf}} 
 \subfloat[\scriptsize Chute\_local\_problems]
-   {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-08/10/time/profile-Chute_local_problems.pdf}} 
+   {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-08/10/time/profile-Chute_local_problems.pdf}} \\
 \subfloat[\scriptsize Chute\_4000]
    {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-04/200/time/profile-Chute_4000.pdf}} 
 \subfloat[\scriptsize Chute\_1000]

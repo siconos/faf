@@ -1,11 +1,13 @@
 from glob import glob
 import os 
 
-#list_f= glob('../figure/VI/UpdateRule/**/*.pdf', recursive=True)
-list_f= glob('../figure/NSGS/LocalSolver/**/*.pdf', recursive=True)
+# list_f= glob('../figure/VI/UpdateRule/**/*.pdf', recursive=True)
+# list_f= glob('../figure/NSGS/LocalSolver/**/*.pdf', recursive=True)
 
 
+# list_f= glob('../figure/NSGS/LocalTol/VI/**/*.pdf', recursive=True)
 # list_f= glob('../figure/NSGS/LocalTol/**/*.pdf', recursive=True)
+
 # list_f_copy=[]
 # for f in list_f:
 #     if 'VI' in f:
@@ -13,13 +15,14 @@ list_f= glob('../figure/NSGS/LocalSolver/**/*.pdf', recursive=True)
 #     else:
 #         list_f_copy.append(f)
 # list_f=list_f_copy
-        
+
+#list_f= glob('../figure/NSGS/rho/**/*.pdf', recursive=True)
 #list_f= glob('../figure/NSGS/LocalSolverHybrid/**/*.pdf', recursive=True)
 list_f= glob('../figure/NSGS/Shuffled/**/*.pdf', recursive=True)
-#list_f= glob('../figure/NSGS/rho/**/*.pdf', recursive=True)
+
 #list_f= glob('../figure/PSOR/**/*.pdf', recursive=True)
 #list_f= glob('../figure/NSN/**/*.pdf', recursive=True)
-#list_f= glob('../figure/PROX/InternalSolvers/**/*.pdf', recursive=True)
+list_f= glob('../figure/PROX/InternalSolvers/**/*.pdf', recursive=True)
 #list_f= glob('../figure/PROX/Parameters/nu05/**/*.pdf', recursive=True)
 #list_f= glob('../figure/OPTI/**/*.pdf', recursive=True)
 #list_f= glob('../figure/COMP/**/*.pdf', recursive=True)
