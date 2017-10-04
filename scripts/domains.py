@@ -78,22 +78,43 @@ with h5py.File('comp.hdf5','r+') as comp_file:
 
 #print([x for x in next(os.walk('/Users/acary/Work/fclib-library/'))[1]])
 tests= ['LMGC_100_PR_PerioBox', 'LMGC_945_SP_Box_PL', 'LMGC_AqueducPR', 'BoxesStack1', 'LMGC_Bridge_PR', 'Capsules', 'Chain', 'Chute_1000', 'Chute_4000', 'Chute_local_problems', 'LMGC_Cubes_H8', 'Global', 'KaplasTower', 'LMGC_LowWall_FEM']
-targets= 'vi nsgs_localtol_ac_gp nsgs_localtol_vi  nsgs_localsolver nsgs_localsolver_hybrid nsgs_shuffled psor_solvers nsn_solvers prox_solvers prox_series regul_series opti_solvers comp_solvers comp_solvers_large'
+targets= 'vi nsgs_localtol_ac_gp nsgs_localtol_vi nsgs_localsolver nsgs_localsolver_hybrid nsgs_localsolver_rho nsgs_shuffled psor_solvers nsn_solvers prox_solvers prox_series regul_series opti_solvers comp_solvers comp_solvers_large'
 list_target=targets.split(' ')
 
 #print('len of targets', len(list_target))
 #default Values
-default_values = [5,2,2,4,4,5,5,5,15,100,100,100,10,20,100]
+default_values = [5,2,2,4,3,4,5,5,5,15,100,100,100,10,20,100]
 #print('len of default_values', len(default_values))
+
+
+
+default_values=dict()
+
+
+default_values['vi']=5
+default_values['nsgs_localtol_ac_gp']=2
+default_values['nsgs_localtol_vi']=2
+default_values['nsgs_localsolver']=4
+default_values['nsgs_localsolver_hybrid']=3
+default_values['nsgs_localsolver_rho']=2
+default_values['nsgs_shuffled']=5
+default_values['psor_solvers']=5
+default_values['nsn_solvers']=5
+default_values['prox_solvers']=15
+default_values['prox_series']=100
+default_values['regul_series']=100
+default_values['opti_solvers']=100
+default_values['comp_solvers']=10
+default_values['comp_solvers_large']=100
 
 data=dict()
 for t in tests:
     data[t]=dict()
-    i=0
     for tt in list_target:
+        #print('target', tt)
         data[t][tt]=dict()
-        data[t][tt]['domain'] = default_values[i]
-        i=i+1
+        data[t][tt]['domain'] = default_values[tt]
+
         
 
 

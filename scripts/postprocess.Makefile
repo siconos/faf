@@ -7,7 +7,7 @@ faf_dir=$(HOME)/Work/faf
 domain=python ~/Work/faf/scripts/domains.py
 comp=python ~/Work/faf/src/comp.py
 
-all: vi nsgs_localtol_ac_gp nsgs_localtol_vi  nsgs_localsolver nsgs_localsolver_hybrid nsgs_shuffled psor_solvers nsn_solvers prox_solvers prox_series_nu05 prox_series_nu10 prox_series_nu20 regul_series opti_solvers comp_solvers comp_solvers_large
+all: vi nsgs_localtol_ac_gp nsgs_localtol_vi  nsgs_localsolver nsgs_localsolver_rho nsgs_localsolver_limited nsgs_localsolver_hybrid nsgs_shuffled psor_solvers nsn_solvers prox_solvers prox_series_nu05 prox_series_nu10 prox_series_nu20 regul_series opti_solvers comp_solvers comp_solvers_large prox_solvers_nsgs
 #all:  nsgs_localsolver nsgs_shuffled psor_solvers nsn_solvers prox_solvers opti_solvers comp_solvers comp_solvers_large
 
 
@@ -38,7 +38,7 @@ nsgs_localtol_ac_gp : 	test_name=$(shell $(domain) --test_name)
 nsgs_localtol_ac_gp :	save_dir=figure/NSGS/LocalTol/${precision}/${timeout}/${measure_name}
 nsgs_localtol_ac_gp :
 	echo "NSGS Local tolerances"
-	$(comp) --measure=${measure_name} --display --no-matplot --solvers='NSGS-AC-GP-1e','NSGS-AC-GP-ADAPTIVE' --domain=1.0:$(step):${domain_max} --gnuplot-profile --gnuplot-separate-keys
+	$(comp) --measure=${measure_name} --display --no-matplot --solvers='NSGS-AC-GP-1e','NSGS-AC-GP-ADAPTIVE1' --domain=1.0:$(step):${domain_max} --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-${test_name}.tex;
 	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;
@@ -55,7 +55,7 @@ nsgs_localtol_vi : 	test_name=$(shell $(domain) --test_name)
 nsgs_localtol_vi :	save_dir=figure/NSGS/LocalTol/VI/${precision}/${timeout}/${measure_name}
 nsgs_localtol_vi :
 	echo "NSGS Local tolerances"
-	$(comp) --measure=${measure_name} --display --no-matplot --solvers='NSGS-PLI-1e','NSGS-PLI-ADAPTIVE' --domain=1.0:$(step):${domain_max} --gnuplot-profile --gnuplot-separate-keys
+	$(comp) --measure=${measure_name} --display --no-matplot --solvers='NSGS-PLI-1e','NSGS-PLI-ADAPTIVE1' --domain=1.0:$(step):${domain_max} --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-${test_name}.tex;
 	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;
@@ -69,14 +69,12 @@ nsgs_localsolver : 	step=$(shell $(domain) --target=nsgs_localsolver --step)
 nsgs_localsolver : 	precision=$(shell $(domain) --target=nsgs_localsolver --precision)
 nsgs_localsolver : 	timeout=$(shell $(domain) --target=nsgs_localsolver --timeout)
 nsgs_localsolver : 	test_name=$(shell $(domain) --test_name)
-nsgs_localsolver: save_dir=figure/NSGS/LocalSolver/${precision}/${timeout}/${measure_name}
+nsgs_localsolver : save_dir=figure/NSGS/LocalSolver/${precision}/${timeout}/${measure_name}
 nsgs_localsolver :
-	$(comp) --measure=${measure_name} --display --no-matplot --solvers-exact='NSGS-AC','NSGS-AC-GP',\
-	'NSGS-AC-RHO-GIVEN','NSGS-AC-RHO-SPECTRAL-NORM','NSGS-AC-RHO-SPLIT-SPECTRAL-NORM',\
-	'NSGS-AC-GP-ADAPTIVE','NSGS-AC-GP-ADAPTIVE2',\
-	'NSGS-AC-100','NSGS-AC-GP-100','NSGS-JM','NSGS-JM-GP',\
-	'NSGS-PLI-1e-14','NSGS-PLI-1e-06','NSGS-PLI-100','NSGS-PLI-10',\
-	'NSGS-PLI-ADAPTIVE','NSGS-PLI-ADAPTIVE2',\
+	$(comp) --measure=${measure_name} --display --no-matplot --solvers-exact=\
+	'NSGS-AC','NSGS-AC-GP',\
+	'NSGS-JM','NSGS-JM-GP',\
+	'NSGS-PLI-1e-14','NSGS-PLI-1e-06',\
 	'NSGS-P','NSGS-Quartic' --domain=1.0:$(step):${domain_max} --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-${test_name}.tex;
@@ -84,6 +82,44 @@ nsgs_localsolver :
 	mkdir -p ${save_dir}
 	mv  profile-${test_name}.pdf ${save_dir}
 	mv  profile-${test_name}_legend.pdf ${save_dir}
+
+# NSGS Local Solvers rho studies
+nsgs_localsolver_rho : 	domain_max=$(shell $(domain) --target=nsgs_localsolver_rho --domain)
+nsgs_localsolver_rho : 	step=$(shell $(domain) --target=nsgs_localsolver_rho --step)
+nsgs_localsolver_rho : 	precision=$(shell $(domain) --target=nsgs_localsolver_rho --precision)
+nsgs_localsolver_rho : 	timeout=$(shell $(domain) --target=nsgs_localsolver_rho --timeout)
+nsgs_localsolver_rho : 	test_name=$(shell $(domain) --test_name)
+nsgs_localsolver_rho :  save_dir=figure/NSGS/rho/${precision}/${timeout}/${measure_name}
+nsgs_localsolver_rho :
+	$(comp) --measure=${measure_name} --display --no-matplot --solvers-exact='NSGS-AC',\
+	'NSGS-AC-RHO-GIVEN','NSGS-AC-RHO-SPECTRAL-NORM','NSGS-AC-RHO-SPLIT-SPECTRAL-NORM','NSGS-AC-RHO-SPLIT-SPECTRAL-NORM-COND' \
+	--domain=1.0:$(step):${domain_max} --gnuplot-profile --gnuplot-separate-keys
+	gnuplot profile.gp ;
+	pdflatex -interaction=batchmode  profile-${test_name}.tex;
+	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;
+	mkdir -p ${save_dir}
+	mv  profile-${test_name}.pdf ${save_dir}
+	mv  profile-${test_name}_legend.pdf ${save_dir}
+
+# NSGS Local Solvers
+nsgs_localsolver_limited : 	domain_max=$(shell $(domain) --target=nsgs_localsolver --domain)
+nsgs_localsolver_limited : 	step=$(shell $(domain) --target=nsgs_localsolver --step)
+nsgs_localsolver_limited : 	precision=$(shell $(domain) --target=nsgs_localsolver --precision)
+nsgs_localsolver_limited : 	timeout=$(shell $(domain) --target=nsgs_localsolver --timeout)
+nsgs_localsolver_limited : 	test_name=$(shell $(domain) --test_name)
+nsgs_localsolver_limited :      save_dir=figure/NSGS/limited/${precision}/${timeout}/${measure_name}
+nsgs_localsolver_limited :
+	$(comp) --measure=${measure_name} --display --no-matplot --solvers-exact='NSGS-AC',\
+	'NSGS-AC-100','NSGS-AC-GP-100',\
+	'NSGS-PLI-1e-14','NSGS-PLI-1e-06','NSGS-PLI-100','NSGS-PLI-10' \
+	 --domain=1.0:$(step):${domain_max} --gnuplot-profile --gnuplot-separate-keys
+	gnuplot profile.gp ;
+	pdflatex -interaction=batchmode  profile-${test_name}.tex;
+	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;
+	mkdir -p ${save_dir}
+	mv  profile-${test_name}.pdf ${save_dir}
+	mv  profile-${test_name}_legend.pdf ${save_dir}
+
 
 # NSGS Local Solvers
 nsgs_localsolver_hybrid : 	domain_max=$(shell $(domain) --target=nsgs_localsolver --domain)
@@ -137,6 +173,22 @@ psor_solvers :
 
 
 #NSN solvers
+nsn_solvers_all : 	domain_max=$(shell $(domain) --target=nsn_solvers --domain)
+nsn_solvers_all : 	step=$(shell $(domain) --target=nsn_solvers --step)
+nsn_solvers_all : 	precision=$(shell $(domain) --target=nsn_solvers --precision)
+nsn_solvers_all : 	timeout=$(shell $(domain) --target=nsn_solvers --timeout)
+nsn_solvers_all : 	test_name=$(shell $(domain) --test_name)
+nsn_solvers_all : save_dir=figure/NSN/${precision}/${timeout}/${measure_name}
+nsn_solvers_all :
+	$(comp) --measure=${measure_name} --display --no-matplot --solvers-exact='NSN-AlartCurnier','NSN-AlartCurnier-NLS','NSN-AlartCurnier-NLS-RHO-GIVEN','NSN-AlartCurnier-Generated','NSN-AlartCurnier-Generated-NLS','NSN-AlartCurnier-WRAP-FPP','NSN-AlartCurnier-WRAP-EG','NSN-AlartCurnier-FBLSA','NSN-JeanMoreau','NSN-JeanMoreau-NLS','NSN-JeanMoreau-Generated','NSN-JeanMoreau-Generated-NLS','NSN-JeanMoreau-FBLSA','NSN-FischerBurmeister-GP','NSN-FischerBurmeister-NLS','NSN-FischerBurmeister-FBLSA','NSN-NaturalMap-GP','NSN-NaturalMap-NLS','NSN-NaturalMap-FBLSA','NSN-AlartCurnier-NLS-HYBRID'  --domain=1.0:$(step):${domain_max}  --gnuplot-profile --gnuplot-separate-keys
+	gnuplot profile.gp ;
+	pdflatex -interaction=batchmode  profile-${test_name}.tex;
+	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;
+	mkdir -p ${save_dir}
+	mv  profile-${test_name}.pdf ${save_dir}
+	mv  profile-${test_name}_legend.pdf ${save_dir}
+
+#NSN solvers
 nsn_solvers : 	domain_max=$(shell $(domain) --target=nsn_solvers --domain)
 nsn_solvers : 	step=$(shell $(domain) --target=nsn_solvers --step)
 nsn_solvers : 	precision=$(shell $(domain) --target=nsn_solvers --precision)
@@ -144,7 +196,12 @@ nsn_solvers : 	timeout=$(shell $(domain) --target=nsn_solvers --timeout)
 nsn_solvers : 	test_name=$(shell $(domain) --test_name)
 nsn_solvers: save_dir=figure/NSN/${precision}/${timeout}/${measure_name}
 nsn_solvers :
-	$(comp) --measure=${measure_name} --display --no-matplot --solvers-exact='NSN-AlartCurnier','NSN-AlartCurnier-NLS','NSN-AlartCurnier-NLS-RHO-GIVEN','NSN-AlartCurnier-Generated','NSN-AlartCurnier-Generated-NLS','NSN-AlartCurnier-WRAP-FPP','NSN-AlartCurnier-WRAP-EG','NSN-AlartCurnier-FBLSA','NSN-JeanMoreau','NSN-JeanMoreau-NLS','NSN-JeanMoreau-Generated','NSN-JeanMoreau-Generated-NLS','NSN-JeanMoreau-FBLSA','NSN-FischerBurmeister-GP','NSN-FischerBurmeister-NLS','NSN-FischerBurmeister-FBLSA','NSN-NaturalMap-GP','NSN-NaturalMap-NLS','NSN-NaturalMap-FBLSA','NSN-AlartCurnier-NLS-HYBRID'  --domain=1.0:$(step):${domain_max}  --gnuplot-profile --gnuplot-separate-keys
+	$(comp) --measure=${measure_name} --display --no-matplot --solvers-exact=\
+	'NSN-AlartCurnier','NSN-AlartCurnier-NLS','NSN-AlartCurnier-NLS-RHO-GIVEN','NSN-AlartCurnier-FBLSA',\
+	'NSN-JeanMoreau','NSN-JeanMoreau-NLS','NSN-JeanMoreau-FBLSA',\
+	'NSN-FischerBurmeister-GP','NSN-FischerBurmeister-NLS','NSN-FischerBurmeister-FBLSA',\
+	'NSN-NaturalMap-GP','NSN-NaturalMap-NLS','NSN-NaturalMap-FBLSA',\
+	'NSN-AlartCurnier-NLS-HYBRID'  --domain=1.0:$(step):${domain_max}  --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-${test_name}.tex;
 	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;
@@ -162,7 +219,7 @@ prox_solvers : 	test_name=$(shell $(domain) --test_name)
 prox_solvers: save_dir=figure/PROX/InternalSolvers/${precision}/${timeout}/${measure_name}
 prox_solvers :
 	$(comp) --measure=${measure_name} --display --no-matplot --solvers-exact='NSN-AlartCurnier','PROX-NSN-AC','PROX-NSN-AC-NLS',\
-	'PROX-NSN-FB-GP','PROX-NSN-FB-NLS','PROX-NSGS-NSN-AC','PROX-NSN-FB-FBLSA','PROX-NSN-AC-regulVar-1e+03' \
+	'PROX-NSN-FB-GP','PROX-NSN-FB-NLS','PROX-NSN-FB-FBLSA','PROX-NSN-AC-regulVar-1e+03' \
 	--domain=1.0:$(step):${domain_max}  --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-${test_name}.tex;
@@ -170,6 +227,24 @@ prox_solvers :
 	mkdir -p ${save_dir}
 	mv  profile-${test_name}.pdf ${save_dir}
 	mv  profile-${test_name}_legend.pdf ${save_dir}
+
+#PROX solvers NSGS
+prox_solvers_nsgs : 	step=$(shell $(domain) --target=prox_solvers --step)
+prox_solvers_nsgs : 	domain_max=$(shell $(domain) --target=prox_solvers --domain)
+prox_solvers_nsgs : 	precision=$(shell $(domain) --target=prox_solvers --precision)
+prox_solvers_nsgs : 	timeout=$(shell $(domain) --target=prox_solvers --timeout)
+prox_solvers_nsgs : 	test_name=$(shell $(domain) --test_name)
+prox_solvers_nsgs: save_dir=figure/PROX/InternalSolvers/${precision}/${timeout}/${measure_name}
+prox_solvers_nsgs :
+	$(comp) --measure=${measure_name} --display --no-matplot --solvers-exact='NSGS-AC','PROX-NSGS-NSN-AC' \
+	--domain=1.0:$(step):${domain_max}  --gnuplot-profile --gnuplot-separate-keys
+	gnuplot profile.gp ;
+	pdflatex -interaction=batchmode  profile-${test_name}.tex;
+	pdflatex -interaction=batchmode  profile-${test_name}_legend.tex;
+	mkdir -p ${save_dir}
+	mv  profile-${test_name}.pdf ${save_dir}
+	mv  profile-${test_name}_legend.pdf ${save_dir}
+
 
 #PROX series
 prox_series_nu05 : 	step=$(shell $(domain) --target=prox_series --step)
