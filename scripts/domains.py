@@ -98,12 +98,12 @@ default_values['nsgs_localsolver']=4
 default_values['nsgs_localsolver_hybrid']=3
 default_values['nsgs_localsolver_rho']=2
 default_values['nsgs_shuffled']=5
-default_values['psor_solvers']=5
-default_values['nsn_solvers']=5
+default_values['psor_solvers']=10
+default_values['nsn_solvers']=30
 default_values['prox_solvers']=15
 default_values['prox_series']=100
 default_values['regul_series']=100
-default_values['opti_solvers']=100
+default_values['opti_solvers']=50
 default_values['comp_solvers']=10
 default_values['comp_solvers_large']=100
 
@@ -127,7 +127,7 @@ data[test]['nsn_solvers']['domain']=35
 
 test= 'LMGC_AqueducPR'
 data[test]['nsgs_localtol_ac_gp']['domain']=4
-data[test]['opti_solvers']['domain']=10
+data[test]['opti_solvers']['domain']=30
 data[test]['comp_solvers']['domain']=5
 data[test]['comp_solvers_large']['domain']=30
 
@@ -136,7 +136,7 @@ data[test]['nsgs_localtol_ac_gp']['domain']=4
 data[test]['nsgs_localsolver']['domain']=5
 data[test]['nsgs_shuffled']['domain']=3
 data[test]['nsn_solvers']['domain']=100
-data[test]['opti_solvers']['domain']=5
+data[test]['opti_solvers']['domain']=30
 data[test]['comp_solvers']['domain']=5
 
 test = 'LMGC_Cubes_H8'
@@ -144,9 +144,8 @@ data[test]['vi']['domain']=5
 data[test]['nsgs_localtol_ac_gp']['domain']=3
 data[test]['nsgs_localsolver']['domain']=5
 data[test]['nsgs_shuffled']['domain']=10
-data[test]['psor_solvers']['domain']=20
-data[test]['nsn_solvers']['domain']=50
-data[test]['opti_solvers']['domain']=5
+data[test]['nsn_solvers']['domain']=25
+data[test]['opti_solvers']['domain']=10
 data[test]['comp_solvers']['domain']=5
 
 test= 'LMGC_945_SP_Box_PL'
@@ -155,19 +154,17 @@ data[test]['nsgs_localsolver']['domain']=10
 data[test]['nsgs_localsolver_hybrid']['domain']=10
 data[test]['nsgs_shuffled']['domain']=3
 data[test]['psor_solvers']['domain']=10
-data[test]['opti_solvers']['domain']=5
+data[test]['opti_solvers']['domain']=30
 data[test]['comp_solvers']['domain']=15
 
 
 test = 'LMGC_100_PR_PerioBox'
 data[test]['vi']['domain']=4
-data[test]['psor_solvers']['domain']=15
 data[test]['nsn_solvers']['domain']=20
-data[test]['prox_solvers']['domain']=2
 data[test]['prox_series']['domain']=20
 data[test]['nsgs_localsolver']['domain']=15
 data[test]['nsgs_localtol_ac_gp']['domain']=8
-
+data[test]['opti_solvers']['domain']=30
 data[test]['nsgs_localsolver_hybrid']['domain']=25
 data[test]['prox_series']['domain']=200
 data[test]['regul_series']['domain']=50
@@ -181,8 +178,7 @@ data[test]['nsgs_localsolver']['domain']=5
 data[test]['nsgs_localtol_ac_gp']['domain']=3
 data[test]['nsgs_localsolver']['domain']=5
 data[test]['nsgs_shuffled']['domain']=3
-data[test]['psor_solvers']['domain']=15
-data[test]['nsn_solvers']['domain']=20
+data[test]['nsn_solvers']['domain']=25
 data[test]['prox_solvers']['domain']=20
 data[test]['prox_series']['domain']=20
 data[test]['comp_solvers']['domain']=2
@@ -195,7 +191,7 @@ data[test]['prox_series']['domain']=3
 data[test]['comp_solvers']['domain']=10
 data[test]['comp_solvers_large']['domain']=50
 data[test]['regul_series']['domain']=15
-data[test]['nsn_solvers']['domain']=4
+data[test]['nsn_solvers']['domain']=5
 
 test = 'Chute_1000'
 #data[test]['nsgs_shuffled']['domain']=
