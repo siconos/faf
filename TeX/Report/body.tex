@@ -3447,7 +3447,7 @@ In this section, we study the influence of the contact order within the loop of 
 \label{fig:NSGS/Shuffled}
 \end{figure}
 
-\paragraph{Comparison of PSOR algorithm with respect to  the relaxation parameter $\omega$}
+\paragraph{Comparison of {\sf PSOR}  algorithm with respect to  the relaxation parameter $\omega$}
 
 In Figure~\ref{fig:PSOR},  the relaxation parameter $\omega$ is varied ranging in $[0.5,1.8]$.  Two conclusions can be drawn:
 \begin{enumerate}
@@ -3560,7 +3560,7 @@ As general conclusion, the success of the {\sf NSN-$\star$} algorithms relates o
 
 
 \subsection{Comparison of the proximal point algorithm {\sf PPA-NSN-$\star$} algorithms}
-
+\label{Sec:PROX/NSN/InternalSolvers}
 In Figure~\ref{fig:PROX/NSN/InternalSolvers}, we compare various the proximal point algorithm with various internal solvers based on nonsmooth Newton methods {\sf NSN-$\star$}. The main observations are:
 \begin{enumerate}
 \item For the flexible test sets (see for an illustration the test set LowWall\_FEM), for which the nonsmooth Newton solvers work pretty well, the use of a proximal point algorithm has no interest since it slows down the convergence of the algorithm by performing a first iteration with a large value of the regularization parameter $\alpha$.
@@ -3781,7 +3781,7 @@ In Figure~\ref{fig:PROX/NSGS/InternalSolvers}, we compare the {\sf NSGS-AC} solv
 
 
 \clearpage
-\subsection{Comparison of optimization-based algorithms}
+\subsection{Comparison of optimization-based algorithms {\sf PANA-$\star$, TRESCA-$\star$ and ACLM-$\star$}}
 
 In Figure~\ref{fig:OPTI}, we compare the algorithms based on the optimization approach presented in Section~\ref{Sec:OptimisationBasedMethods}. The pure convex relaxation {\sf SOCLCP-NSGS-PLI}  method has been added to understand the effect of the nonconvexity of the problems on the efficiency and robustness of the solvers. The main conclusions are
 \begin{enumerate}
@@ -3814,7 +3814,7 @@ In Figure~\ref{fig:OPTI}, we compare the algorithms based on the optimization ap
 % \subfloat[\scriptsize 100\_PR\_PerioBox]
 %    {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-08/200/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
 % {\includegraphics[height=\legendheight]{../figure/OPTI/1.0e-08/50/time/profile-Chain_legend.pdf}}
-%  \caption{Comparison of the optimization based solvers}
+   \caption{Comparison of the optimization based solvers}
 %   \label{fig:OPTI-1}
 \end{figure}
 \begin{figure}
@@ -3847,6 +3847,15 @@ In Figure~\ref{fig:OPTI}, we compare the algorithms based on the optimization ap
 \section{Comparison of different families of solvers.}
 \label{Sec:Comparison}
 
+In this last section, the most efficient solvers by family has been chosen and are compared. The performance profiles are reported in Figure~\ref{fig:COMP}. The main conclusions are as follows:
+\begin{enumerate}
+\item First of all, we can observe that for all the test sets, a least one solver is able to solve all the problems within the prescribed time.  Unfortunately, there is no universal solver that outperforms all the other solver for all the test sets.
+\item For the flexible test sets, the nonsmooth Newton solvers {\sf NSN-$\star$} are the best solvers. In the test set LowWall\_FEM, the {\sf NSN-$\star$} are followed the {\sf NSGS-FP-VI-UPK} and {\sf NSGS-AC} solvers. On this test set, the requires accuracy is limited to $10^{-04}$ and the  {\sf NSGS-$\star$} are still able to reach the tolerance in a reasonable time. Between the test sets {\sf Cubes\_H8 II} and {\sf Cubes\_H8}, the required accuracy is decreased to $10^{-08}$. With a tighter tolerance, we observe that the relative efficiency of the {\sf NSN-$\star$} solvers increase. In other words, on the flexible tests we are able to nonsmooth Newton methods efficiently since the matrix $W$ is full rank and we retrieve quadratic convergent rates that enables to reach tighter tolerances. Note that in the flexible test sets, the proximal point algorithms {\sf PPA-NSN-$\star$} are directly interesting but as the required accuracy decreased, they start to compete with {\sf NSGS-$\star$} algorithms.\\
+  {\tt redo simulation of LowWall at $10^{-08}$ or cite \citep{Acary.ea_CSMA2017}}
+\item For most of the rigid test sets with a low requires accuracy of $10^{-04}$ as AqueducPR, 945\_SP\_Box\_PL, 100\_PR\_PerioBox , KaplasTower, Chute\_4000 and Chute\_1000,   the {\sf NSGS-$\star$} are the most efficient and robust solvers. In the case of the test sets Chute\_4000 and Chute\_1000,  the {\sf NSGS-FP-VI-UPK} solvers are better than the {\sf NSGS-AC-$\star$} due to some robustness issues in the local solvers based on nonsmooth Newton methods. These solvers are generally followed by optimization based solvers such as {\sf ACLM-$\star$} and {\sf TRESCA-$\star$} solvers, except for the test set 945\_SP\_Box\_PL where the more robust solver is {\sf TRESCA-NSGS-FP-VI-UPK}.
+\item For the rigid test sets with a low requires accuracy of $10^{-08}$ as Bridge\_PR, Chain, Capsules and BoxesStack, the solvers {\sf PPA-$\star$} are the most efficient and robust solvers. The regularization of the matrix $W$ introduced by the proximal point algorithm has a very positive effect on the internal solvers. Especially, it enables the use of nonsmooth Newton techniques that allows one to reach a tighter accuracy thank to their quadratic convergent rates. The {\sf PPA-$\star$} algorithms are generally followed {\sf NSGS-$\star$} except in the case of the Chain test set where the  {\sf NSN-$\star$} is able to solve 60\% of the problems quite efficiently. In the case of the Bridge\_PR test set, the use of proximal point technique \{PPA-NSN-AC-GP adaptive $\nu0 = 10^{+03}\}$ is the only to solve all the problems at the tolerance of  $10^{-08}$. As discussed in Section~\ref{Sec:PROX/NSN/InternalSolvers}, the rule for updating the proximal point parameter $\alpha$ play an important role and deserves further studies.
+\item In the case of the Chute\_local\_problems test set, we observe that the optimization based solver are the best solvers and allows one to circumvent the issues of robustness of {\sf NSGS-AC-$\star$} solvers that are reduced in that case to the {\sf NSN-$\star$} solvers. We recall that this local problems are extracted from Chute\_4000 and selected as difficult local problems. These problems are characterized by strongly asymmetric matrices with large extra-diagonal terms compared to the diagonal ones. In that case, the optimization solver based on a convexification helps to solve the problems. We can also note as in the Chute\_4000 and Chute\_1000 that  the {\sf NSGS-FP-VI-UPK} solvers are not sensitive to this feature.
+ \end{enumerate}
 
 
 \begin{figure}
@@ -3866,8 +3875,9 @@ In Figure~\ref{fig:OPTI}, we compare the algorithms based on the optimization ap
    {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
 \subfloat[\scriptsize 945\_SP\_Box\_PL]
    {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}}
-\subfloat[\scriptsize 100\_PR\_PerioBox]
+   \subfloat[\scriptsize 100\_PR\_PerioBox]
    {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
+ \caption{Comparison of the solvers between families}
 \end{figure}
 \begin{figure}
   \centering
@@ -3890,7 +3900,7 @@ In Figure~\ref{fig:OPTI}, we compare the algorithms based on the optimization ap
 \subfloat[\scriptsize BoxesStack]
    {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-08/100/time/profile-BoxesStack1.pdf}} \\
 {\includegraphics[height=\legendheight]{../figure/COMP/large/1.0e-08/50/time/profile-Chain_legend.pdf}}
- \caption{Comparison of the solvers between families}
+ \caption{Comparison of the solvers between families (continued)}
   \label{fig:COMP}
 \end{figure}
 
@@ -3903,23 +3913,21 @@ In Figure~\ref{fig:OPTI}, we compare the algorithms based on the optimization ap
 \clearpage
 \section{General conclusions}
 
+In this chapter, we have reviewed several formulations of the discrete frictional contact problems. These formulations open the way to various solving procedures that have detailed. Most of these solving procedures are already know in the literature as a) the  splitting and relaxation techniques ({\sf NSGS-$\star$} and {\sf PSOR-$\star$} solvers, b) the nonsmooth Newton methods ({\sf NSN-$\star$} solvers) and c) the optimization based solvers ({\sf PANA-$\star$, TRESCA-$\star$ and ACLM-$\star$}). For the first time, we present general solvers based on the variational inequalities formulation ({\sf FP-VI-$\star$} and {\sf FP-EG-$\star$}). These methods extends the {\sf FP-DS} algorithm in various directions and provides some rule to update the $\rho_k$ parameters that appears to be fundamentally important in practice. As far as we know, it is also the first application of the proximal point algorithms ({\sf PPA-$\star$}) to the discrete frictional contact problems.  the new set of solvers appears to be a promising alternative when we want to reach tight accuracy for collections of rigid bodies such as granular material.
 
-
+This review of solvers has been used for a thorough comparisons of solvers over a large set of test problems. Using performance profiles, the solvers has been compared by families and then alltogether. The main conclusions and perspectives of this study are as follows:
 \begin{itemize}
-\item {\sf NSGS-$\star$}
-  \begin{enumerate}
-  \item robust
-  \item slow
-  \item local solvers must preserve robutness.
-  \end{enumerate}
-\item {\sf NSN-$\star$}
-  \begin{enumerate}
-  \item Choice of rho and robustness convergence. more studies
-  \end{enumerate}
-\item {\sf PPA-$\star$}
-  \begin{enumerate}
-  \item some huge improvements in efficiency and robustness on some tests. Need further studies.
-  \end{enumerate}
+\item The method based on variational inequality formulations ({\sf FP-VI-$\star$} are robust solver if a consistent self-adaptive rule for the parameter $\rho$ is used. In this chapter, two rules has been described that gives very satisfactory results. Thanks to their robustness, these methods provides a goor robust solver for the local problem in splitting techniques. Nevertheless, the convergence rate of the method is low. The methods have difficulties to get a solution  for tight tolerances or if the problem size is large. The main perspectives for these methods are a) to adapt the values of $\rho$ contact by contact to try to improve the convergence speed and b) to perform computation in parallel for large systems. Indeed, each iteration of the {\sf FP-VI-$\star$} solvers may be straightforwardly implemented on distributed computer architectures.
+
+\item The methods based on a splitting techniques, the {\sf NSGS-$\star$} solvers provides us with robust and efficient solvers provided that the solver of the internal solver is also robust. They are generally more efficient than the {\sf FP-VI-$\star$} since they exploit the particular structure of the problem (sparse block sparsity and local solver routines). Nevertheless, they suffer from the problems as the  {\sf FP-VI-$\star$} solvers. The convergence rate is low and high accuracy s very to reach in a reasonable time. The main perspective for this solver is to able to improve the robustness and the efficiency of the local solver for instance by using proximal point technique or optimization based solvers. Concerning the {\sf PSOR-$\star$} solvers, for a certain value of the relaxation parameters $\omega$, they improve greatly the convergence rate of the {\sf NSGS-$\star$} solvers. The problem is that it is very difficult to guess the correct value of the parameter $\omega$. A wrong value may destroy the efficiency of the solver and can also implies divergence of the algorithm. It is clear that such solver deserves more attention to try to find a self adaptive rule for sizing $\omega$.
+
+\item The nonsmooth Newton solvers {\sf NSN-$\star$} appears to be an efficient family of solvers for problems that have a full-rank Delassus matrix or a very low contact density. For instance, in the case of the flexible tests, they are the best solvers among others and they are able to reach tight tolerances that are not reachable with ({\sf FP-VI-$\star$}  and {\sf NSGS-$\star$} solvers. For the other test sets, they suffer from robustness issues. Clearly, the choice of the $\rho$ parameters in the formulation is important but not sufficient to circumvent all the divergence problems. Also the line-search procedures may help to stabilize the convergence at the price to slow down the convergence. Some pointers in the literature try to modified the iteration matrix in the Newton loop to improve robustness when the iterates are far form the solution. The main perspectives for this solver is to work to improve their robustness. When the solvers are robust, theses solvers are also highly paralelizable for large systems since we can rely on massively parallel solvers for linear systems.
+
+\item As we discussed before, the {\sf PPA-$\star$} solvers are a possible solution for improving the robustness of  {\sf NSN-$\star$} while keeping their convergence rates. Nevertheless, we were not able to find an universal rule for updating the exact regularization parameter $\alpha$. Clearly, this deserves more studies  on this aspect.
+
+\item The optimization based solvers ({\sf PANA-$\star$, TRESCA-$\star$ and ACLM-$\star$} might be also a good alternative to provide us with robust solvers. Unfortunately, they do not prove to more efficient than the others solvers mainly due to the fact the decrease of the convergence raet implied by the fixed point external loop is not compensated by the efficiency of the internal solver for convex problems. As we have seen, the nonconvexity of the problems is not the only difficult that we have to face and most of the time the rank deficiency of the matrix Delassus matrix is the main problem for the convergence.
+
+
 \end{itemize}
 
 
