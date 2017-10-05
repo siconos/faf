@@ -105,7 +105,7 @@ default_values['prox_series']=100
 default_values['regul_series']=100
 default_values['opti_solvers']=50
 default_values['comp_solvers']=10
-default_values['comp_solvers_large']=100
+default_values['comp_solvers_large']=50
 
 data=dict()
 for t in tests:
@@ -123,13 +123,14 @@ for t in tests:
 test= 'Chain'
 data[test]['nsgs_localsolver']['domain']=10
 data[test]['nsn_solvers']['domain']=35
-
+test= 'BoxesStack1'
+data[test]['opti_solvers']['domain']=30
 
 test= 'LMGC_AqueducPR'
 data[test]['nsgs_localtol_ac_gp']['domain']=4
 data[test]['opti_solvers']['domain']=30
 data[test]['comp_solvers']['domain']=5
-data[test]['comp_solvers_large']['domain']=30
+data[test]['comp_solvers_large']['domain']=260
 
 test= 'LMGC_Bridge_PR'
 data[test]['nsgs_localtol_ac_gp']['domain']=4
@@ -145,7 +146,7 @@ data[test]['nsgs_localtol_ac_gp']['domain']=3
 data[test]['nsgs_localsolver']['domain']=5
 data[test]['nsgs_shuffled']['domain']=10
 data[test]['nsn_solvers']['domain']=25
-data[test]['opti_solvers']['domain']=10
+data[test]['opti_solvers']['domain']=20
 data[test]['comp_solvers']['domain']=5
 
 test= 'LMGC_945_SP_Box_PL'
@@ -182,7 +183,8 @@ data[test]['nsn_solvers']['domain']=25
 data[test]['prox_solvers']['domain']=20
 data[test]['prox_series']['domain']=20
 data[test]['comp_solvers']['domain']=2
-data[test]['comp_solvers_large']['domain']=10
+data[test]['comp_solvers_large']['domain']=20
+data[test]['opti_solvers']['domain']=20
 
 
 test = 'Chute_local_problems'
@@ -192,11 +194,15 @@ data[test]['comp_solvers']['domain']=10
 data[test]['comp_solvers_large']['domain']=50
 data[test]['regul_series']['domain']=15
 data[test]['nsn_solvers']['domain']=5
+data[test]['opti_solvers']['domain']=30
 
 test = 'Chute_1000'
 #data[test]['nsgs_shuffled']['domain']=
 data[test]['psor_solvers']['domain']=10
+data[test]['comp_solvers_large']['domain']=50
 
+test = 'Chute_4000'
+data[test]['comp_solvers_large']['domain']=50
 for t in tests:
     for tt in list_target:
         

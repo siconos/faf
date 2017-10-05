@@ -220,7 +220,8 @@ prox_solvers: save_dir=figure/PROX/NSN/InternalSolvers/${precision}/${timeout}/$
 prox_solvers :
 	$(comp) --measure=${measure_name} --display --no-matplot --solvers-exact=\
 	'NSN-AlartCurnier','PROX-NSN-AC','PROX-NSN-AC-NLS',\
-	'PROX-NSN-FB-GP','PROX-NSN-FB-NLS','PROX-NSN-FB-FBLSA','PROX-NSN-AC-regulVar-1e+03' \
+	'PROX-NSN-FB-GP','PROX-NSN-FB-NLS','PROX-NSN-FB-FBLSA',\
+	'PROX-NSN-AC-regulVar-1e+03','PROX-NSN-AC-nu1.0-sigma0.5' \
 	--domain=1.0:$(step):${domain_max}  --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-${test_name}.tex;
@@ -328,7 +329,7 @@ opti_solvers: save_dir=figure/OPTI/${precision}/${timeout}/${measure_name}
 
 opti_solvers :
 	$(comp) --measure=${measure_name} --display --no-matplot --solvers-exact=\
-	'NSGS-PLI-1e-14','SOCLCP-NSGS-PLI',\
+	'SOCLCP-NSGS-PLI',\
 	'TRESCA-NSGS-PLI','TRESCA-VI-FP','TRESCA-VI-EG','TRESCA-PG',\
 	'ACLMFixedPoint-SOCLCP-NSGS-PLI','ACLMFixedPoint-SOCLCP-VI-EG','ACLMFixedPoint-SOCLCP-VI-FPP',\
 	'PANA-PGS-VI-FPP','PANA-PGS-VI-EG','PANA-PGS-CONVEXQP-PG','PANA-CONVEXQP-PG' \
@@ -353,7 +354,7 @@ comp_solvers :
 	$(comp) --measure=${measure_name} --display --no-matplot --solvers-exact=\
 	'NSGS-AC','NSN-AlartCurnier','NSN-AlartCurnier-NLS',\
 	'PROX-NSN-AC','PROX-NSN-AC-nu2.0-sigma5.0',\
-	'TrescaFixedPoint-NSGS-PLI','ACLMFixedPoint-SOCLCP-NSGS-PLI','FixedPoint-VI','ExtraGradient-VI' \
+	'TRESCA-NSGS-PLI','ACLMFixedPoint-SOCLCP-NSGS-PLI','FixedPoint-VI','ExtraGradient-VI' \
 	--domain=1.0:${step}:${domain_max} --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-${test_name}.tex;
@@ -369,8 +370,12 @@ comp_solvers_large : 	timeout=$(shell $(domain) --target=comp_solvers_large --ti
 comp_solvers_large : 	test_name=$(shell $(domain) --test_name)
 comp_solvers_large: save_dir=figure/COMP/large/${precision}/${timeout}/${measure_name}
 comp_solvers_large :
-	$(comp) --measure=${measure_name} --display --no-matplot --solvers-exact='NSGS-AC','NSN-AlartCurnier','NSN-AlartCurnier-NLS','PROX-NSN-AC','PROX-NSN-AC-nu2.0-sigma5.0',\
-	'TrescaFixedPoint-NSGS-PLI','SOCLCP-NSGS-PLI','ACLMFixedPoint-SOCLCP-NSGS-PLI',FixedPoint-VI,ExtraGradient-VI \
+	$(comp) --measure=${measure_name} --display --no-matplot --solvers-exact=\
+	'NSGS-AC','NSGS-PLI-1e-14','NSGS-PLI-1e-06',\
+	'NSN-AlartCurnier','NSN-AlartCurnier-NLS',\
+	'PROX-NSN-AC','PROX-NSGS-NSN-AC','PROX-NSN-AC-regulVar-1e+03','PROX-NSN-AC-nu1.0-sigma0.5',\
+	'TRESCA-NSGS-PLI','ACLMFixedPoint-SOCLCP-NSGS-PLI','ACLMFixedPoint-SOCLCP-VI-EG',\
+	'ExtraGradient-VI' \
 	--domain=1.0:$(step):${domain_max} --gnuplot-profile --gnuplot-separate-keys
 	gnuplot profile.gp ;
 	pdflatex -interaction=batchmode  profile-${test_name}.tex;
