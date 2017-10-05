@@ -1977,6 +1977,14 @@ A nomenclature for the algorithms based on the nonsmooth Newton methods is given
     % &
     \\
     \hline
+    \sf NSN-AC-HYBRID
+    & \ref{Algo:NSN}
+    & Alart--Curnier formulation~\eqref{eq:AC-II} with a pre computation of the initial guess with $100$ iterations of {\sf EG-VI-UPK} algorithm
+      the
+    % & $tol, \rho_\n, \rho_\t$
+    \\
+    \hline
+
   \end{tabular}
   \caption{Naming convention for the algorithms based on nonsmooth Newton (NSN) method}
   \label{tab:NSN-algos}
@@ -2963,16 +2971,6 @@ All the solvers that are used in this article are implemented in standard C in t
   & 0\\
   \hline
   100\_PR\_Periobox
-  & $10^{-08}$
-  & 200
-  & 53.2
-  & 59.5
-  & $2.01^{-01}$
-  & $1.90^{-01}$
-  & 57
-  \\
-  \hline
-  100\_PR\_Periobox II
   & $10^{-04}$
   & 100
   & 0.064
@@ -3126,7 +3124,7 @@ In this section, we perform a comparison of the solvers by family in order to st
 \label{Sec:Comparison,VI,step-length}
 
 
-In Figure~\ref{fig:VI/UpdateRule}, we compare the different numerical solvers for VI described in Section~\ref{sec:numericalmethods,vi}. Only the test sets for which the solvers are reached the precicion before the prescribed time (timeout) are presented. For that reason, the results for the test sets LowWall\_FEM,  Cubes\_H8, Bridge\_PR, AqueducPR, 945\_SP\_Box\_PL, 100\_PR\_PerioBox, BoxesStack, Chute\_4000  and Chute\_1000  are not depicted. The solvers are quite slow to converge in practice for large problems although they are robust except for {\sf FP-DS}. 
+In Figure~\ref{fig:VI/UpdateRule}, we compare the different numerical solvers for VI described in Section~\ref{sec:numericalmethods,vi}. Only the test sets for which the solvers are reached the precicion before the prescribed time (timeout) are presented. For that reason, the results for the test sets LowWall\_FEM,  Cubes\_H8, Bridge\_PR, AqueducPR, 945\_SP\_Box\_PL, BoxesStack, Chute\_4000  and Chute\_1000  are not depicted. The solvers are quite slow to converge in practice for large problems although they are robust except for {\sf FP-DS}.
 The main conclusions are as follows:
 \begin{enumerate}
 \item The solver {\sf FP-DS} suffers from robustness problems and a lot of divergence has been observed. 
@@ -3154,10 +3152,8 @@ The main conclusions are as follows:
 %    {\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} 
 % \subfloat[\scriptsize 945\_SP\_Box\_PL]
 %    {\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}} 
- \subfloat[\scriptsize 100\_PR\_PerioBox II]
+ \subfloat[\scriptsize 100\_PR\_PerioBox]
 {\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}}
-% \subfloat[\scriptsize 100\_PR\_PerioBox]
-%    {\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-08/200/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
 \subfloat[\scriptsize KaplasTower II]
    {\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/100/time/profile-KaplasTower.pdf}} \\
 \subfloat[\scriptsize KaplasTower]
@@ -3183,7 +3179,54 @@ The main conclusions are as follows:
 
 
 \subsection{Splitting based algorithms: {\sf NSGS-$\star$} and {\sf PSOR-$\star$}}
-Again the results on the test sets Bridge\_PR, 100\_PR\_PerioBox, Chute\_local\_problems, BoxesStack are not reported since the  {\sf NSGS-$\star$} are not able to meet the required tolerance for a sufficient percentage of the problems mainly due  to a slow convergence rate. We can see that this problem also appears in the Capsules test set.
+Again the results on the test sets Bridge\_PR,  Chute\_local\_problems, BoxesStack are not reported since the  {\sf NSGS-$\star$} are not able to meet the required tolerance for a sufficient percentage of the problems mainly due  to a slow convergence rate. We can see that this problem also appears in the Capsules test set.
+
+{
+  \begin{figure}
+    \centering
+    \subfiglayout
+    \subfloat[\scriptsize LowWall\_FEM]
+    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}}
+    \subfloat[\scriptsize Cubes\_H8 II]
+    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} \\
+    \subfloat[\scriptsize Cubes\_H8]
+    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}}
+    \subfloat[\scriptsize Bridge\_PR II]
+    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}} \\
+    \subfloat[\scriptsize Bridge\_PR]
+    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}}
+    \subfloat[\scriptsize AqueducPR]
+    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}}\\
+    \subfloat[\scriptsize 945\_SP\_Box\_PL]
+    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}}
+    \subfloat[\scriptsize 100\_PR\_PerioBox]
+    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
+  \end{figure}
+  \begin{figure}
+    \centering
+    \ContinuedFloat
+    \subfiglayout
+    \subfloat[\scriptsize KaplasTower II]
+    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/100/time/profile-KaplasTower.pdf}}
+    \subfloat[\scriptsize KaplasTower]
+    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-08/200/time/profile-KaplasTower.pdf}} \\
+    \subfloat[\scriptsize Chute\_local\_problems]
+    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-08/10/time/profile-Chute_local_problems.pdf}}
+    \subfloat[\scriptsize Chute\_4000]
+    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/200/time/profile-Chute_4000.pdf}} \\
+    \subfloat[\scriptsize Chute\_1000]
+    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/200/time/profile-Chute_1000.pdf}}
+    \subfloat[\scriptsize Chain]
+    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-08/50/time/profile-Chain.pdf}} \\
+    \subfloat[\scriptsize Capsules]
+    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-08/50/time/profile-Capsules.pdf}}
+    \subfloat[\scriptsize BoxesStack]
+    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-08/100/time/profile-BoxesStack1.pdf}} \\
+    {\includegraphics[height=\legendheight]{../figure/NSGS/LocalSolver/1.0e-08/50/time/profile-Chain_legend.pdf}}
+    \caption{Influence of the local solver in {\sf NSGS-$\star$} algorithms.}
+    \label{fig:NSGS/LocalSolver}
+  \end{figure}
+}
 
 \paragraph{Effect and influence of the local solver in {\sf NSGS-$\star$}  algorithms} In Figure~\ref{fig:NSGS/LocalSolver}, we report the performance profiles of the  {\sf NSGS-$\star$} for the different local solvers.  The main conclusions are as follows:
 \begin{enumerate}
@@ -3191,53 +3234,12 @@ Again the results on the test sets Bridge\_PR, 100\_PR\_PerioBox, Chute\_local\_
 \item Except for the test sets KaplasTower II and BoxesStack, the solver {\sf NSGS-EXACT} behaves poorly. This is mainly due to the fact that the solver is not robust to find a solution for one contact when we are far from the solutions for all the contacts. This behavior was already reported in~\citep{Daviet.ea_SIGGRAPH2011} where another solver based a nonsmooth Newton technique was used when  the exact solution was not satisfactory.
 \item  The solver  {\sf NSGS-FP-DS-One} is most efficient on the test sets Bridge\_PR II, KaplasTower II, Chain and BoxesStack. These tests sets seem to be among the easiest one the solve (see Table~\ref{Tab:fclib-simulation}). Nevertheless, this local solver seems slow or suffers from robustness issues for other test sets.
 \item On the flexible test sets and 945\_SP\_Box\_PL, the best solver is {\sf NSGS-FP-VI-UPK} for a relatively low required tolerance ($\sf tol_{local} =10^{-06}$). For these test sets, an approximate solution of the single contact problems seems sufficient to ensure an efficient convergence towards the solution without entailing robustness.
-\item On the test sets 100\_PR\_PerioBox II, KaplasTower,  Chain, Capsules, the solver {\sf NSGS-NSN-$\star$} are the best solvers and behave very well on Bridge\_PR II. It seems that when a tight accuracy is required, the solvers {\sf NSGS-NSN-$\star$} are useful and helps with a tight local tolerance to speed-up the convergence.
+\item On the test sets 100\_PR\_PerioBox, KaplasTower,  Chain, Capsules, the solver {\sf NSGS-NSN-$\star$} are the best solvers and behave very well on Bridge\_PR II. It seems that when a tight accuracy is required, the solvers {\sf NSGS-NSN-$\star$} are useful and helps with a tight local tolerance to speed-up the convergence.
 \item For the Chute\_1000, Chute\_4000 test sets, we observe large differences between the local formulations of the nonsmooth equations for the Newton solvers ({\sf NSGS-NSN-AC} or {\sf NSGS-NSN-JM}). The solver {\sf NSGS-NSN-JMx} is the best solver and really better than {\sf NSGS-NSN-AC} although their theoretical formulation are very close. Theses two test sets are characterized by difficult local problems where the matrix $W$ is asymmetric.
 \item {\tt Comment on the line searches method}
 \end{enumerate}
 
 
-\begin{figure}
-  \centering
-    \subfiglayout
-\subfloat[\scriptsize LowWall\_FEM]
-   {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}} 
-\subfloat[\scriptsize Cubes\_H8 II]
-   {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} \\
-% \subfloat[\scriptsize Cubes\_H8]
-%    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}} \\
-\subfloat[\scriptsize Bridge\_PR II]
-   {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}} 
-% \subfloat[\scriptsize Bridge\_PR]
-%    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}}
-\subfloat[\scriptsize AqueducPR]
-   {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}}
-\subfloat[\scriptsize 945\_SP\_Box\_PL]
-   {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}} \\
-\subfloat[\scriptsize 100\_PR\_PerioBox II]
-   {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}} 
-% \subfloat[\scriptsize 100\_PR\_PerioBox]
-%    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-08/200/time/profile-LMGC_100_PR_PerioBox.pdf}}
-\subfloat[\scriptsize KaplasTower II]
-   {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/100/time/profile-KaplasTower.pdf}} 
-\subfloat[\scriptsize KaplasTower]
-   {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-08/200/time/profile-KaplasTower.pdf}} \\
-\subfloat[\scriptsize Chute\_local\_problems]
-    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-08/10/time/profile-Chute_local_problems.pdf}}\\
-\subfloat[\scriptsize Chute\_4000]
-   {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/200/time/profile-Chute_4000.pdf}} 
-\subfloat[\scriptsize Chute\_1000]
-   {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/200/time/profile-Chute_1000.pdf}} \\
-\subfloat[\scriptsize Chain]
-   {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-08/50/time/profile-Chain.pdf}} 
-\subfloat[\scriptsize Capsules]
-   {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-08/50/time/profile-Capsules.pdf}} \\
-% \subfloat[\scriptsize BoxesStack]
-%   {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-08/100/time/profile-BoxesStack1.pdf}} \\
-{\includegraphics[height=\legendheight]{../figure/NSGS/LocalSolver/1.0e-08/50/time/profile-Chain_legend.pdf}} 
-  \caption{Influence of the local solver in {\sf NSGS-$\star$} algorithms.}
-  \label{fig:NSGS/LocalSolver}
-\end{figure}
 
 \paragraph{Influence of the tolerance of the local solver $\sf tol_{local}$ in {\sf NSGS-FP-VI-UPK} algorithms}
 In this paragraph, the tolerance of the local solver is varied and its effect on the global convergence of the solver is reported. In Figure~\ref{fig:NSGS/LocalTol/VI},  we report the performance profiles of {\sf NSGS-FP-VI-UPK} algorithms for the $\sf tol_{local}$ in the range $[10^{-04}, 10^{-16}]$. We also report the efficiency of the adaptive strategy for setting the value of the local tolerance (see Section~\ref{Sec:NSGS-LocalTol}).The main observations are
@@ -3264,10 +3266,8 @@ From these results, it is quite difficult to guess in advance the internal dynam
 %    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}}
 % \subfloat[\scriptsize 945\_SP\_Box\_PL]
 %    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}} \\
-   \subfloat[\scriptsize 100\_PR\_PerioBox II]
+   \subfloat[\scriptsize 100\_PR\_PerioBox]
     {\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
-% \subfloat[\scriptsize 100\_PR\_PerioBox]
-%    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-08/200/time/profile-LMGC_100_PR_PerioBox.pdf}}
 % \subfloat[\scriptsize KaplasTower II]
 %    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/100/time/profile-KaplasTower.pdf}} 
 % \subfloat[\scriptsize KaplasTower]
@@ -3312,10 +3312,8 @@ In Figure~\ref{fig:NSGS/LocalTol},  we report the performance profile of {\sf NS
 %    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
 % \subfloat[\scriptsize 945\_SP\_Box\_PL]
 %    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}} \\
-% \subfloat[\scriptsize 100\_PR\_PerioBox II]
-%    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}} 
 % \subfloat[\scriptsize 100\_PR\_PerioBox]
-%    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/1.0e-08/200/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
+%    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}}
 % \subfloat[\scriptsize KaplasTower II]
 %    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/1.0e-04/100/time/profile-KaplasTower.pdf}} 
 % \subfloat[\scriptsize KaplasTower]
@@ -3343,7 +3341,7 @@ In Figure~\ref{fig:NSGS/LocalTol},  we report the performance profile of {\sf NS
 In Figure~\ref{fig:NSGS/rho}, we evaluate the influence of the choice of the parameters $\rho_\n, \rho_\t$ on the convergence of the solver. The main conclusion are:
 \begin{enumerate}
 \item For the test sets 945\_SP\_Box\_PL, 100\_PR\_PerioBox, KaplasTower II, KaplasTower, Chute\_local\_problems, Chute\_4000, Chute\_1000, Capsules, a fixed value of $\rho_\n=\rho_\t=1$ has a dramatic effect on the convergence of the algorithm. The scaling of $\rho$ is of utmost importance for the efficiency and the robustness of the solver. Note that the rule  \eqref{eq:rho-4} that takes into account the condition number of the local matrix $W$ deteriorates the performance for Chute\_local\_problems, Chute\_4000, Chute\_1000. In these problems, the local matrix is asymmetric due to large Coriolis effects.
-\item For the other tests, the choice of $\rho_\n,\rho_\t$ does not really change the results such as LowWall\_FEM , mainly due the fact that the order of magnitude of the chosen $\rho$ with the rules \eqref{eq:rho-2}, \eqref{eq:rho-3} or \eqref{eq:rho-4} is around $1$. Cubes\_H8 II, Cubes\_H8, Bridge\_PR II, Bridge\_PR, 100\_PR\_PerioBox II, Chain, BoxesStack and AqueducPR are not displayed since the results are similar.
+\item For the other tests, the choice of $\rho_\n,\rho_\t$ does not really change the results such as LowWall\_FEM , mainly due the fact that the order of magnitude of the chosen $\rho$ with the rules \eqref{eq:rho-2}, \eqref{eq:rho-3} or \eqref{eq:rho-4} is around $1$. Cubes\_H8 II, Cubes\_H8, Bridge\_PR II, Bridge\_PR, 100\_PR\_PerioBox, Chain, BoxesStack and AqueducPR are not displayed since the results are similar.
 \end{enumerate}
 One of the conclusion of this study is as follows, the rules \eqref{eq:rho-2}, \eqref{eq:rho-3} improves a lot some simulations without increasing the computational cost for the others. Therefore, it is strongly advised to use it.
 \begin{figure}
@@ -3363,8 +3361,6 @@ One of the conclusion of this study is as follows, the rules \eqref{eq:rho-2}, \
 %    {\includegraphics[width=\figwidth]{../figure/NSGS/rho/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
 \subfloat[\scriptsize 945\_SP\_Box\_PL]
    {\includegraphics[width=\figwidth]{../figure/NSGS/rho/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}} \\
-% \subfloat[\scriptsize 100\_PR\_PerioBox II]
-%    {\includegraphics[width=\figwidth]{../figure/NSGS/rho/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}}
 % \subfloat[\scriptsize 100\_PR\_PerioBox]
 %    {\includegraphics[width=\figwidth]{../figure/NSGS/rho/1.0e-08/200/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
 \subfloat[\scriptsize KaplasTower II]
@@ -3398,7 +3394,7 @@ One of the conclusion of this study is as follows, the rules \eqref{eq:rho-2}, \
 In this section, we study the influence of the contact order within the loop of the {\sf NSGS-AC-GP} solver. We reproduce in Figure~\ref{fig:NSGS/Shuffled} the result of the solvers with the original contact list of the problem ({\sf NSGS-AC-GP}) and with two other ways of iterating over the contacts. The solver {\sf NSGS-AC-GP Shuffled} corresponds to a single randomization of the list of contacts at the beginning of the algorithm. In the solver  {\sf NSGS-AC-GP Fully shuffled}, the  list is shuffled at each iteration.
 \begin{enumerate}
 \item The solver  {\sf NSGS-AC-GP Fully shuffled} performs really better on the flexible test sets
-\item For the rigid test sets, we reproduce here only the test set  100\_PR\_PerioBox II because the other test sets behave identically. The  {\sf NSGS-AC-GP Fully shuffled} has a really bad influence on the convergence of the solver. It seems that is modify the internal dynamics of the solver in a way the rate of convergence is really decreased.
+\item For the rigid test sets, we reproduce here only the test set  100\_PR\_PerioBox because the other test sets behave identically. The  {\sf NSGS-AC-GP Fully shuffled} has a really bad influence on the convergence of the solver. It seems that is modify the internal dynamics of the solver in a way the rate of convergence is really decreased.
 \end{enumerate}
 
 \def\widthfigure{0.6}
@@ -3419,10 +3415,8 @@ In this section, we study the influence of the contact order within the loop of 
 %    {\includegraphics[width=\figwidth]{../figure/NSGS/Shuffled/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
 % \subfloat[\scriptsize 945\_SP\_Box\_PL]
 %    {\includegraphics[width=\figwidth]{../figure/NSGS/Shuffled/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}} 
-\subfloat[\scriptsize 100\_PR\_PerioBox II]
+\subfloat[\scriptsize 100\_PR\_PerioBox]
    {\includegraphics[width=\figwidth]{../figure/NSGS/Shuffled/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
-% \subfloat[\scriptsize 100\_PR\_PerioBox]
-%    {\includegraphics[width=\figwidth]{../figure/NSGS/Shuffled/1.0e-08/200/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
 % \subfloat[\scriptsize KaplasTower II]
 %    {\includegraphics[width=\figwidth]{../figure/NSGS/Shuffled/1.0e-04/100/time/profile-KaplasTower.pdf}} 
 % \subfloat[\scriptsize KaplasTower]
@@ -3447,10 +3441,10 @@ In this section, we study the influence of the contact order within the loop of 
 
 \paragraph{Comparison of PSOR algorithm with respect to  the relaxation parameter $\omega$}
 
-In Figure~\ref{fig:PSOR}, we study the effect  on the performance of the relaxation parameter $\omega$ ranging from $[0.5,1.8]$.  Two conclusions can be drawn:
+In Figure~\ref{fig:PSOR},  the relaxation parameter $\omega$ is varied ranging in $[0.5,1.8]$.  Two conclusions can be drawn:
 \begin{enumerate}
 \item For the flexible tests, the efficiency of the solver is really improved as we decreased the value of $\omega$. Moreover, this is done without destroying the robustness of the solver.
-\item For the rigid tests, the effect of the relaxation is not so clear. For values of $\omega$ greater than $1.0$, the efficiency is improved but the robustness deteriorates and we observe the contrary for the  $\omega$  less than $1.0$
+\item For the rigid tests, the effect of the relaxation is not so clear. For values of $\omega$ greater than $1.0$, the efficiency is improved but the robustness deteriorates and we observe the contrary for the  $\omega$  less than $1.0$. Note in particular that for the test sets Chute\_1000, Chute\_4000 the convergence is completely destroyed fro $\omega = 1.8$.
 \end{enumerate}
 To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$. If it accelerates drastically the rate of convergence of the algorithm for some problems it deteriorates the convergence for others. Further studies would be needed to design self--adaptive schemes for the choice of $\omega$.
 
@@ -3466,26 +3460,25 @@ To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$
    {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}} 
 \subfloat[\scriptsize Cubes\_H8 II]
    {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} 
-\subfloat[\scriptsize Cubes\_H8]
-   {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}} \\
-\subfloat[\scriptsize Bridge\_PR II]
-   {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}} 
-\subfloat[\scriptsize Bridge\_PR]
-   {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}} 
-\subfloat[\scriptsize AqueducPR]
-   {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
-\subfloat[\scriptsize 945\_SP\_Box\_PL]
-   {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}} 
-\subfloat[\scriptsize 100\_PR\_PerioBox II]
-   {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}} 
-\subfloat[\scriptsize 100\_PR\_PerioBox]
-   {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-08/200/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
-\subfloat[\scriptsize KaplasTower II]
-   {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-04/100/time/profile-KaplasTower.pdf}} 
-\subfloat[\scriptsize KaplasTower]
-   {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-08/200/time/profile-KaplasTower.pdf}} 
-\subfloat[\scriptsize Chute\_local\_problems]
-   {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-08/10/time/profile-Chute_local_problems.pdf}} \\
+% \subfloat[\scriptsize Cubes\_H8]
+%    {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}}
+   \\
+% \subfloat[\scriptsize Bridge\_PR II]
+%    {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}}
+% \subfloat[\scriptsize Bridge\_PR]
+%    {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}}
+% \subfloat[\scriptsize AqueducPR]
+%    {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
+% \subfloat[\scriptsize 945\_SP\_Box\_PL]
+%    {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}}
+% \subfloat[\scriptsize 100\_PR\_PerioBox]
+%    {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}}
+% \subfloat[\scriptsize KaplasTower II]
+%    {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-04/100/time/profile-KaplasTower.pdf}}
+% \subfloat[\scriptsize KaplasTower]
+%    {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-08/200/time/profile-KaplasTower.pdf}}
+% \subfloat[\scriptsize Chute\_local\_problems]
+%    {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-08/10/time/profile-Chute_local_problems.pdf}} \\
 \subfloat[\scriptsize Chute\_4000]
    {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-04/200/time/profile-Chute_4000.pdf}} 
 \subfloat[\scriptsize Chute\_1000]
@@ -3494,8 +3487,9 @@ To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$
    {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-08/50/time/profile-Chain.pdf}} 
 \subfloat[\scriptsize Capsules]
    {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-08/50/time/profile-Capsules.pdf}} 
-\subfloat[\scriptsize BoxesStack]
-   {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-08/100/time/profile-BoxesStack1.pdf}} \\
+% \subfloat[\scriptsize BoxesStack]
+% {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-08/100/time/profile-BoxesStack1.pdf}}
+\\
 {\includegraphics[height=\legendheight]{../figure/PSOR/1.0e-08/50/time/profile-Chain_legend.pdf}} 
   \caption{Effect of relation coefficient $\omega$ in {\sf PSOR-AC-GP} algorithm.}
   \label{fig:PSOR}
@@ -3504,15 +3498,25 @@ To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$
 \clearpage
 \subsection{Comparison of {\sf NSN-$\star$} algorithms}
 
+In this section,  the nonsmooth Newton methods  are compared and we depict the performance profiles in Figure~\ref{fig:NSN}. The main conclusion are as follows:
+\begin{enumerate}
+\item For the flexible tests, most of the Newton methods succeed to solve the problems within the prescribed time. The solver {\sf NSN-AC-HYBRID} appears to be the best solver.  The effect of computing an initial condition of the solver with a robust method such as {\sf EG-VI-UPK}  improves the convergence. In practice, we observe the precomputation allows one to determine roughly the set of closed and sliding contacts and it helps a lot the convergence of the Newton solvers. The solvers without line--searches perform also better than those with a line--search procedure which  seems to slow down the convergence without improving the robustness.  For the different formulations, the {\sf NSNS-AC} and {\sf NSN-JM} give equivalent results and are better that the {\sf NSN-NM} solver which is in turns better than the {\sf NSN-FB} solver. Note that the Goldstein--Price line search is usually better than the Armijo despite the fact the merit function is not necessarily smooth. Finally, we note that  {\sf NSN-FB}  and {\sf NSN-FB-A} are really the slowest solver on these flexible examples.
+\item For the rigid test sets with an high value of the rank ratio or the contact density~$c$ (see Table~\ref{Tab:fclib}), the Newton methods fail to converge and a lot of divergence has been noted in practice. This is the case for the test sets Bridge\_PR II, Bridge\_PR, AqueducPR, 945\_SP\_Box\_PL, 100\_PR\_PerioBox.
+\item For the rigid test sets with a low value of the rank ratio or the contact density $c$ less than $1$ such as Chute\_1000 and Chain, we observe that the Newton methods are able to solve some problems. We note also that in the Chain test set, the use of a fixed value of $\rho$ is penalizing a lot the convergence of the solver. Contrary to flexible test sets, the use of a line--search procedure helps  to get a better robustness  of the solver. This is particularly true for {\sf NSN-NM-GP}.
+\item Chute\_local\_problems
+\item Finally, for the test sets KaplasTower and Capsules, the {\sf NSN-FB-GP} is able to solve more than 80\% in a very efficient way. Some further studies would be needed to understand why this specific solver performs really better than the others.
+\end{enumerate}
+As general conclusion, the success of the {\sf NSN-$\star$} algorithms relates on the rank of the matrix $W$ and then on the contact density value $c$. For full rank matrix $W$, the solvers are robust and efficient. For values of $c$ not larger than $1$, the methods are able to find a solution with a tight accuracy. For larger values of $c$ and larger rank ratio, the nonsmooth Newton methods are not robust.
+
 \begin{figure}
   \centering
     \subfiglayout
  \subfloat[\scriptsize LowWall\_FEM]
    {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}} 
 \subfloat[\scriptsize Cubes\_H8 II]
-   {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} 
+   {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} \\
 \subfloat[\scriptsize Cubes\_H8]
-   {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}} \\
+   {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}}
 % \subfloat[\scriptsize Bridge\_PR II]
 %    {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}}
 % \subfloat[\scriptsize Bridge\_PR]
@@ -3521,14 +3525,11 @@ To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$
 %    {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
 % \subfloat[\scriptsize 945\_SP\_Box\_PL]
 %    {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}}
-% \subfloat[\scriptsize 100\_PR\_PerioBox II]
-%    {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}}
 % \subfloat[\scriptsize 100\_PR\_PerioBox]
-%    {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-08/200/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
-\subfloat[\scriptsize KaplasTower II]
-   {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-04/100/time/profile-KaplasTower.pdf}} 
+% \subfloat[\scriptsize KaplasTower II]
+%    {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-04/100/time/profile-KaplasTower.pdf}} \\
 \subfloat[\scriptsize KaplasTower]
-   {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-08/200/time/profile-KaplasTower.pdf}} 
+   {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-08/200/time/profile-KaplasTower.pdf}} \\
 \subfloat[\scriptsize Chute\_local\_problems]
    {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-08/10/time/profile-Chute_local_problems.pdf}} 
 % \subfloat[\scriptsize Chute\_4000]
@@ -3539,8 +3540,9 @@ To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$
    {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-08/50/time/profile-Chain.pdf}} 
 \subfloat[\scriptsize Capsules]
    {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-08/50/time/profile-Capsules.pdf}} 
-\subfloat[\scriptsize BoxesStack]
-   {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-08/100/time/profile-BoxesStack1.pdf}} \\
+% \subfloat[\scriptsize BoxesStack]
+%    {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-08/100/time/profile-BoxesStack1.pdf}}
+   \\
 {\includegraphics[height=\legendheight]{../figure/NSN/1.0e-08/50/time/profile-Chain_legend.pdf}} 
   \caption{Comparison of {\sf NSN-$\star$} algorithms.}
   \label{fig:NSN}
@@ -3549,179 +3551,224 @@ To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$
 
 
 
-\subsection{Comparison of PPA-NSN-AC algorithm with respect to  the step-size parameter $\sigma$, $\mu$}
+\subsection{Comparison of the proximal point algorithm {\sf PPA-NSN-$\star$} algorithms}
 
+In Figure~\ref{fig:PROX/NSN/InternalSolvers}, we compare various the proximal point algorithm with various internal solvers based on nonsmooth Newton methods {\sf NSN-$\star$}. The main observations are:
+\begin{enumerate}
+\item For the flexible test sets (see for an illustration the test set LowWall\_FEM), for which the nonsmooth Newton solvers work pretty well, the use of a proximal point algorithm has no interest since it slows down the convergence of the algorithm by performing a first iteration with a large value of the regularization parameter $\alpha$.
+\item For the test sets KaplasTower,   Chute\_1000, Chain, Capsules and BoxesStack, the proximal point approach improves  the efficiency  of the {\sf NSN-AC-GP} solver and often it improves its reliability (see for comparison Figure~\ref{fig:NSN}). Clearly, the regularization introduced in the proximal point algorithm changes the rank of the matrix $W$ and it has a strong effect on the convergence of the Newton methods.
+\item The efficiency of the proximal point algorithm depends on the internal solver. As is is illustrated on the Capsules test, the improvement brought by the proximal point algorithm does not necessarily follows the success of the Newton solver when it is used alone.
+\item The strategy for updating the regularization parameter $\alpha$ plays also an important role. Quite surprisingly, for the Bridge\_PR test set, the adaptive rule that does not take into account the current error is really efficient and allows to get a robust and efficient solver with respect to the others.
+\end{enumerate}
+
+In Figure~\ref{fig:PROX/NSGS/InternalSolvers}, we compare the {\sf NSGS-AC} solver when it is used directly or inside the proximal point algorithm. On most of the test sets such as KaplasTower, A direct application of the {\sf NSGS-AC} solver is already efficient and its embedding into a proximal point algorithm does not bring any improvements. Nevertheless, we can see on Figure~\ref{fig:PROX/NSGS/InternalSolvers} that the proximal point algorithm improves the robustess and the efficiency for the test sets 945\_SP\_Box\_PL,  Chute\_4000, Chute\_1000 and Capsules. For the test set Chute\_4000, the result is quite impressive.
 
 \begin{figure}
   \centering
     \subfiglayout
 \subfloat[\scriptsize LowWall\_FEM]
-   {\includegraphics[width=\figwidth]{../figure/PROX/InternalSolvers/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}} 
-\subfloat[\scriptsize Cubes\_H8 II]
-   {\includegraphics[width=\figwidth]{../figure/PROX/InternalSolvers/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} 
-\subfloat[\scriptsize Cubes\_H8]
-   {\includegraphics[width=\figwidth]{../figure/PROX/InternalSolvers/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}} \\
-\subfloat[\scriptsize Bridge\_PR II]
-   {\includegraphics[width=\figwidth]{../figure/PROX/InternalSolvers/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}} 
+   {\includegraphics[width=\figwidth]{../figure/PROX/NSN/InternalSolvers/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}}
+% \subfloat[\scriptsize Cubes\_H8 II]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/NSN/InternalSolvers/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}}
+% \subfloat[\scriptsize Cubes\_H8]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/NSN/InternalSolvers/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}}
+% \subfloat[\scriptsize Bridge\_PR II]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/NSN/InternalSolvers/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}} \\
 \subfloat[\scriptsize Bridge\_PR]
-   {\includegraphics[width=\figwidth]{../figure/PROX/InternalSolvers/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}} 
-\subfloat[\scriptsize AqueducPR]
-   {\includegraphics[width=\figwidth]{../figure/PROX/InternalSolvers/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
-\subfloat[\scriptsize 945\_SP\_Box\_PL]
-   {\includegraphics[width=\figwidth]{../figure/PROX/InternalSolvers/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}} 
-\subfloat[\scriptsize 100\_PR\_PerioBox II]
-   {\includegraphics[width=\figwidth]{../figure/PROX/InternalSolvers/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}} 
-\subfloat[\scriptsize 100\_PR\_PerioBox]
-   {\includegraphics[width=\figwidth]{../figure/PROX/InternalSolvers/1.0e-08/200/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
-\subfloat[\scriptsize KaplasTower II]
-   {\includegraphics[width=\figwidth]{../figure/PROX/InternalSolvers/1.0e-04/100/time/profile-KaplasTower.pdf}} 
+   {\includegraphics[width=\figwidth]{../figure/PROX/NSN/InternalSolvers/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}} \\
+% \subfloat[\scriptsize AqueducPR]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/NSN/InternalSolvers/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
+% \subfloat[\scriptsize 945\_SP\_Box\_PL]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/NSN/InternalSolvers/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}}
+% \subfloat[\scriptsize 100\_PR\_PerioBox]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/NSN/InternalSolvers/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}}
+% \subfloat[\scriptsize KaplasTower II]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/NSN/InternalSolvers/1.0e-04/100/time/profile-KaplasTower.pdf}}
 \subfloat[\scriptsize KaplasTower]
-   {\includegraphics[width=\figwidth]{../figure/PROX/InternalSolvers/1.0e-08/200/time/profile-KaplasTower.pdf}} 
-\subfloat[\scriptsize Chute\_local\_problems]
-   {\includegraphics[width=\figwidth]{../figure/PROX/InternalSolvers/1.0e-08/10/time/profile-Chute_local_problems.pdf}} 
-\subfloat[\scriptsize Chute\_4000]
-   {\includegraphics[width=\figwidth]{../figure/PROX/InternalSolvers/1.0e-04/200/time/profile-Chute_4000.pdf}} 
+   {\includegraphics[width=\figwidth]{../figure/PROX/NSN/InternalSolvers/1.0e-08/200/time/profile-KaplasTower.pdf}}
+\subfloat[\scriptsize Chute\_local\_problems II]
+   {\includegraphics[width=\figwidth]{../figure/PROX/NSN/InternalSolvers/1.0e-04/10/time/profile-Chute_local_problems.pdf}} \\
+% \subfloat[\scriptsize Chute\_local\_problems]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/NSN/InternalSolvers/1.0e-08/10/time/profile-Chute_local_problems.pdf}}
+% \subfloat[\scriptsize Chute\_4000]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/NSN/InternalSolvers/1.0e-04/200/time/profile-Chute_4000.pdf}}
 \subfloat[\scriptsize Chute\_1000]
-   {\includegraphics[width=\figwidth]{../figure/PROX/InternalSolvers/1.0e-04/200/time/profile-Chute_1000.pdf}} \\
+   {\includegraphics[width=\figwidth]{../figure/PROX/NSN/InternalSolvers/1.0e-04/200/time/profile-Chute_1000.pdf}}
 \subfloat[\scriptsize Chain]
-   {\includegraphics[width=\figwidth]{../figure/PROX/InternalSolvers/1.0e-08/50/time/profile-Chain.pdf}} 
+   {\includegraphics[width=\figwidth]{../figure/PROX/NSN/InternalSolvers/1.0e-08/50/time/profile-Chain.pdf}} \\
 \subfloat[\scriptsize Capsules]
-   {\includegraphics[width=\figwidth]{../figure/PROX/InternalSolvers/1.0e-08/50/time/profile-Capsules.pdf}} 
+   {\includegraphics[width=\figwidth]{../figure/PROX/NSN/InternalSolvers/1.0e-08/50/time/profile-Capsules.pdf}}
 \subfloat[\scriptsize BoxesStack]
-   {\includegraphics[width=\figwidth]{../figure/PROX/InternalSolvers/1.0e-08/100/time/profile-BoxesStack1.pdf}} \\
-   {\includegraphics[height=\legendheight]{../figure/PROX/InternalSolvers/1.0e-08/50/time/profile-Chain_legend.pdf}}
-   \caption{Comparison of internal solvers in {\sf PPA-$\star$} algorithms.}
-  \label{fig:PROX/InternalSolvers}
-\end{figure}  
+   {\includegraphics[width=\figwidth]{../figure/PROX/NSN/InternalSolvers/1.0e-08/100/time/profile-BoxesStack1.pdf}} \\
+{\includegraphics[height=\legendheight]{../figure/PROX/NSN/InternalSolvers/1.0e-08/50/time/profile-Chain_legend.pdf}}
+   \caption{Comparison of internal solvers in {\sf PPA-NSN-$\star$} algorithms.}
+  \label{fig:PROX/NSN/InternalSolvers}
+\end{figure}
+\begin{figure}
+  \centering
+    \subfiglayout
+% \subfloat[\scriptsize LowWall\_FEM]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/NSGS/InternalSolvers/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}}
+% \subfloat[\scriptsize Cubes\_H8 II]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/NSGS/InternalSolvers/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}}
+% \subfloat[\scriptsize Cubes\_H8]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/NSGS/InternalSolvers/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}} \\
+% \subfloat[\scriptsize Bridge\_PR II]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/NSGS/InternalSolvers/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}}
+% \subfloat[\scriptsize Bridge\_PR]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/NSGS/InternalSolvers/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}}
+% \subfloat[\scriptsize AqueducPR]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/NSGS/InternalSolvers/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
+% \subfloat[\scriptsize 100\_PR\_PerioBox]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/NSGS/InternalSolvers/1.0e-08/100/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
+\subfloat[\scriptsize KaplasTower II]
+   {\includegraphics[width=\figwidth]{../figure/PROX/NSGS/InternalSolvers/1.0e-04/100/time/profile-KaplasTower.pdf}}
+\subfloat[\scriptsize KaplasTower]
+{\includegraphics[width=\figwidth]{../figure/PROX/NSGS/InternalSolvers/1.0e-08/200/time/profile-KaplasTower.pdf}} \\
+\subfloat[\scriptsize 945\_SP\_Box\_PL]
+   {\includegraphics[width=\figwidth]{../figure/PROX/NSGS/InternalSolvers/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}}
+% \subfloat[\scriptsize Chute\_local\_problems II]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/NSGS/InternalSolvers/1.0e-04/10/time/profile-Chute_local_problems.pdf}} \\
+% \subfloat[\scriptsize Chute\_local\_problems]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/NSGS/InternalSolvers/1.0e-08/10/time/profile-Chute_local_problems.pdf}}
+\subfloat[\scriptsize Chute\_4000]
+   {\includegraphics[width=\figwidth]{../figure/PROX/NSGS/InternalSolvers/1.0e-04/200/time/profile-Chute_4000.pdf}} \\
+\subfloat[\scriptsize Chute\_1000]
+   {\includegraphics[width=\figwidth]{../figure/PROX/NSGS/InternalSolvers/1.0e-04/200/time/profile-Chute_1000.pdf}}
+% \subfloat[\scriptsize Chain]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/NSGS/InternalSolvers/1.0e-08/50/time/profile-Chain.pdf}} \\
+\subfloat[\scriptsize Capsules]
+{\includegraphics[width=\figwidth]{../figure/PROX/NSGS/InternalSolvers/1.0e-08/50/time/profile-Capsules.pdf}}
+\\
+% \subfloat[\scriptsize BoxesStack]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/NSGS/InternalSolvers/1.0e-08/100/time/profile-BoxesStack1.pdf}} \\
+{\includegraphics[height=\legendheight]{../figure/PROX/NSGS/InternalSolvers/1.0e-08/50/time/profile-Chain_legend.pdf}}
+ \caption{Comparison of internal solvers in {\sf PPA-NSGS-$\star$} algorithms.}
+  \label{fig:PROX/NSGS/InternalSolvers}
+\end{figure}
+% \paragraph{ PPA-NSN-AC algorithm with respect to  the step-size parameter $\sigma$, $\mu$}}
 
-\begin{figure}
-  \centering
-  \subfiglayout
-  \subfloat[\scriptsize LowWall\_FEM]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}}
-\subfloat[\scriptsize Cubes\_H8 II]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}}
-\subfloat[\scriptsize Cubes\_H8]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}} \\
-\subfloat[\scriptsize Bridge\_PR II]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}}
-\subfloat[\scriptsize Bridge\_PR]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}}
-\subfloat[\scriptsize AqueducPR]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
-\subfloat[\scriptsize 945\_SP\_Box\_PL]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}}
-\subfloat[\scriptsize 100\_PR\_PerioBox II]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}}
-\subfloat[\scriptsize 100\_PR\_PerioBox]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-08/200/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
-\subfloat[\scriptsize KaplasTower II]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-04/100/time/profile-KaplasTower.pdf}}
-\subfloat[\scriptsize KaplasTower]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-08/200/time/profile-KaplasTower.pdf}}
-\subfloat[\scriptsize Chute\_local\_problems]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-08/10/time/profile-Chute_local_problems.pdf}}
-\subfloat[\scriptsize Chute\_4000]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-04/200/time/profile-Chute_4000.pdf}}
-\subfloat[\scriptsize Chute\_1000]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-04/200/time/profile-Chute_1000.pdf}} \\
-\subfloat[\scriptsize Chain]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-08/50/time/profile-Chain.pdf}}
-\subfloat[\scriptsize Capsules]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-08/50/time/profile-Capsules.pdf}}
-\subfloat[\scriptsize BoxesStack]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-08/100/time/profile-BoxesStack1.pdf}} \\
-{\includegraphics[height=\legendheight]{../figure/PROX/Parameters/nu05/1.0e-08/50/time/profile-Chain_legend.pdf}}
-  \caption{Effect of the step-size parameter $\sigma$, $\mu$ in PPA-NSN-AC algorithm}
-  \label{fig:PROX/Parameters/nu05}
-\end{figure}
+% \begin{figure}
+%   \centering
+%   \subfiglayout
+%   \subfloat[\scriptsize LowWall\_FEM]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}}
+% \subfloat[\scriptsize Cubes\_H8 II]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}}
+% \subfloat[\scriptsize Cubes\_H8]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}} \\
+% \subfloat[\scriptsize Bridge\_PR II]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}}
+% \subfloat[\scriptsize Bridge\_PR]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}}
+% \subfloat[\scriptsize AqueducPR]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
+% \subfloat[\scriptsize 945\_SP\_Box\_PL]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}}
+% \subfloat[\scriptsize 100\_PR\_PerioBox]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}}
+% \subfloat[\scriptsize KaplasTower II]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-04/100/time/profile-KaplasTower.pdf}}
+% \subfloat[\scriptsize KaplasTower]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-08/200/time/profile-KaplasTower.pdf}}
+% \subfloat[\scriptsize Chute\_local\_problems]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-08/10/time/profile-Chute_local_problems.pdf}}
+% \subfloat[\scriptsize Chute\_4000]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-04/200/time/profile-Chute_4000.pdf}}
+% \subfloat[\scriptsize Chute\_1000]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-04/200/time/profile-Chute_1000.pdf}} \\
+% \subfloat[\scriptsize Chain]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-08/50/time/profile-Chain.pdf}}
+% \subfloat[\scriptsize Capsules]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-08/50/time/profile-Capsules.pdf}}
+% \subfloat[\scriptsize BoxesStack]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-08/100/time/profile-BoxesStack1.pdf}} \\
+% {\includegraphics[height=\legendheight]{../figure/PROX/Parameters/nu05/1.0e-08/50/time/profile-Chain_legend.pdf}}
+%   \caption{Effect of the step-size parameter $\sigma$, $\mu$ in PPA-NSN-AC algorithm}
+%   \label{fig:PROX/Parameters/nu05}
+% \end{figure}
 
-\begin{figure}
-  \centering
-  \subfiglayout
-  \subfloat[\scriptsize LowWall\_FEM]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}}
-\subfloat[\scriptsize Cubes\_H8 II]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}}
-\subfloat[\scriptsize Cubes\_H8]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}} \\
-\subfloat[\scriptsize Bridge\_PR II]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}}
-\subfloat[\scriptsize Bridge\_PR]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}}
-\subfloat[\scriptsize AqueducPR]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
-\subfloat[\scriptsize 945\_SP\_Box\_PL]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}}
-\subfloat[\scriptsize 100\_PR\_PerioBox II]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}}
-\subfloat[\scriptsize 100\_PR\_PerioBox]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-08/200/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
-\subfloat[\scriptsize KaplasTower II]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-04/100/time/profile-KaplasTower.pdf}}
-\subfloat[\scriptsize KaplasTower]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-08/200/time/profile-KaplasTower.pdf}}
-\subfloat[\scriptsize Chute\_local\_problems]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-08/10/time/profile-Chute_local_problems.pdf}}
-\subfloat[\scriptsize Chute\_4000]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-04/200/time/profile-Chute_4000.pdf}}
-\subfloat[\scriptsize Chute\_1000]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-04/200/time/profile-Chute_1000.pdf}} \\
-\subfloat[\scriptsize Chain]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-08/50/time/profile-Chain.pdf}}
-\subfloat[\scriptsize Capsules]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-08/50/time/profile-Capsules.pdf}}
-\subfloat[\scriptsize BoxesStack]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-08/100/time/profile-BoxesStack1.pdf}} \\
-{\includegraphics[height=\legendheight]{../figure/PROX/Parameters/nu10/1.0e-08/50/time/profile-Chain_legend.pdf}}
-  \caption{Effect of the step-size parameter $\sigma$, $\mu$ in PPA-NSN-AC algorithm}
-  \label{fig:PROX/Parameters/nu10}
-\end{figure}
-\begin{figure}
-  \centering
-  \subfiglayout
-  \subfloat[\scriptsize LowWall\_FEM]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}}
-\subfloat[\scriptsize Cubes\_H8 II]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}}
-\subfloat[\scriptsize Cubes\_H8]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}} \\
-\subfloat[\scriptsize Bridge\_PR II]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}}
-\subfloat[\scriptsize Bridge\_PR]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}}
-\subfloat[\scriptsize AqueducPR]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
-\subfloat[\scriptsize 945\_SP\_Box\_PL]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}}
-\subfloat[\scriptsize 100\_PR\_PerioBox II]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}}
-\subfloat[\scriptsize 100\_PR\_PerioBox]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-08/200/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
-\subfloat[\scriptsize KaplasTower II]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-04/100/time/profile-KaplasTower.pdf}}
-\subfloat[\scriptsize KaplasTower]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-08/200/time/profile-KaplasTower.pdf}}
-\subfloat[\scriptsize Chute\_local\_problems]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-08/10/time/profile-Chute_local_problems.pdf}}
-\subfloat[\scriptsize Chute\_4000]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-04/200/time/profile-Chute_4000.pdf}}
-\subfloat[\scriptsize Chute\_1000]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-04/200/time/profile-Chute_1000.pdf}} \\
-\subfloat[\scriptsize Chain]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-08/50/time/profile-Chain.pdf}}
-\subfloat[\scriptsize Capsules]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-08/50/time/profile-Capsules.pdf}}
-\subfloat[\scriptsize BoxesStack]
-   {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-08/100/time/profile-BoxesStack1.pdf}} \\
-{\includegraphics[height=\legendheight]{../figure/PROX/Parameters/nu20/1.0e-08/50/time/profile-Chain_legend.pdf}}
-  \caption{Effect of the step-size parameter $\sigma$, $\mu$ in PPA-NSN-AC algorithm}
-  \label{fig:PROX/Parameters/nu20}
-\end{figure}
-\begin{ndrva}
-  \item redo this comparison on a set of mixed examples 
-  \item add some results with $\nu < 1 $
-\end{ndrva}
+% \begin{figure}
+%   \centering
+%   \subfiglayout
+%   \subfloat[\scriptsize LowWall\_FEM]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}}
+% \subfloat[\scriptsize Cubes\_H8 II]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}}
+% \subfloat[\scriptsize Cubes\_H8]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}} \\
+% \subfloat[\scriptsize Bridge\_PR II]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}}
+% \subfloat[\scriptsize Bridge\_PR]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}}
+% \subfloat[\scriptsize AqueducPR]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
+% \subfloat[\scriptsize 945\_SP\_Box\_PL]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}}
+% \subfloat[\scriptsize 100\_PR\_PerioBox]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}}
+% \subfloat[\scriptsize KaplasTower II]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-04/100/time/profile-KaplasTower.pdf}}
+% \subfloat[\scriptsize KaplasTower]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-08/200/time/profile-KaplasTower.pdf}}
+% \subfloat[\scriptsize Chute\_local\_problems]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-08/10/time/profile-Chute_local_problems.pdf}}
+% \subfloat[\scriptsize Chute\_4000]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-04/200/time/profile-Chute_4000.pdf}}
+% \subfloat[\scriptsize Chute\_1000]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-04/200/time/profile-Chute_1000.pdf}} \\
+% \subfloat[\scriptsize Chain]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-08/50/time/profile-Chain.pdf}}
+% \subfloat[\scriptsize Capsules]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-08/50/time/profile-Capsules.pdf}}
+% \subfloat[\scriptsize BoxesStack]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-08/100/time/profile-BoxesStack1.pdf}} \\
+% {\includegraphics[height=\legendheight]{../figure/PROX/Parameters/nu10/1.0e-08/50/time/profile-Chain_legend.pdf}}
+%   \caption{Effect of the step-size parameter $\sigma$, $\mu$ in PPA-NSN-AC algorithm}
+%   \label{fig:PROX/Parameters/nu10}
+% \end{figure}
+% \begin{figure}
+%   \centering
+%   \subfiglayout
+%   \subfloat[\scriptsize LowWall\_FEM]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}}
+% \subfloat[\scriptsize Cubes\_H8 II]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}}
+% \subfloat[\scriptsize Cubes\_H8]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}} \\
+% \subfloat[\scriptsize Bridge\_PR II]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}}
+% \subfloat[\scriptsize Bridge\_PR]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}}
+% \subfloat[\scriptsize AqueducPR]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
+% \subfloat[\scriptsize 945\_SP\_Box\_PL]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}}
+% \subfloat[\scriptsize 100\_PR\_PerioBox]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}}
+% \subfloat[\scriptsize KaplasTower II]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-04/100/time/profile-KaplasTower.pdf}}
+% \subfloat[\scriptsize KaplasTower]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-08/200/time/profile-KaplasTower.pdf}}
+% \subfloat[\scriptsize Chute\_local\_problems]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-08/10/time/profile-Chute_local_problems.pdf}}
+% \subfloat[\scriptsize Chute\_4000]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-04/200/time/profile-Chute_4000.pdf}}
+% \subfloat[\scriptsize Chute\_1000]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-04/200/time/profile-Chute_1000.pdf}} \\
+% \subfloat[\scriptsize Chain]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-08/50/time/profile-Chain.pdf}}
+% \subfloat[\scriptsize Capsules]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-08/50/time/profile-Capsules.pdf}}
+% \subfloat[\scriptsize BoxesStack]
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-08/100/time/profile-BoxesStack1.pdf}} \\
+% {\includegraphics[height=\legendheight]{../figure/PROX/Parameters/nu20/1.0e-08/50/time/profile-Chain_legend.pdf}}
+%   \caption{Effect of the step-size parameter $\sigma$, $\mu$ in PPA-NSN-AC algorithm}
+%   \label{fig:PROX/Parameters/nu20}
+% \end{figure}
+
+
+
 
 
 
@@ -3735,33 +3782,41 @@ To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$
 \subfloat[\scriptsize LowWall\_FEM]
    {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}}
 \subfloat[\scriptsize Cubes\_H8 II]
-   {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}}
+   {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} \\
 \subfloat[\scriptsize Cubes\_H8]
-   {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}} \\
+   {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}}
 \subfloat[\scriptsize Bridge\_PR II]
-   {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}}
+   {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}} \\
 \subfloat[\scriptsize Bridge\_PR]
    {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}}
 \subfloat[\scriptsize AqueducPR]
-   {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
+   {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}}  \\
 \subfloat[\scriptsize 945\_SP\_Box\_PL]
    {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}}
-\subfloat[\scriptsize 100\_PR\_PerioBox II]
-   {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}}
 \subfloat[\scriptsize 100\_PR\_PerioBox]
-   {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-08/200/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
+   {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
+% \subfloat[\scriptsize 100\_PR\_PerioBox]
+%    {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-08/200/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
+% {\includegraphics[height=\legendheight]{../figure/OPTI/1.0e-08/50/time/profile-Chain_legend.pdf}}
+%  \caption{Comparison of the optimization based solvers}
+%   \label{fig:OPTI-1}
+\end{figure}
+\begin{figure}
+  \centering
+  \ContinuedFloat
+    \subfiglayout
 \subfloat[\scriptsize KaplasTower II]
    {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-04/100/time/profile-KaplasTower.pdf}}
 \subfloat[\scriptsize KaplasTower]
-   {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-08/200/time/profile-KaplasTower.pdf}}
+   {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-08/200/time/profile-KaplasTower.pdf}} \\
 \subfloat[\scriptsize Chute\_local\_problems]
    {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-08/10/time/profile-Chute_local_problems.pdf}}
 \subfloat[\scriptsize Chute\_4000]
-   {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-04/200/time/profile-Chute_4000.pdf}}
+   {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-04/200/time/profile-Chute_4000.pdf}} \\
 \subfloat[\scriptsize Chute\_1000]
-   {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-04/200/time/profile-Chute_1000.pdf}} \\
+   {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-04/200/time/profile-Chute_1000.pdf}}
 \subfloat[\scriptsize Chain]
-   {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-08/50/time/profile-Chain.pdf}}
+   {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-08/50/time/profile-Chain.pdf}}\\
 \subfloat[\scriptsize Capsules]
    {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-08/50/time/profile-Capsules.pdf}}
 \subfloat[\scriptsize BoxesStack]
@@ -3771,6 +3826,7 @@ To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$
   \label{fig:OPTI}
 \end{figure}
 
+In Figure~\ref{fig:OPTI}, we compare the algorithms based on the optimization approach presented in Section~\ref{Sec:OptimisationBasedMethods}.
 
 
 
@@ -3784,40 +3840,43 @@ To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$
   \centering
     \subfiglayout
 \subfloat[\scriptsize LowWall\_FEM]
-   {\includegraphics[width=\figwidth]{../figure/COMP/zoom/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}}
+   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}}
 \subfloat[\scriptsize Cubes\_H8 II]
-   {\includegraphics[width=\figwidth]{../figure/COMP/zoom/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}}
+   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} \\
 \subfloat[\scriptsize Cubes\_H8]
-   {\includegraphics[width=\figwidth]{../figure/COMP/zoom/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}} \\
+   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}}
 \subfloat[\scriptsize Bridge\_PR II]
-   {\includegraphics[width=\figwidth]{../figure/COMP/zoom/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}}
+   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}} \\
 \subfloat[\scriptsize Bridge\_PR]
-   {\includegraphics[width=\figwidth]{../figure/COMP/zoom/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}}
+   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}}
 \subfloat[\scriptsize AqueducPR]
-   {\includegraphics[width=\figwidth]{../figure/COMP/zoom/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
+   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
 \subfloat[\scriptsize 945\_SP\_Box\_PL]
-   {\includegraphics[width=\figwidth]{../figure/COMP/zoom/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}}
-\subfloat[\scriptsize 100\_PR\_PerioBox II]
-   {\includegraphics[width=\figwidth]{../figure/COMP/zoom/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}}
+   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}}
 \subfloat[\scriptsize 100\_PR\_PerioBox]
-   {\includegraphics[width=\figwidth]{../figure/COMP/zoom/1.0e-08/200/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
+   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
+\end{figure}
+\begin{figure}
+  \centering
+  \ContinuedFloat
+    \subfiglayout
 \subfloat[\scriptsize KaplasTower II]
-   {\includegraphics[width=\figwidth]{../figure/COMP/zoom/1.0e-04/100/time/profile-KaplasTower.pdf}}
+   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-04/100/time/profile-KaplasTower.pdf}}
 \subfloat[\scriptsize KaplasTower]
-   {\includegraphics[width=\figwidth]{../figure/COMP/zoom/1.0e-08/200/time/profile-KaplasTower.pdf}}
+   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-08/200/time/profile-KaplasTower.pdf}}\\
 \subfloat[\scriptsize Chute\_local\_problems]
-   {\includegraphics[width=\figwidth]{../figure/COMP/zoom/1.0e-08/10/time/profile-Chute_local_problems.pdf}}
+   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-08/10/time/profile-Chute_local_problems.pdf}}
 \subfloat[\scriptsize Chute\_4000]
-   {\includegraphics[width=\figwidth]{../figure/COMP/zoom/1.0e-04/200/time/profile-Chute_4000.pdf}}
+   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-04/200/time/profile-Chute_4000.pdf}}\\
 \subfloat[\scriptsize Chute\_1000]
-   {\includegraphics[width=\figwidth]{../figure/COMP/zoom/1.0e-04/200/time/profile-Chute_1000.pdf}} \\
+   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-04/200/time/profile-Chute_1000.pdf}}
 \subfloat[\scriptsize Chain]
-   {\includegraphics[width=\figwidth]{../figure/COMP/zoom/1.0e-08/50/time/profile-Chain.pdf}}
+   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-08/50/time/profile-Chain.pdf}}\\
 \subfloat[\scriptsize Capsules]
-   {\includegraphics[width=\figwidth]{../figure/COMP/zoom/1.0e-08/50/time/profile-Capsules.pdf}}
+   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-08/50/time/profile-Capsules.pdf}}
 \subfloat[\scriptsize BoxesStack]
-   {\includegraphics[width=\figwidth]{../figure/COMP/zoom/1.0e-08/100/time/profile-BoxesStack1.pdf}} \\
-{\includegraphics[height=\legendheight]{../figure/COMP/zoom/1.0e-08/50/time/profile-Chain_legend.pdf}}
+   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-08/100/time/profile-BoxesStack1.pdf}} \\
+{\includegraphics[height=\legendheight]{../figure/COMP/large/1.0e-08/50/time/profile-Chain_legend.pdf}}
  \caption{Comparison of the solvers between families}
   \label{fig:COMP}
 \end{figure}
@@ -3828,7 +3887,7 @@ To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$
 
 % \subsection{Analyze reached accuracy for a given time}
 
-
+\clearpage
 \section{General conclusions}
 
 
@@ -3844,6 +3903,10 @@ To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$
   \begin{enumerate}
   \item Choice of rho and robustness convergence. more studies
   \end{enumerate}
+\item {\sf PPA-$\star$}
+  \begin{enumerate}
+  \item some huge improvements in efficiency and robustness on some tests. Need further studies.
+  \end{enumerate}
 \end{itemize}
 
 
@@ -3851,5 +3914,5 @@ To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$
 
 %%% Local Variables: 
 %%% mode: latex
-%%% TeX-master: "rr"
+%%% TeX-master: "Acary_Bremond_Huber"
 %%% End: 
