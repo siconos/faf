@@ -2019,7 +2019,7 @@ Splitting techniques are standard techniques to solve $\mathrm{VI}(F,X)$ when th
 Usually, a block splitting of the matrix $M$ is performed and a Projected Successive Over Relaxation (PSOR) method is used to solve the VI. Since the cone $K$ is a product of second-order cones in $\RR^3$, a natural way to split the problem is to form sub-problems by using single contact as a building block. The sub-problems can be solved by any method for the VI that have been presented in the previous sections. In the same way, the proximal point algorithm can also be used which amounts to solving the original $\mathrm{VI}(F,X)$ by solving a sequence of $\mathrm{VI}(F_{c,x_k},X)$  problems such that $  F_{c,x_k}(z) = z - x_k + c F(z) , \quad c > 0$ and $\lim_ {k \rightarrow +\infty } \|x_k-z\| =0$.
 
 
-\subsection{Splitting techniques}
+\subsection{Splitting and relaxation techniques}
 \label{Sec:SplittingTechniques}
  The particular structure of the cone $K$ as a product of second-order cone in $\RR^3$
  calls for a splitting of the problem contact by contact.
@@ -2584,22 +2584,23 @@ In Algorithms~\ref{Algo:Panagiotopoulos},~\ref{Algo:Tresca} and~\ref{Algo:ACLM},
   \label{tab:OPTI-algos}
 \end{table}
 
-\clearpage
 \section{Comparison framework}
 \label{sec:numericalcomparisons}
-In this section, we present our comparison framework. Especially, we specify how we measure performance and how the performance profile are built.
+In this section, we present our comparison framework. Especially, we specify how the performance is measured and how the performance profiles are built.
 
 \subsection{Measuring errors}
 \label{Sec:MeasuringErrors}
 
-A key parameter in the measurement of performance of the solver is the definition of errors. The absolute error is given by the  norm of the natural map. A relative error is computed with respect to the norm of the vector $q$. More precisely, the error is given by
+A key parameter in the measurement of performance of the solver is the definition of error. The absolute error is given by the  norm of the natural map. A relative error is computed with respect to the norm of the vector $q$. More precisely, the error is given by
 \begin{equation}
   \label{eq:error-1}
   \mbox{error} = \frac{\|F^\nat_\vitwo(r)\|}{\|q\|}.
 \end{equation}
-This error is used as the  final error measurement for all solvers.
 
-For some iterative solvers such as {\sf VI-FP}, {\sf VI-EG}, {\sf NSGS} and {\sf PSOR}, the computation of the error at each iteration penalizes the performance of the solver  since it amounts to computing a matrix-vector product that costs more that one iteration. This is the reason why  a cheaper error measurement is used inside the main loop in Algorithms~\ref{Algo:FP-vi}, \ref{Algo:ExtraGradient-vi} and ~\ref{Algo:PSOR-II}. This cheaper error measurement is  based on
+For all solvers, the error in (\ref{eq:error-1}) is compared to the required tolerance $\sf tol$ given by the user. 
+
+
+For some iterative solvers such as {\sf VI-FP}, {\sf VI-EG}, {\sf NSGS} and {\sf PSOR}, the computation of the error (\ref{eq:error-1})  at each iteration penalizes the performance of the solver  since it amounts to computing a matrix-vector product that costs more that one iteration. This is the reason why  a cheaper error measurement is used inside the main loop in Algorithms~\ref{Algo:FP-vi}, \ref{Algo:ExtraGradient-vi} and ~\ref{Algo:PSOR-II}. This cheaper error measurement is given by
 \begin{equation}
   \label{eq:error-2}
   \mbox{error}_{\mbox{cheap}} = \frac{\|r_{k+1}-r_{k}\|}{\|r_k\|}.
@@ -2608,12 +2609,12 @@ The tolerance of solver is then self-adapted in the loop to meet the required to
 
 \subsection{Performance profiles}
 
-The concept of performance profiles was introduced in \citep{Dolan.More_MP2002} for bench-marking optimization solvers. It enables to comparison of several solvers on a large set of problems. For a set $P$ of $n_p$ problems, and a set $S$ of $n_s$ solvers, we define a performance criterion for a solver $s$ and a problem $p$ by
+The concept of performance profiles was introduced in \citep{Dolan.More_MP2002} for bench-marking optimization solvers. It enables to comparison of several solvers on a large set of problems. For a set $P$ of $n_p$ problems, and a set $S$ of $n_s$ solvers, we define a performance criterion for a solver $s$, a problem $p$ and a required precision $\sf tol$ by
 \begin{equation}
   \label{eq:measure}
- t_{p,s} = \text{computing time required for solver}\, \,  s\, \,  \text{to solve problem}\, \,  p \, ,
+ t_{p,s} = \text{computing time required for}\, \,  s\, \,  \text{to solve}\, \,  p \, \,  \text{at precision } \sf tol, 
 \end{equation}
-and a performance ratio over all the solvers
+A performance ratio over all the solvers is defined by
 \begin{equation}
  r_{p, s} = \frac{t_{p,s}}{\text{min}\, \{t_{p,s}, \, \, s \in S\}} \geq 1 \, .
 \end{equation}
@@ -2621,24 +2622,27 @@ For $\tau \geq 1$, we define a  distribution function $\rho_s$ for the performan
 \begin{equation}
  \rho_s(\tau) = \frac{1}{n_p} \text{size} \{p \in P, \, \, r_{p, s} \leq \tau\} \leq 1.
 \end{equation}
-This distribution computes the number of problems $p$ that are solved with a performance ratio below a given threshold $\tau$. In other words, $\rho_s(\tau)$ represents the probability that the solver $s$ has a performance ratio not larger than a factor $\tau$ of the best solver. It is worth noting that $\rho_s(1)$ represents the probability that the solver $s$ beats the other solvers, and $\rho_s(\infty)$ characterizes the robustness of the method.
+This distribution computes the number of problems $p$ that are solved with a performance ratio below a given threshold $\tau$. In other words, $\rho_s(\tau)$ represents the probability that the solver $s$ has a performance ratio not larger than a factor $\tau$ of the best solver. It is worth noting that $\rho_s(1)$ represents the probability that the solver $s$ beats the other solvers, and $\rho_s(\tau)$ characterizes the robustness of the method for large values of $\tau$.
 The higher $\rho_s$ is, the better the method is. The term \textit{performance profile} will be used in the sequel for this graph of the functions $\rho_s(\tau), \tau \geq 1$.
 
-In (\ref{eq:measure}), the computational time is used to measure performance. Other criterion can be used. The number of floating point operations (flops) is a better measure of performance since it is independent of the computer. Unfortunately, it is usually difficult to measure automatically it in a robust over various platform. This is the reason why we prefer use the computational time. In our experiments, we decided to fix the required accuracy with the tolerance of each solver. Another performance criteria could be also used. For instance, we can fix a given computational time and measure to obtained error of the solver. This a way to measure the ability of solver to give a solution in a given time that may be interesting for real-time applications. Another way to measure performance may also to divide the computational time by the number of contacts in order to judge of the ability of the solver to be scalable. For the sake of conciseness, this has not been done in this chapter.
+The computational time is used to measure performance in (\ref{eq:measure}).  Other criterion can be used. The number of floating point operations (flops) is a better measure of performance since it is independent of the computer. Unfortunately, it is usually difficult to measure it automatically and in a robust way over various platforms. This is the reason why we prefer use the computational time.
+
+In our experiments, we decided to fix the required accuracy with the tolerance of each solver. Another performance criteria could be also used., that, for instance  fixes a given maximal computational time and measures the obtained error of the solver. This a way to measure the ability of a solver to give an approximate solution within a prescribed   time limit that may be interesting for real-time applications. Another way to measure performance may also to divide the computational time by the number of contacts in order to judge of the ability of the solver to be scalable. For the sake of conciseness, this has not been done in this chapter.
 
 \subsection{Benchmarks presentation}
 
 
-To perform the comparison of the solvers on a fair basis, we use a large set of problems that comes from various applications. This collection is FCLib (Frictional Contact libraries)  which is an open collection of problems in a hdf5 format described in \citep{acary:hal-00945820} and more information can be found at \href{https://frictionalcontactlibrary.github.io}{https://frictionalcontactlibrary.github.io}. The whole collection of problems can be found at \href{https://github.com/FrictionalContactLibrary/fclib-library}{https://github.com/FrictionalContactLibrary/fclib-library} and we used the version $\tt v1.0$ for the comparisons that contains $2368$ problems.
+To perform the comparison of the solvers on a fair basis, we use a large set of problems that comes from various applications. This collection is FCLib (Frictional Contact libraries)  which is an open collection of problems in a hdf5 format described in \citep{acary:hal-00945820}\footnote{More information can be found at \href{https://frictionalcontactlibrary.github.io}{https://frictionalcontactlibrary.github.io}}. In this work, we used the version $\tt v1.0$ for the comparisons that contains $2368$ problems\footnote{
+The whole collection of problems can be found at \href{https://github.com/FrictionalContactLibrary/fclib-library}{https://github.com/FrictionalContactLibrary/fclib-library}}.
 
-The test sets are illustrated in Figure~\ref{fig:fclib} ans some details on their contents are given in Table~\ref{Tab:fclib}. All the problems has been generated thanks to the software codes LMGC90 and Siconos. In Table~\ref{Tab:fclib}, the number of degrees of freedom $n$ corresponds to the degrees of freedom of the systems before its condensation to local variables. In other words, the number of rows of the matrix $M$ and $H$ in  (\ref{eq:soccp1-intro}). The contact density $c$ is the ratio of the number of contact unknowns over the number of degrees of freedom:
+The test sets are illustrated in Figure~\ref{fig:fclib} and some details on their contents are given in Table~\ref{Tab:fclib}. All the problems has been generated thanks to the software codes LMGC90 and Siconos. In Table~\ref{Tab:fclib}, the number of degrees of freedom $n$ corresponds to the degrees of freedom of the systems before its condensation to local variables. In other words, the number of rows of the matrix $M$ and $H$ in  (\ref{eq:soccp1-intro}). The contact density $c$ is the ratio of the number of contact unknowns over the number of degrees of freedom:
 \begin{equation}
   \label{eq:fclib-1}
   c= \frac {3 n_c }{ n} = \frac {m} {n}.
 \end{equation}
- The coefficient $c$ corresponds also to the ratio between the number of rows of $H$ over its number of columns. If this number is larger than $1$, the matrix $H$ can not be full row rank and then the matrix $W$ is also rank deficient. In the case that $m >n$, we can observe in Table~\ref{Tab:fclib} that  this number $c$ is a good approximation of the rank ratio of the matrix $W$ in our applications. The estimation of the rank of matrix $W$ shows that is is very close to the number of degrees of freedom of the system when $c>1$. For $c >> 1$, the contact density is really high and the system suffers from hyperstaticity as we discussed in Section~\ref{sec:existence}. In Table~\ref{Tab:fclib}, we also give an estimation of the conditioning of the matrix $W$. When is was possible from a computational point of view, we perform a singular value decomposition (SVD) of the matrix $W$ to estimate the spectral radius and then the conditioning by cutting the small eigenvalues. This process has two drawbacks. Firstly, the computation of the SVD decomposition can ba really expensive for large dense matrix. Secondly, the value of the condition number of the matrix is very sensitive to the threshold for cutting off the small eigenvalues renders. This is we also use LSMR~\citep{Fong.Saunders_SISC2011} algorithm to give an better approximation of the condition number of rank deficient matrix. 
+ The coefficient $c$ corresponds also to the ratio between the number of rows of $H$ over its number of columns. If this number is larger than $1$, the matrix $H$ can not be full row rank and then the matrix $W$ is also rank deficient. In the case that $m >n$, we can observe in Table~\ref{Tab:fclib} that  this number $c$ is a good approximation of the rank ratio of the matrix $W$ in our applications. The estimation of the rank of matrix $W$ shows that it is very close to the number of degrees of freedom of the system when $c>1$. For $c \ggg 1$, the contact density is really high and the system suffers from hyperstaticity as we discussed in Section~\ref{sec:existence}. In Table~\ref{Tab:fclib}, we also give an estimation of the conditioning of the matrix $W$. When is was possible from a computational point of view, we perform a singular value decomposition (SVD) of the matrix $W$ to estimate the spectral radius and then the conditioning by cutting the small eigenvalues. This process has two drawbacks. Firstly, the computation of the SVD decomposition can be really expensive for large dense matrices. Secondly, the value of the condition number of the matrix is very sensitive to the threshold for cutting off the small eigenvalues. This is the reason why we also use LSMR~\citep{Fong.Saunders_SISC2011} algorithm to give an better approximation of the condition number of rank deficient matrix. 
 
-The four first tests in~\ref{Tab:fclib} are examples that involve flexible elastic bodies meshed by element methods. The matrix $W$ is that case is full rank. We will call this set of examples the flexible test set in the sequel.
+The four first tests in Table ~\ref{Tab:fclib} are examples that involve flexible elastic bodies meshed by finite element methods. The Delassus  matrix $W$ in that case is full rank. We will call these sets of examples the flexible test sets in the sequel.
 
 \def\figillus{0.15\textheight}
 \begin{figure}
@@ -2684,107 +2688,107 @@ The four first tests in~\ref{Tab:fclib} are examples that involve flexible elast
   & 0.3
   & 15
   & 162
-  & [3:5]
-  & [0.02:0.09]
-%  & [6:15]
+  & $[3:5]$
+  & $[0.02:0.09]$
+%  & $[6:15]$
   & 1
-  & $[2.2.10^{1},1.3.10^{3}]$
-  & $[8.1.10^{5},1.5.10^{6}]$\\
+  & $[2.2.10^{1}:1.3.10^{3}]$
+  & $[8.1.10^{5}:1.5.10^{6}]$\\
    \hline
   Cubes\_H8\_5
   & LMGC90
   & 0.3
   & 50
   & 1296
-  & [17:36]
-  & [0.02:0.09]
-%  & [48:108]
+  & $[17:36]$
+  & $[0.02:0.09]$
+%  & $[48:108]$
   & 1
-  & $[3.3.10^{4}, 7.2.10^{4} ]$
-  & $[1.3.10^{6}, 3.1.10^{6} ]$\\
+  & $[3.3.10^{4}: 7.2.10^{4} ]$
+  & $[1.3.10^{6}: 3.1.10^{6} ]$\\
    \hline
   Cubes\_H8\_20
   & LMGC90
   & 0.3
   & 50
   & 55566
-  & [361:388]
-  & [0.019:0.021]
-%  & [1083:1164]
+  & $[361:388]$
+  & $[0.019:0.021]$
+%  & $[1083:1164]$
   & 1
-  & $[2.4.10^{5}, 2.5.10^{5} ]$
-  & $[1.3.10^{6}, 5.2.10^{6} ]$\\
+  & $[2.4.10^{5}: 2.5.10^{5} ]$
+  & $[1.3.10^{6}: 5.2.10^{6} ]$\\
   \hline
   LowWall\_FEM
    & LMGC90
   & 0.83
   & 50
   & \{7212\}
-  & [624:688]
-  & [0.28:0.29]
-%  & [1873:2064]
+  & $[624:688]$
+  & $[0.28:0.29]$
+%  & $[1873:2064]$
   & 1
   & --
-  & $[9.3.10^{2},5.0.10^{5}]$\\
+  & $[9.3.10^{2}:5.0.10^{5}]$\\
   \hline
   Aqueduct\_PR
   & LMGC90
   & 0.8
   & 10
   & \{1932\}
-  & [4337:4811]
-  & [6.81:7.47]
-%  & $[1934]$
-  & [6.80:7.46]
-  & $[4.7.10^{7},3.4.10^{8}]$
-  & $[6.7.10^{1},1.5.10^{2}]$\\
+  & $[4337:4811]$
+  & $[6.81:7.47]$
+%  & $[1934]$$
+  & $[6.80:7.46]$
+  & $[4.7.10^{7}:3.4.10^{8}]$
+  & $[6.7.10^{1}:1.5.10^{2}]$\\
   \hline
   Bridge\_PR
   & LMGC90
   & 0.9
   & 50
   & \{138\}
-  & [70:108]
-  & [1.5:2.3]
-%  & [87:132]
-  & [2.27,2.45]
-  & $[8.3.10^{4},1.1.10^{5}]$
-  & $[1.9.10^{3},2.6.10^{4}]$\\
+  & $[70:108]$
+  & $[1.5:2.3]$
+%  & $[87:132]$
+  & $[2.27:2.45]$
+  & $[8.3.10^{4}:1.1.10^{5}]$
+  & $[1.9.10^{3}:2.6.10^{4}]$\\
   \hline
   100\_PR\_Periobox
   & LMGC90
   & 0.8
   & 106
   & \{606\}
-  & [14:578]
-  & [0.2:3]
-%  & [23:600]
-  & [1.76:3.215]
-  & $[4.3.10^{2},1.0.10^{6}]$
-  & $[6.3.10^{5},3.5.10^{6}]$ \\
+  & $[14:578]$
+  & $[0.2:3]$
+%  & $[23:600]$
+  & $[1.76:3.215]$
+  & $[4.3.10^{2}:1.0.10^{6}]$
+  & $[6.3.10^{5}:3.5.10^{6}]$ \\
   \hline
   945\_SP\_Box\_PL
   & LMGC90
   & 0.8
   & 60
   & \{5700\}
-  & [2322:5037]
-  & [1.22:2.65]
+  & $[2322:5037]$
+  & $[1.22:2.65]$
 %  & $[5333:7617]$
-  & $[1.0,2.66]$
-  & $[2.2.10^{4},4.4.10^{5}]$
-  & $[2.9.10^{1},9.2.10^{2}]$\\
+  & $[1.0:2.66]$
+  & $[2.2.10^{4}:4.4.10^{5}]$
+  & $[2.9.10^{1}:9.2.10^{2}]$\\
   \hline
   Capsules
   & Siconos
   & 0.7
   & 249
   & \{300\}
-  & [1:200]
-  & [1.2:1.5]
-%  & [47:587]
-  & [1.08:1.55]
-  & $[1.2.10^{6},7.5.10^{9}]$
+  & $[1:200]$
+  & $[1.2:1.5]$
+%  & $[47:587]$
+  & $[1.08:1.55]$
+  & $[1.2.10^{6}:7.5.10^{9}]$
   & -- \\
   \hline
   Chain
@@ -2792,22 +2796,22 @@ The four first tests in~\ref{Tab:fclib} are examples that involve flexible elast
   & 0.3
   & 242
   & \{60\}
-  & [8:28]
-  & [0.5:1.3]
+  & $[8:28]$
+  & $[0.5:1.3]$
 %  & 53
-  & [1.05:1.6]
-  & $[7.4.10^{4},4.0.10^{9}]$
-  & $[1.5.10^{1},4.7.10^{5}]$\\
+  & $[1.05:1.6]$
+  & $[7.4.10^{4}:4.0.10^{9}]$
+  & $[1.5.10^{1}:4.7.10^{5}]$\\
   \hline
   KaplasTower
   & Siconos
   & 0.7
   & 201
-  & [72:792]
-  & [48:933]
-  & [3.0:3.6]
-%  & [72:792]
-  & [2.0:3.53]
+  & $[72:792]$
+  & $[48:933]$
+  & $[3.0:3.6]$
+%  & $[72:792]$
+  & $[2.0:3.53]$
   & $[67:2174]$
   & $[8:67]$\\
   \hline
@@ -2815,37 +2819,37 @@ The four first tests in~\ref{Tab:fclib} are examples that involve flexible elast
   & Siconos
   & 0.7
   & 255
-  & [6:300]
-  & [1:200]
-  & [1.86:2.00]
-%  & [54:300]
-  & [1.875,2.0]
-  & $[3.8.10^{4},2.5.10^{7}]$
-  & $[9.0,5.4.10^{3}]$\\
+  & $[6:300]$
+  & $[1:200]$
+  & $[1.86:2.00]$
+%  & $[54:300]$
+  & $[1.875:2.0]$
+  & $[3.8.10^{4}:2.5.10^{7}]$
+  & $[9.0:5.4.10^{3}]$\\
   \hline
   Chute\_1000
   & Siconos
   & 1.0
   & 156
-  & [276:5508]
-  & [74:5056]
-  & [0.69:2.95]
-%  & [222,8133]
-  & [1.0:2.95]
-  & $[2.1.10^{1},1.9.10^{3}]$
+  & $[276:5508]$
+  & $[74:5056]$
+  & $[0.69:2.95]$
+%  & $[222:8133]$
+  & $[1.0:2.95]$
+  & $[2.1.10^{1}:1.9.10^{3}]$
   & \\
   \hline
   Chute\_4000
   & Siconos
   & 1.0
   & 40
-  & [17280:20034]
-  & [15965:19795]
-  & [2.51:3.06]
+  & $[17280:20034]$
+  & $[15965:19795]$
+  & $[2.51:3.06]$
   & --
-  % & [222,8133]
+  % & $[222:8133]$
   & --
-  & $[5.5.10^{1},9.0.10^{3}]$\\
+  & $[5.5.10^{1}:9.0.10^{3}]$\\
   \hline
   Chute\_local\_problems
   & Siconos
@@ -2856,8 +2860,8 @@ The four first tests in~\ref{Tab:fclib} are examples that involve flexible elast
   & 1
 %  & 3
   & 1
-  & [1.04:4.66]
-  & $[2.6,2.6.10^{1}]$\\
+  & $[1.04:4.66]$
+  & $[2.6:2.6.10^{1}]$\\
   \hline
 \end{tabular}
 \caption{Description of the test sets of FCLib library (v1.0)}
@@ -2888,7 +2892,7 @@ The four first tests in~\ref{Tab:fclib} are examples that involve flexible elast
 
 \subsection{Sofware \& implementation details}
 
-All the solvers that are used in this chapter are implemented in standard C in the component of Siconos called Siconos/Numerics. The aim of Siconos is to provide a common platform for the modeling, simulation, analysis and control of general nonsmooth dynamical systems. More information on the software is available at \href{http://siconos.gforge.inria.fr}{http://siconos.gforge.inria.fr} and the software can be downloaded at  \href{https://github.com/siconos/siconos}{https://github.com/siconos/siconos}. The algebraic manipulations are based on BLAS/LAPACK and we use SuiteSparse for the implementation of sparse matrices. The algorithm {\sf VI-FP}, {\sf VI-EG}, {\sf NSGS} and {\sf PSOR} uses the sparse block structure of the matrix $W$. The {\sf NSN} solvers relies on a standard sparse implementation. The simulations are performed on the University of Grenoble-Alpes cluster {\sc ciment}\footnote{https://ciment-grid.ujf-grenoble.fr/}.
+All the solvers that are used in this chapter are implemented in standard C in the component of the open source software Siconos called numerics. The aim of Siconos is to provide a common platform for the modeling, simulation, analysis and control of general nonsmooth dynamical systems\footnote{More information on the software is available at \href{http://siconos.gforge.inria.fr}{http://siconos.gforge.inria.fr} and the software can be downloaded at  \href{https://github.com/siconos/siconos}{https://github.com/siconos/siconos}}. The algebraic manipulations are based on BLAS/LAPACK. The algorithms {\sf VI-FP}, {\sf VI-EG}, {\sf NSGS} and {\sf PSOR} use the sparse block structure of the Delassus matrix $W$ and we solve . The {\sf NSN} solvers relies on a standard sparse implementation given by csparse\footnote{\href{http://people.sc.fsu.edu/~jburkardt/c_src/csparse/csparse.html}{http://people.sc.fsu.edu/~jburkardt/c\_src/csparse/csparse.html}} and we use the linear solver based on LU factorization embedded in csparse. The simulations are performed on the University of Grenoble-Alpes cluster {\sc ciment}\footnote{https://ciment-grid.ujf-grenoble.fr/}.
 
 
 
@@ -2899,13 +2903,16 @@ All the solvers that are used in this chapter are implemented in standard C in t
 \end{ndrva}
 
 \subsection{Simulation campaign}
+The simulation campaign is described in Table~\ref{Tab:fclib-simulation}. For some test sets, two simulations runs have been performed with different precisions and prescribed time limits. A trade-off between the time limit and the precision has been chosen such that all the problems of the test sets are solved at least by one solver within the prescribed time limit.
+
+
 \begin{table}
 \centering
 \begin{tabular}{|l|l|l|l|l|l|l|l|}
   \hline
   Test set
   & \parbox[t]{3mm}{\rotatebox[origin=c]{90}{ precision }}
-  & \parbox[t]{3mm}{\rotatebox[origin=c]{90}{ timeout (s) }}
+  & \parbox[t]{3mm}{\rotatebox[origin=c]{90}{ prescribed time limit (s) }}
   & \parbox[t]{3mm}{\rotatebox[origin=c]{90}{ mean performance  }}
     \parbox[t]{3mm}{\rotatebox[origin=c]{90}{ of the fastest solver }}
     \parbox[t]{3mm}{\rotatebox[origin=c]{90}{$\mu\{\min\{t_{p,s}, s\in S\}\}$  }}
@@ -2962,11 +2969,11 @@ All the solvers that are used in this chapter are implemented in standard C in t
   \hline
   Bridge\_PR
   & $10^{-08}$
-  & 100
-  & 11.0
-  & 13.6
-  & $1.05^{-01}$
-  & $1.33^{-01}$
+  & 400
+  & 10.3
+  & 12.9
+  & $1.23^{-01}$
+  & $2.88^{-01}$
   & 0\\
   \hline
   Bridge\_PR II
@@ -3091,7 +3098,7 @@ All the solvers that are used in this chapter are implemented in standard C in t
 \label{Tab:fclib-simulation}
 \end{table}
 
-In Sections~\ref{Sec:ComparisonFamily} and~\ref{Sec:Comparison}, we report the results for the simulation campaign. Since the large amount of data and the numerous of performance profiles for each test sets that are generated, we do not report any profiles  when a list of solvers fails or is not able to meet the required tolerance within the prescribed time defined by the timeout values. Nevertheless, the reader may have access to the complete list of performance profiles at \href{https://github.com/siconos/faf/blob/master/TeX/Full-test/full-test_current.pdf}{https://github.com/siconos/faf/blob/master/TeX/Full-test/full-test\_current.pdf}.
+In Sections~\ref{Sec:ComparisonFamily} and~\ref{Sec:Comparison}, we report the results for the simulation campaign. The simulations campaign represents more that $27000$ runs to complete all the simulations of all problems with all the variants of the solvers.  Since the large amount of data and the numerous of performance profiles for each test sets that are generated, we do not report any profiles  when a list of solvers fails or is not able to meet the required tolerance within the prescribed time defined by the timeout values\footnote{Nevertheless, the reader can have access to the complete list of performance profiles at \href{https://github.com/siconos/faf/blob/master/TeX/Full-test/full-test_current.pdf}{https://github.com/siconos/faf/blob/master/TeX/Full-test/full-test\_current.pdf}}.
 
 
 \begin{ndrva}
@@ -3100,7 +3107,6 @@ In Sections~\ref{Sec:ComparisonFamily} and~\ref{Sec:Comparison}, we report the r
 
 
 
-\clearpage
 
 %\newcommand\commentedfigure[1]{#1}
 \newcommand\commentedfigure[1]{}
@@ -3126,23 +3132,20 @@ In Sections~\ref{Sec:ComparisonFamily} and~\ref{Sec:Comparison}, we report the r
 
 \section{Comparison of methods by family}
 \label{Sec:ComparisonFamily}
-In this section, we perform a comparison of the solvers by family in order to study the influence of the various possible parameters on the performance of the solvers.
+In this section, we perform a comparison of the solvers by family by family. The goal is  to study the influence of the various parameters and possible strategies on the performance of the solvers.
 
 \subsection{Numerical methods for VI: {\sf FP-DS, FP-VI-$\star$} and {\sf FP-EG-$\star$}}
 \label{Sec:Comparison,VI,step-length}
 
 
-In Figure~\ref{fig:VI/UpdateRule}, we compare the different numerical solvers for VI described in Section~\ref{sec:numericalmethods,vi}. Only the test sets for which the solvers are reached the precicion before the prescribed time (timeout) are presented. For that reason, the results for the test sets LowWall\_FEM,  Cubes\_H8, Bridge\_PR, AqueducPR, 945\_SP\_Box\_PL, BoxesStack, Chute\_4000  and Chute\_1000  are not depicted. The solvers are quite slow to converge in practice for large problems although they are robust except for {\sf FP-DS}.
+In Figure~\ref{fig:VI/UpdateRule}, we compare the different numerical solvers for VI described in Section~\ref{sec:numericalmethods,vi}. The solvers are quite slow to converge in practice for large problems and/or with tight tolerances although they are robust except for {\sf FP-DS}. Only the test sets for which the solvers are reached the precision before the prescribed time limit are presented. For that reason, the results for the test sets LowWall\_FEM,  Cubes\_H8, Bridge\_PR, AqueducPR, 945\_SP\_Box\_PL, BoxesStack, Chute\_4000  and Chute\_1000  are not depicted. 
 The main conclusions are as follows:
 \begin{enumerate}
-\item The solver {\sf FP-DS} suffers from robustness problems and a lot of divergence has been observed. 
-\item The solvers {\sf FP-VI-$\star$} and {\sf FP-EG-$\star$} are really robust but slow. They are able to solve all the problems but they require a lot of time and we didn't observe divergence issues. Comparing to {\sf FP-DS}, the self-adaptive rule for size the paramater $\rho_k$ is of utmost importance for robustness.
+\item The solver {\sf FP-DS} suffers from robustness problems and a lot of divergence has been observed. This is mainly due to the fact that we set a priori the $\rho$ parameter in Algorithm~\ref{Algo:FP-vi} to a fixed value of $1$, independently of the problem.
+\item The solvers {\sf FP-VI-$\star$} and {\sf FP-EG-$\star$} are really robust but slow. They are able to solve all the problems but they require a lot of time. We did not observe divergence issues on all the test sets for these solvers. Comparing to {\sf FP-DS}, the self-adaptive rule for sizing the paramater $\rho_k$ is of utmost importance for the  robustness and the convergence rate.
 \item Except for the test set KaplasTower II, the  {\sf FP-EG-$\star$} performs better than  {\sf FP-VI-$\star$}.
-\item The difference between the adaptive strategy for sizing $\rho_k$, {\sf UPK} and {\sf UPTS} is very small in all the examples and the choice of the update rule is not fundamentally important.
+\item The difference between the adaptive strategy for sizing $\rho_k$, {\sf UPK} and {\sf UPTS}, is negligible in all the test sets. Therefore, the choice of the update rule is not really important.
 \end{enumerate}
-
-
-
 \begin{figure*}[htbp]
   \centering
   \subfiglayout
@@ -3155,7 +3158,7 @@ The main conclusions are as follows:
  \subfloat[\scriptsize Bridge\_PR II]
  {\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}}\\
 % \subfloat[\scriptsize Bridge\_PR]
-%    {\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}} 
+%    {\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}} 
 % \subfloat[\scriptsize AqueducPR]
 %    {\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} 
 % \subfloat[\scriptsize 945\_SP\_Box\_PL]
@@ -3179,17 +3182,35 @@ The main conclusions are as follows:
 % \subfloat[\scriptsize BoxesStack]
 %    {\includegraphics[width=\figwidth]{../figure/VI/UpdateRule/1.0e-08/100/time/profile-BoxesStack1.pdf}} \\
    {\includegraphics[height=\legendheight]{../figure/VI/UpdateRule/1.0e-08/50/time/profile-Chain_legend.pdf}}
-  
-   \caption{Comparison of numerical method for VI  {\sf FP-DS, FP-VI-$\star$} and {\sf FP-EG-$\star$}}
+   \setlength{\abovecaptionskip}{-40pt}
+   \caption{Comparison of numerical methods {\sf FP-DS, FP-VI-$\star$} and {\sf FP-EG-$\star$}}
 \label{fig:VI/UpdateRule}
 \end{figure*}
 
 
 
 \subsection{Splitting based algorithms: {\sf NSGS-$\star$} and {\sf PSOR-$\star$}}
-Again the results on the test sets Bridge\_PR,  Chute\_local\_problems, BoxesStack are not reported since the  {\sf NSGS-$\star$} are not able to meet the required tolerance for a sufficient percentage of the problems mainly due  to a slow convergence rate. We can see that this problem also appears in the Capsules test set.
 
-{
+In this section, we compare the family of solvers based on splitting and relaxation techniques described in Section~\ref{Sec:SplittingTechniques}. Firstly, we start by comparing the choice of the local solvers in {\sf NSGS-$\star$} and then the effect of the local tolerance $\sf tol_{local}$. Secondly, we study the influence of the order  of the contact list. Finally, we study the effect of the relaxation parameter $\omega$ in  {\sf PSOR-$\star$} solvers. 
+
+\paragraph{Influence of the local solver in {\sf NSGS-$\star$}  algorithms} In Figure~\ref{fig:NSGS/LocalSolver}, we report the performance profiles of the  {\sf NSGS-$\star$} for the different local solvers.  The main conclusions are:
+\begin{enumerate}
+\item When the prescribed time limit is sufficiently large and the tolerance is low ($10^{-4}$), we observe the {\sf NSGS-$\star$} solvers are robust. Indeed, we are able to find to a local solver for each test sets that is able to give a solution at the required low accuracy. Nevertheless, there is no universal efficient local solver that outperforms the other ones.
+  
+\item When the tolerance is equal to $10^{-8}$,  the {\sf NSGS-$\star$} solvers have some difficulties to reach convergence for all the problems within the prescribed time limit. This is the case for the test sets Cubes\_H8, Bridge\_PR, Chain,  Capsules and BoxesStack. Generally, the convergence is so slow that it is difficult to reach tight tolerance with a reasonable time limit.
+ 
+\item Except for the test sets KaplasTower II and BoxesStack, the solver {\sf NSGS-EXACT} behaves poorly. This is mainly due to the fact that the solver is not robust to find a solution for one contact when we are far from the global solution for all the contacts. This behavior was already reported in~\citep{Daviet.ea_SIGGRAPH2011} where another solver based a nonsmooth Newton technique is used when  the exact solution is not satisfactory.
+  
+\item  The {\sf NSGS-FP-DS-One} solver  is most efficient on the test sets Bridge\_PR II, KaplasTower II, Chain and BoxesStack. In these tests sets, a part of problems seem easier to solve and the {\sf NSGS-FP-DS-One} solver seems sufficient to get a global convergence.
+  Nevertheless, this local solver seems slow or suffers from robustness issues for other test sets.
+  
+\item On the flexible test sets and 945\_SP\_Box\_PL, Chute\_4000, the best solver is {\sf NSGS-FP-VI-UPK} for a relatively low required tolerance ($\sf tol_{local} =10^{-06}$). For these test sets, an approximate solution of the single contact problems seems sufficient to ensure an efficient convergence towards the solution without entailing robustness.
+  
+\item On the test sets 100\_PR\_PerioBox, KaplasTower,  Chain, Capsules, the solver {\sf NSGS-NSN-$\star$} are the best solvers and behave very well on Bridge\_PR II. It seems that when a tight accuracy is required, the solvers {\sf NSGS-NSN-$\star$} are useful and helps with a tight local tolerance to speed-up the convergence.
+  
+\item For the Chute\_1000, Chute\_4000 test sets, we observe large differences between the local formulations of the nonsmooth equations for the Newton solvers ({\sf NSGS-NSN-AC} or {\sf NSGS-NSN-JM}). The solver {\sf NSGS-NSN-JM} is the best solver and really better than {\sf NSGS-NSN-AC} although their theoretical formulation are very close. Theses two test sets are characterized by difficult local problems where the Delassus matrix  $W$ is unsymmetric with large extra-diagonal terms.
+\item For almost the tests, the line--search procedures slow down the solvers without increasing the robustness. The only test sets where is has interest is Chute\_4000 where the {\sf NSGS-AC} solver fails to get a solution and the line--search seems to stabilize the algorithm.
+\end{enumerate}
   \begin{figure}
     \centering
     \subfiglayout
@@ -3202,13 +3223,14 @@ Again the results on the test sets Bridge\_PR,  Chute\_local\_problems, BoxesSta
     \subfloat[\scriptsize Bridge\_PR II]
     {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}} \\
     \subfloat[\scriptsize Bridge\_PR]
-    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}}
+    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}}
     \subfloat[\scriptsize AqueducPR]
     {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}}\\
     \subfloat[\scriptsize 945\_SP\_Box\_PL]
     {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}}
     \subfloat[\scriptsize 100\_PR\_PerioBox]
     {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
+    \caption{Influence of the local solver in {\sf NSGS-$\star$} algorithms.}
   \end{figure}
   \begin{figure}
     \centering
@@ -3231,31 +3253,17 @@ Again the results on the test sets Bridge\_PR,  Chute\_local\_problems, BoxesSta
     \subfloat[\scriptsize BoxesStack]
     {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-08/100/time/profile-BoxesStack1.pdf}} \\
     {\includegraphics[height=\legendheight]{../figure/NSGS/LocalSolver/1.0e-08/50/time/profile-Chain_legend.pdf}}
-    \caption{Influence of the local solver in {\sf NSGS-$\star$} algorithms.}
+    \caption{Influence of the local solver in {\sf NSGS-$\star$} algorithms (continued).}
     \label{fig:NSGS/LocalSolver}
   \end{figure}
-}
-
-\paragraph{Effect and influence of the local solver in {\sf NSGS-$\star$}  algorithms} In Figure~\ref{fig:NSGS/LocalSolver}, we report the performance profiles of the  {\sf NSGS-$\star$} for the different local solvers.  The main conclusions are as follows:
-\begin{enumerate}
-\item When the timeout value is sufficiently large, we observe the {\sf NSGS-$\star$} solvers are quite robust. In other words, the convergence is slow but robust. Indeed, we are able to find to a local solver for each test sets that is able to give a solution at the required accuracy. Nervetheless, there is no universal efficient local solver that outperforms the other ones and the global efficiency depends on the local solver in various ways according to  the test sets.
-\item Except for the test sets KaplasTower II and BoxesStack, the solver {\sf NSGS-EXACT} behaves poorly. This is mainly due to the fact that the solver is not robust to find a solution for one contact when we are far from the solutions for all the contacts. This behavior was already reported in~\citep{Daviet.ea_SIGGRAPH2011} where another solver based a nonsmooth Newton technique was used when  the exact solution was not satisfactory.
-\item  The solver  {\sf NSGS-FP-DS-One} is most efficient on the test sets Bridge\_PR II, KaplasTower II, Chain and BoxesStack. These tests sets seem to be among the easiest one the solve (see Table~\ref{Tab:fclib-simulation}). Nevertheless, this local solver seems slow or suffers from robustness issues for other test sets.
-\item On the flexible test sets and 945\_SP\_Box\_PL, the best solver is {\sf NSGS-FP-VI-UPK} for a relatively low required tolerance ($\sf tol_{local} =10^{-06}$). For these test sets, an approximate solution of the single contact problems seems sufficient to ensure an efficient convergence towards the solution without entailing robustness.
-\item On the test sets 100\_PR\_PerioBox, KaplasTower,  Chain, Capsules, the solver {\sf NSGS-NSN-$\star$} are the best solvers and behave very well on Bridge\_PR II. It seems that when a tight accuracy is required, the solvers {\sf NSGS-NSN-$\star$} are useful and helps with a tight local tolerance to speed-up the convergence.
-\item For the Chute\_1000, Chute\_4000 test sets, we observe large differences between the local formulations of the nonsmooth equations for the Newton solvers ({\sf NSGS-NSN-AC} or {\sf NSGS-NSN-JM}). The solver {\sf NSGS-NSN-JMx} is the best solver and really better than {\sf NSGS-NSN-AC} although their theoretical formulation are very close. Theses two test sets are characterized by difficult local problems where the matrix $W$ is asymmetric.
-\item {\tt Comment on the line searches method}
-\end{enumerate}
-
-
 
 \paragraph{Influence of the tolerance of the local solver $\sf tol_{local}$ in {\sf NSGS-FP-VI-UPK} algorithms}
-In this paragraph, the tolerance of the local solver is varied and its effect on the global convergence of the solver is reported. In Figure~\ref{fig:NSGS/LocalTol/VI},  we report the performance profiles of {\sf NSGS-FP-VI-UPK} algorithms for the $\sf tol_{local}$ in the range $[10^{-04}, 10^{-16}]$. We also report the efficiency of the adaptive strategy for setting the value of the local tolerance (see Section~\ref{Sec:NSGS-LocalTol}).The main observations are
+In this paragraph, the tolerance of the local solver $\sf tol_{local}$  is varied and its effect on the global convergence of the solver is reported. In Figure~\ref{fig:NSGS/LocalTol/VI},  we report the performance profiles of {\sf NSGS-FP-VI-UPK} algorithms for the $\sf tol_{local}$ in the range $[10^{-04}, 10^{-16}]$. We also report the efficiency of the adaptive strategy for setting the value of the local tolerance (see Section~\ref{Sec:NSGS-LocalTol}). The main observations are:
 \begin{enumerate}
-\item For the test sets that are quickly solved (see Table~\ref{Tab:fclib-simulation}), such as   Capsules  a tight tolerance on the local solver $10^{-16}$ improves the efficiency  of the {\sf NSGS-FP-VI-UPK} solver. Similar results are obtained for BoxesStack Chain, Chute\_local\_problems, KaplasTower, KaplasTower II and are not depicted. 
-\item For the other problems that are longer to solve, that is, when we expect more iterations of the  {\sf NSGS-FP-VI-UPK} solver, the adaptive rule or tight local tolerances are better.
+\item For the test sets that are quickly solved (see Table~\ref{Tab:fclib-simulation}), such as   Capsules  a tight tolerance on the local solver $10^{-16}$ improves the efficiency  of the {\sf NSGS-FP-VI-UPK} solver. Similar results are obtained for BoxesStack, Chain, KaplasTower and KaplasTower II; they are not depicted. 
+\item For the other problems that are longer to solve, that is, when we expect more iterations of the  {\sf NSGS-FP-VI-UPK} solver, the adaptive rule, or a tight local tolerance is better.
 \end{enumerate}
-From these results, it is quite difficult to guess in advance the internal dynamics of the solver. Note that the range of $\tau$ that we used in the graph is quite small so the difference in performance between the solvers is not crucial.
+From these results, it is quite difficult to guess in advance the internal dynamics of the solver. By internal dynamics, we mean the propagation in the algorithm between the local problem and the global loop. Note that the range of $\tau$ that we used in the graph is quite small so the difference in performance between the solvers is not crucial.
 
 \begin{figure}
   \centering
@@ -3269,7 +3277,7 @@ From these results, it is quite difficult to guess in advance the internal dynam
 \subfloat[\scriptsize Bridge\_PR II]
    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}} 
 % \subfloat[\scriptsize Bridge\_PR]
-%    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}}
+%    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}}
 % \subfloat[\scriptsize AqueducPR]
 %    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}}
 % \subfloat[\scriptsize 945\_SP\_Box\_PL]
@@ -3299,7 +3307,7 @@ From these results, it is quite difficult to guess in advance the internal dynam
 \end{figure}
 
 \paragraph{Influence of the tolerance of the local solver $\sf tol_{local}$ in {\sf NSGS-AC-GP} algorithms.}
-In Figure~\ref{fig:NSGS/LocalTol},  we report the performance profile of {\sf NSGS-AC-GP} algorithms for the $\sf tol_{local}$ in the range $[10^{-04}, 10^{-16}]$. We also test the  adaptive strategy value for the local tolerance. Except for the test set Chute\_local\_problems,  the main observation is that the local tolerance does not change fundamentally the convergence of the solver. For the test set Chute\_local\_problems, there is no internal dynamics of the main loop of the {\sf NSGS} since there is only one contact. It is therefore reasonable to see that adaptive performs better that the other.
+In Figure~\ref{fig:NSGS/LocalTol},  we report the performance profiles of {\sf NSGS-AC-GP} algorithms for the $\sf tol_{local}$ in the range $[10^{-04}, 10^{-16}]$. We also test the  adaptive strategy value for the local tolerance. Except for the test set Chute\_local\_problems,  the main observation is that the local tolerance does not change fundamentally the convergence of the solver. For the test set Chute\_local\_problems, there is no internal dynamics of the main loop of the {\sf NSGS} since there is only one contact. It is therefore reasonable to see that adaptive strategy performs better that the other.
 
 
 
@@ -3315,7 +3323,7 @@ In Figure~\ref{fig:NSGS/LocalTol},  we report the performance profile of {\sf NS
 % \subfloat[\scriptsize Bridge\_PR II]
 %    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}} 
 % \subfloat[\scriptsize Bridge\_PR]
-%    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}} 
+%    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}} 
 % \subfloat[\scriptsize AqueducPR]
 %    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
 % \subfloat[\scriptsize 945\_SP\_Box\_PL]
@@ -3348,10 +3356,11 @@ In Figure~\ref{fig:NSGS/LocalTol},  we report the performance profile of {\sf NS
 
 In Figure~\ref{fig:NSGS/rho}, we evaluate the influence of the choice of the parameters $\rho_\n, \rho_\t$ on the convergence of the solver. The main conclusion are:
 \begin{enumerate}
-\item For the test sets 945\_SP\_Box\_PL, 100\_PR\_PerioBox, KaplasTower II, KaplasTower, Chute\_local\_problems, Chute\_4000, Chute\_1000, Capsules, a fixed value of $\rho_\n=\rho_\t=1$ has a dramatic effect on the convergence of the algorithm. The scaling of $\rho$ is of utmost importance for the efficiency and the robustness of the solver. Note that the rule  \eqref{eq:rho-4} that takes into account the condition number of the local matrix $W$ deteriorates the performance for Chute\_local\_problems, Chute\_4000, Chute\_1000. In these problems, the local matrix is asymmetric due to large Coriolis effects.
-\item For the other tests, the choice of $\rho_\n,\rho_\t$ does not really change the results such as LowWall\_FEM , mainly due the fact that the order of magnitude of the chosen $\rho$ with the rules \eqref{eq:rho-2}, \eqref{eq:rho-3} or \eqref{eq:rho-4} is around $1$. Cubes\_H8 II, Cubes\_H8, Bridge\_PR II, Bridge\_PR, 100\_PR\_PerioBox, Chain, BoxesStack and AqueducPR are not displayed since the results are similar.
+\item For the test sets 945\_SP\_Box\_PL, 100\_PR\_PerioBox, KaplasTower II, KaplasTower, Chute\_local\_problems, Chute\_4000, Chute\_1000, Capsules, a fixed value of $\rho_\n=\rho_\t=1$ has a dramatic effect on the convergence of the algorithm. The scaling of $\rho$ is of utmost importance for the efficiency and the robustness of the solver. Note that the rule  \eqref{eq:rho-4} that takes into account the condition number of the local Delassus matrix $W$ deteriorates the performance for  Chute\_4000, Chute\_1000. In these problems, the local matrix is unsymmetric with large extra-diagonal terms due to large gyroscopic effects.
+  
+\item For the other tests, the choice of $\rho_\n,\rho_\t$ does not really change the results such as LowWall\_FEM, mainly due the fact that the order of magnitude of the chosen $\rho$ with the rules \eqref{eq:rho-2}, \eqref{eq:rho-3} or \eqref{eq:rho-4} is in $[10^{-01}, 1]$. Cubes\_H8 II, Cubes\_H8, Bridge\_PR II, Bridge\_PR, 100\_PR\_PerioBox, Chain, BoxesStack and AqueducPR are not displayed since the results are similar.
 \end{enumerate}
-One of the conclusion of this study is as follows, the rules \eqref{eq:rho-2}, \eqref{eq:rho-3} improves a lot some simulations without increasing the computational cost for the others. Therefore, it is strongly advised to use it.
+One of the conclusion of this study is as follows, the rules \eqref{eq:rho-2}, \eqref{eq:rho-3} improves a lot some simulations without increasing the computational cost for the others. Therefore, it is strongly advised to use it. Some further theoretical studies are needed to understand the effect of $\rho$ on the convergence. In particular, the rule \eqref{eq:rho-4} is usually better, but sometimes destroy completely the convergence.
 \begin{figure}
   \centering
     \subfiglayout
@@ -3364,7 +3373,7 @@ One of the conclusion of this study is as follows, the rules \eqref{eq:rho-2}, \
 % \subfloat[\scriptsize Bridge\_PR II]
 %    {\includegraphics[width=\figwidth]{../figure/NSGS/rho/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}}
 % \subfloat[\scriptsize Bridge\_PR]
-%    {\includegraphics[width=\figwidth]{../figure/NSGS/rho/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}}
+%    {\includegraphics[width=\figwidth]{../figure/NSGS/rho/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}}
 % \subfloat[\scriptsize AqueducPR]
 %    {\includegraphics[width=\figwidth]{../figure/NSGS/rho/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
 \subfloat[\scriptsize 945\_SP\_Box\_PL]
@@ -3395,17 +3404,11 @@ One of the conclusion of this study is as follows, the rules \eqref{eq:rho-2}, \
 
 
 \paragraph{Influence of the contacts order  in NSGS algorithms}
-
-
-
-
-In this section, we study the influence of the contact order within the loop of the {\sf NSGS-AC-GP} solver. We reproduce in Figure~\ref{fig:NSGS/Shuffled} the result of the solvers with the original contact list of the problem ({\sf NSGS-AC-GP}) and with two other ways of iterating over the contacts. The solver {\sf NSGS-AC-GP Shuffled} corresponds to a single randomization of the list of contacts at the beginning of the algorithm. In the solver  {\sf NSGS-AC-GP Fully shuffled}, the  list is shuffled at each iteration.
+In this section, we study the influence of the contact order within the loop of the {\sf NSGS-AC-GP} solver. We reproduce in Figure~\ref{fig:NSGS/Shuffled} the result of the solvers with the original contact list of the problem ({\sf NSGS-AC-GP}) and with two other ways of iterating over the contacts. The solver {\sf NSGS-AC-GP Shuffled} corresponds to a single randomization of the list of contacts at the beginning of the algorithm. In the solver  {\sf NSGS-AC-GP Fully shuffled}, the  list is shuffled at each iteration. The following observations can be made:
 \begin{enumerate}
 \item The solver  {\sf NSGS-AC-GP Fully shuffled} performs really better on the flexible test sets
-\item For the rigid test sets, we reproduce here only the test set  100\_PR\_PerioBox because the other test sets behave identically. The  {\sf NSGS-AC-GP Fully shuffled} has a really bad influence on the convergence of the solver. It seems that is modify the internal dynamics of the solver in a way the rate of convergence is really decreased.
+\item For the rigid test sets, we reproduce here only the test set  100\_PR\_PerioBox because the other test sets behave similarly. The  {\sf NSGS-AC-GP Fully shuffled} has a really bad influence on the convergence of the solver. It seems that it modifies the internal dynamics of the solver in a way that the rate of convergence is really decreased.
 \end{enumerate}
-
-\def\widthfigure{0.6}
 \begin{figure}
   \centering
     \subfiglayout
@@ -3418,7 +3421,7 @@ In this section, we study the influence of the contact order within the loop of 
 \subfloat[\scriptsize Bridge\_PR II]
    {\includegraphics[width=\figwidth]{../figure/NSGS/Shuffled/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}}  
 % \subfloat[\scriptsize Bridge\_PR]
-%    {\includegraphics[width=\figwidth]{../figure/NSGS/Shuffled/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}} 
+%    {\includegraphics[width=\figwidth]{../figure/NSGS/Shuffled/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}} 
 % \subfloat[\scriptsize AqueducPR]
 %    {\includegraphics[width=\figwidth]{../figure/NSGS/Shuffled/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
 % \subfloat[\scriptsize 945\_SP\_Box\_PL]
@@ -3441,7 +3444,6 @@ In this section, we study the influence of the contact order within the loop of 
 % {\includegraphics[width=\figwidth]{../figure/NSGS/Shuffled/1.0e-08/50/time/profile-Capsules.pdf}}
    % \subfloat[\scriptsize BoxesStack]
    % {\includegraphics[width=\figwidth]{../figure/NSGS/Shuffled/1.0e-08/100/time/profile-BoxesStack1.pdf}}
-  
 {\includegraphics[height=\legendheight]{../figure/NSGS/Shuffled/1.0e-08/50/time/profile-Chain_legend.pdf}} 
 \caption{Influence of the contacts order in NSGS algorithms.}
 \label{fig:NSGS/Shuffled}
@@ -3452,9 +3454,9 @@ In this section, we study the influence of the contact order within the loop of 
 In Figure~\ref{fig:PSOR},  the relaxation parameter $\omega$ is varied ranging in $[0.5,1.8]$.  Two conclusions can be drawn:
 \begin{enumerate}
 \item For the flexible tests, the efficiency of the solver is really improved as we decreased the value of $\omega$. Moreover, this is done without destroying the robustness of the solver.
-\item For the rigid tests, the effect of the relaxation is not so clear. For values of $\omega$ greater than $1.0$, the efficiency is improved but the robustness deteriorates and we observe the contrary for the  $\omega$  less than $1.0$. Note in particular that for the test sets Chute\_1000, Chute\_4000 the convergence is completely destroyed fro $\omega = 1.8$.
+\item For the rigid tests, the effect of the relaxation is not so clear. For values of $\omega$ greater than $1.0$, the efficiency is improved but the robustness deteriorates and we observe the contrary for the  $\omega$  less than $1.0$. Note in particular that for the test sets Chute\_1000, Chute\_4000 the convergence is completely destroyed for $\omega = 1.8$.
 \end{enumerate}
-To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$. If it accelerates drastically the rate of convergence of the algorithm for some problems it deteriorates the convergence for others. Further studies would be needed to design self--adaptive schemes for the choice of $\omega$.
+To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$. If it accelerates drastically the rate of convergence of the algorithm for some problems, but it deteriorates the convergence for others. Further studies would be needed to design self--adaptive schemes for sizing $\omega$.
 
 % \begin{ndrva}
 %   \item redo this comparison on a set of mixed examples
@@ -3474,7 +3476,7 @@ To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$
 % \subfloat[\scriptsize Bridge\_PR II]
 %    {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}}
 % \subfloat[\scriptsize Bridge\_PR]
-%    {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}}
+%    {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}}
 % \subfloat[\scriptsize AqueducPR]
 %    {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
 % \subfloat[\scriptsize 945\_SP\_Box\_PL]
@@ -3503,18 +3505,17 @@ To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$
   \label{fig:PSOR}
 \end{figure}
 
-\clearpage
 \subsection{Comparison of {\sf NSN-$\star$} algorithms}
 
-In this section,  the nonsmooth Newton methods  are compared and we depict the performance profiles in Figure~\ref{fig:NSN}. The main conclusion are as follows:
+In this section,  the nonsmooth Newton methods  are compared.  The performance profiles are depicted in Figure~\ref{fig:NSN} for the test sets for which the {\sf NSN-$\star$} are able to solve at least 10\% of the problems. The main conclusion are as follows:
 \begin{enumerate}
-\item For the flexible tests, most of the Newton methods succeed to solve the problems within the prescribed time. The solver {\sf NSN-AC-HYBRID} appears to be the best solver.  The effect of computing an initial condition of the solver with a robust method such as {\sf EG-VI-UPK}  improves the convergence. In practice, we observe the precomputation allows one to determine roughly the set of closed and sliding contacts and it helps a lot the convergence of the Newton solvers. The solvers without line--searches perform also better than those with a line--search procedure which  seems to slow down the convergence without improving the robustness.  For the different formulations, the {\sf NSNS-AC} and {\sf NSN-JM} give equivalent results and are better that the {\sf NSN-NM} solver which is in turns better than the {\sf NSN-FB} solver. Note that the Goldstein--Price line search is usually better than the Armijo despite the fact the merit function is not necessarily smooth. Finally, we note that  {\sf NSN-FB}  and {\sf NSN-FB-A} are really the slowest solver on these flexible examples.
-\item For the rigid test sets with an high value of the rank ratio or the contact density~$c$ (see Table~\ref{Tab:fclib}), the Newton methods fail to converge and a lot of divergence has been noted in practice. This is the case for the test sets Bridge\_PR II, Bridge\_PR, AqueducPR, 945\_SP\_Box\_PL, 100\_PR\_PerioBox.
+\item For the flexible tests, most of the Newton methods succeed to solve the problems within the prescribed time limit. The solver {\sf NSN-AC-HYBRID} appears to be the best solver.  The effect of computing an initial condition of the solver with a robust method such as {\sf EG-VI-UPK}  improves the convergence. In practice, we observe that the precomputation allows one to determine roughly the set of closed and sliding contacts and it helps a lot the convergence of the Newton solvers. The solvers without line--searches perform also better than those with a line--search procedure which  seems to slow down the convergence without improving the robustness.  For the different formulations, the {\sf NSN-AC} and {\sf NSN-JM} give equivalent results and are better that the {\sf NSN-NM} solver which is in turns better than the {\sf NSN-FB} solver. Note that the Goldstein--Price line search is usually better than the Armijo despite the fact the merit function is not necessarily smooth. Finally, we note that  {\sf NSN-FB}  and {\sf NSN-FB-A} are really the slowest solver on these flexible examples.
+\item For the rigid test sets with an high value of the rank ratio or the contact density~$c$ (see Table~\ref{Tab:fclib}), the Newton methods fail to converge and a lot of divergence has been noted in practice. This is the case for the test sets Bridge\_PR II, Bridge\_PR, AqueducPR, 945\_SP\_Box\_PL, 100\_PR\_PerioBox that are not depicted in Figure~\ref{fig:NSN}.
 \item For the rigid test sets with a low value of the rank ratio or the contact density $c$ less than $1$ such as Chute\_1000 and Chain, we observe that the Newton methods are able to solve some problems. We note also that in the Chain test set, the use of a fixed value of $\rho$ is penalizing a lot the convergence of the solver. Contrary to flexible test sets, the use of a line--search procedure helps  to get a better robustness  of the solver. This is particularly true for {\sf NSN-NM-GP}.
-\item Chute\_local\_problems
+\item For the Chute\_local\_problems test set, we observe a large variability of the results depending on the formulation and the line--search procedures.
 \item Finally, for the test sets KaplasTower and Capsules, the {\sf NSN-FB-GP} is able to solve more than 80\% in a very efficient way. Some further studies would be needed to understand why this specific solver performs really better than the others.
 \end{enumerate}
-As general conclusion, the success of the {\sf NSN-$\star$} algorithms relates on the rank of the matrix $W$ and then on the contact density value $c$. For full rank matrix $W$, the solvers are robust and efficient. For values of $c$ not larger than $1$, the methods are able to find a solution with a tight accuracy. For larger values of $c$ and larger rank ratio, the nonsmooth Newton methods are not robust.
+As general conclusion, the success of the {\sf NSN-$\star$} algorithms is conditioned by  the rank of the Delassus matrix $W$, and then, by the contact density value $c$. For full rank matrix $W$, the solvers are robust and efficient. For values of $c$ not larger than $1$, the methods are able to find a solution with a tight accuracy. For larger values of $c$ and larger rank ratio, the nonsmooth Newton methods are not robust and generally diverge.
 
 \begin{figure}
   \centering
@@ -3528,7 +3529,7 @@ As general conclusion, the success of the {\sf NSN-$\star$} algorithms relates o
 % \subfloat[\scriptsize Bridge\_PR II]
 %    {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}}
 % \subfloat[\scriptsize Bridge\_PR]
-%    {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}}
+%    {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}}
 % \subfloat[\scriptsize AqueducPR]
 %    {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
 % \subfloat[\scriptsize 945\_SP\_Box\_PL]
@@ -3559,17 +3560,16 @@ As general conclusion, the success of the {\sf NSN-$\star$} algorithms relates o
 
 
 
-\subsection{Comparison of the proximal point algorithm {\sf PPA-NSN-$\star$} algorithms}
+\subsection{Comparison of the proximal point algorithm {\sf PPA-NSN-$\star$} and {\sf PPA-NSGS-$\star$}  algorithms}
 \label{Sec:PROX/NSN/InternalSolvers}
-In Figure~\ref{fig:PROX/NSN/InternalSolvers}, we compare various the proximal point algorithm with various internal solvers based on nonsmooth Newton methods {\sf NSN-$\star$}. The main observations are:
+In Figure~\ref{fig:PROX/NSN/InternalSolvers}, we compare the proximal point algorithm with various internal solvers based on nonsmooth Newton methods {\sf NSN-$\star$}. The main observations are:
 \begin{enumerate}
-\item For the flexible test sets (see for an illustration the test set LowWall\_FEM), for which the nonsmooth Newton solvers work pretty well, the use of a proximal point algorithm has no interest since it slows down the convergence of the algorithm by performing a first iteration with a large value of the regularization parameter $\alpha$.
-\item For the test sets KaplasTower,   Chute\_1000, Chain, Capsules and BoxesStack, the proximal point approach improves  the efficiency  of the {\sf NSN-AC-GP} solver and often it improves its reliability (see for comparison Figure~\ref{fig:NSN}). Clearly, the regularization introduced in the proximal point algorithm changes the rank of the matrix $W$ and it has a strong effect on the convergence of the Newton methods.
-\item The efficiency of the proximal point algorithm depends on the internal solver. As is is illustrated on the Capsules test, the improvement brought by the proximal point algorithm does not necessarily follows the success of the Newton solver when it is used alone.
-\item The strategy for updating the regularization parameter $\alpha$ plays also an important role. Quite surprisingly, for the Bridge\_PR test set, the adaptive rule that does not take into account the current error is really efficient and allows to get a robust and efficient solver with respect to the others.
+\item For the flexible test sets (see for an illustration the test set LowWall\_FEM), for which the nonsmooth Newton solvers work pretty well, the use of a proximal point algorithm has no interest since it slows down the convergence of the algorithm by performing a first iteration with a given, and possibly large, value of the exact regularization parameter $\alpha$.
+\item For the test sets KaplasTower,   Chute\_1000, Chain, Capsules and BoxesStack, the proximal point approach improves greatly the efficiency  of the {\sf NSN-AC-GP} solver and often improves also its reliability (see for comparison Figure~\ref{fig:NSN}). Clearly, the regularization introduced in the proximal point algorithm changes the rank of the matrix $W$ and it has a strong effect on the convergence of the nonsmooth  Newton methods.
+\item The efficiency of the proximal point algorithm depends strongly  on the internal solver. As it is illustrated on the Capsules test, the improvement brought by the proximal point algorithm does not necessarily follows the success of the Newton solver when it is used alone.
+\item The strategy for updating the regularization parameter $\alpha$ plays also an important role. Quite surprisingly, for the Bridge\_PR test set, the adaptive rule that does not take into account the current error is really efficient and allows to get a robust and efficient solver with respect to the others. Unfortunately, there is no updating method for the parameter $\alpha$ that works for all test sets.
 \end{enumerate}
-
-In Figure~\ref{fig:PROX/NSGS/InternalSolvers}, we compare the {\sf NSGS-AC} solver when it is used directly or inside the proximal point algorithm. On most of the test sets such as KaplasTower, A direct application of the {\sf NSGS-AC} solver is already efficient and its embedding into a proximal point algorithm does not bring any improvements. Nevertheless, we can see on Figure~\ref{fig:PROX/NSGS/InternalSolvers} that the proximal point algorithm improves the robustess and the efficiency for the test sets 945\_SP\_Box\_PL,  Chute\_4000, Chute\_1000 and Capsules. For the test set Chute\_4000, the result is quite impressive.
+In Figure~\ref{fig:PROX/NSGS/InternalSolvers}, we compare the {\sf NSGS-AC} solver when it is used directly or inside the proximal point algorithm. On most of the test sets such as KaplasTower, a direct application of the {\sf NSGS-AC} solver is already efficient and its embedding into a proximal point algorithm does not bring any improvements. Nevertheless, we can see on Figure~\ref{fig:PROX/NSGS/InternalSolvers} that the proximal point algorithm improves the robustess and the efficiency for the test sets 945\_SP\_Box\_PL,  Chute\_4000, Chute\_1000 and Capsules has been improved. For the test set Chute\_4000, the result is particularly impressive.
 
 \begin{figure}
   \centering
@@ -3583,7 +3583,7 @@ In Figure~\ref{fig:PROX/NSGS/InternalSolvers}, we compare the {\sf NSGS-AC} solv
 % \subfloat[\scriptsize Bridge\_PR II]
 %    {\includegraphics[width=\figwidth]{../figure/PROX/NSN/InternalSolvers/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}} \\
 \subfloat[\scriptsize Bridge\_PR]
-   {\includegraphics[width=\figwidth]{../figure/PROX/NSN/InternalSolvers/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}} \\
+   {\includegraphics[width=\figwidth]{../figure/PROX/NSN/InternalSolvers/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}} \\
 % \subfloat[\scriptsize AqueducPR]
 %    {\includegraphics[width=\figwidth]{../figure/PROX/NSN/InternalSolvers/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
 % \subfloat[\scriptsize 945\_SP\_Box\_PL]
@@ -3624,7 +3624,7 @@ In Figure~\ref{fig:PROX/NSGS/InternalSolvers}, we compare the {\sf NSGS-AC} solv
 % \subfloat[\scriptsize Bridge\_PR II]
 %    {\includegraphics[width=\figwidth]{../figure/PROX/NSGS/InternalSolvers/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}}
 % \subfloat[\scriptsize Bridge\_PR]
-%    {\includegraphics[width=\figwidth]{../figure/PROX/NSGS/InternalSolvers/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}}
+%    {\includegraphics[width=\figwidth]{../figure/PROX/NSGS/InternalSolvers/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}}
 % \subfloat[\scriptsize AqueducPR]
 %    {\includegraphics[width=\figwidth]{../figure/PROX/NSGS/InternalSolvers/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
 % \subfloat[\scriptsize 100\_PR\_PerioBox]
@@ -3668,7 +3668,7 @@ In Figure~\ref{fig:PROX/NSGS/InternalSolvers}, we compare the {\sf NSGS-AC} solv
 % \subfloat[\scriptsize Bridge\_PR II]
 %    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}}
 % \subfloat[\scriptsize Bridge\_PR]
-%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}}
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}}
 % \subfloat[\scriptsize AqueducPR]
 %    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
 % \subfloat[\scriptsize 945\_SP\_Box\_PL]
@@ -3708,7 +3708,7 @@ In Figure~\ref{fig:PROX/NSGS/InternalSolvers}, we compare the {\sf NSGS-AC} solv
 % \subfloat[\scriptsize Bridge\_PR II]
 %    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}}
 % \subfloat[\scriptsize Bridge\_PR]
-%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}}
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}}
 % \subfloat[\scriptsize AqueducPR]
 %    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
 % \subfloat[\scriptsize 945\_SP\_Box\_PL]
@@ -3747,7 +3747,7 @@ In Figure~\ref{fig:PROX/NSGS/InternalSolvers}, we compare the {\sf NSGS-AC} solv
 % \subfloat[\scriptsize Bridge\_PR II]
 %    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}}
 % \subfloat[\scriptsize Bridge\_PR]
-%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}}
+%    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}}
 % \subfloat[\scriptsize AqueducPR]
 %    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
 % \subfloat[\scriptsize 945\_SP\_Box\_PL]
@@ -3780,13 +3780,12 @@ In Figure~\ref{fig:PROX/NSGS/InternalSolvers}, we compare the {\sf NSGS-AC} solv
 
 
 
-\clearpage
 \subsection{Comparison of optimization-based algorithms {\sf PANA-$\star$, TRESCA-$\star$ and ACLM-$\star$}}
 
 In Figure~\ref{fig:OPTI}, we compare the algorithms based on the optimization approach presented in Section~\ref{Sec:OptimisationBasedMethods}. The pure convex relaxation {\sf SOCLCP-NSGS-PLI}  method has been added to understand the effect of the nonconvexity of the problems on the efficiency and robustness of the solvers. The main conclusions are
 \begin{enumerate}
-\item The pure convex relaxation in {\sf SOCLCP-NSGS-PLI}  simplifies fundamentally the problems in the test sets  LowWall\_FEM, AqueducPR, KaplasTower, BoxesStack  and is slightly better in Bridge\_PR II, 100\_PR\_PerioBox, KaplasTower II. Especially, we note that if we want to reach a better accuracy as in the KaplasTower test set, the convex relaxation helps a lot but this conclusion cannot be made in the test set Bridge\_PR. Let us also note that  the convex relaxation does not help a lot in the test sets Cubes\_H8, Bridge\_PR, Chute\_1000, Chute\_4000 and Capsules. One of the conclusion is that the nonconvexity of the problem is not the only difficulty in such problems.
-\item The solvers based on the optimization approach are generally robust but slow. This is mainly due to two reasons. Firstly,  we use internal iterative solvers with a slow convergence rate. The fact that  the matrix of the problem is no full rank in the rigid tests, prevents the use of second order methods as nonsmooth Newton methods. It could be of interest to implement dedicated new internal solvers for the internal convex problems based on nonsmooth Newton methods for the flexible tests. Furthermore, the tests with standard implementations of optimization methods was not really concluding. The general convex solvers are not necessarily able to exploit the particular structure of the constraints given by a Cartesian product of a large number of second order cones. Secondly, the fixed point iteration that drives the convergence is generally slow. Once again, it would valuable to implement a second order method for driving the external loop.
+\item The pure convex relaxation in {\sf SOCLCP-NSGS-PLI}  simplifies drastically the problems in the test sets  LowWall\_FEM, AqueducPR, KaplasTower, BoxesStack  and is slightly better in Bridge\_PR II, 100\_PR\_PerioBox, KaplasTower II test sets. Especially, we note that if we want to reach a better accuracy as in the KaplasTower test set, the convex relaxation helps a lot but this conclusion cannot be made in the test set Bridge\_PR. Let us also note that  the convex relaxation does not help a lot in the test sets Cubes\_H8, Bridge\_PR, Chute\_1000, Chute\_4000 and Capsules. One of the conclusion may be that the nonconvexity of the problem is not the only difficulty in such problems. Using a convex relaxation is not sufficient to solve all the problems.
+\item The solvers based on the optimization approach are generally robust but slow. This is mainly due to two reasons. Firstly,  we use internal iterative solvers with a slow convergence rate. The fact that  the Delassus matrix has not full rank in the rigid tests prevents the use of second order methods as nonsmooth Newton methods.  For the flexible test, it could be of interest to implement dedicated new internal solvers of the internal convex problems based on nonsmooth Newton methods. Furthermore, the tests with standard implementations of optimization methods was not really concluding. The general convex solvers are not  able to exploit the particular structure of the constraints given by a Cartesian product of a large number of second order cones. Secondly, the fixed point iteration that drives the convergence is generally slow. Once again, it would valuable to implement a second order method for driving the external loop.
 \item On the choice of a specific optimization based strategy with respect to the others, we can observe that the comparison is really problem--dependent. On the test sets Cubes\_H8, Bridge\_PR,  Bridge\_PR II, LowWall\_FEM and AqueducPR, the {\sf ACLM-$\star$} solvers perform better than the others.  For the test-sets KaplasTower, 945\_SP\_Box\_PL, Chute\_4000, Chute\_1000 and BoxesStack, the {\sf TRESCA-$\star$} solvers are better. Finally, the {\sf PANA-$\star$} solvers are better on the 100\_PR\_PerioBox test set. Since the convex relaxation of the internal problem is made in different manners, we may expect that the different families  of solvers will not behave in the same way. In particular, if the coefficient of friction is large or if the number of sliding contacts is low, we may expect that the {\sf ACLM-$\star$} solvers behave better because the $s$ variable in the fixed point iteration will not drastically influence the convergence. On the contrary, when the coefficient of friction is low, we may expect that the splitting introduced in the {\sf PANA-$\star$} will be better. Unfortunately, we have further investigated this point with an analysis of the contact status (closed, sliding, sticking) in the problems.
 \end{enumerate}
 
@@ -3804,7 +3803,7 @@ In Figure~\ref{fig:OPTI}, we compare the algorithms based on the optimization ap
 \subfloat[\scriptsize Bridge\_PR II]
    {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}} \\
 \subfloat[\scriptsize Bridge\_PR]
-   {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}}
+   {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}}
 \subfloat[\scriptsize AqueducPR]
    {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}}  \\
 \subfloat[\scriptsize 945\_SP\_Box\_PL]
@@ -3849,12 +3848,14 @@ In Figure~\ref{fig:OPTI}, we compare the algorithms based on the optimization ap
 
 In this last section, the most efficient solvers by family has been chosen and are compared. The performance profiles are reported in Figure~\ref{fig:COMP}. The main conclusions are as follows:
 \begin{enumerate}
-\item First of all, we can observe that for all the test sets, a least one solver is able to solve all the problems within the prescribed time.  Unfortunately, there is no universal solver that outperforms all the other solver for all the test sets.
-\item For the flexible test sets, the nonsmooth Newton solvers {\sf NSN-$\star$} are the best solvers. In the test set LowWall\_FEM, the {\sf NSN-$\star$} are followed the {\sf NSGS-FP-VI-UPK} and {\sf NSGS-AC} solvers. On this test set, the requires accuracy is limited to $10^{-04}$ and the  {\sf NSGS-$\star$} are still able to reach the tolerance in a reasonable time. Between the test sets {\sf Cubes\_H8 II} and {\sf Cubes\_H8}, the required accuracy is decreased to $10^{-08}$. With a tighter tolerance, we observe that the relative efficiency of the {\sf NSN-$\star$} solvers increase. In other words, on the flexible tests we are able to nonsmooth Newton methods efficiently since the matrix $W$ is full rank and we retrieve quadratic convergent rates that enables to reach tighter tolerances. Note that in the flexible test sets, the proximal point algorithms {\sf PPA-NSN-$\star$} are directly interesting but as the required accuracy decreased, they start to compete with {\sf NSGS-$\star$} algorithms.\\
+\item First of all, we can observe that for all the test sets, a least one solver is able to solve all the problems within the prescribed time.  Unfortunately, there is no universal solver that outperforms all the other solvers for all the test sets.
+\item For the flexible test sets, the nonsmooth Newton solvers {\sf NSN-$\star$} are the best solvers. In the test set LowWall\_FEM, the {\sf NSN-$\star$} are followed the {\sf NSGS-FP-VI-UPK} and {\sf NSGS-AC} solvers. On this test set, the requires accuracy is limited to $10^{-04}$ and the  {\sf NSGS-$\star$} are still able to reach the tolerance in a competitive time. Between the test sets {\sf Cubes\_H8 II} and {\sf Cubes\_H8}, the required accuracy is decreased to $10^{-08}$. With a tighter tolerance, we observe that the relative efficiency of the {\sf NSN-$\star$} solvers increase. In other words, on the flexible tests we are able to use nonsmooth Newton methods efficiently since the Delassus matrix $W$ has full rank. In that case, we observe that we retrieve a quadratic convergent rate that enables to reach tighter tolerances. Note that in the flexible test sets, the proximal point algorithms {\sf PPA-NSN-$\star$} are not really interesting but as the required accuracy decreased, they start to compete with {\sf NSGS-$\star$} algorithms.\\
   {\tt redo simulation of LowWall at $10^{-08}$ or cite \citep{Acary.ea_CSMA2017}}
-\item For most of the rigid test sets with a low requires accuracy of $10^{-04}$ as AqueducPR, 945\_SP\_Box\_PL, 100\_PR\_PerioBox , KaplasTower, Chute\_4000 and Chute\_1000,   the {\sf NSGS-$\star$} are the most efficient and robust solvers. In the case of the test sets Chute\_4000 and Chute\_1000,  the {\sf NSGS-FP-VI-UPK} solvers are better than the {\sf NSGS-AC-$\star$} due to some robustness issues in the local solvers based on nonsmooth Newton methods. These solvers are generally followed by optimization based solvers such as {\sf ACLM-$\star$} and {\sf TRESCA-$\star$} solvers, except for the test set 945\_SP\_Box\_PL where the more robust solver is {\sf TRESCA-NSGS-FP-VI-UPK}.
-\item For the rigid test sets with a low requires accuracy of $10^{-08}$ as Bridge\_PR, Chain, Capsules and BoxesStack, the solvers {\sf PPA-$\star$} are the most efficient and robust solvers. The regularization of the matrix $W$ introduced by the proximal point algorithm has a very positive effect on the internal solvers. Especially, it enables the use of nonsmooth Newton techniques that allows one to reach a tighter accuracy thank to their quadratic convergent rates. The {\sf PPA-$\star$} algorithms are generally followed {\sf NSGS-$\star$} except in the case of the Chain test set where the  {\sf NSN-$\star$} is able to solve 60\% of the problems quite efficiently. In the case of the Bridge\_PR test set, the use of proximal point technique \{PPA-NSN-AC-GP adaptive $\nu0 = 10^{+03}\}$ is the only to solve all the problems at the tolerance of  $10^{-08}$. As discussed in Section~\ref{Sec:PROX/NSN/InternalSolvers}, the rule for updating the proximal point parameter $\alpha$ play an important role and deserves further studies.
-\item In the case of the Chute\_local\_problems test set, we observe that the optimization based solver are the best solvers and allows one to circumvent the issues of robustness of {\sf NSGS-AC-$\star$} solvers that are reduced in that case to the {\sf NSN-$\star$} solvers. We recall that this local problems are extracted from Chute\_4000 and selected as difficult local problems. These problems are characterized by strongly asymmetric matrices with large extra-diagonal terms compared to the diagonal ones. In that case, the optimization solver based on a convexification helps to solve the problems. We can also note as in the Chute\_4000 and Chute\_1000 that  the {\sf NSGS-FP-VI-UPK} solvers are not sensitive to this feature.
+\item For most of the rigid test sets with a low required accuracy of $10^{-04}$ as AqueducPR, 945\_SP\_Box\_PL, 100\_PR\_PerioBox , KaplasTower, Chute\_4000 and Chute\_1000,   the {\sf NSGS-$\star$} are the most efficient and robust solvers. In the case of the test sets Chute\_4000 and Chute\_1000,  the {\sf NSGS-FP-VI-UPK} solvers are better than the {\sf NSGS-AC-$\star$} due to some robustness issues in the local solvers based on nonsmooth Newton methods. These solvers are generally followed by optimization based solvers such as {\sf ACLM-$\star$} and {\sf TRESCA-$\star$} solvers, except for the test set 945\_SP\_Box\_PL where the more robust solver is {\sf TRESCA-NSGS-FP-VI-UPK}.
+  
+\item For the rigid test sets with a low requires accuracy of $10^{-08}$ as Bridge\_PR, Chain, Capsules and BoxesStack, the solvers {\sf PPA-$\star$} are the most efficient and robust solvers. The regularization of the Delassus matrix  introduced by the proximal point algorithm has a very positive effect on the internal solvers. Especially, it enables the use of nonsmooth Newton techniques that allows one to reach a tighter accuracy thank to their quadratic convergent rates. The {\sf PPA-$\star$} algorithms are generally followed {\sf NSGS-$\star$} except in the case of the Chain test set where the  {\sf NSN-$\star$} is able to solve 60\% of the problems quite efficiently. In the case of the Bridge\_PR test set, the use of proximal point technique {\sf PPA-NSN-AC-GP adaptive $\nu0 = 10^{+03}$} is the only one  to solve all the problems at the tolerance of  $10^{-08}$. As discussed in Section~\ref{Sec:PROX/NSN/InternalSolvers}, the rule for updating the proximal point parameter $\alpha$ play an important role and deserves further studies.
+  
+\item In the case of the Chute\_local\_problems test set, we observe that the optimization based solver are the best solvers and allows one to circumvent the issues of robustness of {\sf NSGS-AC-$\star$} solvers that are reduced in that case to the {\sf NSN-$\star$} solvers. We recall that these local problems are extracted from Chute\_4000 and selected as most difficult local problems. These problems are characterized by strongly unsymmetric matrices with large extra-diagonal terms compared to the diagonal ones. In that case, the optimization solver based on a convexification helps to solve the problems. We can also note as in the Chute\_4000 and Chute\_1000 that  the {\sf NSGS-FP-VI-UPK} solvers are not sensitive to this asymmetry of the Delassus matrix.
  \end{enumerate}
 
 
@@ -3870,7 +3871,7 @@ In this last section, the most efficient solvers by family has been chosen and a
 \subfloat[\scriptsize Bridge\_PR II]
    {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}} \\
 \subfloat[\scriptsize Bridge\_PR]
-   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-08/100/time/profile-LMGC_Bridge_PR.pdf}}
+   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}}
 \subfloat[\scriptsize AqueducPR]
    {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
 \subfloat[\scriptsize 945\_SP\_Box\_PL]
@@ -3910,22 +3911,22 @@ In this last section, the most efficient solvers by family has been chosen and a
 
 % \subsection{Analyze reached accuracy for a given time}
 
-\clearpage
+
 \section{General conclusions}
 
-In this chapter, we have reviewed several formulations of the discrete frictional contact problems. These formulations open the way to various solving procedures that have detailed. Most of these solving procedures are already know in the literature as a) the  splitting and relaxation techniques ({\sf NSGS-$\star$} and {\sf PSOR-$\star$} solvers, b) the nonsmooth Newton methods ({\sf NSN-$\star$} solvers) and c) the optimization based solvers ({\sf PANA-$\star$, TRESCA-$\star$ and ACLM-$\star$}). For the first time, we present general solvers based on the variational inequalities formulation ({\sf FP-VI-$\star$} and {\sf FP-EG-$\star$}). These methods extends the {\sf FP-DS} algorithm in various directions and provides some rule to update the $\rho_k$ parameters that appears to be fundamentally important in practice. As far as we know, it is also the first application of the proximal point algorithms ({\sf PPA-$\star$}) to the discrete frictional contact problems.  the new set of solvers appears to be a promising alternative when we want to reach tight accuracy for collections of rigid bodies such as granular material.
+In this chapter, we have reviewed several formulations of the discrete frictional contact problems. These formulations open the way to various solving procedures that have detailed. Most of these solving procedures are already known in the literature such  as a) the  splitting and relaxation techniques ({\sf NSGS-$\star$} and {\sf PSOR-$\star$} solvers), b) the nonsmooth Newton methods ({\sf NSN-$\star$} solvers) and c) the optimization based solvers ({\sf PANA-$\star$, TRESCA-$\star$ and ACLM-$\star$} solvers). For the first time, we present general solvers based on the variational inequalities formulation ({\sf FP-VI-$\star$} and {\sf FP-EG-$\star$}). These methods extends the {\sf FP-DS} algorithm in various directions and provides some self-adaptive rule to update the $\rho$ parameters that appears to be crucial in practice fro the efficiency of the methods. As far as we know, it is also the first application of the proximal point algorithms ({\sf PPA-$\star$}) to the discrete frictional contact problems.  This new family of solvers appears to be a promising alternative when we want to reach tight accuracy for collections of rigid bodies such as granular material.
 
-This review of solvers has been used for a thorough comparisons of solvers over a large set of test problems. Using performance profiles, the solvers has been compared by families and then alltogether. The main conclusions and perspectives of this study are as follows:
+This review of solvers has been used for a thorough comparison of solvers over a large set of test problems. Using performance profiles, the solvers has been compared by families and then alltogether. The main conclusions and perspectives of this study are as follows:
 \begin{itemize}
-\item The method based on variational inequality formulations ({\sf FP-VI-$\star$} are robust solver if a consistent self-adaptive rule for the parameter $\rho$ is used. In this chapter, two rules has been described that gives very satisfactory results. Thanks to their robustness, these methods provides a goor robust solver for the local problem in splitting techniques. Nevertheless, the convergence rate of the method is low. The methods have difficulties to get a solution  for tight tolerances or if the problem size is large. The main perspectives for these methods are a) to adapt the values of $\rho$ contact by contact to try to improve the convergence speed and b) to perform computation in parallel for large systems. Indeed, each iteration of the {\sf FP-VI-$\star$} solvers may be straightforwardly implemented on distributed computer architectures.
+\item The method based on variational inequality formulations ({\sf FP-VI-$\star$}) are robust solver if a consistent self-adaptive rule for the parameter $\rho$ is used. In this chapter, two rules has been described that gives very satisfactory results. Thanks to their robustness, these methods provides a good robust solver for the local problems in splitting techniques. Nevertheless, the convergence rate of the method is low. The methods have difficulties to get a solution within the prescribed time for tight tolerances or if the problem size is large. The main perspectives for these methods are a) to adapt the values of $\rho$ contact by contact to try to improve the convergence speed and b) to perform computation in parallel for large systems. Indeed, each iteration of the {\sf FP-VI-$\star$} solvers may be straightforwardly implemented on distributed computer architectures.
 
-\item The methods based on a splitting techniques, the {\sf NSGS-$\star$} solvers provides us with robust and efficient solvers provided that the solver of the internal solver is also robust. They are generally more efficient than the {\sf FP-VI-$\star$} since they exploit the particular structure of the problem (sparse block sparsity and local solver routines). Nevertheless, they suffer from the problems as the  {\sf FP-VI-$\star$} solvers. The convergence rate is low and high accuracy s very to reach in a reasonable time. The main perspective for this solver is to able to improve the robustness and the efficiency of the local solver for instance by using proximal point technique or optimization based solvers. Concerning the {\sf PSOR-$\star$} solvers, for a certain value of the relaxation parameters $\omega$, they improve greatly the convergence rate of the {\sf NSGS-$\star$} solvers. The problem is that it is very difficult to guess the correct value of the parameter $\omega$. A wrong value may destroy the efficiency of the solver and can also implies divergence of the algorithm. It is clear that such solver deserves more attention to try to find a self adaptive rule for sizing $\omega$.
+\item The methods based on a splitting techniques, the {\sf NSGS-$\star$} solvers provides us with robust and efficient solvers provided that the solver of the internal solver is also robust. They are generally more efficient than the {\sf FP-VI-$\star$} since they exploit the particular structure of the problem (sparse block sparsity and local solver routines). Nevertheless, they suffer from the same problems as the  {\sf FP-VI-$\star$} solvers. The convergence rate is low and high accuracy is difficult to reach within the prescribed time for tight tolerances. The main perspective for this solver is to able to improve the robustness and the efficiency of the local solver for instance by using proximal point technique or optimization based solvers. Concerning the {\sf PSOR-$\star$} solvers, for a certain value of the relaxation parameters $\omega$, they improve greatly the convergence rate with respect to the {\sf NSGS-$\star$} solvers. The problem is that it is very difficult to guess the correct value of the parameter $\omega$. A wrong value may destroy the efficiency of the solver and can also implies divergence of the algorithm. It is clear that such solvers deserve more attention to try to find a self adaptive rule for sizing the relaxation parameter $\omega$.
 
-\item The nonsmooth Newton solvers {\sf NSN-$\star$} appears to be an efficient family of solvers for problems that have a full-rank Delassus matrix or a very low contact density. For instance, in the case of the flexible tests, they are the best solvers among others and they are able to reach tight tolerances that are not reachable with ({\sf FP-VI-$\star$}  and {\sf NSGS-$\star$} solvers. For the other test sets, they suffer from robustness issues. Clearly, the choice of the $\rho$ parameters in the formulation is important but not sufficient to circumvent all the divergence problems. Also the line-search procedures may help to stabilize the convergence at the price to slow down the convergence. Some pointers in the literature try to modified the iteration matrix in the Newton loop to improve robustness when the iterates are far form the solution. The main perspectives for this solver is to work to improve their robustness. When the solvers are robust, theses solvers are also highly paralelizable for large systems since we can rely on massively parallel solvers for linear systems.
+\item The nonsmooth Newton solvers {\sf NSN-$\star$} appears to be an efficient family of solvers for problems that have a full-rank Delassus matrix or a very low contact density. For instance, in the case of the flexible tests, they are the best solvers among others and they are able to reach tight tolerances that are not reachable with the {\sf FP-VI-$\star$}  and {\sf NSGS-$\star$} solvers. For the other test sets, they suffer from robustness issues. To improve the robustness, we work on several options:  a) the choice of the $\rho$ parameters in the equation based formulation, b) the line-search procedures may help to stabilize the convergence at the price to slow down the convergence and c) improving the initial staring point of the solver with a {\sf FP-VI-$\star$}. All these improvements appear to be increase the robustness. Unfortunately, it was not sufficient to circumvent all the divergence problems. Some pointers in the literature try to modified the iteration matrix in the Newton loop to improve robustness when the iterates are far form the solution. This solution has still not been tested. The main perspectives for this solver is to work to improve their robustness by testing modification of the iteration matrix or self-adapting rule for sizing $\rho$. The question of the scaling and the preconditioning must be studied deeper. When the solvers are robust, theses solvers are also highly paralelizable for large systems since we can rely on massively parallel solvers for linear systems.
 
-\item As we discussed before, the {\sf PPA-$\star$} solvers are a possible solution for improving the robustness of  {\sf NSN-$\star$} while keeping their convergence rates. Nevertheless, we were not able to find an universal rule for updating the exact regularization parameter $\alpha$. Clearly, this deserves more studies  on this aspect.
+\item As we discussed before, the {\sf PPA-$\star$} solvers are a possible solution for improving the robustness of  {\sf NSN-$\star$} while keeping their convergence rates. This solution proves its efficiency on a lot of test sets. Nevertheless, we were not able to find an universal rule for updating the exact regularization parameter $\alpha$ such that it works for all test sets. Clearly, this deserves more studies  on this aspect.
 
-\item The optimization based solvers ({\sf PANA-$\star$, TRESCA-$\star$ and ACLM-$\star$} might be also a good alternative to provide us with robust solvers. Unfortunately, they do not prove to more efficient than the others solvers mainly due to the fact the decrease of the convergence raet implied by the fixed point external loop is not compensated by the efficiency of the internal solver for convex problems. As we have seen, the nonconvexity of the problems is not the only difficult that we have to face and most of the time the rank deficiency of the matrix Delassus matrix is the main problem for the convergence.
+\item The optimization based solvers ({\sf PANA-$\star$, TRESCA-$\star$ and ACLM-$\star$} might be also a good alternative to provide us with robust solvers. Unfortunately, they do not prove to more efficient than the others solvers mainly due to the fact the decrease of the convergence rate implied by the fixed point external loop is not compensated by the efficiency of the internal solver for convex problems. As we have seen, the nonconvexity of the problems is not the only difficult that we have to face and most of the time the rank deficiency of the matrix Delassus matrix is the main cause of the slow convergence or divergence. Finally, it could be interesting to understand why an optimization formulation is better than another for some test sets. One of the reasons might that the contact status (closed, sticking, sliding) are not distributed in the same  way along the test sets. A study based on the contact status would be complementary to the measure of the rank ratio and the contact density for guessing the cause of the issues.
 
 
 \end{itemize}
