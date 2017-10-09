@@ -123,8 +123,13 @@ for t in tests:
 test= 'Chain'
 data[test]['nsgs_localsolver']['domain']=10
 data[test]['nsn_solvers']['domain']=35
+
+test= 'Capsules'
+data[test]['nsgs_localsolver']['domain']=10
+
 test= 'BoxesStack1'
 data[test]['opti_solvers']['domain']=30
+data[test]['nsgs_localsolver']['domain']=10
 
 test= 'LMGC_AqueducPR'
 data[test]['nsgs_localtol_ac_gp']['domain']=4
@@ -139,11 +144,13 @@ data[test]['nsgs_shuffled']['domain']=3
 data[test]['nsn_solvers']['domain']=100
 data[test]['opti_solvers']['domain']=30
 data[test]['comp_solvers']['domain']=5
+data[test]['nsgs_localsolver']['domain']=100
+
 
 test = 'LMGC_Cubes_H8'
 data[test]['vi']['domain']=5
 data[test]['nsgs_localtol_ac_gp']['domain']=3
-data[test]['nsgs_localsolver']['domain']=5
+data[test]['nsgs_localsolver']['domain']=15
 data[test]['nsgs_shuffled']['domain']=10
 data[test]['nsn_solvers']['domain']=25
 data[test]['opti_solvers']['domain']=20
