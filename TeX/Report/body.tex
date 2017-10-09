@@ -149,7 +149,7 @@ For a description of the derivation of such problems in various practical situat
 % \end{ndrva}
 
 The comparison are performed on a large set of examples using performance profiles.
-\tg{Let us summarize the main conclusion from Section~\ref{sec:numericalcomparisons}:
+{Let us summarize the main conclusion from Section~\ref{sec:numericalcomparisons}:
 on one hand}, the algorithms based on Newton methods for nonsmooth equations solve quickly the problem when they succeed, but suffer from robustness issues mainly if the matrix $H$ has not full rank. On the other hand, the
 iterative methods dedicated to solving variational inequalities are quite robust but with an extremely slow rate of convergence. To sum up, as far as we know there is no option that combines time efficiency and robustness.
 {The set of problems used here are from the FCLIB collection\footnote{\url{https://frictionalcontactlibrary.github.io/index.html}, which aims at providing many problems to compare algorithms on a fair basis}.  In this work, this collection is solved with the software {\sc Siconos} and its component {\sc Siconos/Numerics}\footnote{\url{http://siconos.gforge.inria.fr}}\citep{Acary.Bremond.Huber.Perignon2015}.
@@ -430,9 +430,6 @@ An instance of the problem is denoted by $\mathrm{FC}(W,q,\mu)$
   We do not assume that the Delassus matrix $W$ is symmetric in the general case. In most of the applications, the Delassus matrix is symmetric since it represents either a mass matrix or a stiffness matrix. Nevertheless, in the rigid body applications, or more generally when large rotations are taken into account, the Delassus matrix is not symmetric. Indeed, in an implicit time-discretization, the Jacobian matrix of the gyroscopic forces brings a skew symmetric matrix in the Delassus matrix. 
 \end{remark}
 
-\begin{ndrva}
-  Is the assumption on the symmetry of the matrix $M$ is mandatory ? I don't think so but it has to be checked carefully in the sequel.
-\end{ndrva}
 %
 %The  first two lines of~\eqref{eq:soccp1} may represent a linear time--discretized dynamics and $v$ have the role of the global or generalized velocity. 
 
@@ -458,7 +455,7 @@ Therefore, it makes sense to design a procedure to solve the problem. In the seq
 
 This assumption is easy verified in numerous applications. For applications in nonsmooth dynamics where the unknown $v$ is a relative contact velocity, the term $w$ vanishes if we have only scleronomic constraints. For $w \in \mathrm{im}(H^\top)$ (and especially $w=0$), the assumption is trivially satisfied. As it is explained in~\cite{Acary.Cadoux2013}, the term $w$ has several possible sources. If the constraints are formulated at the velocity level, an input term of $w$ is given in dynamics by the impact law. In the case of the Newton impact law, it holds that $w \in \mathrm{im}(H^\top)$.   For other impact law, this is not clear. Another input in $w$ is given by constraints that depends explicitly on time. In that case, we can have $w \not\in \mathrm{im}(H^\top)$ and non existence of solutions. If the constraints are written at the position level, $w$ can be given by initial of terms that comes from velocity discretization. In that cases, the existence is also not ensured.
 
-The assumption is also satisfied \moh{whenever} $\mathrm{im}\, H = \RR^m$ or in other words if $H^\top$ has full row rank. Unfortunately, in large number of applications $H^\top$ is rank deficient. 
+The assumption is also satisfied {whenever} $\mathrm{im}\, H = \RR^m$ or in other words if $H^\top$ has full row rank. Unfortunately, in large number of applications $H^\top$ is rank deficient. 
 From the mechanical point of view, the rank deficiency of $H$ and the amount of friction seems to play a fundamental role in the question of the existence (and uniqueness) of solutions. In the numerical comparisons, we will attempt to get a deeper understanding on the role of these assumptions on the convergence of the algorithms. The rank deficiency  of $H$ is related to the number of constraints that are imposed to the system with respect to the number of degrees of freedom in the system. It is closely related to the concept of hyperstaticity in overconstrained mechanical  systems. In the most favorable cases, it yields  indeterminate Lagrange multipliers but also to unfeasible problems and then to the lost of solutions in the worth cases. The second assumption on the amount of friction is also well--know. The frictionless problem is  easy to solve if it is  feasible. It is clear that large friction coefficients prevent from sliding and therefore increase the degree of hyperstaticity of the system. 
 
 
@@ -1754,8 +1751,8 @@ Algorithm~\ref{Algo:NSN} is applied {with}
 %The details of a possible computation of $\Phi$ can be found in Appendix~\ref{Sec:Phi-FB-II}.
 
 \paragraph{Nonsmooth newton based on the natural map }
-Let us consider the natural map $F_{\vitwo}^\nat$ in~\eqref{eq:natural-II} that enables to write Problem~\ref{prob:II} \tg{as} a nonsmooth equation.
-Algorithm~\ref{Algo:NSN} is applied \tg{with}
+Let us consider the natural map $F_{\vitwo}^\nat$ in~\eqref{eq:natural-II} that enables to write Problem~\ref{prob:II} {as} a nonsmooth equation.
+Algorithm~\ref{Algo:NSN} is applied {with}
 \begin{equation}  \label{eq:phiphi}
     \Phi(r) \in \partial F_{\vitwo}^\nat(r).
 \end{equation}
@@ -2692,6 +2689,8 @@ The four first tests in Table ~\ref{Tab:fclib} are examples that involve flexibl
   & \parbox[t]{2mm}{\rotatebox[origin=c]{-90}{rank ratio(W)}}
   & \parbox[t]{2mm}{\rotatebox[origin=c]{-90}{cond(W)}}
   & \parbox[t]{2mm}{\rotatebox[origin=c]{-90}{cond(W) LSMR}}
+  & \parbox[t]{2mm}{\rotatebox[origin=c]{-90}{$\mu(\|W-W^T\|)$}}
+    \parbox[t]{2mm}{\rotatebox[origin=c]{-90}{symmetry of $W$}}
   \\
   \hline
   \hline
@@ -2705,7 +2704,8 @@ The four first tests in Table ~\ref{Tab:fclib} are examples that involve flexibl
 %  & $[6:15]$
   & 1
   & $[2.2.10^{1}:1.3.10^{3}]$
-  & $[8.1.10^{5}:1.5.10^{6}]$\\
+  & $[8.1.10^{5}:1.5.10^{6}]$
+  & $3.2.10^{-4}$\\
    \hline
   Cubes\_H8\_5
   & LMGC90
@@ -2717,7 +2717,8 @@ The four first tests in Table ~\ref{Tab:fclib} are examples that involve flexibl
 %  & $[48:108]$
   & 1
   & $[3.3.10^{4}: 7.2.10^{4} ]$
-  & $[1.3.10^{6}: 3.1.10^{6} ]$\\
+  & $[1.3.10^{6}: 3.1.10^{6} ]$
+  & $4.2.10^{-4}$\\
    \hline
   Cubes\_H8\_20
   & LMGC90
@@ -2729,7 +2730,8 @@ The four first tests in Table ~\ref{Tab:fclib} are examples that involve flexibl
 %  & $[1083:1164]$
   & 1
   & $[2.4.10^{5}: 2.5.10^{5} ]$
-  & $[1.3.10^{6}: 5.2.10^{6} ]$\\
+  & $[1.3.10^{6}: 5.2.10^{6} ]$
+  &  $5.2.10^{-5}$\\
   \hline
   LowWall\_FEM
    & LMGC90
@@ -2741,7 +2743,8 @@ The four first tests in Table ~\ref{Tab:fclib} are examples that involve flexibl
 %  & $[1873:2064]$
   & 1
   & --
-  & $[9.3.10^{2}:5.0.10^{5}]$\\
+  & $[9.3.10^{2}:5.0.10^{5}]$
+  &  $5.2.10^{-2}$\\
   \hline
   Aqueduct\_PR
   & LMGC90
@@ -2753,7 +2756,8 @@ The four first tests in Table ~\ref{Tab:fclib} are examples that involve flexibl
 %  & $[1934]$$
   & $[6.80:7.46]$
   & $[4.7.10^{7}:3.4.10^{8}]$
-  & $[6.7.10^{1}:1.5.10^{2}]$\\
+  & $[6.7.10^{1}:1.5.10^{2}]$
+  &  $1.1.10^{-15}$\\
   \hline
   Bridge\_PR
   & LMGC90
@@ -2765,7 +2769,8 @@ The four first tests in Table ~\ref{Tab:fclib} are examples that involve flexibl
 %  & $[87:132]$
   & $[2.27:2.45]$
   & $[8.3.10^{4}:1.1.10^{5}]$
-  & $[1.9.10^{3}:2.6.10^{4}]$\\
+  & $[1.9.10^{3}:2.6.10^{4}]$
+  & $5.8.10^{-18}$\\
   \hline
   100\_PR\_Periobox
   & LMGC90
@@ -2777,7 +2782,8 @@ The four first tests in Table ~\ref{Tab:fclib} are examples that involve flexibl
 %  & $[23:600]$
   & $[1.76:3.215]$
   & $[4.3.10^{2}:1.0.10^{6}]$
-  & $[6.3.10^{5}:3.5.10^{6}]$ \\
+  & $[6.3.10^{5}:3.5.10^{6}]$
+  & $8.8.10^{-20}$\\
   \hline
   945\_SP\_Box\_PL
   & LMGC90
@@ -2789,19 +2795,21 @@ The four first tests in Table ~\ref{Tab:fclib} are examples that involve flexibl
 %  & $[5333:7617]$
   & $[1.0:2.66]$
   & $[2.2.10^{4}:4.4.10^{5}]$
-  & $[2.9.10^{1}:9.2.10^{2}]$\\
+  & $[2.9.10^{1}:9.2.10^{2}]$
+  & $1.3.10^{-10}$\\
   \hline
   Capsules
   & Siconos
   & 0.7
   & 249
-  & \{300\}
-  & $[1:200]$
-  & $[1.2:1.5]$
+  & [96:600]
+  & $[17:304]$
+  & $[0.53:1.52]$
 %  & $[47:587]$
   & $[1.08:1.55]$
-  & $[1.2.10^{6}:7.5.10^{9}]$
-  & -- \\
+  & --
+  & $[4.8:1.6.10^{2}]$
+  & $3.3.10^{-02}$\\
   \hline
   Chain
   & Siconos
@@ -2813,7 +2821,8 @@ The four first tests in Table ~\ref{Tab:fclib} are examples that involve flexibl
 %  & 53
   & $[1.05:1.6]$
   & $[7.4.10^{4}:4.0.10^{9}]$
-  & $[1.5.10^{1}:4.7.10^{5}]$\\
+  & $[1.5.10^{1}:4.7.10^{5}]$
+  & $3.7.10^{-02}$\\
   \hline
   KaplasTower
   & Siconos
@@ -2825,7 +2834,8 @@ The four first tests in Table ~\ref{Tab:fclib} are examples that involve flexibl
 %  & $[72:792]$
   & $[2.0:3.53]$
   & $[67:2174]$
-  & $[8:67]$\\
+  & $[8:67]$
+  & $5.4.10^{-08}$\\
   \hline
   BoxesStack
   & Siconos
@@ -2837,7 +2847,8 @@ The four first tests in Table ~\ref{Tab:fclib} are examples that involve flexibl
 %  & $[54:300]$
   & $[1.875:2.0]$
   & $[3.8.10^{4}:2.5.10^{7}]$
-  & $[9.0:5.4.10^{3}]$\\
+  & $[9.0:5.4.10^{3}]$
+  & $2.23.10^{-14}$\\
   \hline
   Chute\_1000
   & Siconos
@@ -2849,7 +2860,7 @@ The four first tests in Table ~\ref{Tab:fclib} are examples that involve flexibl
 %  & $[222:8133]$
   & $[1.0:2.95]$
   & $[2.1.10^{1}:1.9.10^{3}]$
-  & \\
+  & $6.6.10^{-02}$ \\
   \hline
   Chute\_4000
   & Siconos
@@ -2861,7 +2872,8 @@ The four first tests in Table ~\ref{Tab:fclib} are examples that involve flexibl
   & --
   % & $[222:8133]$
   & --
-  & $[5.5.10^{1}:9.0.10^{3}]$\\
+  & $[5.5.10^{1}:9.0.10^{3}]$
+  & $8.9.10^{-14}$\\
   \hline
   Chute\_local\_problems
   & Siconos
@@ -2873,7 +2885,8 @@ The four first tests in Table ~\ref{Tab:fclib} are examples that involve flexibl
 %  & 3
   & 1
   & $[1.04:4.66]$
-  & $[2.6:2.6.10^{1}]$\\
+  & $[2.6:2.6.10^{1}]$
+  & $1.76.10^{-09}$\\
   \hline
 \end{tabular}
 \caption{Description of the test sets of FCLib library (v1.0)}
@@ -2959,7 +2972,17 @@ The simulation campaign is described in Table~\ref{Tab:fclib-simulation}. For so
   & $2.83^{-03}$
   & 0\\
   \hline
-  LowWall\_FEM
+  LowWall\_FEM 
+  & $10^{-08}$
+  & 400
+  & 13.1
+  & 3.50
+  & $1.91^{-02}$
+  & $5.09^{-03}$
+  & 0
+  \\
+  \hline
+  LowWall\_FEM II
   & $10^{-04}$
   & 400
   & 14.8
@@ -3150,7 +3173,7 @@ In this section, we perform a comparison of the solvers by family by family. The
 \label{Sec:Comparison,VI,step-length}
 
 
-In Figure~\ref{fig:VI/UpdateRule}, we compare the different numerical solvers for VI described in Section~\ref{sec:numericalmethods,vi}. The solvers are quite slow to converge in practice for large problems and/or with tight tolerances although they are robust except for {\sf FP-DS}. Only the test sets for which the solvers are reached the precision before the prescribed time limit are presented. For that reason, the results for the test sets LowWall\_FEM,  Cubes\_H8, Bridge\_PR, AqueducPR, 945\_SP\_Box\_PL, BoxesStack, Chute\_4000  and Chute\_1000  are not depicted. 
+In Figure~\ref{fig:VI/UpdateRule}, we compare the different numerical solvers for VI described in Section~\ref{sec:numericalmethods,vi}. The solvers are quite slow to converge in practice for large problems and/or with tight tolerances although they are robust except for {\sf FP-DS}. Only the test sets for which the solvers are reached the precision before the prescribed time limit are presented. For that reason, the results for the test sets LowWall\_FEM,  LowWall\_FEM II,  Cubes\_H8, Bridge\_PR, AqueducPR, 945\_SP\_Box\_PL, BoxesStack, Chute\_4000  and Chute\_1000  are not depicted. 
 The main conclusions are as follows:
 \begin{enumerate}
 \item The solver {\sf FP-DS} suffers from robustness problems and a lot of divergence has been observed. This is mainly due to the fact that we set a priori the $\rho$ parameter in Algorithm~\ref{Algo:FP-vi} to a fixed value of $1$, independently of the problem.
@@ -3209,7 +3232,7 @@ In this section, we compare the family of solvers based on splitting and relaxat
 \begin{enumerate}
 \item When the prescribed time limit is sufficiently large and the tolerance is low ($10^{-4}$), we observe the {\sf NSGS-$\star$} solvers are robust. Indeed, we are able to find to a local solver for each test sets that is able to give a solution at the required low accuracy. Nevertheless, there is no universal efficient local solver that outperforms the other ones.
   
-\item When the tolerance is equal to $10^{-8}$,  the {\sf NSGS-$\star$} solvers have some difficulties to reach convergence for all the problems within the prescribed time limit. This is the case for the test sets Cubes\_H8, Bridge\_PR, Chain,  Capsules and BoxesStack. Generally, the convergence is so slow that it is difficult to reach tight tolerance with a reasonable time limit.
+\item When the tolerance is equal to $10^{-8}$,  the {\sf NSGS-$\star$} solvers have some difficulties to reach convergence for all the problems within the prescribed time limit. This is the case for the test sets LowWall\_FEM, Cubes\_H8, Bridge\_PR, Chain,  Capsules and BoxesStack. Generally, the convergence is so slow that it is difficult to reach tight tolerance with a reasonable time limit.
  
 \item Except for the test sets KaplasTower II and BoxesStack, the solver {\sf NSGS-EXACT} behaves poorly. This is mainly due to the fact that the solver is not robust to find a solution for one contact when we are far from the global solution for all the contacts. This behavior was already reported in~\citep{Daviet.ea_SIGGRAPH2011} where another solver based a nonsmooth Newton technique is used when  the exact solution is not satisfactory.
   
@@ -3227,19 +3250,21 @@ In this section, we compare the family of solvers based on splitting and relaxat
     \centering
     \subfiglayout
     \subfloat[\scriptsize LowWall\_FEM]
-    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}}
+    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-08/400/time/profile-LMGC_LowWall_FEM.pdf}}
+    \subfloat[\scriptsize LowWall\_FEM II]
+    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}} \\
     \subfloat[\scriptsize Cubes\_H8 II]
-    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} \\
+    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} 
     \subfloat[\scriptsize Cubes\_H8]
-    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}}
+    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}} \\
     \subfloat[\scriptsize Bridge\_PR II]
-    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}} \\
+    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}} 
     \subfloat[\scriptsize Bridge\_PR]
-    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}}
+    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}} \\
     \subfloat[\scriptsize AqueducPR]
-    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}}\\
+    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}}
     \subfloat[\scriptsize 945\_SP\_Box\_PL]
-    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}}
+    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}} \\
     \subfloat[\scriptsize 100\_PR\_PerioBox]
     {\includegraphics[width=\figwidth]{../figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
     \caption{Influence of the local solver in {\sf NSGS-$\star$} algorithms.}
@@ -3280,7 +3305,7 @@ From these results, it is quite difficult to guess in advance the internal dynam
 \begin{figure}
   \centering
     \subfiglayout
-\subfloat[\scriptsize LowWall\_FEM]
+\subfloat[\scriptsize LowWall\_FEM II]
    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}} 
 \subfloat[\scriptsize Cubes\_H8 II]
    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/VI/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} \\
@@ -3326,7 +3351,7 @@ In Figure~\ref{fig:NSGS/LocalTol},  we report the performance profiles of {\sf N
 \begin{figure}
   \centering
     \subfiglayout
-\subfloat[\scriptsize LowWall\_FEM]
+\subfloat[\scriptsize LowWall\_FEM II]
    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}} 
 \subfloat[\scriptsize Cubes\_H8 II]
    {\includegraphics[width=\figwidth]{../figure/NSGS/LocalTol/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} \\
@@ -3370,13 +3395,13 @@ In Figure~\ref{fig:NSGS/rho}, we evaluate the influence of the choice of the par
 \begin{enumerate}
 \item For the test sets 945\_SP\_Box\_PL, 100\_PR\_PerioBox, KaplasTower II, KaplasTower, Chute\_local\_problems, Chute\_4000, Chute\_1000, Capsules, a fixed value of $\rho_\n=\rho_\t=1$ has a dramatic effect on the convergence of the algorithm. The scaling of $\rho$ is of utmost importance for the efficiency and the robustness of the solver. Note that the rule  \eqref{eq:rho-4} that takes into account the condition number of the local Delassus matrix $W$ deteriorates the performance for  Chute\_4000, Chute\_1000. In these problems, the local matrix is unsymmetric with large extra-diagonal terms due to large gyroscopic effects.
   
-\item For the other tests, the choice of $\rho_\n,\rho_\t$ does not really change the results such as LowWall\_FEM, mainly due the fact that the order of magnitude of the chosen $\rho$ with the rules \eqref{eq:rho-2}, \eqref{eq:rho-3} or \eqref{eq:rho-4} is in $[10^{-01}, 1]$. Cubes\_H8 II, Cubes\_H8, Bridge\_PR II, Bridge\_PR, 100\_PR\_PerioBox, Chain, BoxesStack and AqueducPR are not displayed since the results are similar.
+\item For the other tests, the choice of $\rho_\n,\rho_\t$ does not really change the results such as LowWall\_FEM II, mainly due the fact that the order of magnitude of the chosen $\rho$ with the rules \eqref{eq:rho-2}, \eqref{eq:rho-3} or \eqref{eq:rho-4} is in $[10^{-01}, 1]$. Cubes\_H8 II, Cubes\_H8, Bridge\_PR II, Bridge\_PR, 100\_PR\_PerioBox, Chain, BoxesStack and AqueducPR are not displayed since the results are similar.
 \end{enumerate}
 One of the conclusion of this study is as follows, the rules \eqref{eq:rho-2}, \eqref{eq:rho-3} improves a lot some simulations without increasing the computational cost for the others. Therefore, it is strongly advised to use it. Some further theoretical studies are needed to understand the effect of $\rho$ on the convergence. In particular, the rule \eqref{eq:rho-4} is usually better, but sometimes destroy completely the convergence.
 \begin{figure}
   \centering
     \subfiglayout
-\subfloat[\scriptsize LowWall\_FEM]
+\subfloat[\scriptsize LowWall\_FEM II]
    {\includegraphics[width=\figwidth]{../figure/NSGS/rho/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}}
 % \subfloat[\scriptsize Cubes\_H8 II]
 %    {\includegraphics[width=\figwidth]{../figure/NSGS/rho/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}}
@@ -3424,7 +3449,7 @@ In this section, we study the influence of the contact order within the loop of 
 \begin{figure}
   \centering
     \subfiglayout
-  \subfloat[\scriptsize LowWall\_FEM]
+  \subfloat[\scriptsize LowWall\_FEM II]
    {\includegraphics[width=\figwidth]{../figure/NSGS/Shuffled/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}} 
    \subfloat[\scriptsize Cubes\_H8 II]
    {\includegraphics[width=\figwidth]{../figure/NSGS/Shuffled/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} \\
@@ -3478,7 +3503,7 @@ To conclude, it is difficult to advice to use PSOR algorithm with $\omega\neq 1$
 \begin{figure}
   \centering
     \subfiglayout
-  \subfloat[\scriptsize LowWall\_FEM]
+  \subfloat[\scriptsize LowWall\_FEM II]
    {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}} 
 \subfloat[\scriptsize Cubes\_H8 II]
    {\includegraphics[width=\figwidth]{../figure/PSOR/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} 
@@ -3524,7 +3549,7 @@ In this section,  the nonsmooth Newton methods  are compared.  The performance p
 \item For the flexible tests, most of the Newton methods succeed to solve the problems within the prescribed time limit. The solver {\sf NSN-AC-HYBRID} appears to be the best solver.  The effect of computing an initial condition of the solver with a robust method such as {\sf EG-VI-UPK}  improves the convergence. In practice, we observe that the precomputation allows one to determine roughly the set of closed and sliding contacts and it helps a lot the convergence of the Newton solvers. The solvers without line--searches perform also better than those with a line--search procedure which  seems to slow down the convergence without improving the robustness.  For the different formulations, the {\sf NSN-AC} and {\sf NSN-JM} give equivalent results and are better that the {\sf NSN-NM} solver which is in turns better than the {\sf NSN-FB} solver. Note that the Goldstein--Price line search is usually better than the Armijo despite the fact the merit function is not necessarily smooth. Finally, we note that  {\sf NSN-FB}  and {\sf NSN-FB-A} are really the slowest solver on these flexible examples.
 \item For the rigid test sets with an high value of the rank ratio or the contact density~$c$ (see Table~\ref{Tab:fclib}), the Newton methods fail to converge and a lot of divergence has been noted in practice. This is the case for the test sets Bridge\_PR II, Bridge\_PR, AqueducPR, 945\_SP\_Box\_PL, 100\_PR\_PerioBox that are not depicted in Figure~\ref{fig:NSN}.
 \item For the rigid test sets with a low value of the rank ratio or the contact density $c$ less than $1$ such as Chute\_1000 and Chain, we observe that the Newton methods are able to solve some problems. We note also that in the Chain test set, the use of a fixed value of $\rho$ is penalizing a lot the convergence of the solver. Contrary to flexible test sets, the use of a line--search procedure helps  to get a better robustness  of the solver. This is particularly true for {\sf NSN-NM-GP}.
-\item For the Chute\_local\_problems test set, we observe a large variability of the results depending on the formulation and the line--search procedures.
+%\item For the Chute\_local\_problems test set, we observe a large variability of the results depending on the formulation and the line--search procedures.
 \item Finally, for the test sets KaplasTower and Capsules, the {\sf NSN-FB-GP} is able to solve more than 80\% in a very efficient way. Some further studies would be needed to understand why this specific solver performs really better than the others.
 \end{enumerate}
 As general conclusion, the success of the {\sf NSN-$\star$} algorithms is conditioned by  the rank of the Delassus matrix $W$, and then, by the contact density value $c$. For full rank matrix $W$, the solvers are robust and efficient. For values of $c$ not larger than $1$, the methods are able to find a solution with a tight accuracy. For larger values of $c$ and larger rank ratio, the nonsmooth Newton methods are not robust and generally diverge.
@@ -3532,12 +3557,14 @@ As general conclusion, the success of the {\sf NSN-$\star$} algorithms is condit
 \begin{figure}
   \centering
     \subfiglayout
- \subfloat[\scriptsize LowWall\_FEM]
+ \subfloat[\scriptsize LowWall\_FEM II]
    {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}} 
+ \subfloat[\scriptsize LowWall\_FEM]
+   {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-08/400/time/profile-LMGC_LowWall_FEM.pdf}} \\
 \subfloat[\scriptsize Cubes\_H8 II]
-   {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} \\
+   {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} 
 \subfloat[\scriptsize Cubes\_H8]
-   {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}}
+   {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}} \\
 % \subfloat[\scriptsize Bridge\_PR II]
 %    {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}}
 % \subfloat[\scriptsize Bridge\_PR]
@@ -3550,9 +3577,9 @@ As general conclusion, the success of the {\sf NSN-$\star$} algorithms is condit
 % \subfloat[\scriptsize KaplasTower II]
 %    {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-04/100/time/profile-KaplasTower.pdf}} \\
 \subfloat[\scriptsize KaplasTower]
-   {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-08/200/time/profile-KaplasTower.pdf}} \\
-\subfloat[\scriptsize Chute\_local\_problems]
-   {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-08/10/time/profile-Chute_local_problems.pdf}} 
+   {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-08/200/time/profile-KaplasTower.pdf}} 
+% \subfloat[\scriptsize Chute\_local\_problems]
+%    {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-08/10/time/profile-Chute_local_problems.pdf}} \\
 % \subfloat[\scriptsize Chute\_4000]
 %    {\includegraphics[width=\figwidth]{../figure/NSN/1.0e-04/200/time/profile-Chute_4000.pdf}}
 \subfloat[\scriptsize Chute\_1000]
@@ -3576,17 +3603,17 @@ As general conclusion, the success of the {\sf NSN-$\star$} algorithms is condit
 \label{Sec:PROX/NSN/InternalSolvers}
 In Figure~\ref{fig:PROX/NSN/InternalSolvers}, we compare the proximal point algorithm with various internal solvers based on nonsmooth Newton methods {\sf NSN-$\star$}. The main observations are:
 \begin{enumerate}
-\item For the flexible test sets (see for an illustration the test set LowWall\_FEM), for which the nonsmooth Newton solvers work pretty well, the use of a proximal point algorithm has no interest since it slows down the convergence of the algorithm by performing a first iteration with a given, and possibly large, value of the exact regularization parameter $\alpha$.
+\item For the flexible test sets (see for an illustration the test set LowWall\_FEM II), for which the nonsmooth Newton solvers work pretty well, the use of a proximal point algorithm has no interest since it slows down the convergence of the algorithm by performing a first iteration with a given, and possibly large, value of the exact regularization parameter $\alpha$.
 \item For the test sets KaplasTower,   Chute\_1000, Chain, Capsules and BoxesStack, the proximal point approach improves greatly the efficiency  of the {\sf NSN-AC-GP} solver and often improves also its reliability (see for comparison Figure~\ref{fig:NSN}). Clearly, the regularization introduced in the proximal point algorithm changes the rank of the matrix $W$ and it has a strong effect on the convergence of the nonsmooth  Newton methods.
 \item The efficiency of the proximal point algorithm depends strongly  on the internal solver. As it is illustrated on the Capsules test, the improvement brought by the proximal point algorithm does not necessarily follows the success of the Newton solver when it is used alone.
 \item The strategy for updating the regularization parameter $\alpha$ plays also an important role. Quite surprisingly, for the Bridge\_PR test set, the adaptive rule that does not take into account the current error is really efficient and allows to get a robust and efficient solver with respect to the others. Unfortunately, there is no updating method for the parameter $\alpha$ that works for all test sets.
 \end{enumerate}
-In Figure~\ref{fig:PROX/NSGS/InternalSolvers}, we compare the {\sf NSGS-AC} solver when it is used directly or inside the proximal point algorithm. On most of the test sets such as KaplasTower, a direct application of the {\sf NSGS-AC} solver is already efficient and its embedding into a proximal point algorithm does not bring any improvements. Nevertheless, we can see on Figure~\ref{fig:PROX/NSGS/InternalSolvers} that the proximal point algorithm improves the robustess and the efficiency for the test sets 945\_SP\_Box\_PL,  Chute\_4000, Chute\_1000 and Capsules has been improved. For the test set Chute\_4000, the result is particularly impressive.
+In Figure~\ref{fig:PROX/NSGS/InternalSolvers}, we compare the {\sf NSGS-AC} solver when it is used directly or inside the proximal point algorithm. On most of the test sets such as KaplasTower, a direct application of the {\sf NSGS-AC} solver is already efficient and its embedding into a proximal point algorithm does not bring any improvements. Nevertheless, we can see on Figure~\ref{fig:PROX/NSGS/InternalSolvers} that the proximal point algorithm improves the robustess and the efficiency for the test sets 945\_SP\_Box\_PL  and Capsules has been improved. For the test set Chute\_4000, the result is particularly impressive.
 
 \begin{figure}
   \centering
     \subfiglayout
-\subfloat[\scriptsize LowWall\_FEM]
+\subfloat[\scriptsize LowWall\_FEM II]
    {\includegraphics[width=\figwidth]{../figure/PROX/NSN/InternalSolvers/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}}
 % \subfloat[\scriptsize Cubes\_H8 II]
 %    {\includegraphics[width=\figwidth]{../figure/PROX/NSN/InternalSolvers/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}}
@@ -3627,7 +3654,7 @@ In Figure~\ref{fig:PROX/NSGS/InternalSolvers}, we compare the {\sf NSGS-AC} solv
 \begin{figure}
   \centering
     \subfiglayout
-% \subfloat[\scriptsize LowWall\_FEM]
+% \subfloat[\scriptsize LowWall\_FEM II]
 %    {\includegraphics[width=\figwidth]{../figure/PROX/NSGS/InternalSolvers/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}}
 % \subfloat[\scriptsize Cubes\_H8 II]
 %    {\includegraphics[width=\figwidth]{../figure/PROX/NSGS/InternalSolvers/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}}
@@ -3671,7 +3698,7 @@ In Figure~\ref{fig:PROX/NSGS/InternalSolvers}, we compare the {\sf NSGS-AC} solv
 % \begin{figure}
 %   \centering
 %   \subfiglayout
-%   \subfloat[\scriptsize LowWall\_FEM]
+%   \subfloat[\scriptsize LowWall\_FEM II]
 %    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}}
 % \subfloat[\scriptsize Cubes\_H8 II]
 %    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu05/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}}
@@ -3711,7 +3738,7 @@ In Figure~\ref{fig:PROX/NSGS/InternalSolvers}, we compare the {\sf NSGS-AC} solv
 % \begin{figure}
 %   \centering
 %   \subfiglayout
-%   \subfloat[\scriptsize LowWall\_FEM]
+%   \subfloat[\scriptsize LowWall\_FEM II]
 %    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}}
 % \subfloat[\scriptsize Cubes\_H8 II]
 %    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu10/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}}
@@ -3750,7 +3777,7 @@ In Figure~\ref{fig:PROX/NSGS/InternalSolvers}, we compare the {\sf NSGS-AC} solv
 % \begin{figure}
 %   \centering
 %   \subfiglayout
-%   \subfloat[\scriptsize LowWall\_FEM]
+%   \subfloat[\scriptsize LowWall\_FEM II]
 %    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}}
 % \subfloat[\scriptsize Cubes\_H8 II]
 %    {\includegraphics[width=\figwidth]{../figure/PROX/Parameters/nu20/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}}
@@ -3796,7 +3823,7 @@ In Figure~\ref{fig:PROX/NSGS/InternalSolvers}, we compare the {\sf NSGS-AC} solv
 
 In Figure~\ref{fig:OPTI}, we compare the algorithms based on the optimization approach presented in Section~\ref{Sec:OptimisationBasedMethods}. The pure convex relaxation {\sf SOCLCP-NSGS-PLI}  method has been added to understand the effect of the nonconvexity of the problems on the efficiency and robustness of the solvers. The main conclusions are
 \begin{enumerate}
-\item The pure convex relaxation in {\sf SOCLCP-NSGS-PLI}  simplifies drastically the problems in the test sets  LowWall\_FEM, AqueducPR, KaplasTower, BoxesStack  and is slightly better in Bridge\_PR II, 100\_PR\_PerioBox, KaplasTower II test sets. Especially, we note that if we want to reach a better accuracy as in the KaplasTower test set, the convex relaxation helps a lot but this conclusion cannot be made in the test set Bridge\_PR. Let us also note that  the convex relaxation does not help a lot in the test sets Cubes\_H8, Bridge\_PR, Chute\_1000, Chute\_4000 and Capsules. One of the conclusion may be that the nonconvexity of the problem is not the only difficulty in such problems. Using a convex relaxation is not sufficient to solve all the problems.
+\item The pure convex relaxation in {\sf SOCLCP-NSGS-PLI}  simplifies drastically the problems in the test sets  LowWall\_FEM II, AqueducPR, KaplasTower, BoxesStack  and is slightly better in Bridge\_PR II, 100\_PR\_PerioBox, KaplasTower II test sets. Especially, we note that if we want to reach a better accuracy as in the KaplasTower test set, the convex relaxation helps a lot but this conclusion cannot be made in the test set Bridge\_PR. Let us also note that  the convex relaxation does not help a lot in the test sets Cubes\_H8, Bridge\_PR, Chute\_1000, Chute\_4000 and Capsules. One of the conclusion may be that the nonconvexity of the problem is not the only difficulty in such problems. Using a convex relaxation is not sufficient to solve all the problems.
 \item The solvers based on the optimization approach are generally robust but slow. This is mainly due to two reasons. Firstly,  we use internal iterative solvers with a slow convergence rate. The fact that  the Delassus matrix has not full rank in the rigid tests prevents the use of second order methods as nonsmooth Newton methods.  For the flexible test, it could be of interest to implement dedicated new internal solvers of the internal convex problems based on nonsmooth Newton methods. Furthermore, the tests with standard implementations of optimization methods was not really concluding. The general convex solvers are not  able to exploit the particular structure of the constraints given by a Cartesian product of a large number of second order cones. Secondly, the fixed point iteration that drives the convergence is generally slow. Once again, it would valuable to implement a second order method for driving the external loop.
 \item On the choice of a specific optimization based strategy with respect to the others, we can observe that the comparison is really problem--dependent. On the test sets Cubes\_H8, Bridge\_PR,  Bridge\_PR II, LowWall\_FEM and AqueducPR, the {\sf ACLM-$\star$} solvers perform better than the others.  For the test-sets KaplasTower, 945\_SP\_Box\_PL, Chute\_4000, Chute\_1000 and BoxesStack, the {\sf TRESCA-$\star$} solvers are better. Finally, the {\sf PANA-$\star$} solvers are better on the 100\_PR\_PerioBox test set. Since the convex relaxation of the internal problem is made in different manners, we may expect that the different families  of solvers will not behave in the same way. In particular, if the coefficient of friction is large or if the number of sliding contacts is low, we may expect that the {\sf ACLM-$\star$} solvers behave better because the $s$ variable in the fixed point iteration will not drastically influence the convergence. On the contrary, when the coefficient of friction is low, we may expect that the splitting introduced in the {\sf PANA-$\star$} will be better. Unfortunately, we have further investigated this point with an analysis of the contact status (closed, sliding, sticking) in the problems.
 \end{enumerate}
@@ -3806,8 +3833,10 @@ In Figure~\ref{fig:OPTI}, we compare the algorithms based on the optimization ap
 \begin{figure}
   \centering
     \subfiglayout
-\subfloat[\scriptsize LowWall\_FEM]
+\subfloat[\scriptsize LowWall\_FEM II]
    {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}}
+% \subfloat[\scriptsize LowWall\_FEM]
+%    {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-08/400/time/profile-LMGC_LowWall_FEM.pdf}}
 \subfloat[\scriptsize Cubes\_H8 II]
    {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} \\
 \subfloat[\scriptsize Cubes\_H8]
@@ -3825,17 +3854,17 @@ In Figure~\ref{fig:OPTI}, we compare the algorithms based on the optimization ap
 % \subfloat[\scriptsize 100\_PR\_PerioBox]
 %    {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-08/200/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
 % {\includegraphics[height=\legendheight]{../figure/OPTI/1.0e-08/50/time/profile-Chain_legend.pdf}}
-   \caption{Comparison of the optimization based solvers}
+\subfloat[\scriptsize KaplasTower II]
+   {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-04/100/time/profile-KaplasTower.pdf}}
+\subfloat[\scriptsize KaplasTower]
+   {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-08/200/time/profile-KaplasTower.pdf}} 
+   \caption{}
 %   \label{fig:OPTI-1}
 \end{figure}
 \begin{figure}
   \centering
   \ContinuedFloat
     \subfiglayout
-\subfloat[\scriptsize KaplasTower II]
-   {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-04/100/time/profile-KaplasTower.pdf}}
-\subfloat[\scriptsize KaplasTower]
-   {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-08/200/time/profile-KaplasTower.pdf}} \\
 \subfloat[\scriptsize Chute\_local\_problems]
    {\includegraphics[width=\figwidth]{../figure/OPTI/1.0e-08/10/time/profile-Chute_local_problems.pdf}}
 \subfloat[\scriptsize Chute\_4000]
@@ -3861,8 +3890,8 @@ In Figure~\ref{fig:OPTI}, we compare the algorithms based on the optimization ap
 In this last section, the most efficient solvers by family has been chosen and are compared. The performance profiles are reported in Figure~\ref{fig:COMP}. The main conclusions are as follows:
 \begin{enumerate}
 \item First of all, we can observe that for all the test sets, a least one solver is able to solve all the problems within the prescribed time.  Unfortunately, there is no universal solver that outperforms all the other solvers for all the test sets.
-\item For the flexible test sets, the nonsmooth Newton solvers {\sf NSN-$\star$} are the best solvers. In the test set LowWall\_FEM, the {\sf NSN-$\star$} are followed the {\sf NSGS-FP-VI-UPK} and {\sf NSGS-AC} solvers. On this test set, the requires accuracy is limited to $10^{-04}$ and the  {\sf NSGS-$\star$} are still able to reach the tolerance in a competitive time. Between the test sets {\sf Cubes\_H8 II} and {\sf Cubes\_H8}, the required accuracy is decreased to $10^{-08}$. With a tighter tolerance, we observe that the relative efficiency of the {\sf NSN-$\star$} solvers increase. In other words, on the flexible tests we are able to use nonsmooth Newton methods efficiently since the Delassus matrix $W$ has full rank. In that case, we observe that we retrieve a quadratic convergent rate that enables to reach tighter tolerances. Note that in the flexible test sets, the proximal point algorithms {\sf PPA-NSN-$\star$} are not really interesting but as the required accuracy decreased, they start to compete with {\sf NSGS-$\star$} algorithms.\\
-  {\tt redo simulation of LowWall at $10^{-08}$ or cite \citep{Acary.ea_CSMA2017}}
+\item For the flexible test sets, the nonsmooth Newton solvers {\sf NSN-$\star$} are the best solvers. In the test set LowWall\_FEM II, the {\sf NSN-$\star$} are followed the {\sf NSGS-FP-VI-UPK} and {\sf NSGS-AC} solvers. On this test set, the requires accuracy is limited to $10^{-04}$ and the  {\sf NSGS-$\star$} are still able to reach the tolerance in a competitive time. Between the test sets {Cubes\_H8 II} and {Cubes\_H8}, and between the test sets  LowWall\_FEM II and LowWall\_FEM, the required accuracy is decreased to $10^{-08}$. With a tighter tolerance, we observe that the relative efficiency of the {\sf NSN-$\star$} solvers increase. This was already noted in~\citep{Acary.ea_CSMA2017}. In other words, on the flexible tests we are able to use nonsmooth Newton methods efficiently since the Delassus matrix $W$ has full rank. In that case, we observe that we retrieve a quadratic convergent rate that enables to reach tighter tolerances. Note that in the flexible test sets, the proximal point algorithms {\sf PPA-NSN-$\star$} are not really interesting but as the required accuracy decreased, they start to compete with {\sf NSGS-$\star$} algorithms.
+
 \item For most of the rigid test sets with a low required accuracy of $10^{-04}$ as AqueducPR, 945\_SP\_Box\_PL, 100\_PR\_PerioBox , KaplasTower, Chute\_4000 and Chute\_1000,   the {\sf NSGS-$\star$} are the most efficient and robust solvers. In the case of the test sets Chute\_4000 and Chute\_1000,  the {\sf NSGS-FP-VI-UPK} solvers are better than the {\sf NSGS-AC-$\star$} due to some robustness issues in the local solvers based on nonsmooth Newton methods. These solvers are generally followed by optimization based solvers such as {\sf ACLM-$\star$} and {\sf TRESCA-$\star$} solvers, except for the test set 945\_SP\_Box\_PL where the more robust solver is {\sf TRESCA-NSGS-FP-VI-UPK}.
   
 \item For the rigid test sets with a low requires accuracy of $10^{-08}$ as Bridge\_PR, Chain, Capsules and BoxesStack, the solvers {\sf PPA-$\star$} are the most efficient and robust solvers. The regularization of the Delassus matrix  introduced by the proximal point algorithm has a very positive effect on the internal solvers. Especially, it enables the use of nonsmooth Newton techniques that allows one to reach a tighter accuracy thank to their quadratic convergent rates. The {\sf PPA-$\star$} algorithms are generally followed {\sf NSGS-$\star$} except in the case of the Chain test set where the  {\sf NSN-$\star$} is able to solve 60\% of the problems quite efficiently. In the case of the Bridge\_PR test set, the use of proximal point technique {\sf PPA-NSN-AC-GP adaptive $\nu0 = 10^{+03}$} is the only one  to solve all the problems at the tolerance of  $10^{-08}$. As discussed in Section~\ref{Sec:PROX/NSN/InternalSolvers}, the rule for updating the proximal point parameter $\alpha$ play an important role and deserves further studies.
@@ -3874,22 +3903,24 @@ In this last section, the most efficient solvers by family has been chosen and a
 \begin{figure}
   \centering
     \subfiglayout
-\subfloat[\scriptsize LowWall\_FEM]
+\subfloat[\scriptsize LowWall\_FEM II]
    {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}}
+\subfloat[\scriptsize LowWall\_FEM]
+   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-08/400/time/profile-LMGC_LowWall_FEM.pdf}} \\
 \subfloat[\scriptsize Cubes\_H8 II]
-   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} \\
+   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} 
 \subfloat[\scriptsize Cubes\_H8]
-   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}}
+   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}} \\
 \subfloat[\scriptsize Bridge\_PR II]
-   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}} \\
+   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}} 
 \subfloat[\scriptsize Bridge\_PR]
-   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}}
+   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}} \\
 \subfloat[\scriptsize AqueducPR]
-   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
+   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} 
 \subfloat[\scriptsize 945\_SP\_Box\_PL]
-   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}}
+   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}} \\
    \subfloat[\scriptsize 100\_PR\_PerioBox]
-   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
+   {\includegraphics[width=\figwidth]{../figure/COMP/large/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}}
  \caption{Comparison of the solvers between families}
 \end{figure}
 \begin{figure}
