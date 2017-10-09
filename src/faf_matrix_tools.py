@@ -3,7 +3,7 @@ from faf_tools import *
 
 import numpy as np
 import sys
-from scipy.sparse import csr_matrix
+from scipy.sparse import csr_matrix, linalg, diags
 
 from numpy.linalg import matrix_rank,svd
 try:
@@ -30,7 +30,7 @@ except:
 def dense_matrix_rank(M):
     return matrix_rank(M)
 
-@timeout(1)
+@timeout(200)
 def sparse_matrix_svd(A,k):
     return svds(A,k)
 
@@ -196,3 +196,42 @@ def _rank_estimate(f):
     return r
 
 rank_estimate = Memoize(_rank_estimate)
+
+def dd(X):
+    Sum_values_in_given_row = np.ravel((np.sum(abs(X),axis=1)))
+
+    X_diag = np.zeros(X.shape[0])
+    for i in range(X.shape[0]):
+        X_diag[i] = abs(X[i,i])
+    #print('X_diag', X_diag)
+
+    test = 2*X_diag - Sum_values_in_given_row
+    print('test',test) 
+    
+    if np.all( test >= 0.0):
+        print('matrix is diagonally dominant')
+        return True, min(test)
+    else:
+        print('NOT diagonally dominant')
+        return False, min(test)
+
+
+def _test_symmetry_W(problem_filename):
+    problem = read_fclib_format(problem_filename)[1]
+    A = csr_matrix(N.SBM_to_sparse(problem.M)[1])
+
+    #print("A=", A)
+    #print("A=", np.transpose(A))
+    #print("A-A^T",A-np.transpose(A))
+    print("norm A-A^T", linalg.norm(A-np.transpose(A)) )
+    is_symmetric =False
+    symmetry_test = linalg.norm(A-np.transpose(A),np.inf)
+    print("symmetry_test === ", symmetry_test)
+    
+    is_symmetric = (symmetry_test <= 1e-12)
+    is_dd, dd_test =  dd(A)
+    print("is_dd", is_dd)
+    print("is_symmetric", is_symmetric)
+    return is_symmetric, symmetry_test, is_dd, dd_test
+    
+test_symmetry_W = Memoize(_test_symmetry_W)

@@ -153,7 +153,7 @@ try:
                                     'output-dat', 'with-mumps', 'file-filter=', 'remove-files=',
                                     'list-contents','list-contents-solver',
                                     'add-precision-in-comp-file','add-timeout-in-comp-file',
-                                    'compute-cond-rank','compute-hardness','adhoc',
+                                    'compute-cond-rank','compute-hardness','test-symmetry','forced','adhoc',
                                     'display-speedup', 'thread-list=','estimate-optimal-timeout'])
 
 
@@ -315,9 +315,14 @@ for o, a in opts:
     elif o == '--compute-cond-rank':
         compute_cond_rank = True
         compute = False
+    elif o == '--test-symmetry':
+        test_symmetry = True
+        compute = False
     elif o == '--adhoc':
         adhoc = True
         compute = False
+    elif o == '--forced':
+        forced=True
 
 numerics_has_openmp_solvers=False
 try:
@@ -1312,12 +1317,13 @@ if __name__ == '__main__':
             print("compute for", problem_filename,"....")
             with h5py.File(problem_filename, 'r+') as fclib_file:
                 no_rank_info=True
-                if (fclib_file['fclib_local']['W'].attrs.get('rank') == None) :
-                    print("Rank info already not  in", problem_filename)
-                else:
-                    print("Rank info already in", problem_filename)
-                    print("fclib_file['fclib_local']['W'].attrs.get('rank')", fclib_file['fclib_local']['W'].attrs.get('rank'))
-                    no_rank_info=False
+                if (not forced):
+                    if (fclib_file['fclib_local']['W'].attrs.get('rank') == None) :
+                        print("Rank info already not  in", problem_filename)
+                    else:
+                        print("Rank info already in", problem_filename)
+                        print("fclib_file['fclib_local']['W'].attrs.get('rank')", fclib_file['fclib_local']['W'].attrs.get('rank'))
+                        no_rank_info=False
             if no_rank_info:
                 try:
                     [norm_lsmr, cond_lsmr, max_nz_sv, min_nz_sv, cond, rank, rank_dense, rank_svd, rank_estimate] = norm_cond(problem_filename)
@@ -1334,6 +1340,28 @@ if __name__ == '__main__':
                         fclib_file['fclib_local']['W'].attrs.create('cond_lsmr', cond_lsmr)
                 except Exception as e :
                     print("-->", e)
+                    
+    if test_symmetry:
+        print("Tasks will be run for", problem_filenames)
+        symmetry_test_list=[]
+        dd_test_list=[]
+        for problem_filename in problem_filenames:
+            print("compute for", problem_filename,"....")
+            with h5py.File(problem_filename, 'r+') as fclib_file:
+                no_rank_info=True
+                
+                try:
+                    is_symmetric, symmetry_test, is_dd, dd_test = test_symmetry_W(problem_filename)
+                    symmetry_test_list.append(symmetry_test)
+                    dd_test_list.append(dd_test)
+                    print("is_symmetric", is_symmetric)
+                    print("is_dd",is_dd)
+                    with h5py.File(problem_filename, 'r+') as fclib_file:
+                        fclib_file['fclib_local']['W'].attrs.create('symmetry', is_symmetric)
+                except Exception as e :
+                    print("-->", e)
+        print("avg symmetry_test",np.array(symmetry_test_list).mean() )
+        print("avg dd_test",np.array(dd_test_list).mean() )
 
     if adhoc:
         print("script adhoc (convenient moulinette)")

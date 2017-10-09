@@ -51,7 +51,10 @@ compute_hardness = False
 compute_cond_rank = False
 adhoc= False
 thread_list = []
-
+test_symmetry= False
 compute_rho=False
 estimate_optimal_timeout=False
 numerics_has_openmp_solvers=False
+
+
+forced=False
