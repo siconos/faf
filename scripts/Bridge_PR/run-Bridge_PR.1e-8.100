@@ -18,7 +18,7 @@ preload=''
 #OAR --project siconos
 #OAR --name Bridge_PR
 ###OAR -p cpumarch != 'haswell'
-#OAR -l /nodes=1,walltime=48:00:00
+#OAR -l /nodes=1/cpu=2,walltime=48:00:00
 
 faf_dir=$HOME/faf
 faf_src_dir=$faf_dir/src
