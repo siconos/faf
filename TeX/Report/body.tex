@@ -1,6 +1,7 @@
 \newcommand{\tb}[1]{\textcolor{blue}{#1}}
 \definecolor{applegreen}{rgb}{0.05, 0.41, 0.0}
-\newcommand{\tg}[1]{\textcolor{applegreen}{#1}}
+\newcommand{\tg}[1]{#1}
+\newcommand{\tgg}[1]{\textcolor{applegreen}{#1}}
 \newcommand{\moh}[1]{\textcolor{applegreen}{#1}}
 \newcommand{\MM}[0]{\rightrightarrows}
 
@@ -1660,7 +1661,7 @@ A nomenclature for the algorithms based on the VI formulation is given in Table~
 
 \subsection{Principle of the nonsmooth Newton methods}
 
-In Section~\ref{Sec:NonsmoothEquations}, several formulations of the frictional contact problem by means of nonsmooth equations  have been presented. These nonsmooth equations call for the use of nonsmooth Newton's methods. Remember that the standard Newton method is to solve
+In Section~\ref{Sec:NonsmoothEquations}, several formulations of the frictional contact problem by means of nonsmooth equations  have been presented. These nonsmooth equations call for the use of nonsmooth Newton's methods. Remember that the standard Newton method \tg{consists in solving}
 \begin{equation}
   \label{eq:NSN1}
   G(z)=0
@@ -1670,8 +1671,8 @@ by performing the following Newton iteration
   \label{eq:NSN2}
   z_{k+1}  =  z_k -  J^{-1}(z_k) G(z_k).
 \end{equation}
-If the mapping $G$ is smooth enough, the matrix $J$ is the Jacobian matrix of $G$ with respect to $z$, that is $J(z) = \nabla^\top_z G(z)$.
-When the $G$ is nonsmooth but locally Lipschitz continuous,  the Jacobian matrix is replaced by an element of the generalized Jacobian at $z$ denoted by $ \Phi(z) \in \partial G(z)$. Let us recall the definition of the generalized Jacobian. By Rademacher's Theorem, if $G$ is locally Lipschitz continuous, then $G$ is almost everywhere differentiable and let us define the set $D_G$ by
+If the mapping $G$ is smooth, the matrix $J$ is the Jacobian matrix of $G$ with respect to $z$, that is $J(z) = \nabla^\top_z G(z)$.
+Whenever $G$ is nonsmooth but locally Lipschitz continuous,  the Jacobian matrix $J$ is replaced by an element $\Phi(z)$ of the generalized Jacobian at $z$: $\Phi(z) \in \partial G(z)$. Let us recall the definition of the generalized Jacobian. By Rademacher's Theorem, if $G$ is locally Lipschitz continuous, then $G$ is almost everywhere differentiable and let us define the set $D_G$ by
 \begin{equation}
   \label{eq:NSN4}
   D_G \coloneqq \{z \mid G \text{ is differentiable at } z\}.
@@ -1713,16 +1714,20 @@ The resulting nonsmooth Newton method is detailed in Algorithm~\ref{Algo:NSN}.
   \caption{Nonsmooth Newton method for~\eqref{eq:NSN1}}  \label{Algo:NSN}
 \end{algorithm}
 
-The convergence of nonsmooth Newton methods is based on the assumption of semi--smoothness of the nonsmooth function in (\ref{eq:NSN1}). For this reason they are often called semi--smooth Newton methods  (see \citep[Section 7.5]{Facchinei.Pang2003} and references therein).
+The convergence of nonsmooth Newton methods is based on the assumption of semi--smoothness of the nonsmooth function in \eqref{eq:NSN1}.
+For this reason they are often called \emph{semi--smooth Newton methods} (see \citep[Section 7.5]{Facchinei.Pang2003} and references therein).
 \subsection{Application to  the discrete frictional contact problem}
-
-
-
-\paragraph{Newton method based on the Jean--Moreau and  Alart--Curnier functions}
 \label{Sec:NSN-AC}
 
+\tgg{We use the Alart--Curnier function $F_{\actwo}(u,r)$ in~\eqref{eq:AC-II}, Jean--Moreau function $F_{\mjtwo}(u,r)$ in \eqref{eq:MJ-II},
+Fischer-Burmeister function $F_{\fb}(u,r)$ in~\eqref{eq:FB-II}, and the natural map $F_{\vitwo}^\nat$ in~\eqref{eq:natural-II} to define
+a Newton method for the Problem~\ref{prob:II}.}
 
-Let us consider now the Alart--Curnier function $F_{\actwo}(u,r)$ in~\eqref{eq:AC-II} or the Jean--Moreau function $F_{\mjtwo}(u,r)$ \eqref{eq:MJ-II} for Problem~\ref{prob:II}. 
+\if0
+\paragraph{Newton method based on the Jean--Moreau and  Alart--Curnier functions}
+
+
+Let us now consider the Alart--Curnier function $F_{\actwo}(u,r)$ in~\eqref{eq:AC-II} or the Jean--Moreau function $F_{\mjtwo}(u,r)$ \eqref{eq:MJ-II} for Problem~\ref{prob:II}. 
 Algorithm~\ref{Algo:NSN} is applied with
 \begin{equation}  \label{eq:phiphi-ac}
     \Phi(r) \in \partial F_{\actwo}(r)\quad\text{ or } \quad   \Phi(r) \in \partial F_{\mjtwo}(r).
@@ -1756,10 +1761,11 @@ Algorithm~\ref{Algo:NSN} is applied {with}
 \begin{equation}  \label{eq:phiphi}
     \Phi(r) \in \partial F_{\vitwo}^\nat(r).
 \end{equation}
+\fi
 
 \paragraph{Computation of an element of $\partial G$}
 
-For any $r_0$ in the nonsmooth domain of $G$, we compute $\Phi(r_0) = \lim_{t\to0}\Phi(r(t))$ with $t \to r(t)$ a parametrization such that $\lim_{t\to0}r(t) = r_0$ with $r(t)$ in the smooth domain. 
+For any $r_0$ in the nonsmooth domain of $G$, we compute $\Phi(r_0) = \lim_{t\to0}\Phi(r(t))$ with $t \to r(t)$ a parametrization such that $\lim_{t\to0}r(t) = r_0$ with $r(t)$ in the smooth domain for all $t$.
 Similar computations can also be found in~\cite{Joli.Feng2008} where a Newton method based on the formulation~\eqref{eq:natural-II} is used contact by contact in a Gauss--Seidel loop.
 
 % \begin{ndrva}
@@ -1776,7 +1782,9 @@ Similar computations can also be found in~\cite{Joli.Feng2008} where a Newton me
 
 
 
-\paragraph{Lipschitz continuity properties} For the mapping $F^\nat_\vitwo, F_\actwo, F_{\fb}, F_{\mjtwo}, F_{\xswtwo}$ that are mainly generated by a composition of the Lipschitz functions $P_X,\min,\max$ and $\|.\|$ ; the local Lipschitz properties can be proven without difficulties. For the mapping  $F_{\fb}$, the proof of Lipschitz continuity of $\phi_\fb$ can be found in \citep{Sun.Sun_MP2005} and references therein. This ensures the consistency of the definition of the generalized Jacobians.
+\paragraph{Lipschitz continuity properties} For the mappings $F^\nat_\vitwo, F_\actwo, F_{\fb}, F_{\mjtwo}, F_{\xswtwo}$, \tgg{whose expressions is mostly made of}
+%that are mainly generated by a composition of
+the Lipschitz functions $P_X,\min,\max$ and $\|.\|$ ; the local Lipschitz properties can be shown without difficulties. For the mapping  $F_{\fb}$, the proof of Lipschitz continuity of $\phi_\fb$ can be found in \citep{Sun.Sun_MP2005} and references therein. This ensures the consistency of the definition of the generalized Jacobians.
 
 
 \subsection{Convergence and robustness issues.}
@@ -1784,21 +1792,22 @@ Similar computations can also be found in~\cite{Joli.Feng2008} where a Newton me
 
 The local convergence of the nonsmooth Newton methods is based on the semi-smoothness of the mapping $G$ and the fact that all elements of the generalized Jacobian at the solution point $z^\star$,  $\Phi(z^\star) \in \partial G(z^\star)$ are non singular (see \cite{Qi.Sun1993} and Chapter 1 of~\cite{Qi.ea_Book2018} for a survey of mathematical results). For our application, the semi-smoothness of the mapping $F_\actwo,  F_{\mjtwo},  \text{ or } F_\hswtwo) $ is proven in several papers \cite{Christensen.Pang1998,Hueber.ea_SJSC2008}. The strong semi--smoothness of $\phi_\fb$ can be found in \citep{Sun.Sun_MP2005}.
 
-On the contrary, the regularity of all elements of the generalized Jacobians is not necessarily ensured. The first reason is the possible rank deficiency of the matrix $W$, which is usual in rigid body applications as discussed in Section~\ref{sec:existence}. Even if we consider a full rank matrix $W$, as in the standard one contact case for instance, the invertibility of all the elements of the generalized Jacobian at the solution point is not straightforward. For the mapping $F_\actwo,  F_{\mjtwo}$, some results are given in~\cite{Alart1993,Alart95,Jourdan.Alart.ea98}. Some of the results depends on the value of the coefficient of friction and the exact penalty parameters  $\rho, \rho_\n, \rho_\t$ parameters. For the mapping $F_\hswtwo$, some other results can be found in~\cite{Hueber.ea_SJSC2008}.
+On the other hand, the regularity of all elements of the generalized Jacobians is not guaranteed. The first reason is the possible rank deficiency of the matrix $W$, which is usual in rigid body applications as discussed in Section~\ref{sec:existence}. Even if we consider a full rank matrix $W$, as in the standard one contact case for instance, the invertibility of all the elements of the generalized Jacobian at the solution point is not straightforward. For the mapping $F_\actwo,  F_{\mjtwo}$, some results are given in~\cite{Alart1993,Alart95,Jourdan.Alart.ea98}. Some of the results depends on the value of the coefficient of friction and the exact penalty parameters  $\rho, \rho_\n, \rho_\t$ parameters. For the mapping $F_\hswtwo$, some other results can be found in~\cite{Hueber.ea_SJSC2008}.
 
 In the numerical practice and even if $W$ is full-rank, it may happen that the elements of the generalized Jacobians are not regular or very badly conditioned when we are far from the solution. This fact is reported in~\cite{Alart1993,Alart95,Jourdan.Alart.ea98,Hueber.ea_SJSC2008,Koziara.Bicanic_CMAME2008}. Some divergence of the Newton algorithm can be encountered. A few work has been done to understand this problem. Among them, we cite~\cite{Hueber.ea_SJSC2008} where some modifications of the elements of the generalized Jacobian are performed far form the solution to keep the Newton iteration matrix regular and well conditioned when the function $F_\hswtwo$ is chosen. This very interesting work opens new directions of research for the other mappings. In~\cite{Koziara.Bicanic_CMAME2008}, some other heuristics are developed to try avoid divergence of the Newton loop. In the two next sections, we present two complementary ways to partly solve this problem by choosing consistently the parameters $\rho, \rho_\n, \rho_\t$ and by applying some line--searches techniques to globalize the convergence.
 
 
 \subsection{Estimation of $\rho, \rho_\n, \rho_\t$ parameters}
 
-One of the key parameters in the efficiency of the nonsmooth Newton methods are the choice of the parameter $\rho$ in the parameterized natural map in (\ref{eq:parametrized-naturalnormalmap}) and the parameters  $\rho_\n$ and $\rho_\t$ in the Jean--Moreau and Alart-Curnier functions (\ref{eq:MJ-II}) and (\ref{eq:AC-II}). The default choice is to set these parameters equal to $1$ but the numerical practice shows  that the convergence of the nonsmooth solvers is drastically deteriorated, especially  if the norm or the conditioning of the matrix $W$ is far from this unit value. There is no theoretical rules to size this parameters, but some heuristics may be found in the literature for a single contact problem that we expose in the sequel.
+One of the key parameter in the efficiency of the nonsmooth Newton methods is the choice of the parameter $\rho$ in the parameterized natural map~\eqref{eq:parametrized-naturalnormalmap} and the parameters  $\rho_\n$ and $\rho_\t$ in the Jean--Moreau and Alart-Curnier functions (\ref{eq:MJ-II}) and (\ref{eq:AC-II}). The default choice is to set these parameters equal to $1$ but the numerical practice shows  that the convergence of the nonsmooth solvers is drastically deteriorated, especially  if the norm or the conditioning of the matrix $W$ is far from this unit value. There is no theoretical rules to size this parameters, but some heuristics may be found in the literature for a single contact problem that we expose in the sequel.
 
 \paragraph{Inverse of a norm of $W$} A first simple choice is to consider the inverse of a norm of the matrix $W$. With this heuristics, we set the $\rho$ parameter before the Newton loop as follows:
 \begin{equation}
   \label{eq:rho-1}
   \rho = \frac 1 {\|W\|}, \quad  \rho_\n =  \rho_\t = \frac 1 {\|W\|}.
 \end{equation}
-This choice is mainly based on a guess of the inverse of the local Lipschitz constant of the operator $Wr+q$. In the case of the natural map, it amounts to neglecting the nonlinear contribution of $g$. Naturally, this choice depends on the choice of the matrix norm. If we assume that the matrix is a symmetric definite positive matrix, a possibility is to choose a 2-norm based on the spectral radius $\|W\|_2 = \rho(W) =\lambda_{\max}(W)$ of the matrix:
+This choice is mainly based on a guess of the inverse of the local Lipschitz constant of the operator $Wr+q$. In the case of the natural map, it amounts to neglecting the nonlinear contribution of $g$.
+For the norm, whenever the matrix is symmetric definite positive, choosing the 2-norm based on the spectral radius $\|W\|_2= \rho(W) =\lambda_{\max}(W)$ would yield:
 \begin{equation}
   \label{eq:rho-2}
   \rho = \frac 1 {\lambda_{\max}(W)}, \quad  \rho_\n = \rho_\t = \frac 1 {\lambda_{\max}(W)}.
@@ -1814,7 +1823,7 @@ A third option it also to take into account the conditioning of the matrix $W_{\
   \label{eq:rho-4}
   \rho_\n = \frac 1 {W_{\n\n}}, \quad \rho_\t = \frac{\lambda_{\min}(W_{\n\n})}{\lambda^2_{\max}(W_{\t\t})}
 \end{equation}
-Again, these heuristics assume implicitly that the Delassus matrix is a symmetric definite positive matrix. 
+Again, these heuristics implicitly assume that the Delassus matrix $W$ is symmetric definite positive.
 \paragraph{Adaptive estimation of the parameters} In~\cite{Koziara.Bicanic_CMAME2008}, an adaptive way of updating $\rho$ is proposed that has not been implemented for our experiments.
 
 \paragraph{Default choices} By default, we use the rule~(\ref{eq:rho-3}) for the mapping  (\ref{eq:MJ-II}) and (\ref{eq:AC-II}) and the rule  (\ref{eq:rho-2}) for the natural map. When other rules are chosen in the comparison, they are specified.
@@ -1822,8 +1831,8 @@ Again, these heuristics assume implicitly that the Delassus matrix is a symmetri
 
 \subsection{Damped Newton and line-search procedures}
 
-These line-searches algorithms follow the presentation done in chapter 3 of
-\cite{Bonnans.ea2003}, where one may find notably all the mathematical
+The presentation now mostly follows Chapter 3 of
+\cite{Bonnans.ea2003}, where the reader can find all the mathematical
 explanations of why they terminate, under some assumptions on the merit
 function. However, even if the assumptions are fulfilled and despite the
 mathematical proofs, in practice, is is recommended that some emergency tests
@@ -2024,7 +2033,7 @@ A nomenclature for the algorithms based on the nonsmooth Newton methods is  list
 \label{Sec:SplittingTechniquesAndProx}
 
 Splitting techniques are standard techniques to solve $\mathrm{VI}(F,X)$ when the function $F$ is affine that is $F(z) = Mz+q$ and the set $X$ can decomposed in a Cartesian product of independent smaller sets $X = \Pi_{i} X_i$.
-Usually, a block splitting of the matrix $M$ is performed and a Projected Successive Over Relaxation (PSOR) method is used to solve the VI. Since the cone $K$ is a product of second-order cones in $\RR^3$, a natural way to split the problem is to form sub-problems by using single contact as a building block. The sub-problems can be solved by any method for the VI that have been presented in the previous sections. In the same way, the proximal point algorithm can also be used which amounts to solving the original $\mathrm{VI}(F,X)$ by solving a sequence of $\mathrm{VI}(F_{c,x_k},X)$  problems such that $  F_{c,x_k}(z) = z - x_k + c F(z) , \quad c > 0$ and $\lim_ {k \rightarrow +\infty } \|x_k-z\| =0$.
+Usually, a block splitting of the matrix $M$ is performed and a Projected Successive Over Relaxation (PSOR) method is used to solve the VI. Since the cone $K$ is a product of second-order cones in $\RR^3$, a natural way to split the problem is to form sub-problems by using single contact as a building block. The sub-problems can be solved by any method for the VI that have been presented in the previous sections. In the same way, the proximal point algorithm can also be used which amounts to solving the original $\mathrm{VI}(F,X)$ by solving a sequence of (easier) VIs.
 
 
 \subsection{Splitting and relaxation techniques}
@@ -2078,7 +2087,7 @@ The problem~\eqref{eq:psor-3} has exactly the same structure as Problem~\ref{pro
 It is solved by a \emph{local solver}, which can be any of the algorithms presented in this chapter or even an analytical method (enumerating all the possible cases as in \citep{bonnefon:inria-00553859}).
 
 
-The PSOR algorithm is summarized in Algorithm~\ref{Algo:PSOR-II} and the NSGS can be recovered by setting $\omega=1$.
+The PSOR algorithm is summarized in Algorithm~\ref{Algo:PSOR-II} and the NSGS correspond to the case $\omega=1$.
 %
 \begin{algorithm}
   \begin{algorithmic}
@@ -2353,7 +2362,7 @@ In this section, the Delassus matrix is assumed to be symmetric in order to be a
 
 \subsection{Alternating optimization problem}
 
-The Panagiotopoulos approach described in Section~\ref{Sec:OptimisationProblems} generates a family of solvers by choosing a particular solver for the normal contact problem~(\ref{eq:AO-3}) and the tangential contact problem~(\ref{eq:AO-4}). This method may be viewed as a two-block Gauss-Seidel method as it has been pointed out by \cite{Tzaferopoulos_CS1993}. More precisely, the following choices may be made for the normal and tangent problems.
+The Panagiotopoulos approach described in Section~\ref{Sec:OptimisationProblems} generates a family of solvers by choosing a particular solver for the normal contact problem~(\ref{eq:AO-3}) and the tangential contact problem~(\ref{eq:AO-4}). This method may be viewed as a two-block Gauss-Seidel method (as pointed out by \cite{Tzaferopoulos_CS1993}). More precisely, the following choices may be made for the normal and tangent problems.
 
 The normal contact problem
  \begin{equation}
@@ -2366,11 +2375,11 @@ The normal contact problem
 \end{equation}
 is a convex quadratic program with simple bound constraints.
 %
-In the literature, a bunch of solvers has been developed to solve such problems. Among others, we might cite the active set strategy solvers \cite{Fletcher1987,Nocedal.Wright1999} that are mainly dedicated to  small--scale systems, the projected gradient \cite{Calamai.More1987} and projected conjugate gradient methods~\citep{More.Toraldo_NM1989,More.Toraldo1991} that are more dedicated to large--scale systems. Note that there exists also a bunch of methods in the literature that improves the methods of \cite{More.Toraldo1991} for large--scale systems. For the reader interested in deeper details, we refer to the book of \cite{Dostal.ea_AMM2016}. (see especially \cite{Dostal.ea_AMM2016}, Section 8.7 for a review of the different approaches).
+In the literature, a large number of solvers has been developed to solve such problems. Among others, we might cite the active set strategy solvers \cite{Fletcher1987,Nocedal.Wright1999} that are mainly dedicated to  small--scale systems, the projected gradient \cite{Calamai.More1987} and projected conjugate gradient methods~\citep{More.Toraldo_NM1989,More.Toraldo1991} that are more dedicated to large--scale systems. Note that there exists also a wealth of methods in the literature that improves the methods of \cite{More.Toraldo1991} for large--scale systems. For the reader interested in those details, we refer to the book of \cite{Dostal.ea_AMM2016}. (see especially the Section 8.7 for a review of the different approaches).
 %
 It is clear that we might also use semi-smooth Newton methods or interior point methods but our experience has shown that such methods are not efficient when $\ker (W_{\n\n}) \neq \{0\}$. The optimality conditions of this quadratic problem  reduced to a linear complementarity problem with a semi-definite matrix. In that case, it is also possible to solve the problem with PSOR techniques with line-searches.
 %
-In order to keep the chapter in a reasonable size, we decided in this work to use the projected gauss-seidel (PGS) algorithm and the projected gradient algorithm of   ~\cite{Calamai.More1987} to solve the normal problem described. The projected gradient algorithm solved
+Due to space constraints, we decided in this work to use the projected Gauss-Seidel (PGS) algorithm and the projected gradient algorithm of~\cite{Calamai.More1987} to solve the normal problem described. The projected gradient algorithm solved
 the following QP for a convex set $C$
  \begin{equation}
   \label{eq:ConvexQP}
@@ -2426,9 +2435,11 @@ The tangential problem,
   \end{array}
 \end{cases} \text{ with } \tilde q_\t = q_\t + W_{\t\n}r_{\n,k+1},
 \end{equation}
-is also a convex program but with a more complex structure since the constraints are quadratic one. It exists also some dedicated methods to solve this specific problem as the method in~\cite{Dostal.Kozubek_MP2012} (an extension of~\citep{More.Toraldo1991}) which is  an algorithm  for solving QP over convex constraints (disk constraint for instance). Earlier application of projected gradient and projected gradient techniques for the frictionless problem can also be found in \cite{Barbosa.ea1997} with comparison with PSOR techniques.
+is also a convex program but with a more complex structure since the constraints are quadratic one.
+There exists dedicated algorithm, as (\cite{Dostal.Kozubek_MP2012}), for QP with convex constraints.
+Earlier application of projected gradient and projected gradient techniques for the frictionless problem can also be found in \cite{Barbosa.ea1997}, including a comparison with PSOR techniques.
 
-In the chapter, we will use a) a reformulation of the optimality conditions of this problem as a variational inequality and we apply the fixed point algorithm and the extra gradient algorithm of Section~\ref{sec:numericalmethods,vi} or b) an adaptation of one of the splitting techniques detailed in Section~\ref{Sec:SplittingTechniquesAndProx}. The algorithm is described in Algorithm~\ref{Algo:Panagiotopoulos}.
+In the chapter, we will use either a) a reformulation of the optimality conditions of this problem as a variational inequality and we apply the fixed point algorithm and the extra gradient algorithm of Section~\ref{sec:numericalmethods,vi} or b) an adaptation of one of the splitting techniques detailed in Section~\ref{Sec:SplittingTechniquesAndProx}. The algorithm is described in Algorithm~\ref{Algo:Panagiotopoulos}.
 In Table~\ref{tab:OPTI-algos}, we detailed the algorithms we use in the present study.
 
 \begin{algorithm}
@@ -2458,7 +2469,7 @@ In Table~\ref{tab:OPTI-algos}, we detailed the algorithms we use in the present 
 
 \subsection{Successive approximation  method}
 \label{Sec:Tresca-solver}
-The methods of successive approximation is a natural tool for the numerical realization of Problem~\ref{prob:II}. It is based on the Tresca approximation of the Coulomb cone as it is described in Section~\ref{Sec:OptimisationProblems} and the work of the celebrated Czech school which summarizes the seminal work of the Czech school~\cite{Necas.ea1980,Haslinger1983,Haslinger1984,Haslinger.ea1996}.   Each iterative step is represented by an auxiliary contact problem with given friction described by quadratic program over a cylinder~(\ref{eq:Haslinger-2}), that we recall there:
+The methods of successive approximations is a natural tool for the numerical realization of Problem~\ref{prob:II}. It is based on the Tresca approximation of the Coulomb cone as described in Section~\ref{Sec:OptimisationProblems} and the work of the celebrated Czech school~\cite{Necas.ea1980,Haslinger1983,Haslinger1984,Haslinger.ea1996}.   Each iterative step is represented by an auxiliary contact problem with given friction described by quadratic program over a cylinder~(\ref{eq:Haslinger-2}), that we recall there:
 \begin{equation}
   \label{eq:Haslinger-2-bis}
   \begin{cases}
@@ -2493,7 +2504,7 @@ The radius of the cylinder is then updated in an iterative procedure.  The algor
   \label{Algo:Tresca}
 \end{algorithm}
 
-In the literature, the successive approximation technique has been used in the bidimensional case in~\citep{Haslinger.ea_CMAME2002} \&~\citep{Dostal_JCAM2002} with improved and dedicated QP solvers overs box-constraints. Two strategies are implemented : a) the classical Tresca iteration (called FPMI) and  b) the Panagiotopoulos decomposition plus a Fixed point (called FPMII). They use  a specific QP solver for box constraint~\cite{Dostal_SIOPT1997} that is an improvement of Mor\'e--Toraldo method~\citep{More.Toraldo1991}. This technique has been directly extended in the three-dimensional case with a faceting of the cone in~\cite{Haslinger.ea_JCAM2004}. In the latter case, the problem is still a  box constrained QP since it contains only polyhedral constraints. In~\cite{Haslinger.ea_MCS2012} the authors propose a successive approximation technique in 3D with the special solver of~\cite{Kucera_OMS2007,Kucera_SIOPT2008} which is itself an extension to disk constraints of the Polyak method (conjugate gradient with active set on the bounds constraint) and its improvements~\cite{Dostal_SIOPT1997,Dostal.Schoberl_COA2005}. Other improvements of the method may be found in~\cite{Dostal.Kucera_SIOPT2010} with a last improvement of the method in~\cite{Dostal.Kozubek_MP2012}. All this work is summarized and details in ~\cite{Dostal.ea_AMM2016}
+In the literature, the successive approximation technique has been used in the bidimensional case in~\citep{Haslinger.ea_CMAME2002} \&~\citep{Dostal_JCAM2002} with improved and dedicated QP solvers overs box-constraints. Two strategies are implemented: a) the classical Tresca iteration (called FPMI) and  b) the Panagiotopoulos decomposition plus a Fixed point (called FPMII). They use  a specific QP solver for box constraint~\cite{Dostal_SIOPT1997} that is an improvement of Mor\'e--Toraldo method~\citep{More.Toraldo1991}. This technique has been directly extended in the three-dimensional case with a faceting of the cone in~\cite{Haslinger.ea_JCAM2004}. In the latter case, the problem is still a  box constrained QP since it contains only polyhedral constraints. In~\cite{Haslinger.ea_MCS2012} the authors propose a successive approximation technique in 3D with the special solver of~\cite{Kucera_OMS2007,Kucera_SIOPT2008} which is itself an extension to disk constraints of the Polyak method (conjugate gradient with active set on the bounds constraint) and its improvements~\cite{Dostal_SIOPT1997,Dostal.Schoberl_COA2005}. Other improvements of the method may be found in~\cite{Dostal.Kucera_SIOPT2010} with a last improvement of the method in~\cite{Dostal.Kozubek_MP2012}. All this work is summarized and details in ~\cite{Dostal.ea_AMM2016}
 
 
 \subsection{ACLM approach}
@@ -2639,7 +2650,7 @@ In this section, we present our comparison framework. Especially, we specify how
 \subsection{Measuring errors}
 \label{Sec:MeasuringErrors}
 
-A key parameter in the measurement of performance of the solver is the definition of error. The absolute error is given by the  norm of the natural map. A relative error is computed with respect to the norm of the vector $q$. More precisely, the error is given by
+A key parameter in the measurement of performance of the solver is the definition of the error. The absolute error is given by the  norm of the natural map. A relative error is computed with respect to the norm of the vector $q$. More precisely, the error is given by
 \begin{equation}
   \label{eq:error-1}
   \mbox{error} = \frac{\|F^\nat_\vitwo(r)\|}{\|q\|}.
