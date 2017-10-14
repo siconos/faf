@@ -6,6 +6,10 @@
 
 @STRING{ijnme	= "International Journal for Numerical Methods in Engineering" }
 
+@STRING{jam	= "Journal of Applied Mechanics, Transactions of A.S.M.E" }
+
+@STRING{jmpa	= "Journal de Math\'ematiques Pures et Appliqu\'ees" }
+
 @STRING{jota	= "Journal of Optimization Theory and Applications" }
 
 @STRING{jtam-fr	= "Journal de M\'ecanique Th\'eorique et Appliqu\'ee" }
@@ -176,6 +180,15 @@
   number =	 1
 }
 
+@Article{Moreau1965,
+  author =	 {Moreau, {J.J.}},
+  title =	 {Proximit\'e et dualit\'e dans un espace hilbertien},
+  journal =	 {Bulletin de la soci\'et\'e math\'ematique de France},
+  year =	 1965,
+  volume =	 93,
+  pages =	 {273--299}
+}
+
 @incollection{Moreau1988,
   author =	 {Moreau, {J.J.}},
   editor =	 {Moreau, {J.J.} and Panagiotopoulos P.D.},
@@ -200,6 +213,17 @@
   year =	 1996,
   volume =	 73,
   pages =	 {199-226}
+}
+
+@Article{Renouf.Dubois.ea2004,
+  author =	 {Renouf, M. and Dubois, F. and Alart, P.},
+  title =	 {A parallel version of the {N}on {S}mooth {C}ontact
+                  {D}ynamics Algorithm applied to the simulation of
+                  granular media},
+  journal =	 {J. Comput. Appl. Math.},
+  volume =	 168,
+  year =	 2004,
+  pages =	 {375--38}
 }
 
 @article{Stewart.Trinkle1996,
@@ -230,7 +254,7 @@
   doi =		 {10.1002/zamm.201000073},
   pages =	 {155--175},
   keywords =	 {Nonsmooth mechanics, contact mechanics, Coulomb
-                  friction, Painlevé's problem, fixed-point theorem,
+                  friction, Painlev\'e's problem, fixed-point theorem,
                   convex analysis, convex optimization, second-order
                   cone programming.},
   year =	 2011,
@@ -247,9 +271,24 @@
                   mechanical interpretations of these assumptions,
                   showing in particular that they are actually
                   necessary and sufficient for a basic example similar
-                  to the so-called “paradox of Painlevé”. Finally, we
+                  to the so-called “paradox of Painlev\'e”. Finally, we
                   present some implementations and experiments to
                   illustrate the practical aspect of our work.},
+}
+
+@techreport{bonnefon:inria-00553859,
+  TITLE = {{Quartic formulation of Coulomb 3D frictional contact}},
+  AUTHOR = {Bonnefon, Olivier and Daviet, Gilles},
+  URL = {https://hal.inria.fr/inria-00553859},
+  TYPE = {Technical Report},
+  NUMBER = {RT-0400},
+  INSTITUTION = {{INRIA}},
+  YEAR = {2011},
+  MONTH = Jan,
+  KEYWORDS = {coulomb friction ; mechanics ; contact},
+  PDF = {https://hal.inria.fr/inria-00553859/file/RT-0400.pdf},
+  HAL_ID = {inria-00553859},
+  HAL_VERSION = {v1},
 }
 
 @Book{z-Moreau.Panagiotopoulos88,
@@ -366,6 +405,100 @@
   language =	 {English}
 }
 
+@techreport{acary:hal-00945820,
+  TITLE = {{FCLIB: a collection of discrete 3D Frictional Contact problems}},
+  AUTHOR = {Acary, V. and Br{\'e}mond, M. and Koziara, T. and P{\'e}rignon, F.},
+  URL = {https://hal.inria.fr/hal-00945820},
+  TYPE = {Technical Report},
+  INSTITUTION= {INRIA},
+  NUMBER = {RT-0444},
+  PAGES = {34},
+  YEAR = {2014},
+  MONTH = Feb,
+  HAL_ID = {hal-00945820},
+  HAL_VERSION = {v2},
+}
+
+@inproceedings{Acary.ea_CSMA2017,
+  TITLE = {{M{\'e}thodes de Newton non--lisses pour les probl{\`e}mes de contact frottant dans les syst{\`e}mes de multi--corps flexibles}},
+  AUTHOR = {Acary, Vincent and Br{\'e}mond, Maurice and Dubois, Fr{\'e}d{\'e}ric},
+  URL = {https://hal.inria.fr/hal-01562706},
+  BOOKTITLE = {{CSMA 2017 - 13{\`e}me Colloque National en Calcul des Structures}},
+  ADDRESS = {Presqu'{\^i}le de Giens (Var), France},
+  PAGES = {8},
+  YEAR = {2017},
+  MONTH = May,
+  KEYWORDS = { m{\'e}thodes Newton non--lisses ; contact unilat{\'e}ral ;  frottement de Coulomb},
+  PDF = {https://hal.inria.fr/hal-01562706/file/acary_bremond_dubois_csma2017.pdf},
+  HAL_ID = {hal-01562706},
+  HAL_VERSION = {v1},
+}
+
+@InProceedings{Breitkopf.Jean_CSMA99,
+  author = 	 {Breitkopf, P. and  Jean, M.},
+  title = 	 {Mod\'elisation parallè\`ele des maté\'eriaux granulaires},
+  booktitle = {Actes du 4\`eme Colloque National en Calcul des Structures},
+  year = 	 1999,
+  pages = 	 {387-392},
+  month = 	 {18-21 Mai},
+  address = 	 {Giens(Var)}
+}
+
+@article {Koziara.Bicanic_IJNME2011,
+author = {Koziara, T. and Bićanić, N.},
+title = {A distributed memory parallel multibody Contact Dynamics code},
+journal = {International Journal for Numerical Methods in Engineering},
+volume = {87},
+number = {1-5},
+publisher = {John Wiley & Sons, Ltd.},
+issn = {1097-0207},
+url = {http://dx.doi.org/10.1002/nme.3158},
+doi = {10.1002/nme.3158},
+pages = {437--456},
+keywords = {Contact Dynamics, distributed memory Gauss–Seidel, multibody contact},
+year = {2011},
+}
+
+@article{Wolhmuth.Krause_SJSC2003,
+author = {Barbara I. Wohlmuth and Rolf H. Krause},
+title = {Monotone Multigrid Methods on Nonmatching Grids for Nonlinear Multibody Contact Problems},
+journal = {SIAM Journal on Scientific Computing},
+volume = {25},
+number = {1},
+pages = {324-347},
+year = {2003},
+doi = {10.1137/S1064827502405318},
+
+URL = { 
+        https://doi.org/10.1137/S1064827502405318
+    
+},
+eprint = { 
+        https://doi.org/10.1137/S1064827502405318
+    
+}
+
+}
+
+@article{Dostal.ea_JCAM2010,
+title = "A scalable TFETI algorithm for two-dimensional multibody contact problems with friction",
+journal = "Journal of Computational and Applied Mathematics",
+volume = "235",
+number = "2",
+pages = "403 - 418",
+year = "2010",
+note = "Special Issue on Advanced Computational Algorithms",
+issn = "0377-0427",
+doi = "https://doi.org/10.1016/j.cam.2010.05.042",
+url = "http://www.sciencedirect.com/science/article/pii/S0377042710003328",
+author = "Z. Dostál and T. Kozubek and P. Horyl and T. Brzobohatý and A. Markopoulos",
+keywords = "Domain decomposition",
+keywords = "Natural coarse grid",
+keywords = "Multibody contact problem",
+keywords = "Scalability",
+keywords = "Friction"
+}
+
 @book {Fortin.Glowinski_Book1983,
     AUTHOR = {Fortin, M. and Glowinski, R.},
      TITLE = {Augmented {L}agrangian methods},
@@ -402,6 +535,42 @@
   year =	 1991,
   volume =	 92,
   number =	 3
+}
+
+@article{Alart1993,
+  author =	 "Alart, P.",
+  title =	 "{Injectivity and surjectivity criteria for certain
+                  mappings of $\RR\sp n$ into itself; application to
+                  contact mechanics. (Crit\`eres d'injectivit\'e et de
+                  surjectivit\'e pour certaines applications de
+                  $\RR\sp n$ dans lui-m\^eme; application \`a la
+                  m\'ecanique du contact.)}",
+  language =	 "French. English summary",
+  year =	 1993,
+  journal =	 "RAIRO, Modélisation Math. Anal. Numér.",
+  volume =	 27,
+  number =	 2,
+  pages =	 {203--222}
+}
+
+@Article{Alart95,
+  author =	 {Alart, P.},
+  title =	 {M\'ethode de Newton g\'en\'eralis\'ee en m\'ecanique du
+                  contact},
+  journal =	 jmpa,
+  year =	 1995,
+}
+
+@Article{Barbosa.ea1997,
+  author =	 {Barbosa, H.J.C. and Raupp, F.M.P. and Borges,
+                  C.C.H.},
+  title =	 {Numerical experiments with algorithms for bound
+                  constrained quadratic programming in {M}echanics},
+  journal =	 cs,
+  year =	 1997,
+  volume =	 64,
+  number =	 {1--4},
+  pages =	 {579--594}
 }
 
 @article{Chabrand.ea_MCM1998,
@@ -557,16 +726,6 @@
   pages =	 {125-129}
 }
 
-@Article{Glocker1999,
-  author =	 {Glocker, C.},
-  title =	 {Formulation of spatial contact situations in rigid
-                  multibody systems},
-  journal =	 {Comput. Methods Appl. Mech. Engrg.},
-  year =	 1999,
-  pages =	 {199-214},
-  volume =	 177
-}
-
 @Book{Glowinski.ea1976,
   author =	 {Glowinski, R. and Lions. J.L. and Tr\'emoli\'eres,
                   R.},
@@ -665,21 +824,6 @@
                   is included to demonstrate the developed algorithms
                   and to highlight their performance. Copyright © 2007
                   John Wiley & Sons, Ltd.},
-}
-
-@article{Kanno.ea2006,
-  author =	 { Kanno, Y. and Martins, J.A.C. and Pinto da Costa,
-                  A.},
-  title =	 {Three-dimensional quasi-static frictional contact by
-                  using second-order cone linear complementarity
-                  problem},
-  journal =	 {International Journal for Numerical Methods in
-                  Engineering},
-  issn =	 {0029-5981},
-  pages =	 {62--83},
-  volume =	 65,
-  number =	 1,
-  year =	 2006
 }
 
 @article{Katona_IJNAMG1983,
@@ -803,6 +947,16 @@
   note =	 {1st ed. 2002. Corr. 2nd printing,}
 }
 
+@Article{Leung.ea1998,
+  author =	 {Leung, A.Y.T. and Guoqing, C. and Wanji, C.},
+  title =	 {Smoothing {N}ewton method for solving two-- and
+                  thre--dimensional frictional contact problems},
+  journal =	 ijnme,
+  year =	 1998,
+  volume =	 41,
+  pages =	 {1001--1027}
+}
+
 @article{Mijar.Arora_ACME2000,
   year =	 2000,
   issn =	 {1134-3060},
@@ -908,7 +1062,17 @@
   pages =	 {796-811}
 }
 
-@article{Raous.ea1988,
+@Article{Park.Kwak1994,
+  author =	 {Park, J.K. and Kwak, B.M.},
+  title =	 {Three dimensional frictional contact analysis using
+                  the homotopy method},
+  journal =	 jam,
+  year =	 1994,
+  volume =	 61,
+  pages =	 {703--709}
+}
+
+@article{Raous.ea_JMTA1988,
   author =	 "Raous, M. and Chabrand, P. and Lebon, F.",
   title =	 "{Numerical methods for frictional contact problems
                   and applications.}",
@@ -918,40 +1082,6 @@
   number =	 1,
   pages =	 "111-18",
   year =	 1988,
-}
-
-@article{Renard_CMAME2013,
-  title =	 "Generalized Newton’s methods for the approximation
-                  and resolution of frictional contact problems in
-                  elasticity ",
-  journal =	 "Computer Methods in Applied Mechanics and
-                  Engineering ",
-  volume =	 256,
-  number =	 0,
-  pages =	 "38 - 55",
-  year =	 2013,
-  issn =	 "0045-7825",
-  doi =		 "http://dx.doi.org/10.1016/j.cma.2012.12.008",
-  url =
-                  "http://www.sciencedirect.com/science/article/pii/S0045782512003787",
-  author =	 "Renard, Y.",
-  keywords =	 "Contact",
-  keywords =	 "Friction",
-  keywords =	 "Augmented Lagrangian",
-  keywords =	 "Generalized Newton’s method",
-  keywords =	 "Nitsche’s method ",
-  abstract =	 "In this paper, some new generalized Newton’s methods
-                  for the resolution of elastostatic frictional
-                  contact problem approximated by finite elements are
-                  presented and compared to existing ones. A numerical
-                  experimentation is performed to compare the
-                  different methods, especially with respect to the
-                  sensitivity to the method parameter. Two different
-                  strategies to approximate the contact and friction
-                  condition are considered: a nodal and an integral
-                  one. Existence and uniqueness results of the
-                  solution to the discretized problem are also
-                  discussed. "
 }
 
 @article{Simo.Laursen1992,
@@ -966,15 +1096,25 @@
   year =	 1992,
 }
 
-@Article{Stadler_SIOPT2004,
-  author =	 {Stadler, G.},
-  title =	 {Semismooth Newton method for a simplified friction
-                  problem},
-  journal =	 {SIAM journal on Optimization},
-  year =	 2004,
-  volume =	 15,
-  number =	 1,
-  pages =	 {39--62}
+@article{Stadler_SIOPT2004,
+author = {Georg Stadler},
+title = {Semismooth Newton and Augmented Lagrangian Methods for a Simplified Friction Problem},
+journal = {SIAM Journal on Optimization},
+volume = 15,
+number = 1,
+pages = {39-62},
+year = 2004,
+doi = {10.1137/S1052623403420833},
+
+URL = { 
+        https://doi.org/10.1137/S1052623403420833
+    
+},
+eprint = { 
+        https://doi.org/10.1137/S1052623403420833
+    
+}
+
 }
 
 @Book{Wriggers2006,
@@ -987,24 +1127,14 @@
                   2002 }
 }
 
-@article{Zhang.ea_CMAME2011,
-title = "New second-order cone linear complementarity formulation and semi-smooth Newton algorithm for finite element analysis of 3D frictional contact problem ",
-journal = "Computer Methods in Applied Mechanics and Engineering ",
-volume = "200",
-number = "1–4",
-pages = "77 - 88",
-year = "2011",
-note = "",
-issn = "0045-7825",
-doi = "http://dx.doi.org/10.1016/j.cma.2010.07.014",
-url = "http://www.sciencedirect.com/science/article/pii/S0045782510002264",
-author = "H.W. Zhang and J.Y. Li and S.H. Pan",
-keywords = "3D frictional contact problems",
-keywords = "Second-order cone",
-keywords = "Complementarity",
-keywords = "Parametric variational principle",
-keywords = "Semi-smooth Newton method ",
-abstract = "We propose a new second-order cone linear complementarity problem (SOCLCP) formulation for the numerical finite element analysis of three-dimensional (3D) frictional contact problems by the parametric variational principle. Specifically, we develop a regularization technique to resolve the multi-valued difficulty involved in the frictional contact law, and use a second-order cone complementarity condition to handle the regularized Coulomb friction law in contact analysis. The governing equations of the 3D frictional contact problem is represented by an \{SOCLCP\} via the parametric variational principle and the finite element method, which avoids the polyhedral approximation to the Coulomb friction cone so that the problem to be solved has much smaller size and the solution has better accuracy. In this paper, we reformulate the \{SOCLCP\} as a semi-smooth system of equations via a one-parametric class of second-order cone complementarity functions, and then apply the non-smooth Newton method for solving this system. Numerical results confirm the effectiveness and robustness of the \{SOCLCP\} approach developed. "
+@Article{Xuewen.ea2000,
+  author =	 {Xuewen, L. and Soh, A.-K. and Wanji, C.},
+  title =	 {A new nonsmooth model for three-dimensional
+                  frictional contact problems},
+  journal =	 {Computational Mechanics},
+  year =	 2000,
+  volume =	 26,
+  pages =	 {528--535}
 }
 
 @article{Kleinert.ea_CMAME2014,
@@ -1127,27 +1257,6 @@ year = {2010},
 abstract = {In the present paper, a solution scheme is proposed for frictionless contact problems of linear elastic bodies, which are discretized using the finite element method with lower order elements. An approach combining the interior-point method and the semismooth Newton method is proposed. In this method, an initial active set for the semismooth Newton method is obtained from the approximate optimal solution by the interior-point method. The simplest node-to-node contact model is considered in the present paper, that is, pairs of matching nodes exist on the contact surfaces. However, the discussions can be easily extended to a node-to-segment or segment-to-segment contact model. In order to evaluate the proposed method, a number of illustrative examples of the frictionless contact problem are shown. The proposed combined method is compared with the interior-point method and the semismooth Newton method. Two numerical examples that are difficult to solve using the semismooth Newton method are solved effectively using the proposed combined method. It is shown that the proposed method converges within far fewer iterations than the semismooth Newton methods or the interior-point method. Copyright © 2009 John Wiley & Sons, Ltd.},
 }
 
-@article{Hueber.Wolhmuth_CMAME2005,
-title = "A primal–dual active set strategy for non-linear multibody contact problems ",
-journal = "Computer Methods in Applied Mechanics and Engineering ",
-volume = "194",
-number = "27–29",
-pages = "3147 - 3166",
-year = "2005",
-note = "",
-issn = "0045-7825",
-doi = "http://dx.doi.org/10.1016/j.cma.2004.08.006",
-url = "http://www.sciencedirect.com/science/article/pii/S0045782504004402",
-author = "S. Hüeber and B.I. Wohlmuth",
-keywords = "Multibody contact problems",
-keywords = "Primal-dual active set strategy",
-keywords = "Mortar finite element methods",
-keywords = "Dual Lagrange multipliers",
-keywords = "Non-conforming meshes",
-keywords = "Linear elasticity ",
-abstract = "Non-conforming domain decomposition methods provide a powerful tool for the numerical approximation of partial differential equations. For the discretization of a non-linear multibody contact problem, we use the mortar approach with a dual Lagrange multiplier space. To handle the non-linearity of the contact conditions, we apply a primal–dual active set strategy to find the actual contact zone. The algorithm can be easily generalized to multibody contact problems. A suitable basis transformation guarantees the same algebraic structure in the multibody situation as in the one body case. Using an inexact primal–dual active set strategy in combination with a multigrid method yields an efficient iterative solver. Different numerical examples for one and multibody contact problems illustrate the performance of the method. "
-}
-
 @article{Haslinger.ea_MCS2012,
 title = "Approximation and numerical realization of 3D quasistatic contact problems with Coulomb friction ",
 journal = "Mathematics and Computers in Simulation ",
@@ -1177,7 +1286,7 @@ note = "",
 issn = "0045-7825",
 doi = "http://dx.doi.org/10.1016/j.cma.2014.03.018",
 url = "http://www.sciencedirect.com/science/article/pii/S0045782514001042",
-author = "İ. Temizer and M.M. Abdalla and Z. Gürdal",
+author = {\.{I}. Temizer and M.M. Abdalla and Z. G\"{u}rdal},
 keywords = "Contact",
 keywords = "Interior point method",
 keywords = "Mortar discretization",
@@ -1224,7 +1333,7 @@ URL = {http://journals.cambridge.org/article_S0308210500013536},
 @InProceedings{Barbosa.Feijoo_CISM1985,
   author = 	 {Barbosa, H.J.C. and Feij\'oo, R.A.},
   title = 	 {A numerical Algorithm for Signorini problem with {C}oulomb friction},
-  crossref = {z-DelPieroMaceri_CISM1985}, 
+  crossref = {z-DelPieroMaceri_CISM1985},
   booktitle = { },
   year = 	 1985,
   volume = 	 304,
@@ -1292,14 +1401,56 @@ doi="10.1007/s00211-008-0183-5",
 url="http://dx.doi.org/10.1007/s00211-008-0183-5"
 }
 
-@Article{Konnov1993,
-  author =	 {Konnov, I.V.},
-  title =	 {Combined Relaxation methods for finding equilibrium
-                  point and solving related problems},
-  journal =	 {Russian Mathematics},
-  year =	 1993,
-  volume =	 37,
-  pages =	 {46--53}
+@Book{Dostal.ea_AMM2016,
+author="Dost{\'a}l, Zden{\v{e}}k",
+title="Scalable Algorithms for Contact Problems",
+year="2016",
+publisher="Springer New York",
+address="New York, NY",
+isbn="978-1-4939-6834-3",
+doi="10.1007/978-1-4939-6834-3_8",
+url="https://doi.org/10.1007/978-1-4939-6834-3_8"
+}
+
+@Article{Mylapilli.Jain_JCND2017,
+  author = 	 {Mylapilli, H. and Jain, A.},
+  title = 	 {Complementarity Techniques for minimal coordinates contact dynamics},
+  journal = 	 {ASME Journal of Computational and Nonlinear Dynamics},
+  year = 	 2017,
+  volume = 	 12,
+  number = 	 2}
+
+@article{Daviet.ea_SIGGRAPH2011,
+  TITLE = {{A Hybrid Iterative Solver for Robustly Capturing Coulomb Friction in Hair Dynamics}},
+  AUTHOR = {Daviet, Gilles and Bertails-Descoubes, Florence and Boissieux, Laurence},
+  URL = {https://hal.inria.fr/hal-00647497},
+  JOURNAL = {{ACM Transactions on Graphics}},
+  PUBLISHER = {{Association for Computing Machinery}},
+  SERIES = {Proceedings of SIGGRAPH Asia 2011},
+  VOLUME = {30},
+  NUMBER = {6},
+  PAGES = {139:1--139:12},
+  YEAR = {2011},
+  DOI = {10.1145/2070781.2024173},
+  KEYWORDS = {Hair simulation ; hair contacts ; Coulomb friction},
+  PDF = {https://hal.inria.fr/hal-00647497/file/hairContactSiggraphAsia2011.pdf},
+  HAL_ID = {hal-00647497},
+  HAL_VERSION = {v1},
+}
+
+@article{Calamai.More1987,
+  author =	 {Calamai, P.H. and More, J.J.},
+  title =	 {Projected gradient methods for linearly constrained
+                  problems},
+  journal =	 {Mathematical Programming},
+  volume =	 39,
+  number =	 1,
+  year =	 1987,
+  issn =	 {0025-5610},
+  pages =	 {93--116},
+  doi =		 {http://dx.doi.org/10.1007/BF02592073},
+  publisher =	 {Springer-Verlag New York, Inc.},
+  address =	 {Secaucus, NJ, USA},
 }
 
 @Article{Korpelevich1976,
@@ -1385,6 +1536,56 @@ url="http://dx.doi.org/10.1007/s00211-008-0183-5"
   volume =	 1,
   number =	 1,
   pages =	 {93--113}
+}
+
+@Book{Bonnans.ea2003,
+  author =	 {Bonnans,J.F. and Gilbert, J.C. and Lemaréchal,
+                  C. and Sagastiz\'abal, C.A.},
+  title =	 {Numerical Optimization: Theoretical and Practical
+                  Aspects},
+  publisher =	 {Springer-Verlag},
+  year =	 {2003},
+  OPTkey =	 {},
+  OPTvolume =	 {},
+  OPTnumber =	 {},
+  OPTseries =	 {},
+  OPTaddress =	 {},
+  OPTedition =	 {},
+  OPTmonth =	 {},
+  OPTnote =	 {},
+  OPTannote =	 {}
+}
+
+@Book{Fletcher1987,
+  author =	 {Fletcher, R.},
+  title =	 {Practical Methods of Optimization},
+  publisher =	 {Chichester: John Wiley \& Sons, Inc. },
+  year =	 {1987},
+  OPTkey =	 {},
+  OPTvolume =	 {},
+  OPTnumber =	 {},
+  OPTseries =	 {},
+  OPTaddress =	 {},
+  OPTedition =	 {},
+  OPTmonth =	 {},
+  OPTnote =	 {},
+  OPTannote =	 {}
+}
+
+@Book{Nocedal.Wright1999,
+  author =	 {Nocedal, J. and Wright, S.J.},
+  title =	 {Numerical Optimization},
+  publisher =	 {Springer Verlag},
+  year =	 {1999},
+  OPTkey =	 {},
+  OPTvolume =	 {},
+  OPTnumber =	 {},
+  OPTseries =	 {},
+  OPTaddress =	 {},
+  OPTedition =	 {},
+  OPTmonth =	 {},
+  OPTnote =	 {},
+  OPTannote =	 {}
 }
 
 @Book{Rockafellar.Wets1997,
@@ -1548,26 +1749,6 @@ author = "E.N. Khobotov",
 abstract = "A modified form of the extra-gradient method is considered for solving variational inequalities, finding the saddle points of convex-concave functions under constraints, and finding Nash equilibrium points. "
 }
 
-@article {He_AMO1997,
-    AUTHOR = {He, B.},
-     TITLE = {A class of projection and contraction methods for monotone
-              variational inequalities},
-   JOURNAL = {Appl. Math. Optim.},
-  FJOURNAL = {Applied Mathematics and Optimization. An International Journal
-              with Applications to Stochastics},
-    VOLUME = {35},
-      YEAR = {1997},
-    NUMBER = {1},
-     PAGES = {69--76},
-      ISSN = {0095-4616},
-     CODEN = {AMOMBN},
-   MRCLASS = {49J40 (47H17 47H19 90C33)},
-  MRNUMBER = {1418264 (97m:49009)},
-MRREVIEWER = {Muhammad Aslam Noor},
-       DOI = {10.1007/s002459900037},
-       URL = {http://dx.doi.org/10.1007/s002459900037},
-}
-
 @article{Wang_JCAM2010,
 title = "Steplengths in the extragradient type methods ",
 journal = "Journal of Computational and Applied Mathematics ",
@@ -1585,60 +1766,6 @@ keywords = "Extragradient type methods",
 keywords = "Black-box model",
 keywords = "Projection ",
 abstract = "The extragradient type methods are a class of efficient direct methods. For solving monotone variational inequalities, these methods only require function evaluation, and therefore are widely applied to black-box models. In this type of methods, the distance between the iterate and a fixed solution point decreases by iterations. Furthermore, in each iteration, the negative increment of such squared distance has a differentiable concave lower bound function without requiring any solution in its formula. In this paper, we investigate some properties for the lower bound. Our study reveals that the lower bound affords a steplength domain which guarantees the convergence of the entire algorithm. Based on these results, we present two new steplengths. One involves the projection onto the tangent cone without line search, while the other can be computed via searching the positive root of a one dimension concave lower bound function. Our preliminary numerical results confirm and illustrate the attractiveness of our contributions. "
-}
-
-@article {He.ea_COA2012-II,
-year=2012,
-issn={0926-6003},
-journal={Computational Optimization and Applications},
-volume=51,
-number=2,
-doi={10.1007/s10589-010-9373-z},
-title={Proximal-like contraction methods for monotone variational inequalities in a unified framework II: general methods and numerical experiments},
-url={http://dx.doi.org/10.1007/s10589-010-9373-z},
-publisher={Springer US},
-keywords={Variational inequality; Monotone; Contraction methods},
-author={He, B. and Liao, L.-Z. and Wang, X.},
-pages={681-708},
-language={English}
-}
-
-@article {He.ea_COA2012-I,
-    AUTHOR = {He, B. and Liao, L.-Z. and Wang, X.`},
-     TITLE = {Proximal-like contraction methods for monotone variational
-              inequalities in a unified framework {I}: {E}ffective
-              quadruplet and primary methods},
-   JOURNAL = {Comput. Optim. Appl.},
-  FJOURNAL = {Computational Optimization and Applications. An International
-              Journal},
-    VOLUME = {51},
-      YEAR = {2012},
-    NUMBER = {2},
-     PAGES = {649--679},
-      ISSN = {0926-6003},
-   MRCLASS = {47J25 (49J40)},
-  MRNUMBER = {2891911},
-       DOI = {10.1007/s10589-010-9372-0},
-       URL = {http://dx.doi.org/10.1007/s10589-010-9372-0},
-}
-
-@article{Han.Sun_CMA2004,
-title = "A new modified Goldstein-Levitin-Polyakprojection method for variational inequality problems ",
-journal = "Computers \& Mathematics with Applications ",
-volume = "47",
-number = "12",
-pages = "1817 - 1825",
-year = "2004",
-note = "",
-issn = "0898-1221",
-doi = "http://dx.doi.org/10.1016/j.camwa.2003.12.002",
-url = "http://www.sciencedirect.com/science/article/pii/S0898122104840197",
-author = "Derek Han and Wenyu Sun",
-keywords = "Variational inequality problems",
-keywords = "Strongly monotone mappings",
-keywords = "Projection methods",
-keywords = "Global convergence ",
-abstract = "In this paper, we first show that the adjustment parameter in the step size choice strategy of the modified Goldstein-Levitin-Polyak projection method proposed by He et al. for asymmetric strongly monotone variational inequality problems can be bounded away from zero by a positive constant. Under this observation, we propose a new step size rule which seems to be more practical and robust than the original one. We show that the new modified method is globally convergent under the same conditions and report some computational results to illustrate the method. "
 }
 
 @article{He.Liao_JOTA2002,
@@ -1696,24 +1823,108 @@ keywords = "Prediction correction methods ",
 abstract = "In a class of variational inequality problems arising frequently from applications, the underlying mappings have no explicit expression, which make the subproblems involved in most numerical methods for solving them difficult to implement. In this paper, we propose a generalized proximal-point-based prediction correction method for solving such problems. At each iteration, we first find a prediction point, which only needs several function evaluations; then using the information from the prediction, we update the iteration. Under mild conditions, we prove the global convergence of the method. The preliminary numerical results illustrate the simplicity and effectiveness of the method. "
 }
 
-@article{Chen.Mangasarian1996,
-  author =	 "C. Chen and O. L. Mangasarian",
-  title =	 "A class of smoothing functions for nonlinear and
-                  mixed complementarity problems",
-  journal =	 "Computational Optimization and Applications",
-  volume =	 5,
-  pages =	 "97--138",
-  year =	 1996
+@Article{More.Toraldo_NM1989,
+author="Mor{\'e}, Jorge J.
+and Toraldo, Gerardo",
+title="Algorithms for bound constrained quadratic programming problems",
+journal="Numerische Mathematik",
+year="1989",
+month="Jul",
+day="01",
+volume="55",
+number="4",
+pages="377--400",
+abstract="We present an algorithm which combines standard active set strategies with the gradient projection method for the solution of quadratic programming problems subject to bounds. We show, in particular, that if the quadratic is bounded below on the feasible set then termination occurs at a stationary point in a finite number of iterations. Moreover, if all stationary points are nondegenerate, termination occurs at a local minimizer. A numerical comparison of the algorithm based on the gradient projection algorithm with a standard active set strategy shows that on mildly degenerate problems the gradient projection algorithm requires considerable less iterations and time than the active set strategy. On nondegenerate problems the number of iterations typically decreases by at least a factor of 10. For strongly degenerate problems, the performance of the gradient projection algorithm deteriorates, but it still performs better than the active set method.",
+issn="0945-3245",
+doi="10.1007/BF01396045",
+url="https://doi.org/10.1007/BF01396045"
 }
 
-@Article{Dirkse.Ferris1995,
-  author =	 {Dirkse, S. P. and Ferris, M. C.},
-  title =	 {The PATH solver: A non-monotone stabilization scheme
-                  for mixed complementarity problems},
-  journal =	 {Optimization Methods and Software},
-  year =	 1995,
-  volume =	 5,
-  pages =	 {123--156}
+@Article{Sun.Sun_MP2005,
+author="Sun, D. and Sun, J.",
+title="Strong Semismoothness of the Fischer-Burmeister SDC and SOC Complementarity Functions",
+journal="Mathematical Programming",
+year="2005",
+month="Jul",
+day="01",
+volume="103",
+number="3",
+pages="575--581",
+abstract="We show that the Fischer-Burmeister complementarity functions, associated to the semidefinite cone (SDC) and the second order cone (SOC), respectively, are strongly semismooth everywhere. Interestingly enough, the proof relys on a relationship between the singular value decomposition of a nonsymmetric matrix and the spectral decomposition of a symmetric matrix.",
+issn="1436-4646",
+doi="10.1007/s10107-005-0577-4",
+url="https://doi.org/10.1007/s10107-005-0577-4"
+}
+
+@article{Dolan.More_MP2002,
+  title={Benchmarking optimization software with performance profiles},
+  author={Dolan, E.D. and Mor{\'e}, J.J.},
+  journal={Mathematical Programming},
+  volume={91},
+  number={2},
+  pages={201--213},
+  year={2002},
+  publisher={Springer}
+}
+
+@article{Fong.Saunders_SISC2011,
+author = {David Chin-Lung Fong and Michael Saunders},
+title = {LSMR: An Iterative Algorithm for Sparse Least-Squares Problems},
+journal = {SIAM Journal on Scientific Computing},
+volume = {33},
+number = {5},
+pages = {2950-2971},
+year = {2011},
+doi = {10.1137/10079687X},
+
+URL = { 
+        https://doi.org/10.1137/10079687X
+    
+},
+eprint = { 
+        https://doi.org/10.1137/10079687X
+    
+}
+
+}
+
+@article{parikh2014proximal,
+  title={Proximal algorithms},
+  author={Parikh, Neal and Boyd, Stephen and others},
+  journal={Foundations and Trends{\textregistered} in Optimization},
+  volume={1},
+  number={3},
+  pages={127--239},
+  year={2014},
+  publisher={Now Publishers, Inc.}
+}
+
+@article{rockafellar1976monotone,
+  title={Monotone operators and the proximal point algorithm},
+  author={Rockafellar, R Tyrrell},
+  journal={SIAM journal on control and optimization},
+  volume={14},
+  number={5},
+  pages={877--898},
+  year={1976},
+  publisher={SIAM}
+}
+
+@Article{Hager.Zhang_COA2008,
+author="Hager, William W.
+and Zhang, Hongchao",
+title="Self-adaptive inexact proximal point methods",
+journal="Computational Optimization and Applications",
+year="2008",
+month="Mar",
+day="01",
+volume="39",
+number="2",
+pages="161--181",
+abstract="We propose a class of self-adaptive proximal point methods suitable for degenerate optimization problems where multiple minimizers may exist, or where the Hessian may be singular at a local minimizer. If the proximal regularization parameter has the form                                                                           {\$}{\backslash}mu({\{}{\backslash}bf{\{}x{\}}{\}})={\backslash}beta{\backslash}|{\backslash}nabla f({\{}{\backslash}bf{\{}x{\}}{\}}){\backslash}|^{\{}{\backslash}eta{\}}{\$}                 where $\eta$∈[0,2) and $\beta$>0 is a constant, we obtain convergence to the set of minimizers that is linear for $\eta$=0 and $\beta$ sufficiently small, superlinear for $\eta$∈(0,1), and at least quadratic for $\eta$∈[1,2). Two different acceptance criteria for an approximate solution to the proximal problem are analyzed. These criteria are expressed in terms of the gradient of the proximal function, the gradient of the original function, and the iteration difference. With either acceptance criterion, the convergence results are analogous to those of the exact iterates. Preliminary numerical results are presented using some ill-conditioned CUTE test problems.",
+issn="1573-2894",
+doi="10.1007/s10589-007-9067-3",
+url="https://doi.org/10.1007/s10589-007-9067-3"
 }
 
 @Book{Facchinei.Pang2003,
@@ -1737,12 +1948,18 @@ abstract = "In a class of variational inequality problems arising frequently fro
   pages =	 {160-220}
 }
 
-@Article{Zhang.ea2009,
-  author =	 {Zhang, X. and Liu, S. and Liu, Z.},
-  title =	 {A smoothing method for second order cone
-                  complementarity problem},
-  journal =	 {Journal of Computational and appled Mathematics},
-  year =	 2009,
-  volume =	 228,
-  pages =	 {83--91}
+@Article{Qi.Sun1993,
+  author =	 {Qi, L. and Sun, J.},
+  title =	 {A nonsmooth version of {N}ewton's method},
+  journal =	 {Mathematical Programming},
+  year =	 1993,
+  volume =	 58,
+  pages =	 {353--367}
 }
+
+@Book{Qi.ea_Book2018,
+  editor = 	 { Qi, L. and Sun, D. and Ulbrich, M.},
+  title = 	 {Semismooth and Smoothing Newton Methods},
+  publisher = 	 {Springer Verlag},
+  year = 	 2018
+  }

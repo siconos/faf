@@ -57,7 +57,7 @@
 % your contribution title if the original one is too long
 \institute{Vincent Acary \at INRIA, 655, Avenue de l'Europe, 38334 Saint Ismier Cedex, \email{vincent.acary@inria.fr}
   \and Maurice Br\'emond \at INRIA, 655, Avenue de l'Europe, 38334 Saint Ismier Cedex, \email{maurice.bremond@inria.fr}
-\and Olivier Huber  \at \email{}}
+\and Olivier Huber  \at University of Wisconsin at Madison, Wisconsin Institute for Discovery, Discovery Building Suite 3120 330 N Orchard St Madison, WI 53715 \email{ohuber2@wisc.edu}}
 %
 % Use the package "url.sty" to avoid
 % problems with special characters
@@ -65,24 +65,29 @@
 %
 \maketitle
 
-\abstract*{}
 
-\abstract{}
+\def\ourabstract{
+In this chapter, we review several formulations of the discrete frictional contact problem that arises in space and time discretized mechanical systems with unilateral contact and three-dimensional Coulomb's friction. Most of these formulations are well--known concepts in the optimization community, or more generally, in the mathematical programming community. To cite a few, the discrete frictional contact problem is formulated as variational inequalities, generalized or semi--smooth equations, second--order cone complementarity problems, or as optimization problems such as quadratic programming problems over second-order cones. Thanks to these multiple formulations, various numerical methods emerge naturally for solving the problem. We review the main numerical techniques that are well-known in the literature and we also propose new applications of methods such as the fixed point and extra-gradient methods with self-adaptive step rules for variational inequalities or the proximal point algorithm for generalized equations. All these numerical techniques are compared over a large set of test examples using performance profiles. One of the main conclusion is that there is no universal solver. Nevertheless, we are able to give some hints to choose a solver with respect to the main characteristics of the set of tests.}
+
+
+\abstract*{\ourabstract}
+
+\abstract{\ourabstract}
 
 
 \input{body.tex}
 
 
 \begin{acknowledgement}
-If you want to include acknowledgments of assistance and the like at the end of an individual chapter please use the \verb|acknowledgement| environment -- it will automatically render Springer's preferred layout.
+The authors are grateful to Florent Cadoux, Fr\'ed\'eric Dubois, Claude L\'emar\'echal, J\'er\^ome Malick and Mathieu Renouf  for stimulating discussions.
 \end{acknowledgement}
 %
 
 \input{appendix.tex}
 
 \bibliographystyle{spbasic}
-\bibliography{./biblio/String,./biblio/NonSmooth,./biblio/Math,./biblio/Multibody,./biblio/Fem.bib,./biblio/Dae.bib,./biblio/Meca,./biblio/AnaNum.bib,./biblio/Math-Impact,./biblio/Contact,./biblio/Optim,./biblio/Cp}
-%\bibliography{biblio-extract}
+%\bibliography{./biblio/String,./biblio/NonSmooth,./biblio/Math,./biblio/Multibody,./biblio/Fem.bib,./biblio/Dae.bib,./biblio/Meca,./biblio/AnaNum.bib,./biblio/Math-Impact,./biblio/Contact,./biblio/Optim,./biblio/Cp}
+\bibliography{biblio-extract}
 
 
 %\input{referenc}

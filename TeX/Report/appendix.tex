@@ -40,38 +40,44 @@ y = P_K(x) & \Longleftrightarrow
 & \Longleftrightarrow  x = P_K(x- \rho F(x)) \text{ thanks to~\eqref{eq:tutu}} 
 \end{align}
 
+\subsection*{Sub-differential of the Euclidean norm.}
+
+The sub-differential of the Euclidean norm in $\RR^n$ is given by:
 \begin{equation}
   \label{eq:sub-norm}
-  \partial \|z\|_2 =
-  \begin{cases}
-      \Frac z {\|z\|}\\
-      \{x, \|x\|=1 \}
-    \end{cases}
-\end{equation}
-\subsection*{Euclidean projection on the disk  in $\RR^2$.}
-Let $D=\{x \in \RR^3, \|x\| \leq 1\}$. We have 
+  \partial \|z\| =
+  \left\{
+    \begin{array}{lcl}
+      \Frac z {\|z\|}, & &z \neq 0\\
+      \{x, \|x\| \leq 1 \},& &z = 0
+    \end{array}
+  \right.
+  \end{equation}
+  
+\subsection*{Euclidean projection on the unit ball.}
+Let $B=\{x \in \RR^n, \|x\| \leq 1\}$. The Euclidean projection on the unit ball is given by: 
 \begin{equation}
   \label{eq:projD}
-  P_{D}(z) =\left\{
+  P_{B}(z) =\left\{
   \begin{array}{lcl}
-    z &\text{if}& z \in D \\
-    \Frac {z} {\|z\|}& \text{if}&z \notin D
+    z &\text{if}& z \in B \\
+    \Frac {z} {\|z\|}& \text{if}&z \notin B
     \end{array}\right. 
   \end{equation}
- and
+Its subdifferential can be computed as
 \begin{equation}
   \label{eq:sub-projD}
-  \partial P_{D}(z) =\left\{
+  \partial P_{B}(z) =\left\{
   \begin{array}{lcl}
-   I &\text{if }& z \in D \setminus \partial D \\
-   I + (s-1)z z^\top , s\in [0,1]   &\text{if }& z \in  \partial D \\
-   \Frac I {\|z\|} - \Frac{z z^\top}{\|z\|^3} &\text{if }& z \notin D  
+   I &\text{if }& z \in B \setminus \partial B \\
+   I + (s-1)z z^\top , s\in [0,1]   &\text{if }& z \in  \partial B \\
+   \Frac I {\|z\|} - \Frac{z z^\top}{\|z\|^3} &\text{if }& z \notin B  
    \end{array}\right. 
 \end{equation}
 
 
 \subsection*{Euclidean projection on the second order cone of $\RR^3$.}
-Let $K=\{x = [x_\n x_\t]^T \in \RR^3, x_\n \in \RR, \|x_{\t}\| \leq \mu x_{\n}\}$. We have 
+Let $K=\{x = [x_\n x_\t]^T \in \RR^3, x_\n \in \RR, \|x_{\t}\| \leq \mu x_{\n}\}$ be the second order cone in $\RR^3$. The Euclidean projection on $K$ is
 \begin{equation}
   \label{eq:proj}
   P_{K}(z) =\left\{
@@ -88,7 +94,7 @@ Let $K=\{x = [x_\n x_\t]^T \in \RR^3, x_\n \in \RR, \|x_{\t}\| \leq \mu x_{\n}\}
 
 \paragraph{Direct computation of an element of the subdifferential}
 
-The computation of the subdifferential are given as follows
+The computation of the subdifferential of $P_{K}$ is given as follows
 \begin{itemize}
 \item if $z\in K\setminus \partial K$, $\partial_z P_K(z) =I$,
 \item if $-z \in K^*\setminus \partial K^*$, $\partial_z P_K(z) =0$,
@@ -128,9 +134,9 @@ that is
   \Frac {\mu} {(1+\mu^2)\|z_\t\|} \left[ (z_\n + \mu \|z_\t\|) \,I_2   +  z_\n  \Frac{z_\t z_\t^\top}{\|z_\t\|^2} )\right]
   % \end{array}\right. 
 \end{equation}
-\begin{ndrva}
-  to be checked carefully
-\end{ndrva}
+% \begin{ndrva}
+%   to be checked carefully
+% \end{ndrva}
 
 \end{itemize}
 
@@ -173,9 +179,9 @@ with $y = x / \|x_\t\|$. A simple verification shows that the previous computati
 
 
 
-\begin{ndrva}
-  to be checked carefully
-\end{ndrva}
+% \begin{ndrva}
+%   to be checked carefully
+% \end{ndrva}
 
 
 
@@ -204,9 +210,9 @@ where $ \Phi_{x y}(u,r) \in \partial_{x}[F_{\vitwo}^\nat]_{y}(u,r)$. Since $\Phi
     \Phi(z) = \Phi_{rr}(r,Wr+q) + \Phi_{ru}(r,Wr+q) W
   \end{cases}
 \end{equation}
-\begin{ndrva}
-  to be checked carefully. compare with \cite{Hayashi.ea_SIOPT2005}
-\end{ndrva}
+% \begin{ndrva}
+%   to be checked carefully. compare with \cite{Hayashi.ea_SIOPT2005}
+% \end{ndrva}
 
  Let us introduce the following notation for an element of the sub--differential with a obvious simplification
 \begin{equation}
@@ -408,12 +414,12 @@ If the variant~\eqref{eq:Moreau--Jean-1} is chosen, the computation of $\Phi_{r_
     \end{array}\right.
 \end{equation}
 
-\begin{ndrva}
-  \begin{list}{*}{}
-  \item     Is    there    a    difference    with    the    computation    of    Florent    in    his    thesis?
-  \item
-  \end{list}
-\end{ndrva}
+% \begin{ndrva}
+%   \begin{list}{*}{}
+%   \item     Is    there    a    difference    with    the    computation    of    Florent    in    his    thesis?
+%   \item
+%   \end{list}
+% \end{ndrva}
 
 
 
