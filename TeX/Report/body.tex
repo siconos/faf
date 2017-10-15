@@ -1836,8 +1836,8 @@ The presentation now mostly follows Chapter 3 of
 \cite{Bonnans.ea2003}, where the reader can find all the mathematical
 explanations of why they terminate, under some assumptions on the merit
 function. However, even if the assumptions are fulfilled and despite the
-mathematical proofs, in practice, is is recommended that some emergency tests
-should be added during extrapolation and interpolation phases to avoid
+mathematical proofs, in practice, is is recommended that some additional stopping criteria
+be added during extrapolation and interpolation phases to avoid
 infinite loops.
 
 The choice of the values for the parameters $m_1$, $m_2$ for the
@@ -1848,8 +1848,8 @@ and $m_2 > \frac{1}{2}$.
 
 Termination implies a merit function $q \in C^1$ with $q'(0) < 0$, which is
 bounded from below. In our case, the merit function is
-$t \to \frac{1}{2} \|G(r + t d)\|$ where G is the mapping in~(\ref{eq:NSN1}). The
-emergency test is implemented as a maximum number of iterations and when the
+$t \to \frac{1}{2} \|G(r + t d)\|$ where G is the mapping in~(\ref{eq:NSN1}). An
+additional stopping criterion is implemented as a maximum number of iterations and when the
 line-search fails, the Newton loop is continued with the last value of the step found by the line--search.
 
 The Goldstein--Price (GP) line search and Armijo line search are described in Algorithm~\ref{Algo:GP} and Algorithm ~\ref{Algo:A}.
