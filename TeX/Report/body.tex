@@ -2163,7 +2163,7 @@ whenever $f$ is said to be \emph{prox-regular} and $\alpha$ is small enough.
 The proximal mapping can also be defined for set-valued mappings.
 Then it correspond to a regularization of the (sub-) differential of $f$.
 More precisely, it correspond to the \emph{resolvent} of $\nabla f$,
-defined as $R_\alpha=\alpha(\alpha I + T)^{-1}$.
+defined as $R_\alpha\coloneqq\alpha(\alpha I + T)^{-1}$.
 Starting from a initial guess $x_0$, a sequence is computed as $x_{k+1} = R_\alpha(x_k)$
 (assuming the singlevaluedness of $R_\alpha$).
 Much less attention has been given to this kind of algorithms,
@@ -2173,17 +2173,17 @@ the mapping $T$ is maximal monotone, an extension of the convex case previously 
 With the same hypothesis, the mapping $R_\alpha$ is single-valued for all $\alpha>0$.
 For concreteness, consider the variational inequality
 \begin{equation}
- 0 \in F(x) + N_X(x)\qquad\text{also} \quad 0\in T(x).
+ 0 \in F(x) + N_X(x)\qquad\text{also written as} \quad 0\in T(x).
 \end{equation}
 Then, the proximal point algorithm applied to this VI consists in solving at each step the VI
 \begin{equation}
   0 \in F(x) + \alpha I - \alpha x_k + N_X(x)
 \end{equation}
-that can be denoted as
+that can be compactly written as
  \begin{equation}
- 0\in F_{\alpha,x_k}(z) + N_X(x)
+ 0\in F_{\alpha,x_k}(x) + N_X(x).
 \end{equation}
-Likewise, the parameter $\alpha$ can be changed for each sub-VI.
+The parameter $\alpha$ can be changed for each sub-VI.
 %For variational inequalities, Proximal points methods, or more generally augmented Lagrangian methods, find their roots in the study of variational inequalities.
 %They rely on rather theoretical tools (monotone operators and resolvents), introduced to study VI.
 %However, they are also useful to device numerical methods as we shall see.
@@ -2213,7 +2213,7 @@ Other variants of the basic algorithm can be derived, like adding a relaxation p
   x_{k+1} = (1-\omega) x_{k} + \omega z_{k+1},
 \end{equation}
 where $z_{k+1}$
-The algorithm is described in algorithm~\ref{Algo:PPA-vi}
+The algorithm is described in algorithm~\ref{Algo:PPA-vi}.
 \begin{algorithm}
   \begin{algorithmic}
     {\sf
@@ -2238,17 +2238,17 @@ The algorithm is described in algorithm~\ref{Algo:PPA-vi}
   \caption{Proximal point algorithm for the VI~\eqref{eq:vi}}  \label{Algo:PPA-vi}
 \end{algorithm}
 
-For solving the sub-problem $\mathrm{VI}(F_{\alpha,x_k},X)$, any of the previous presented algorithms can be used.
+For solving the sub-problems $\mathrm{VI}(F_{\alpha,x_k},X)$, any of the previous algorithms for VI can be used.
 The main interest of the proximal point algorithm is that the mapping $F_{\alpha, x_k}$ is nicer than $F$.
 For instance, if $F(x)=Mx+q$ , then the matrix in $F(\alpha, x_k)$ is $M + \alpha I$.
-Then, it is easy to see that for $\alpha$ large enough, $M + \alpha I$ is positive-definite, with no assumption on $M$.
+It is easy to see that for $\alpha$ large enough, $M + \alpha I$ is positive-definite, with no assumption on $M$.
 With nonlinear operator, choosing $\alpha$ large enough ensures that $F_{\alpha, x_k}$ is monotone (with some condition on $F$).
 In practice, this implies that a greater number of algorithms are able to solve the VI.
 It is a good indicator of an easier problem to solve, and we observe that this approach is able to provide some robustness
 to the VI-based approaches.
 The introduction of two additional parameters ($\alpha$ and $\sf tol_{int}$) is the main drawback of this approach.
 Indeed, instead of solving just one VI, this approach calls for solving multiple sub-VIs.
-This additional computational effort can be reduced by either driving the proximal parameter $\alpha_k$ as quickly as possible to zero,
+This additional computational effort can be reduced in two ways: the first one is to drive the proximal parameter $\alpha_k$ as quickly as possible to zero,
 in order to reduce the number of sub-VI to solve. The other option is to set the tolerance $\sf tol_{int}$ to a higher value when $\alpha_k$ is large,
 so as to reduce the computational effort for the sub-VIs.
 The choice of $\sf tol_{int}$ is discussed in Section~\ref{Sec:NSGS-LocalTol}.
