@@ -37,19 +37,18 @@
 %%
 \RRauthor{% % les auteurs
 %  % Premier auteur, avec une note
-% Vincent Acary\thanks{\tt vincent.acary@inrialpes.fr}%
-%   % note partag\'ee (optionnelle)
-% %  \thanks[sfn]{Shared foot note}%
-%  \and Maurice Br\'emond\thanks{\tt maurice.bremond@inrialpes.fr}
+  Vincent Acary\thanks{\tt vincent.acary@inria.fr}%
+  %   % note partag\'ee (optionnelle)
+  \thanks[sfn]{INRIA, 655, Avenue de l'Europe, 38334 Saint Ismier Cedex, France}%
+  \and Maurice Br\'emond\thanks{\tt maurice.bremond@inria.fr}\thanksref{sfn}
 % %entre chaque auteur s'il y en a plusieurs
-%   \and
-% Florent Cadoux\thanks{florent.cadoux@gmail.com}%
+  \and Olivier Huber\thanks{ohuber2@wisc.edu,  Wisconsin Institute for Discovery, University of Wisconsin-Madison, 330 N. Orchard St., 53715, USA}%
 %  % r\'ef\'erence \`a la note partag\'ee
 % %\thanksref{sfn}
 }
 %%
 %% Ceci apparait sur chaque page paire.
-\authorhead{}
+\authorhead{Acary V. and Br\'emond, M. and Huber, O.}
 %%
 \RRtitle{Sur la r\'esolution du probl\`eme de frottement tridimensionnel. Formulations and comparaisons des m\'ethodes num\'eriques. }
 %% English title
@@ -62,7 +61,7 @@
 %%
 \RRresume{TBW
 }
-\RRabstract{TBW}
+\RRabstract{In this report, we review several formulations of the discrete frictional contact problem that arises in space and time discretized mechanical systems with unilateral contact and three-dimensional Coulomb's friction. Most of these formulations are well--known concepts in the optimization community, or more generally, in the mathematical programming community. To cite a few, the discrete frictional contact problem is formulated as variational inequalities, generalized or semi--smooth equations, second--order cone complementarity problems, or as optimization problems such as quadratic programming problems over second-order cones. Thanks to these multiple formulations, various numerical methods emerge naturally for solving the problem. We review the main numerical techniques that are well-known in the literature and we also propose new applications of methods such as the fixed point and extra-gradient methods with self-adaptive step rules for variational inequalities or the proximal point algorithm for generalized equations. All these numerical techniques are compared over a large set of test examples using performance profiles. One of the main conclusion is that there is no universal solver. Nevertheless, we are able to give some hints to choose a solver with respect to the main characteristics of the set of tests}
 %%
 \RRmotcle{Syst\`emes multi--corps, M\'ecanique non r\'eguli\`ere, contraintes unilat\'erales,  frottement de Coulomb, impact, Sch\'emas num\'eriques de r\'esolution}
 \RRkeyword{ Multibody systems, nonsmooth Mechanics,  unilateral constraints, Coulomb friction, impact, numerical methods}
@@ -92,25 +91,25 @@
 \input{packages.tex}
 \input{macro.tex}
 
-\fancyfoot[L]{}
-\fancyfoot[C]{}
-\fancyfoot[R]{\texttt{file rr.tex -- \isodayandtime}}
+% \fancyfoot[L]{}
+% \fancyfoot[C]{}
+% \fancyfoot[R]{\texttt{file rr.tex -- \isodayandtime}}
 
 
-\begingroup
-\count0=\time \divide\count0by60 % Hour
-\count2=\count0 \multiply\count2by-60 \advance\count2by\time
-% Min
-\def\2#1{\ifnum#1<10 0\fi\the#1}
-\xdef\isodayandtime{\the\year-\2\month-\2\day\space\2{\count0}:%
-\2{\count2}}
-\endgroup
-%%%% fin macro %%%%
+% \begingroup
+% \count0=\time \divide\count0by60 % Hour
+% \count2=\count0 \multiply\count2by-60 \advance\count2by\time
+% % Min
+% \def\2#1{\ifnum#1<10 0\fi\the#1}
+% \xdef\isodayandtime{\the\year-\2\month-\2\day\space\2{\count0}:%
+% \2{\count2}}
+% \endgroup
+% %%%% fin macro %%%%
 
 \graphicspath{{../figure/}}
 
 \PassOptionsToPackage{dvipsnames,svgnames}{xcolor}   
-\renewcommand{\baselinestretch}{1.5}
+\renewcommand{\baselinestretch}{1.2}
 \usepackage{natbib}
 %%
 \begin{document}
@@ -122,7 +121,7 @@
 
 \newpage
 \tableofcontents
-\newpage
+
 \input{body.tex}
 
 \addcontentsline{toc}{section}{References}
@@ -136,3 +135,8 @@
 \endinput
 %%
 %% End of file `squelette-rr.tex'.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

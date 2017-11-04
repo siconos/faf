@@ -7,7 +7,8 @@
 
 
 
-
+%\def\chapterorreport{chapter}
+\def\chapterorreport{report}
 
 
 
@@ -18,7 +19,7 @@
 
 
 
-More than thirty years after the pioneering work of~\cite{Panagiotopoulos_IA1975},~\cite{Necas.ea1980},~\cite{Haslinger1983,Haslinger1984,Haslinger.Panagiotopoulos_PRSE1984}, ~\cite{z-DelPieroMaceri_CISM1983,z-DelPieroMaceri_CISM1985},~\cite{Katona_IJNAMG1983},~\cite{Chaudhary.Bathe_CS1986},~\cite{Jean.Moreau1987},~\cite{Mitsopoulou.Doudoumis1988} on numerically solving mechanical problems with contact and friction, there are still active research activities on this subject in the computational mechanics and applied mathematics communities.  This can be explained by the fact that {problems from} mechanical systems with unilateral contact and Coulomb friction are difficult to numerically solve and the mathematical results of convergence of the numerical algorithms are rare and most of these require rather strong assumptions. In this chapter, we want to give some insights of the advantages and weaknesses of standard solvers found in the literature by comparing them on the large sets of examples coming from the simulation of a wide range of mechanical systems. Some new numerical schemes are also introduced, mainly based on general solvers for variational inequalities and the proximal point algorithms.
+More than thirty years after the pioneering work of~\cite{Panagiotopoulos_IA1975},~\cite{Necas.ea1980},~\cite{Haslinger1983,Haslinger1984,Haslinger.Panagiotopoulos_PRSE1984}, ~\cite{z-DelPieroMaceri_CISM1983,z-DelPieroMaceri_CISM1985},~\cite{Katona_IJNAMG1983},~\cite{Chaudhary.Bathe_CS1986},~\cite{Jean.Moreau1987},~\cite{Mitsopoulou.Doudoumis1988} on numerically solving mechanical problems with contact and friction, there are still active research activities on this subject in the computational mechanics and applied mathematics communities.  This can be explained by the fact that {problems from} mechanical systems with unilateral contact and Coulomb friction are difficult to numerically solve and the mathematical results of convergence of the numerical algorithms are rare and most of these require rather strong assumptions. In this \chapterorreport, we want to give some insights of the advantages and weaknesses of standard solvers found in the literature by comparing them on the large sets of examples coming from the simulation of a wide range of mechanical systems. Some new numerical schemes are also introduced, mainly based on general solvers for variational inequalities and the proximal point algorithms.
 
 \subsection{Problem statement}
 In this section, we formulate an abstract, algebraic finite--dimensional frictional contact problem. We cast this problem as a complementarity problem over cones, and discuss the properties of the latter.
@@ -73,7 +74,7 @@ When the non-associated character of the friction is taken into account through 
 We can also mention the results from~\cite{Pang.Trinkle1996,Stewart.Trinkle1996,Anitescu.Potra97} where the friction cone is polyhedral (in 2D or by a faceting process). In that case, if $w=0$ or $w \in \mathrm{im}(H^\top)$, Lemke's algorithm is able to solve the problem. The question of existence of solutions has also been treated in~\cite{Klarbring.Pang1998,Acary.ea_ZAMM2011} recalled in Section~\ref{sec:existence} under similar assumptions but with different techniques. The question of uniqueness remains a difficult problem in the general case.
 
 \paragraph{Range of applicability.}
-\tp{We clearly choose to simplify a lot the general problems of formulating the contact problems with friction by avoiding including too much side effects that are themselves interesting but render the study too difficult to carry out in a single chapter. We choose finite dimensional systems where the time dependency does not appear explicitly.}
+\tp{We clearly choose to simplify a lot the general problems of formulating the contact problems with friction by avoiding including too much side effects that are themselves interesting but render the study too difficult to carry out in a single \chapterorreport. We choose finite dimensional systems where the time dependency does not appear explicitly.}
 \tp{Nevertheless, we believe that there is a strong interest to study  this problem since it appears to be relatively generic in numerous simulations of systems with contact and friction. This problem is indeed at the heart of the simulation of mechanical systems with 3D Coulomb's friction and unilateral constraints in the following cases:
 \begin{itemize}
 \item It might be the result of the time--discretization by event--capturing time--stepping methods or event--detecting (event--driven) techniques of dynamical systems with friction; the variables are homogeneous to pairs velocities/impulses or accelerations/forces.
@@ -84,9 +85,9 @@ We can also mention the results from~\cite{Pang.Trinkle1996,Stewart.Trinkle1996,
 }
 For a description of the derivation of such problems in various practical situations we refer to~\cite{Laursen2003,Wriggers2006,Acary.Brogliato2008,Acary.Cadoux2013}.
 
-\subsection{Objectives and outline of the chapter}
+\subsection{Objectives and outline of the \chapterorreport}
 
-\tp{In this chapter,  after stating the problem with more details in Section~\ref{sec:description}, we recall the existence result of~\cite{Acary.ea_ZAMM2011} for the problem~\eqref{eq:soccp1-intro} in Section \ref{sec:existence}. In this framework, we briefly present in Section~\ref{sec:formulation} {a few} alternative formulations of the problem that enable the design of numerical solution procedures : a) finite--dimensional Variational Inequalities(VI) and Quasi-Variational Inequalities(QVI),  b) nonsmooth equations  and c) optimization based formulations.}
+\tp{In this \chapterorreport,  after stating the problem with more details in Section~\ref{sec:description}, we recall the existence result of~\cite{Acary.ea_ZAMM2011} for the problem~\eqref{eq:soccp1-intro} in Section \ref{sec:existence}. In this framework, we briefly present in Section~\ref{sec:formulation} {a few} alternative formulations of the problem that enable the design of numerical solution procedures : a) finite--dimensional Variational Inequalities(VI) and Quasi-Variational Inequalities(QVI),  b) nonsmooth equations  and c) optimization based formulations.}
 
 
 \tp{Right after these formulations, we list some of the most standard algorithms dedicated to one of the previous formulations :
@@ -98,11 +99,11 @@ For a description of the derivation of such problems in various practical situat
  \end{enumerate}}
 
 
-\tp{Since it is difficult to be exhaustive on the approaches developed in the literature to solve frictional contact problems, we decided to leave out the scope of the chapter the following approaches:
+\tp{Since it is difficult to be exhaustive on the approaches developed in the literature to solve frictional contact problems, we decided to leave out the scope of the \chapterorreport the following approaches:
 \begin{itemize}
 \item the approaches that alter the fundamental assumptions of the 3D Coulomb friction model by faceting the cone as in the pioneering work of~\cite{Klarbring1986} and followed by~\cite{AlFahed.Stavroulakis.ea1991,Pang.Trinkle1996,Stewart.Trinkle1996,Anitescu.Potra97,Haslinger.ea_JCAM2004}, or by convexifying the Coulomb law (associated friction law with normal dilatancy)~\cite{Heyn.ea_IJNME2013,Tasora.Anistescu_Meccanica2013,Tasora.Anistescu_CMAME2011,Anistescu.Tasora_COA2010,Tasora.Anistescu_CMAME2009, Krabbenhoft.ea_CMAME2012} or finally by regularizing the friction law~\cite{Kikuchi.Oden_SIAM1988}.
 \item the recent developments methods for the frictionless case~\cite{Morales.ea_NM2008,Miyamura.ea_IJNME2010,Temizer.ea_CMAME2014} will not discussed .
-\item the approaches that are based on domain decomposition and parallel computing~\citep{Breitkopf.Jean_CSMA99,Renouf.Dubois.ea2004,Koziara.Bicanic_IJNME2011,Wolhmuth.Krause_SJSC2003,Dostal.ea_JCAM2010,Heyn_PhD2013}. We choose in this chapter to focus on single domain computation and to skip the discussion about distributed computing mainly for the sake of length of the chapter.
+\item the approaches that are based on domain decomposition and parallel computing~\citep{Breitkopf.Jean_CSMA99,Renouf.Dubois.ea2004,Koziara.Bicanic_IJNME2011,Wolhmuth.Krause_SJSC2003,Dostal.ea_JCAM2010,Heyn_PhD2013}. We choose in this \chapterorreport to focus on single domain computation and to skip the discussion about distributed computing mainly for the sake of length of the \chapterorreport.
 \end{itemize}}
 
 \tp{Finally, some possible interesting approaches have not been reported. We are thinking mainly  to the interior point methods approach~\cite{Christensen.Pang1998,Miyamura.ea_IJNME2010,Kleinert.ea_CMAME2014}. Some basic implementations of such methods do not give satisfactory results. One of the reasons is the fact that we were not able to get robustness and efficiency on a large class of problems. As it is reported in \cite{Kleinert.ea_CMAME2014,Krabbenhoft.ea_CMAME2012}, it seems that it is needed to alter the friction Coulomb's law by adding regularization or dilatency in the model. In the same spirit, we skip also the comparison for the possibly very promising methods developed in~\cite{Heyn.ea_IJNME2013,Heyn_PhD2013} that are based on Krylov subspace and spectral methods. It could be very interesting to bench also these methods on the actual Coulomb friction model, that is to say, in the nonmonotone case. Finally, our preliminary results on the use of direct general SOCP or SOCLCP solvers were not convincing. Indeed, the structure of contact problems (product of a large number of small second order cones) has to be taken into account to get efficiency and unfortunately, these solvers are difficult to adapt to this structure.}    
@@ -127,7 +128,7 @@ iterative methods dedicated to solving variational inequalities are quite robust
 
 \subsection{Notation}
 
-The following notation is used throughout the chapter: the 2-norm for a function $g$ is denoted  by $\|g\|$ and for a vector $x\in\RR^n$ by $\|x\|$. 
+The following notation is used throughout the \chapterorreport: the 2-norm for a function $g$ is denoted  by $\|g\|$ and for a vector $x\in\RR^n$ by $\|x\|$. 
 The index $\alpha\in\NN$ is used to identify the variable pertaining to a single contact.
 A multivalued mapping $T\colon\RR^n\MM\RR^n$ is an operator whose images are sets.
 The second order cone, also known as Lorentz or ice--cream cone, is defined as $K_\mu \coloneqq\{(x, t)\in\RR\times\RR_+\mid \|x\|\leq \mu t\}$, $\mu\geq0$.
@@ -398,7 +399,7 @@ The set $K$ is the cartesian product of Coulomb's friction cone at each contact,
   \label{eq:CC_bis}
   K = \prod_{\alpha=1,\ldots,n_c} K^{\alpha}\quad\text{and}\quad K^\star\;\text{is its dual.}
 \end{equation}
-In this chapter, we investigate the case where the problem is given in its \emph{reduced} form.
+In this \chapterorreport, we investigate the case where the problem is given in its \emph{reduced} form.
 We consider that the discretized  and linearized dynamics is of the form
 \begin{equation}
  M v = {H} {r} + {f},
@@ -456,14 +457,14 @@ An instance of the problem is denoted by $\mathrm{FC}(W,q,\mu)$
 
 
 %We will see in the next section how these systems can be  obtained and how they may also be an instance of a quasi-static problem
-% Nonlinear versions of this problem can also be stated but they are out pf the scope of the chapter. When the dynamics is nonlinear, an outer Newton linearization is performed leading to a linearized problem. 
+% Nonlinear versions of this problem can also be stated but they are out pf the scope of the \chapterorreport. When the dynamics is nonlinear, an outer Newton linearization is performed leading to a linearized problem. 
 
 
 \subsection{Existence of solutions}
 \label{sec:existence}
 
 The question of the existence of solution for the Problem~\ref{prob:II} has been studied in~\cite{Klarbring.Pang1998} and~\cite{Acary.ea_ZAMM2011} with different analysis techniques under the assumption that the Delassus matrix is symmetric.
-The key assumption for existence of solutions in both chapters is as follows
+The key assumption for existence of solutions in both articles is as follows
 \begin{equation}\label{ass}
    \exists v\in \RR^m \,:\: H^\top v + w \in \mathrm{int}\, K^\star,
 \end{equation}
@@ -931,9 +932,9 @@ Finally,  Problem~\ref{prob:II} is then reformulated as
 % \subsection{Alternative  complementarity formulations}
 
 % \begin{ndroh}
-%  Are we presenting numerical results using this reformulation? If no, we have to think about the usefulness of this paragraph in the chapter version.
+%  Are we presenting numerical results using this reformulation? If no, we have to think about the usefulness of this paragraph in the \chapterorreport version.
 %  It would be great to have more references here. Where does eq:MCP come from?
-%  The assumption that $H = I$ (to get eq:kanno1) are stringent. Do we want to keep it in the chapter?
+%  The assumption that $H = I$ (to get eq:kanno1) are stringent. Do we want to keep it in the \chapterorreport?
 %  At the end, we don't say much about the efficiency of the method. Does it work well?
 
 
@@ -2104,7 +2105,7 @@ where
 , \text{ for all } \alpha \in 1\ldots n_c.
 \end{equation}
 The problem~\eqref{eq:psor-3} has exactly the same structure as Problem~\ref{prob:II}, but is of lower size since it is only for one contact.
-It is solved by a \emph{local solver}, which can be any of the algorithms presented in this chapter or even an analytical method (enumerating all the possible cases as in \citep{bonnefon:inria-00553859}).
+It is solved by a \emph{local solver}, which can be any of the algorithms presented in this \chapterorreport or even an analytical method (enumerating all the possible cases as in \citep{bonnefon:inria-00553859}).
 
 
 The PSOR algorithm is summarized in Algorithm~\ref{Algo:PSOR-II} and the NSGS correspond to the case $\omega=1$.
@@ -2485,7 +2486,7 @@ is also a convex program but with a more complex structure since the constraints
 There exists dedicated algorithm, as (\cite{Dostal.Kozubek_MP2012}), for QP with convex constraints.
 Earlier application of projected gradient and projected gradient techniques for the frictionless problem can also be found in \cite{Barbosa.ea1997}, including a comparison with PSOR techniques.
 
-In the chapter, we will use either a) a reformulation of the optimality conditions of this problem as a variational inequality and we apply the fixed point algorithm and the extra gradient algorithm of Section~\ref{sec:numericalmethods,vi} or b) an adaptation of one of the splitting techniques detailed in Section~\ref{Sec:SplittingTechniquesAndProx}. The algorithm is described in Algorithm~\ref{Algo:Panagiotopoulos}.
+In the \chapterorreport, we will use either a) a reformulation of the optimality conditions of this problem as a variational inequality and we apply the fixed point algorithm and the extra gradient algorithm of Section~\ref{sec:numericalmethods,vi} or b) an adaptation of one of the splitting techniques detailed in Section~\ref{Sec:SplittingTechniquesAndProx}. The algorithm is described in Algorithm~\ref{Algo:Panagiotopoulos}.
 In Table~\ref{tab:OPTI-algos}, we detailed the algorithms we use in the present study.
 
 \begin{algorithm}
@@ -2738,7 +2739,7 @@ Whence, we stick with the computational time.
 
 In our experiments, we decided to fix the required accuracy with the tolerance of each solver.
 Another performance criteria could also  be used: for instance {a timeout could be defined and the metric would be the error at that time.}
-This a way to measure the ability of a solver to give an approximate solution within a prescribed   time limit that may be interesting for real-time applications. Another way to measure performance may also be to divide the computational time by the number of contacts in order to judge of the ability of the solver to be scalable. For the sake of conciseness, this has not been done in this chapter.
+This a way to measure the ability of a solver to give an approximate solution within a prescribed   time limit that may be interesting for real-time applications. Another way to measure performance may also be to divide the computational time by the number of contacts in order to judge of the ability of the solver to be scalable. For the sake of conciseness, this has not been done in this \chapterorreport.
 
 
 \subsection{Benchmarks presentation}
@@ -3020,7 +3021,7 @@ The four first tests in Table ~\ref{Tab:fclib}, Cubes\_H8\_2, Cubes\_H8\_5, Cube
 
 \subsection{Software \& implementation details}
 
-All the solvers that are used in this chapter are implemented in standard C99 in the component of the open source software Siconos called numerics. The aim of Siconos is to provide a common platform for the modeling, simulation, analysis and control of general nonsmooth dynamical systems\footnote{More information on the software is available at \href{http://siconos.gforge.inria.fr}{http://siconos.gforge.inria.fr} and the software can be downloaded at  \href{https://github.com/siconos/siconos}{https://github.com/siconos/siconos}}. The linear algebra operations are based on BLAS/LAPACK. The algorithms {\sf VI-FP}, {\sf VI-EG}, {\sf NSGS} and {\sf PSOR} use the sparse block structure of the Delassus matrix $W$. The {\sf NSN} solvers relies on a standard sparse implementation given by csparse\footnote{\href{http://people.sc.fsu.edu/~jburkardt/c_src/csparse/csparse.html}{http://people.sc.fsu.edu/~jburkardt/c\_src/csparse/csparse.html}}.  We solve linear systems with the LU factorization method embedded in csparse. The simulations are performed on the University of Grenoble-Alpes cluster {\sc ciment}\footnote{https://ciment-grid.ujf-grenoble.fr/}.
+All the solvers that are used in this \chapterorreport are implemented in standard C99 in the component of the open source software Siconos called numerics. The aim of Siconos is to provide a common platform for the modeling, simulation, analysis and control of general nonsmooth dynamical systems\footnote{More information on the software is available at \href{http://siconos.gforge.inria.fr}{http://siconos.gforge.inria.fr} and the software can be downloaded at  \href{https://github.com/siconos/siconos}{https://github.com/siconos/siconos}}. The linear algebra operations are based on BLAS/LAPACK. The algorithms {\sf VI-FP}, {\sf VI-EG}, {\sf NSGS} and {\sf PSOR} use the sparse block structure of the Delassus matrix $W$. The {\sf NSN} solvers relies on a standard sparse implementation given by csparse\footnote{\href{http://people.sc.fsu.edu/~jburkardt/c_src/csparse/csparse.html}{http://people.sc.fsu.edu/~jburkardt/c\_src/csparse/csparse.html}}.  We solve linear systems with the LU factorization method embedded in csparse. The simulations are performed on the University of Grenoble-Alpes cluster {\sc ciment}\footnote{https://ciment-grid.ujf-grenoble.fr/}.
 
 % \begin{ndrva}
 %   something more ?
@@ -4052,7 +4053,7 @@ In this last section, we compare the most efficient solvers for each family. The
 
 \section{General conclusions}
 
-In this chapter, we have reviewed several formulations of the discrete frictional contact problems. These formulations open the way to various solving procedures that have been presented. Some are already well-known: a) the  splitting and relaxation techniques ({\sf NSGS-$\star$} and {\sf PSOR-$\star$} solvers), b) the nonsmooth Newton methods ({\sf NSN-$\star$} solvers) and c) the optimization based solvers ({\sf PANA-$\star$, TRESCA-$\star$ and ACLM-$\star$} solvers). For the first time, we present general solvers based on the variational inequalities formulation ({\sf FP-VI-$\star$} and {\sf FP-EG-$\star$}). These methods extends the {\sf FP-DS} algorithm in various directions and provides some self-adaptive rules to update the $\rho$ parameter that appears to be crucial in practice for the efficiency of the methods. As far as we know, it is also the first application of the proximal point algorithms ({\sf PPA-$\star$}) to the discrete frictional contact problems.  This new family of solvers appears to be a promising alternative when we want to reach tight accuracy for collections of rigid bodies such as granular material.
+In this \chapterorreport, we have reviewed several formulations of the discrete frictional contact problems. These formulations open the way to various solving procedures that have been presented. Some are already well-known: a) the  splitting and relaxation techniques ({\sf NSGS-$\star$} and {\sf PSOR-$\star$} solvers), b) the nonsmooth Newton methods ({\sf NSN-$\star$} solvers) and c) the optimization based solvers ({\sf PANA-$\star$, TRESCA-$\star$ and ACLM-$\star$} solvers). For the first time, we present general solvers based on the variational inequalities formulation ({\sf FP-VI-$\star$} and {\sf FP-EG-$\star$}). These methods extends the {\sf FP-DS} algorithm in various directions and provides some self-adaptive rules to update the $\rho$ parameter that appears to be crucial in practice for the efficiency of the methods. As far as we know, it is also the first application of the proximal point algorithms ({\sf PPA-$\star$}) to the discrete frictional contact problems.  This new family of solvers appears to be a promising alternative when we want to reach tight accuracy for collections of rigid bodies such as granular material.
 
 Then we presented a thorough comparison of solvers over a large set of test problems. Using performance profiles, the solvers has been compared by families and then altogether. The main conclusions and perspectives of this study are as follows:
 \begin{itemize}
