@@ -38,32 +38,32 @@
 %%
 \RRauthor{% % les auteurs
 %  % Premier auteur, avec une note
-% Vincent Acary\thanks{\tt vincent.acary@inrialpes.fr}%
-%   % note partag\'ee (optionnelle)
-% %  \thanks[sfn]{Shared foot note}%
-%  \and Maurice Br\'emond\thanks{\tt maurice.bremond@inrialpes.fr}
+  Vincent Acary\thanks{\tt vincent.acary@inria.fr}%
+  %   % note partag\'ee (optionnelle)
+  \thanks[sfn]{INRIA, 655, Avenue de l'Europe, 38334 Saint Ismier Cedex, France}%
+  \and Maurice Br\'emond\thanks{\tt maurice.bremond@inria.fr}\thanksref{sfn}
 % %entre chaque auteur s'il y en a plusieurs
-%   \and
-% Florent Cadoux\thanks{florent.cadoux@gmail.com}%
+  \and Olivier Huber\thanks{ohuber2@wisc.edu,  Wisconsin Institute for Discovery, University of Wisconsin-Madison, 330 N. Orchard St., 53715, USA}%
 %  % r\'ef\'erence \`a la note partag\'ee
 % %\thanksref{sfn}
 }
+
 %%
 %% Ceci apparait sur chaque page paire.
-\authorhead{}
+\authorhead{Acary V. and Br\'emond, M. and Huber, O.}
 %%
-\RRtitle{Sur la r\'esolution du probl\`eme de frottement tridimensionnel. Formulations and comparaisons des m\'ethodes num\'eriques. }
+\RRtitle{Rapport de test complet sur la r\'esolution du probl\`eme de frottement tridimensionnel. }
 %% English title
-\RRetitle{Solving 3D frictional contact problems: Formulations and comparisons of numerical methods.}
+\RRetitle{Full test report on solving 3D frictional contact problems}
 %%
-\titlehead{Solving 3D frictional contact problems}
+\titlehead{Full test report on solving 3D frictional contact problems}
 %%
 %\RRnote{}
 %\RRnote{This is a second note}
 %%
-\RRresume{TBW
+\RRresume{Ce rapport un est document companion du rapport : ``On solving frictional contact problems: Formulations and comparisons of numerical methods.''
 }
-\RRabstract{TBW}
+\RRabstract{This report is a companion document of the report : "On solving frictional contact problems: Formulations and comparisons of numerical methods.'' }
 %%
 \RRmotcle{Syst\`emes multi--corps, M\'ecanique non r\'eguli\`ere, contraintes unilat\'erales,  frottement de Coulomb, impact, Sch\'emas num\'eriques de r\'esolution}
 \RRkeyword{ Multibody systems, nonsmooth Mechanics,  unilateral constraints, Coulomb friction, impact, numerical methods}
@@ -92,7 +92,7 @@
 
 \input{packages.tex}
 \input{macro.tex}
-
+\usepackage{float,caption}
 %\newcommand{\includegraphicsmaybe}[1]{\IfFileExists{{#1}}{\includegraphics{#1}}{\makebox{‌​File {#1} is missing}}}
 
 \fancyfoot[L]{}
@@ -357,7 +357,6 @@
 
 
 
-\paragraph{Influence of the tolerance of the local solver $\sf tol_{local}$ in {\sf NSGS-FP-VI-UPK} algorithms}
 
 \begin{figure}
   \centering
@@ -403,7 +402,6 @@
  \label{fig:NSGS/LocalTol/VI}
 \end{figure}
 
-\paragraph{Influence of the tolerance of the local solver $\sf tol_{local}$ in {\sf NSGS-AC-GP} algorithms.}
 
 
 
@@ -452,8 +450,6 @@
 \label{fig:NSGS/LocalTol}
 \end{figure}
 
-
-\paragraph{Influence of the choice of the parameters $\rho_\n, \rho_\t$ in the local solver of the {\sf NSGS-AC} algorithms}
 \begin{figure}
   \centering
     \subfiglayout
@@ -499,7 +495,6 @@
 \end{figure}
 
 
-\paragraph{Influence of the contacts order  in NSGS algorithms}
 \begin{figure}
   \centering
     \subfiglayout
@@ -543,7 +538,6 @@
 \caption{Influence of the contacts order in NSGS algorithms.}
 \label{fig:NSGS/Shuffled}
 \end{figure}
-\paragraph{Comparison of PSOR algorithm with respect to  the relaxation parameter $\omega$}
 
 \begin{figure}
   \centering
@@ -589,7 +583,7 @@
   \label{fig:PSOR}
 \end{figure}
 
-\subsection{Comparison of {\sf NSN-$\star$} algorithms}
+\section{Comparison of {\sf NSN-$\star$} algorithms}
 
 \begin{figure}
   \centering
@@ -640,7 +634,7 @@
 
 
 
-\subsection{Comparison of PPA-NSN-AC algorithm with respect to  the step-size parameter $\sigma$, $\mu$}
+\section{Comparison of PPA-NSN-AC algorithm with respect to  the step-size parameter $\sigma$, $\mu$}
 
 
 \begin{figure}
@@ -824,7 +818,7 @@
   \label{fig:PROX/Parameters/nu20}
 \end{figure}
 
-\subsection{Comparison of optimization-based algorithms}
+\section{Comparison of optimization-based algorithms}
 
 
 \begin{figure}
