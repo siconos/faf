@@ -3392,12 +3392,12 @@ In this section, we compare the family of solvers based on splitting and relaxat
   \end{figure}
 
 \paragraph{Influence of the tolerance of the local solver $\sf tol_{local}$ in {\sf NSGS-FP-VI-UPK} algorithms}
-In this paragraph, the tolerance of the local solver $\sf tol_{local}$  is varied and its effect on the global convergence of the solver is reported. In Figure~\ref{fig:NSGS/LocalTol/VI},  we report the performance profiles of {\sf NSGS-FP-VI-UPK} algorithms for the $\sf tol_{local}$ in the range $[10^{-04}, 10^{-16}]$. We also report the efficiency of the adaptive strategy for setting the value of the local tolerance (see Section~\ref{Sec:NSGS-LocalTol}). The main observations are:
+In this paragraph, the tolerance of the local solver $\sf tol_{local}$  is varied and its effect on the global convergence of the solver is reported. In Figure~\ref{fig:NSGS/LocalTol/VI},  we report the performance profiles of {\sf NSGS-FP-VI-UPK} algorithms for the $\sf tol_{local}$ in the range $[10^{-04}, 10^{-16}]$. We also report the efficiency of the adaptive strategy for sizing the value of the local tolerance (see Section~\ref{Sec:NSGS-LocalTol}). The main observations are:
 \begin{enumerate}
 \item For the test sets that are quickly solved (see Table~\ref{Tab:fclib-simulation}), such as   Capsules  a tight tolerance on the local solver $10^{-16}$ improves the efficiency  of the {\sf NSGS-FP-VI-UPK} solver. Similar results are obtained for BoxesStack, Chain, KaplasTower and KaplasTower II; they are not depicted. 
 \item For the other problems that are harder to solve, that is, when we expect more iterations of the  {\sf NSGS-FP-VI-UPK} solver, the adaptive rule, or a tight local tolerance is better.
 \end{enumerate}
-From these results, it is quite difficult to guess in advance the internal dynamics of the solver. By internal dynamics, we mean the propagation in the algorithm between the local problem and the global loop. Note that the range of $\tau$ that we used in the graph is quite small, so the difference in performance between the solvers is not crucial.
+From these results, it is quite difficult to guess in advance the internal dynamics of the solver. By internal dynamics, we mean the propagation in the algorithm  of the error and the values of the unknowns, between the local problem solvers and the global loop over contacts. Note that the range of $\tau$ that we used in the graph is quite small, so the difference in performance between the solvers is not crucial.
 
 \begin{figure}
   \centering
@@ -3494,7 +3494,7 @@ In Figure~\ref{fig:NSGS/rho}, we evaluate the influence of the choice of the par
   
 \item For the other tests, the choice of $\rho_\n,\rho_\t$ does not really change the results such as LowWall\_FEM II, mainly due the fact that the order of magnitude of the chosen $\rho$ with the rules \eqref{eq:rho-2}, \eqref{eq:rho-3} or \eqref{eq:rho-4} is in $[10^{-01}, 1]$. Cubes\_H8 II, Cubes\_H8, Bridge\_PR II, Bridge\_PR, 100\_PR\_PerioBox, Chain, BoxesStack and AqueducPR are not displayed since the results are similar.
 \end{enumerate}
-One of the conclusions of this study is as follows: the rules \eqref{eq:rho-2}, \eqref{eq:rho-3} improve a lot some simulations without increasing the computational cost for the others. Therefore, it is strongly advised to use them. Some further theoretical studies are needed to understand the effect of $\rho$ on the convergence. In particular, the rule \eqref{eq:rho-4} is usually better, but sometimes completely destroy the convergence.
+One of the conclusions of this study is as follows: the rules \eqref{eq:rho-2}, \eqref{eq:rho-3} improve a lot some simulations without increasing the computational cost for the others. Therefore, it is strongly advised to use them. Some further theoretical studies are needed to understand the effect of $\rho$ on the convergence. In particular, the rule \eqref{eq:rho-4} is usually better, but sometimes completely destroys the convergence.
 \begin{figure}
   \centering
     \subfiglayout
