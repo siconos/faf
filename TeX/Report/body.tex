@@ -2703,12 +2703,12 @@ A key parameter in the measurement of performance of the solver is the definitio
   \label{eq:error-1}
   \mbox{error} = \frac{\|F^\nat_\vitwo(r)\|}{\|q\|}.
 \end{equation}
-
+assuming that $\|q\|$ is larger than the machine accuracy. If not, we may assume that $q=0$ and a trivial solution can be computed.
 For all solvers, the error in (\ref{eq:error-1}) is compared to the required tolerance $\sf tol$ given by the user. 
 
 
 For some iterative solvers such as {\sf VI-FP}, {\sf VI-EG}, {\sf NSGS} and {\sf PSOR}, the computation of the error (\ref{eq:error-1})  at each iteration penalizes the performance of the solver:
-it amounts to computing a matrix-vector product, an operation more costly than one iteration. Hence, a cheaper error measurement is used inside the main loop in Algorithms~\ref{Algo:FP-vi}, \ref{Algo:ExtraGradient-vi} and~\ref{Algo:PSOR-II}. This cheaper error measurement is given by
+it amounts to computing a matrix-vector product, an operation that is more computationally expensive than one iteration of the solver. Hence, a cheaper error measurement is used inside the main loop in Algorithms~\ref{Algo:FP-vi}, \ref{Algo:ExtraGradient-vi} and~\ref{Algo:PSOR-II}. This cheaper error measurement is given by
 \begin{equation}
   \label{eq:error-2}
   \mbox{error}_{\mbox{cheap}} = \frac{\|r_{k+1}-r_{k}\|}{\|r_k\|}.
@@ -2735,7 +2735,7 @@ To summarize: the higher $\rho_s$ is, the better the method is. In the sequel, t
 
 The computational time is used to measure performance in (\ref{eq:measure}). 
 Other criteria can be used, like the number of floating point operations (flops).
-It is a better measure of performance since it is independent of the computer. Unfortunately, it is usually difficult to measure it automatically and in a robust way over various platforms.
+It is a better measure of performance since it is independent of the computer. Unfortunately, it is usually difficult to measure in an automatic and robust way over various platforms.
 Whence, we stick with the computational time.
 
 In our experiments, we decided to fix the required accuracy with the tolerance of each solver.
@@ -2746,7 +2746,7 @@ This a way to measure the ability of a solver to give an approximate solution wi
 \subsection{Benchmarks presentation}
 
 
-To perform the comparison of the solvers on a fair basis, we use a large set of problems that comes from various applications. This collection is FCLib (Frictional Contact libraries)  which is an open collection of problems in a hdf5 format described in \citep{acary:hal-00945820}\footnote{More information can be found at \href{https://frictionalcontactlibrary.github.io}{https://frictionalcontactlibrary.github.io}}. In this work, we used the version $\tt v1.0$ for the comparisons that contains $2368$ problems\footnote{
+To perform the comparison of the solvers on a fair basis, we use a large set of problems that comes from various applications. This collection is FCLib (Frictional Contact library)  which is an open collection of problems in a hdf5 format described in \citep{acary:hal-00945820}\footnote{More information can be found at \href{https://frictionalcontactlibrary.github.io}{https://frictionalcontactlibrary.github.io}}. In this work, we used the version $\tt v1.0$ for the comparisons that contains $2368$ problems\footnote{
 The whole collection of problems can be found at \href{https://github.com/FrictionalContactLibrary/fclib-library}{https://github.com/FrictionalContactLibrary/fclib-library}}.
 
 The test sets are illustrated in Figure~\ref{fig:fclib} and details on each test are given in Table~\ref{Tab:fclib}. All the problems have been generated thanks to the software codes LMGC90\footnote{\href{https://git-xen.lmgc.univ-montp2.fr/lmgc90/lmgc90_user/wikis/home}{https://git-xen.lmgc.univ-montp2.fr/lmgc90/lmgc90\_user/wikis/home}} and Siconos. In Table~\ref{Tab:fclib}, the number of degrees of freedom $n$ corresponds to the degrees of freedom of the system before its condensation (or reduction) to local variables. In other words, the number of rows of the matrix $M$ and $H$ in  (\ref{eq:soccp1-intro}). The contact density $c$ is the ratio of the number of contact unknowns over the number of degrees of freedom:
@@ -2756,7 +2756,7 @@ The test sets are illustrated in Figure~\ref{fig:fclib} and details on each test
 \end{equation}
  The coefficient $c$ corresponds also to the ratio between the number of rows of $H$ over its number of columns. If this number is larger than $1$, the matrix $H$ can not be full row rank and then the matrix $W$ is also rank deficient. Whenever $m >n$, we can observe in Table~\ref{Tab:fclib} that  this number $c$ is a good approximation of the rank ratio of the matrix $W$ in our applications. The estimation of the rank of matrix $W$ shows that it is very close to the number of degrees of freedom of the system when $c>1$. For $c \ggg 1$, the contact density is really high and the system suffers from hyperstaticity as we discussed in Section~\ref{sec:existence}. In Table~\ref{Tab:fclib}, we also give an estimation of the conditioning of the matrix $W$. When is was possible from a computational point of view, we perform a singular value decomposition (SVD) of the matrix $W$ to estimate the spectral radius and then the conditioning by cutting the small eigenvalues. This process has two drawbacks. Firstly, the computation of the SVD decomposition can be really expensive for large dense matrices. Secondly, the value of the condition number of the matrix is very sensitive to the threshold for cutting off the small eigenvalues. This is the reason why we also use LSMR~\citep{Fong.Saunders_SISC2011} algorithm to give an better approximation of the condition number of rank deficient matrix. 
 
-The four first tests in Table ~\ref{Tab:fclib}, Cubes\_H8\_2, Cubes\_H8\_5, Cubes\_H8\_20 and  LowWall\_FEM,  are examples that involve flexible elastic bodies meshed by finite element methods. The Delassus  matrix $W$ in that case is full rank. We will call these sets of examples the {\em flexible test sets} in the sequel.
+ The four first tests in Table~\ref{Tab:fclib}, Cubes\_H8\_2, Cubes\_H8\_5, Cubes\_H8\_20 and  LowWall\_FEM,  are examples that involve flexible elastic bodies meshed by finite element methods. Due to a consistent choice of the space-discretization of the contact surfaces, the Delassus  matrix $W$ in that case is full rank. In the sequel, we will call these sets of examples the {\em flexible test sets}.
 
 \def\figillus{0.15\textheight}
 \begin{figure}
@@ -3033,7 +3033,11 @@ All the solvers that are used in this \chapterorreport{} are implemented in stan
 % \end{ndrva}
 
 \subsection{Simulation campaign}
-The simulation campaign is described in Table~\ref{Tab:fclib-simulation}. For some test sets, two simulations runs have been performed with different precisions and prescribed time limits. A trade-off between the time limit and the precision has been chosen such that all the problems of the test sets are solved by at least one solver.
+The simulation campaign is described in Table~\ref{Tab:fclib-simulation}. For some test sets, two simulation runs have been performed with different precisions and prescribed time limits. A trade-off between the time limit and the precision has been chosen such that all the problems of the test sets are solved by at least one solver. In Sections~\ref{Sec:ComparisonFamily} and~\ref{Sec:Comparison}, we report the results for the simulation campaign, which includes more that $27000$ runs.
+{Given this wealth of data, we do not report in this \chapterorreport{},  profiles when a family of solvers fails to solve the instances}\footnote{Nevertheless, the reader can have access to the complete list of performance profiles at \href{https://github.com/siconos/faf/blob/master/TeX/Full-test/full-test_current.pdf}{https://github.com/siconos/faf/blob/master/TeX/Full-test/full-test\_current.pdf}}.
+% \begin{ndrva}
+%  a permanent address on hal  would be better
+% \end{ndrva}
 
 
 \begin{table}
@@ -3238,13 +3242,6 @@ The simulation campaign is described in Table~\ref{Tab:fclib-simulation}. For so
 \label{Tab:fclib-simulation}
 \end{table}
 
-In Sections~\ref{Sec:ComparisonFamily} and~\ref{Sec:Comparison}, we report the results for the simulation campaign, which includes more that $27000$ runs.
-{Given this wealth of data, we do not report profiles when a family of solvers fails to solve the instances}
-%Since the large amount of data and the numerous of performance profiles for each test sets that are generated, we do not report any profiles  when a list of solvers fails or is not able to meet the required tolerance within the prescribed time defined by the timeout values
-\footnote{Nevertheless, the reader can have access to the complete list of performance profiles at \href{https://github.com/siconos/faf/blob/master/TeX/Full-test/full-test_current.pdf}{https://github.com/siconos/faf/blob/master/TeX/Full-test/full-test\_current.pdf}}.
-% \begin{ndrva}
-%  a permanent address on hal  would be better
-% \end{ndrva}
 %\newcommand\commentedfigure[1]{#1}
 \newcommand\commentedfigure[1]{}
 \makeatletter
@@ -3270,12 +3267,13 @@ In this section, we perform a comparison of the solvers by family. The goal is  
 \label{Sec:Comparison,VI,step-length}
 
 
-In Figure~\ref{fig:VI/UpdateRule}, we compare the different numerical solvers for VI described in Section~\ref{sec:numericalmethods,vi}. The solvers are quite slow to converge in practice for large problems and/or with tight tolerances although they are robust except for {\sf FP-DS}. Only the test sets for which the solvers have reached the precision before the prescribed time limit are presented. For that reason, the results for the test sets LowWall\_FEM,  LowWall\_FEM II,  Cubes\_H8, Bridge\_PR, AqueducPR, 945\_SP\_Box\_PL, BoxesStack, Chute\_4000  and Chute\_1000  are not depicted. 
+In Figure~\ref{fig:VI/UpdateRule}, we compare the different VI numerical solvers  described in Section~\ref{sec:numericalmethods,vi}.
+Except for the {\sf FP-DS} solver, the solvers {\sf FP-VI-$\star$} and {\sf FP-EG-$\star$} are very robust. Nevertheless, they are quite slow to converge in practice for large problems and/or with tight tolerances. Only the test sets for which the solvers have reached the precision before the prescribed time limit are presented. For that reason, the results for the test sets LowWall\_FEM,  LowWall\_FEM II,  Cubes\_H8, Bridge\_PR, AqueducPR, 945\_SP\_Box\_PL, BoxesStack, Chute\_4000  and Chute\_1000  are not depicted. 
 The main conclusions are as follows:
 \begin{enumerate}
-\item The solver {\sf FP-DS} suffers from robustness problems and a lot of divergence has been observed. This is mainly due to the fact that we set a priori the $\rho$ parameter in Algorithm~\ref{Algo:FP-vi} to a fixed value of $1$, independently of the problem.
+\item The solver {\sf FP-DS} suffers from robustness problems and a lot of divergence has been observed. This is mainly due to the fact that we set a priori the $\rho$ parameter in Algorithm~\ref{Algo:FP-vi} to a fixed value equal to $1$, independently of the problem.
 \item The solvers {\sf FP-VI-$\star$} and {\sf FP-EG-$\star$} are really robust but slow. They are able to solve all the problems but they require a lot of time. We did not observe divergence issues on all the test sets for these solvers. Comparing to {\sf FP-DS}, the self-adaptive rule for sizing the paramater $\rho_k$ is of utmost importance for the  robustness and the convergence rate.
-\item Except for the test set KaplasTower II, the  {\sf FP-EG-$\star$} performs better than  {\sf FP-VI-$\star$}.
+\item Except for the test set KaplasTower II, the  {\sf FP-EG-$\star$} performs better than  {\sf FP-VI-$\star$}. Otherwise, the performance are quite similar since we plot the performance for a quite narrow range of values of $\tau \in [1,5] $
 \item The difference between the adaptive strategy for sizing $\rho_k$, {\sf UPK} and {\sf UPTS}, is negligible in all the test sets. Therefore, the choice of the update rule is not really important.
 \end{enumerate}
 \begin{figure*}[htbp]
@@ -3331,9 +3329,9 @@ In this section, we compare the family of solvers based on splitting and relaxat
   
 \item When the tolerance is equal to $10^{-8}$,  the {\sf NSGS-$\star$} solvers have some difficulties to reach convergence for all the problems within the prescribed time limit. This is the case for the test sets LowWall\_FEM, Cubes\_H8, Bridge\_PR, Chain,  Capsules and BoxesStack. Generally, the convergence is so slow that it is difficult to reach tight tolerance with a reasonable time limit.
  
-\item Except for the test sets KaplasTower II and BoxesStack, the solver {\sf NSGS-EXACT} behaves poorly. This is mainly due to the fact that the solver is not robust to find a solution for one contact when we are far from the global solution for all the contacts. This behavior was already reported in~\citep{Daviet.ea_SIGGRAPH2011} where another solver based on a nonsmooth Newton technique is used when  the exact solution is not satisfactory.
+\item Except for the test sets KaplasTower II and BoxesStack, the solver {\sf NSGS-EXACT} behaves poorly. This is mainly due to the fact that the local solver is not robust to find a solution  when the unknowns  are far from the global solution for all the other contacts. This behavior was already reported in~\citep{Daviet.ea_SIGGRAPH2011} where another solver based on a nonsmooth Newton technique is used when  the exact solution is not satisfactory.
   
-\item  The {\sf NSGS-FP-DS-One} solver  is most efficient on the test sets Bridge\_PR II, KaplasTower II, Chain and BoxesStack. In these tests sets, a part of problems seem easier to solve and the {\sf NSGS-FP-DS-One} solver seems sufficient to get a global convergence.
+\item  The {\sf NSGS-FP-DS-One} solver  is most efficient on the test sets Bridge\_PR II, KaplasTower II, Chain and BoxesStack. In these tests sets, a part of the  problems seems easier to solve and the {\sf NSGS-FP-DS-One} solver seems sufficient to get a global convergence.
   Nevertheless, this local solver seems slow or suffers from robustness issues for other test sets.
   
 \item On the flexible test sets, Cubes\_H8\_$\star$, LowWall\_FEM and the rigid test sets 945\_SP\_Box\_PL and  Chute\_4000, the best solver is {\sf NSGS-FP-VI-UPK} for a relatively low required tolerance ($\sf tol_{local} =10^{-06}$). For these test sets, an approximate solution of the single contact problems seems sufficient to ensure an efficient convergence towards the solution without entailing robustness.
