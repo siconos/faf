@@ -693,20 +693,20 @@ Using the alternative inclusions formulations~\eqref{eq:signo-inclusion-velo}--\
   \label{eq:inclusion-rhorho}
   \left\{ \begin{array}{ll}
     -\rho_\n u_\n \in N_{\RR^{n_c}_+}(r_\n), & \rho_\n>0, \\
-    -\rho_\t u_{\t} \in N_{D(\mu,(r_{n})_+)}(r_\t), & \rho_\t>0,
+    -\rho_\t u_{\t} \in N_{D(\mu(r_{n})_+)}(r_\t), & \rho_\t>0,
   \end{array}\right.
 \end{equation}
- we can replace $P_K$ into $P_{\RR^{n_c}_+}$ and $P_{D(\mu,(r_{n})_+)}$ where 
+ we can replace $P_K$ into $P_{\RR^{n_c}_+}$ and $P_{D(\mu(r_{n})_+)}$ where 
 \begin{equation}
   \label{eq:diskR-prod}
-  D(\mu,(r_{n})_+) = \prod_{\alpha=1\ldots n_c} D(\mu^{\alpha} (r_{\n}^\alpha)_+).
+  D(\mu(r_{n})_+) = \prod_{\alpha=1\ldots n_c} D(\mu^{\alpha} (r_{\n}^\alpha)_+).
 \end{equation}
 defines the Cartesian product of the Coulomb disks for each contact. The notation $x_+$ stands for $x_+ = \max(0,x)$. Using this procedure,~\citet{Jean.Moreau1987,Christensen.Klarbring.ea1998} propose the following nonsmooth equation formulation of the frictional contact condition
 \begin{equation}
   \label{eq:Moreau--Jean-1}
     \begin{cases}
     r_\n - P_{\RR^{n_c}_+}(r_\n - \rho_\n  u_\n) = 0, \\
-    r_\t - P_{D(\mu, (r_{\n})_+)}(r_\t - \rho_\t u_\t   )=0.
+    r_\t - P_{D(\mu (r_{\n})_+)}(r_\t - \rho_\t u_\t   )=0.
   \end{cases}
 \end{equation}
 The parameters $\rho_\n,\rho_\t$ may be also chosen contact by contact. Problem~\ref{prob:II} is then reformulated as
@@ -714,7 +714,7 @@ The parameters $\rho_\n,\rho_\t$ may be also chosen contact by contact. Problem~
   \label{eq:MJ-II}
     F_{\mjtwo}(r) \coloneqq \left[ \begin{array}{c}
     r_\n - P_{\RR^{n_c}_+}(r_\n - \rho_\n (W r +  q)_\n) \\
-    r_\t - P_{D(\mu, (r_{\n})_+)}(r_\t - \rho_\t (Wr+q)_\t   ) 
+    r_\t - P_{D(\mu (r_{\n})_+)}(r_\t - \rho_\t (Wr+q)_\t   ) 
   \end{array}\right] =0.
 \end{equation}
 
@@ -723,17 +723,17 @@ The parameters $\rho_\n,\rho_\t$ may be also chosen contact by contact. Problem~
   \label{eq:AC-1}
   \begin{cases}
     r_\n - P_{\RR^{n_c}_+}(r_\n - \rho_\n  u_\n) = 0, \\
-    r_\t - P_{D(\mu, (r_\n - \rho u_\n)_+)}(r_\t - \rho_\t u_\t   )=0.
+    r_\t - P_{D(\mu (r_\n - \rho u_\n)_+)}(r_\t - \rho_\t u_\t   )=0.
   \end{cases}
 \end{equation}
-The difference between~\eqref{eq:Moreau--Jean-1} and~\eqref{eq:AC-1} is in the radius of the disk: $D(\mu, (r_\n - \rho u_\n)_+)$ rather than $D(\mu, (r_{\n})_+)$.
+The difference between~\eqref{eq:Moreau--Jean-1} and~\eqref{eq:AC-1} is in the radius of the disk: $D(\mu (r_\n - \rho u_\n)_+)$ rather than $D(\mu (r_{\n})_+)$.
 Problem~\ref{prob:II} can be also reformulated as in~\eqref{eq:MJ-II} using~\eqref{eq:AC-1}.
 This yields
 \begin{equation}
   \label{eq:AC-II}
     F_{\actwo}(r) \coloneqq \left[ \begin{array}{c}
     r_\n - P_{\RR^{n_c}_+}(r_\n - \rho_\n (W r +  q)_\n) \\
-    r_\t - P_{D(\mu, (r_\n - \rho_\n u_\n)_+)}(r_\t - \rho_\n (W r +  q)_\t   )
+    r_\t - P_{D(\mu (r_\n - \rho_\n u_\n)_+)}(r_\t - \rho_\n (W r +  q)_\t   )
   \end{array}\right] =0.
 \end{equation}
 
@@ -1092,7 +1092,7 @@ where $\tilde q_\n = q_\n + W_{\n\t}r_\t$. The second problem is to find $u_\t$ 
   \label{eq:AO-2}
   \begin{cases}
     u_\t = W_{\t\t} r_\t + \tilde q_\t, \\
-   -u_\t \in N_{D(\mu,\tilde r_{\n})}(r_\t),
+   -u_\t \in N_{D(\mu\tilde r_{\n})}(r_\t),
   \end{cases}
 \end{equation}
 where $\tilde r_\n$ is fixed and $\tilde q_\t = q_\t + W_{\t\n}r_\n$.
@@ -1113,7 +1113,7 @@ and
   \begin{cases}
     \min\, \Frac 1 2  r_\t^\top W _{\t\t} r_\t +  r_\t^\top \tilde q_\t \\
     \begin{array}{ll}
-     \text{s.t.}  & r_\t \in D(\mu,\tilde r_{\n}).
+     \text{s.t.}  & r_\t \in D(\mu\tilde r_{\n}).
   \end{array}
 \end{cases}
 \end{equation}
@@ -1153,7 +1153,7 @@ This approach has been proposed by \cite{Panagiotopoulos_IA1975} for two--dimens
 % \begin{bmatrix}
 %   \tilde f_\t \\ w_\t
 % \end{bmatrix}
-% + N_{\RR^{n-m}\times D(\mu,\tilde r_{\n})}
+% + N_{\RR^{n-m}\times D(\mu\tilde r_{\n})}
 % $$
 % \end{ndrva}
 \paragraph{The successive approximation} The successive approximation method identifies a single optimization problem by introducing a function that maps the normal reaction to itself (or the friction threshold) such that
@@ -1168,7 +1168,7 @@ Using this artifact, we can define a new problem from Problem~\ref{prob:II} such
     \theta = h(r_\n) \\
     u = W r + q \\
     -u_{\n} \in N_{\RR^{n_c}_+}(r_\n) \\
-    -u_{\t} \in N_{D(\mu,\theta)}(r_\t).
+    -u_{\t} \in N_{D(\mu\theta)}(r_\t).
   \end{cases}
 \end{equation}
 If we assume for a while that the Delassus $W$ is a symmetric positive semi--definite  matrix the last three lines are equivalent to a convex optimization problem over the product of semi--cylinders $C(\mu,\theta)$, that is
@@ -1354,7 +1354,7 @@ In our case, this assumption is not satisfied, but we will see in the sequel tha
 %   \begin{cases}
 %     u_{k+1} \leftarrow W r_{k} +q\\
 %     r_{\n,k+1} \leftarrow P_{\RR^{n_c}_+}(r_{\n,k} -\rho_\n u_{\n,k+1}) \\
-%     r_{\t,k+1} \leftarrow P_{D(\mu,r_{\n,k})}(r_{\t,k}-\rho_\t u_{\t,k+1}).
+%     r_{\t,k+1} \leftarrow P_{D(\mur_{\n,k})}(r_{\t,k}-\rho_\t u_{\t,k+1}).
 %   \end{cases}
 % \end{equation}
 % With the Alart--Curnier approach~\eqref{eq:AC-1}, we get
@@ -1363,13 +1363,13 @@ In our case, this assumption is not satisfied, but we will see in the sequel tha
 %   \begin{cases}
 %     u_{k+1} \leftarrow W r_{k} +q\\
 %     r_{\n,k+1} \leftarrow P_{\RR^{n_c}_+}(r_{\n,k} -\rho_\n u_{\n,k+1}) \\
-%     r_{\t,k+1} \leftarrow P_{D(\mu,r_{\n,k}-\rho_\n u_{\n,k+1} )}(r_{\t,k}-\rho_\t u_{\t,k+1})
+%     r_{\t,k+1} \leftarrow P_{D(\mur_{\n,k}-\rho_\n u_{\n,k+1} )}(r_{\t,k}-\rho_\t u_{\t,k+1})
 %   \end{cases}
 % \end{equation}
 % We will see in Section~\ref{Sec:OptimisationBasedMethods} that more evolved algorithms can be written exploiting the structure of the convex optimization sub-problems.
 
 
-% Algorithm~\ref{Algo:FP-MJ-II}. For the tangential part, the projection is performed on $D(\mu,r_{\n,k})$ at the iteration $k$. It can be also performed on  $D(\mu,r_{\n,k+1})$. We will see in Section~\ref{Sec:OptimisationBasedMethods} that more evolved algorithms can be written exploiting the convex optimization sub-problems
+% Algorithm~\ref{Algo:FP-MJ-II}. For the tangential part, the projection is performed on $D(\mur_{\n,k})$ at the iteration $k$. It can be also performed on  $D(\mur_{\n,k+1})$. We will see in Section~\ref{Sec:OptimisationBasedMethods} that more evolved algorithms can be written exploiting the convex optimization sub-problems
 % \begin{algorithm}
 %   \label{Algo:FP-MJ-II}
 %   \begin{algorithmic}
@@ -1383,7 +1383,7 @@ In our case, this assumption is not satisfied, but we will see in the sequel tha
 %       \WHILE {$\sf error > tol$ and $\sf k < iter_{\max}$} 
 %       \STATE $\sf u_{k+1} \leftarrow W r_{k} +q $
 %       \STATE $\sf r_{\n,k+1} \leftarrow P_{\RR^{n_c}_+}(r_{\n,k} -\rho_\n u_{\n,k+1})$
-%       \STATE $\sf r_{\t,k+1} \leftarrow P_{D(\mu,r_{\n,k})}(r_{\t,k} -\rho_\t u_{\t,k+1})$
+%       \STATE $\sf r_{\t,k+1} \leftarrow P_{D(\mur_{\n,k})}(r_{\t,k} -\rho_\t u_{\t,k+1})$
 %       \STATE Evaluate $\sf error$.
 %       \STATE $\sf k \leftarrow k+1$
 %       \ENDWHILE
@@ -1757,7 +1757,7 @@ Algorithm~\ref{Algo:NSN} is applied with
   % \begin{cases}
   %   \Phi(r) \in \partial_{r} F_{\actwo}^\nat(r) = \rho W \partial_{x}  \left[ \begin{array}{c}
   %       r_\n - P_{\RR^{n_c}_+}(r_\n - \rho_\n (W r +  q)_\n) \\
-  %       r_\t - P_{D(\mu, (r_\n - \rho_\n u_\n)_+)}(r_\t - \rho_\n (W r +  q)_\t   )
+  %       r_\t - P_{D(\mu (r_\n - \rho_\n u_\n)_+)}(r_\t - \rho_\n (W r +  q)_\t   )
   %     \end{array}\right]
   %   \begin{bmatrix}
   %   \end{bmatrix}
@@ -2410,7 +2410,7 @@ In this section, the Delassus matrix is assumed to be symmetric in order to be a
 
 \subsection{Alternating optimization problem}
 
-The Panagiotopoulos approach described in Section~\ref{Sec:OptimisationProblems} generates a family of solvers by choosing a particular solver for the normal contact problem~(\ref{eq:AO-3}) and the tangential contact problem~(\ref{eq:AO-4}). This method may be viewed as a two-block Gauss-Seidel method (as pointed out by \cite{Tzaferopoulos_CS1993}). More precisely, the following choices may be made for the normal and tangent problems.
+The Panagiotopoulos approach described in Section~\ref{Sec:OptimisationProblems} generates a family of solvers by choosing two specific solvers for the normal contact problem~(\ref{eq:AO-3}) and the tangential contact problem~(\ref{eq:AO-4}), respectively. This method may be viewed as a two-block Gauss-Seidel method (as pointed out by \cite{Tzaferopoulos_CS1993}). More precisely, the following choices may be made for the normal and tangent problems.
 
 The normal contact problem
  \begin{equation}
@@ -2446,10 +2446,10 @@ with the algorithm described in  Algorithm~\ref{Algo:ConvexQP}.
       \REQUIRE $\sf W,b$ that defines $q(r)$
       \REQUIRE $\sf C$ a convex set
       \REQUIRE $\sf r_0$ initial values
-      \REQUIRE $\sf tol >0$ a tolerance value and $\sf iter_{\max}  >0$ the max number of iterations
+      \REQUIRE $\sf tol >0$ a tolerance value and $\sf iter_{\max}  >0$ the maximum number of iterations
       \REQUIRE $\sf\rho_0>0$, $l,\sigma\in(0,1)$
       \REQUIRE $\sf i_{lsmax}$ maximum number of line-search iterations
-      \ENSURE  $\sf r$ solution of Problem~\ref{eq:ConvexQP}
+      \ENSURE  $\sf r$ solution of Problem~\eqref{eq:ConvexQP}
       \STATE $\sf r_{k} \leftarrow r_0 $ ; $\sf \theta_0  \leftarrow  q(r_0)$ ; $\sf k \leftarrow 0$
       \WHILE {$\sf error > tol$ and $\sf k < iter_{\max}$}
       \STATE \textit{Armijo like--search procedure}
@@ -2479,7 +2479,7 @@ The tangential problem,
   \begin{cases}
     \min\,  \Frac 1 2 r_\t^\top W _{\t\t} r_\t +  r_\t^\top \tilde q_\t \\
     \begin{array}{ll}
-     \text{s.t.}  & r_\t \in D(\mu,\tilde r_{\n})
+     \text{s.t.}  & r_\t \in D(\mu\tilde r_{\n})
   \end{array}
 \end{cases} \text{ with } \tilde q_\t = q_\t + W_{\t\n}r_{\n,k+1},
 \end{equation}
@@ -2517,7 +2517,7 @@ In Table~\ref{tab:OPTI-algos}, we detailed the algorithms we use in the present 
 
 \subsection{Successive approximation  method}
 \label{Sec:Tresca-solver}
-The methods of successive approximations is a natural tool for the numerical realization of Problem~\ref{prob:II}. It is based on the Tresca approximation of the Coulomb cone as described in Section~\ref{Sec:OptimisationProblems} and the work of the celebrated Czech school~\cite{Necas.ea1980,Haslinger1983,Haslinger1984,Haslinger.ea1996}.   Each iterative step is represented by an auxiliary contact problem with given friction described by quadratic program over a cylinder~(\ref{eq:Haslinger-2}), that we recall there:
+The methods of successive approximations is a natural tool for the numerical realization of Problem~\ref{prob:II}. It is based on the Tresca approximation of the Coulomb cone as described in Section~\ref{Sec:OptimisationProblems} and the work of the celebrated Czech school~\cite{Necas.ea1980,Haslinger1983,Haslinger1984,Haslinger.ea1996}.   Each iterative step is represented by an auxiliary contact problem with a given friction threshold described by quadratic program over a cylinder~(\ref{eq:Haslinger-2}), that we recall there:
 \begin{equation}
   \label{eq:Haslinger-2-bis}
   \begin{cases}
