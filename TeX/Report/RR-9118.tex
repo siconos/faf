@@ -52,16 +52,15 @@
 %%
 \RRtitle{Sur la r\'esolution du probl\`eme de frottement tridimensionnel. Formulations and comparaisons des m\'ethodes num\'eriques. }
 %% English title
-\RRetitle{On solving frictional contact problems: Formulations and comparisons of numerical methods.}
+\RRetitle{On solving contact problems with Coulomb friction: formulations and numerical comparisons}
 %%
 \titlehead{On solving frictional contact problems}
 %%
 %\RRnote{}
 %\RRnote{This is a second note}
 %%
-\RRresume{TBW
-}
-\RRabstract{In this report, we review several formulations of the discrete frictional contact problem that arises in space and time discretized mechanical systems with unilateral contact and three-dimensional Coulomb's friction. Most of these formulations are well--known concepts in the optimization community, or more generally, in the mathematical programming community. To cite a few, the discrete frictional contact problem is formulated as variational inequalities, generalized or semi--smooth equations, second--order cone complementarity problems, or as optimization problems such as quadratic programming problems over second-order cones. Thanks to these multiple formulations, various numerical methods emerge naturally for solving the problem. We review the main numerical techniques that are well-known in the literature and we also propose new applications of methods such as the fixed point and extra-gradient methods with self-adaptive step rules for variational inequalities or the proximal point algorithm for generalized equations. All these numerical techniques are compared over a large set of test examples using performance profiles. One of the main conclusion is that there is no universal solver. Nevertheless, we are able to give some hints to choose a solver with respect to the main characteristics of the set of tests}
+\RRresume{Dans ce rapport, plusieurs formulations du probl\`eme discret de contact frottant qui appara\^it dans les syst\`emes m\'ecaniques avec du contact unilat\'eral et du frottement de Coulomb, sont pr\'esent\'ees. La plupart de ces formulations sont des objets bien connus dans la communaut\'e de l'optimisation, et plus g\'en\'eralement, de la  programmation math\'ematique. Pour en citer quelques uns, le probl\'eme de contact frottant peut \^etre formul\'e comme une in\'egalit\'e variationnelle, comme une \'equation non-r\'eguli\`ere ou semi--lisse, comme un probl\`eme de compl\'ementarit\'e sur des c\^ones, ou encore comme des probl\`emes d'optimisation par exemple des probl\`emes quadratiques sur des c\^ones du second ordre. Gr\^ace \`a ces multiples formulations, de nombreuses m\'ethodes num\'eriques de r\'esolutions \'emergent naturellement. On d\'etaille dans ce rapport les principales techniques num\'eriques bien connues dans la lit\'erature et nous proposons aussi des nouvelles m\'ethodes comme les m\'ethodes de point fixe et d'extra-gradient pour les in\'egalit\'es variationnelles avec une r\`egle d'adaptation automatique du pas, ainsi que l'application de l'algorithme du point optimal pour les \'equations g\'en\'eralis\'ees. Toutes ces techniques sont compar\'ees sur un grand ensemble de probl\`eme--tests en utilisant des profils de performance. Une des conlusions est qu'il n'existe pas de m\'ethode universelle. N\'eanmoins, on peut donner des conseils pour choisir une m\'ethode particuli\`ere la mieux adapt\'ee aux caract\'eristiques d'un probl\`eme donn\'e.}
+\RRabstract{In this report, we review several formulations of the discrete frictional contact problem that arises in space and time discretized mechanical systems with unilateral contact and three-dimensional Coulomb's friction. Most of these formulations are well--known concepts in the optimization community, or more generally, in the mathematical programming community. To cite a few, the discrete frictional contact problem can be formulated as variational inequalities, generalized or semi--smooth equations, second--order cone complementarity problems, or as optimization problems such as quadratic programming problems over second-order cones. Thanks to these multiple formulations, various numerical methods emerge naturally for solving the problem. We review the main numerical techniques that are well-known in the literature and we also propose new applications of methods such as the fixed point and extra-gradient methods with self-adaptive step rules for variational inequalities or the proximal point algorithm for generalized equations. All these numerical techniques are compared over a large set of test examples using performance profiles. One of the main conclusion is that there is no universal solver. Nevertheless, we are able to give some hints to choose a solver with respect to the main characteristics of the set of tests}
 %%
 \RRmotcle{Syst\`emes multi--corps, M\'ecanique non r\'eguli\`ere, contraintes unilat\'erales,  frottement de Coulomb, impact, Sch\'emas num\'eriques de r\'esolution}
 \RRkeyword{ Multibody systems, nonsmooth Mechanics,  unilateral constraints, Coulomb friction, impact, numerical methods}
@@ -114,7 +113,7 @@
 %%
 \begin{document}
 %%
-\RRNo{123456789}
+\RRNo{9118}
 \makeRR   % cas d'un rapport de recherche
 %% \makeRT % cas d'un rapport technique.
 %% a partir d'ici, chacun fait comme il le souhaite
@@ -122,6 +121,7 @@
 \newpage
 \tableofcontents
 
+\newpage
 \input{body.tex}
 
 \addcontentsline{toc}{section}{References}
@@ -131,6 +131,13 @@
 
 
 
+
+
+\input{appendix.tex}
+
+\section*{Appendix 3. Full report of tests}
+\addcontentsline{toc}{section}{Appendix 3. Full report of tests}
+\input{../Full-test/body-full-test}
 \end{document}
 \endinput
 %%
