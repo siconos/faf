@@ -60,13 +60,12 @@
   % \subfloat[Capsules]{\includegraphics[height=\figillus]{figure/Capsules.png}$\quad$}
   %\subfloat[Chain]{\includegraphics[height=\figillus]{figure/Chains.png}$\quad$}
   %\subfloat[KaplasTower]{\includegraphics[height=\figillus]{figure/KaplasTower.png}$\quad$} \subfloat[BoxesStack]{$\quad$$\quad$\includegraphics[height=\figillus]{figure/BoxesStack.png}$\quad$$\quad$}\\
-\subfloat[Chute\_4000]{\includegraphics[height=\figillus]{figure/Chute_1000_light.jpg}$\quad$$\quad$$\quad$$\quad$}
+\subfloat[Chute\_4000]{\includegraphics[height=\figillus]{figure/Chute_1000_light.jpg}}
   \caption{Illustrations of the FClib test problems}
   \label{fig:fclib}
 \end{figure}
 \vspace{-1cm}\section{Introduction}
-
-In this talk, we want to discuss numerical solution procedures for the following discrete frictional contact problem~\cite{Acary.Brogliato2008}.   Let $n_c\in \NN$ be the number of contact points and $n\in\NN$ the number of degree of freedom. Given a symmetric positive (semi-)definite matrix ${M} \in \RR^{n \times n}$, a vector $ {f} \in \RR^n$, a matrix  ${H} \in \RR^{n \times m}$ with $m= 3n_c$, a vector $w \in \RR^{m}$ and a vector of coefficients of friction $\mu \in \RR^{n_c}$, find three vectors $ {v} \in \RR^n$, $u\in\RR^m$ and $r\in \RR^m$ such that
+  Let $n_c\in \NN$ be the number of contact points and $n\in\NN$ the number of degree of freedom. Given a symmetric positive (semi-)definite matrix ${M} \in \RR^{n \times n}$, a vector $ {f} \in \RR^n$, a matrix  ${H} \in \RR^{n \times m}$ with $m= 3n_c$, a vector $w \in \RR^{m}$ and a vector of coefficients of friction $\mu \in \RR^{n_c}$, the discrete frictional contact problem is to find three vectors $ {v} \in \RR^n$, $u\in\RR^m$ and $r\in \RR^m$ such that
 \begin{equation}\label{eq:soccp1}
   \begin{array}{rcl}
     M v = {H} {r} + {f}, &
@@ -82,10 +81,19 @@ The set $K$ is the cartesian product of Coulomb's friction cone at each contact,
   \label{eq:CC}
   K = \prod_{\alpha=1\ldots n_c} K^{\alpha}  = \prod_{\alpha=1\ldots n_c} \{r^\alpha, \|r^\alpha_\t \| \leq \mu^\alpha |r^\alpha_\n| \}.
 \end{equation}
-The function $g$ is defined as $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldots n_c]^\top$.
+The function $g$ is defined as $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldots n_c]^\top$. For more details, we refer to ~\cite{Acary.Brogliato2008}.
+In this work, we discuss and compare the numerical solution procedures for  solving the discrete frictional contact problem.
 
-\vspace{-0.5cm}\section{Origin of the problem}
-  This problem is at the heart of the simulation of mechanical systems with 3D Coulomb's friction and unilateral constraints. It might be the result of the time--discretization by event--capturing time--stepping methods or event--detecting (event--driven) techniques of dynamical systems with friction or the result of a space--discretization (by FEM for instance) of the quasi-static problems of frictional contact mechanics~\cite{Acary.Cadoux2013}. From the mathematical programming point of view, the problem is a Second Order Cone Complementarity Problem (SOCCP). If the nonlinear part of the problem is neglected ($g(u)=0$), the problem is an associated friction problem with dilatation, and by the way, is a gentle Second Order Cone Linear Complementarity Problem (SOCLCP) with a positive matrix $H^\top M^{-1} H$ (possibly semi--definite). When the non-associated character of the friction is taken into account through $g(u)$, the problem is non monotone and nonsmooth, and then very hard to solve efficiently.
+\vspace{-0.5cm}\section{Second Order Cone Complementarity Problem (SOCCP)}
+From the mathematical programming point of view, the problem~\eqref{eq:soccp1} is a SOCCP. If the nonlinear part of the problem is neglected ($g(u)=0$), the problem is an associated friction problem with dilatation, and by the way, is a gentle SOCLCP with a positive matrix $H^\top M^{-1} H$ (possibly semi--definite). When the non-associated character of the friction is taken into account through $g(u)$, the problem is non-monotone and nonsmooth, and then very hard to solve efficiently. 
+This generic problem is at the heart of most of the simulation techniques of mechanical systems with 3D Coulomb's friction and unilateral constraints. as discussed in~\cite{Acary.Cadoux2013}, it might be the result of
+\begin{itemize}
+  \setlength\itemsep{0em}
+\item a time--discretization scheme by event--capturing time--stepping methods or event--detecting (event--driven) techniques of dynamical systems
+\item  a space--discretization (by FEM for instance) of the quasi-static problems of frictional contact mechanics.  
+\end{itemize}
+
+
 
 \vspace{-0.6cm}\section{Formulations based on numerical optimization}
   
@@ -99,18 +107,17 @@ In this talk we will recall a result for the SOCCP~(\ref{eq:soccp1}) which ensur
 \item Optimization based solvers: Panagatiopolous approach, Czech school approach (Tresca successive approximations) and convex SOCQP relaxation.
 \end{itemize}
 \vspace{-0.6cm}\section{Extensive comparisons}
-The goal of this work is to compare on a large set of problems the methods found in the literature. To this end, we build an open collection of discrete frictional contact problems called FCLIB\footnote{\href{https://frictionalcontactlibrary.github.io/index.html}{https://frictionalcontactlibrary.github.io/index.html}} in order to offer a large library of problems to compare algorithms on a fair basis.  In this work, this collection is solved with the software {\sc Siconos} and its component {\sc Siconos/Numerics}\footnote{\href{http://siconos.gforge.inria.fr}{http://siconos.gforge.inria.fr}}.
+The goal of this work is to compare, on a large set of problems, the methods found in the literature and to propose some new approaches. To this end, we build an open collection of discrete frictional contact problems called FCLIB\footnote{\href{https://frictionalcontactlibrary.github.io/index.html}{https://frictionalcontactlibrary.github.io/index.html}} in order to offer a large library of problems to compare algorithms on a fair basis.  In this work, this collection is solved with the software {\sc Siconos} and its component {\sc Siconos/Numerics}\footnote{\href{http://siconos.gforge.inria.fr}{http://siconos.gforge.inria.fr}}.
 
 
 \vspace{-0.5cm}\section{Conclusions}
 
 On one hand, we will show that algorithms based on Newton methods for nonsmooth equations solve quickly the problem when they succeed, but suffer from robustness issues mainly when the matrix $H$ has not full rank. On the other hand, the 
-iterative methods dedicated to solving variational inequalities are quite robust but with an extremely slow rate of convergence. To sum up, as far as we know there is no option that combines time efficiency and robustness. This presentation will be a summary of the work detailed in the following technical report~\cite{acary:hal-01630836}
+iterative methods dedicated to solving variational inequalities are quite robust but with an extremely slow rate of convergence. To sum up, as far as we know there is no option that combines time efficiency and robustness. This presentation will be a summary of the work detailed in a recent technical report~\cite{acary:hal-01630836}
 
 \vspace{-0.3cm}\subsection{References}
 \vspace{-0.5cm}\setlength{\bibsep}{0.5em}
 \small
-\bibliographystyle{plain}
 \bibliography{biblio}
 
 
