@@ -1,0 +1,32 @@
+\makeatletter
+
+\renewcommand\section{\@startsection {section}{1}{\z@}%
+                                   {-3.5ex \@plus -1ex \@minus -.2ex}%
+                                   {.1ex \@plus.0ex}%
+                                   {\normalfont\large\bfseries}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
+                                     {-1.5ex\@plus -1ex \@minus -.2ex}%
+                                     {0.1ex \@plus .0ex}%
+                                     {\normalfont\large\it}}
+\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
+                                     {-1.5ex\@plus -1ex \@minus -.2ex}%
+                                     {0.1ex \@plus .0ex}%
+                                     {\normalfont\large}}                          
+\newenvironment{summary}
+               {\list{}{\itemindent    0pt
+                        \leftmargin    0.25in
+                        \rightmargin   \leftmargin
+                        \parsep        \z@ \@plus\p@}%
+                \item\relax}
+               {\endlist}                                   
+\parskip       4\p@ \@plus \p@
+\parindent     \z@
+\oddsidemargin 0.25in
+\textwidth     5.77in
+\topmargin     0in
+\headheight    0in
+\headsep       0in
+\textheight    9.69in
+\setcounter{secnumdepth}{0}
+\makeatother                                   
+
