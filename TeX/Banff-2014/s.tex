@@ -4,13 +4,14 @@
 \usepackage{subeqnarray}
 
 \usepackage{cases}
-
+\usepackage{array}
 \usepackage{pifont}
 
 \usepackage{fancyhdr}
 
 \usepackage{lastpage}
-
+\usepackage{subfig}
+\usepackage{float}
 
 \usepackage{graphicx}
 \usepackage{subfloat}
@@ -30,6 +31,10 @@
 
 \usepackage{wasysym}
 
+\makeatletter
+\newcommand{\pushright}[1]{\ifmeasuring@#1\else\omit\hfill$\displaystyle#1$\fi\ignorespaces}
+\newcommand{\pushleft}[1]{\ifmeasuring@#1\else\omit$\displaystyle#1$\hfill\fi\ignorespaces}
+\makeatother
 
 
 \setbeamertemplate{theorem}[ams style]
@@ -38,11 +43,9 @@
 
 \input{theme.tex}
 
-\title{An open question : \\How to solve efficiently 3D frictional contact problem ?}
-\author{Vincent Acary, Maurice Br\'emond \\ INRIA Rh\^one--Alpes, Grenoble.}
-\date{Fifth symposium of the European network for nonsmooth dynamics \\ Universit\'e de Li\`ege,  September 08-09th, 2016,\\[2mm]
-Joint work with
-Florent Cadoux, Claude Lemar\'echal, J\'er\^ome Malick,\\ Florence Bertails--Descoubes, Gilles Daviet }
+\title{Formulations and extensive comparisons of 3D frictional contact solvers based on performance profiles}
+\author{Vincent Acary, Maurice Br\'emond, Olivier Huber \\ INRIA Rh\^one--Alpes, Grenoble.}
+\date{CMIS 2018, Biella, Italy}
 
 \setbeamertemplate 
 {footline} 
@@ -143,20 +146,20 @@ Florent Cadoux, Claude Lemar\'echal, J\'er\^ome Malick,\\ Florence Bertails--Des
 %   \end{block}
 % \end{frame}
 
-\frame{\tableofcontents}
+%\frame{\tableofcontents}
 
 
 %\include{introduction}
 %\frame{\tableofcontents}
 
 \include{fc3d}
-\frame{\tableofcontents}
+%\frame{\tableofcontents}
 
-\include{existence}
-\frame{\tableofcontents}
+%\include{existence}
+%\frame{\tableofcontents}
 
 \include{numerics}
-\frame{\tableofcontents}
+%\frame{\tableofcontents}
 
 \include{comparison}
 

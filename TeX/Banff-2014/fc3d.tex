@@ -6,7 +6,7 @@
 
 \frame{
   \frametitle{Signorini's condition and Coulomb's friction} 
-  \begin{minipage}[c]{0.49\linewidth}
+  \begin{minipage}[c]{0.45\linewidth}
     \begin{tikzpicture}[ scale=2,
       axis/.style={ ->, >=stealth'},
       normal/.style={ thick, ->, >=stealth'},
@@ -61,14 +61,13 @@
 \begin{minipage}[c]{0.49\linewidth}
     \begin{itemize}
     \item gap function $ g_{\n} = (C_B-C_A) \sf N.$
-    \item reaction forces $$ r =  r_\n {\sf N} + r_\t, \quad \text{ with  } r_\n \in \RR \text{ and } r_\t \in \RR^2.$$
-    \item Signorini condition at position level
-      $$  0 \leq g_{\n} \perp r_\n \geq 0. $$
-    \item relative velocity
+    \item reaction forces velocities
+      $$ r =  r_\n {\sf N} + r_\t, \quad \text{ with  } r_\n \in \RR \text{ and } r_\t \in \RR^2.$$
       $$u =  u_\n {\sf N} + u_\t, \quad \text{ with } u_\n \in \RR \text{ and } u_\t \in \RR^2.$$
-    \item Signorini condition at velocity level
-        $$\left\{\begin{array}{ll}
-            0 \leq u_{\n} \perp r_\n \geq 0  &\text{ if } g_{\n} \leq 0 \\
+    \item Signorini conditions
+      $$  \text{ position level :}  0 \leq g_{\n} \perp r_\n \geq 0.$$\\
+      $$ \text{velocity level :}\left\{\begin{array}{ll}
+            0 \leq u_{\n} \perp r_\n \geq 0  &\text{ if } g_{\n} \leq 0\\
             r_{\n} =0 &\text{ otherwise}.
           \end{array}\right.$$
     \end{itemize}
@@ -233,29 +232,29 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
   \end{block}
   
 }
-\frame{
-  \frametitle{3D frictional contact problems} 
-  \begin{block}{Wide range of applications}
+% \frame{
+%   \frametitle{3D frictional contact problems} 
+%   \begin{block}{Wide range of applications}
 
-    Origin of the linear relations~\nocite{Acary.Cadoux2013}.
-  $$  M v = {H} {r} + {f},\quad u = H^\top v + w$$
-  \begin{itemize}
-  \item Time--discretization of the discrete dynamical mechanical
-    system
-    \begin{itemize}
-    \item Event--capturing time--stepping schemes
-    \item Event--detecting time--stepping schemes (event-driven)
-    \end{itemize}
-  \item Time--discretization and space discretization of the elasto
-    dynamic problem of solids
-  \item Space discretization of the quasi--static problem of solids.
-  \end{itemize}
-  with a possible linearization (Newton procedure.)
-\end{block}
-   \ding{220}  These problems are really representative of a lot of applications.
+%     Origin of the linear relations~\nocite{Acary.Cadoux2013}.
+%   $$  M v = {H} {r} + {f},\quad u = H^\top v + w$$
+%   \begin{itemize}
+%   \item Time--discretization of the discrete dynamical mechanical
+%     system
+%     \begin{itemize}
+%     \item Event--capturing time--stepping schemes
+%     \item Event--detecting time--stepping schemes (event-driven)
+%     \end{itemize}
+%   \item Time--discretization and space discretization of the elasto
+%     dynamic problem of solids
+%   \item Space discretization of the quasi--static problem of solids.
+%   \end{itemize}
+%   with a possible linearization (Newton procedure.)
+% \end{block}
+%    \ding{220}  These problems are really representative of a lot of applications.
 
 
-}
+% }
 
 \subsection{From the mathematical programming point of view}
 
@@ -266,13 +265,13 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
       \label{eq:soccp3}
       K^\star \ni Wr +q + g(Wr +q) \perp r \in K
     \end{equation}
-    \begin{itemize}
-    \item if we neglect $g(\cdot)$, (\ref{eq:soccp3}) is a gentle
-      monotone SOCLCP that  is the KKT conditions of a convex SOCQP.
-    \item otherwise, the problem is nonmonotone and nonsmooth since
-      $g()$ is nonsmooth
-    \end{itemize}
-    \ding{220} The problem is very hard to solve efficiently.
+    % \begin{itemize}
+    % \item if we neglect $g(\cdot)$, (\ref{eq:soccp3}) is a gentle
+    %   monotone SOCLCP that  is the KKT conditions of a convex SOCQP.
+    % \item otherwise, the problem is nonmonotone and nonsmooth since
+    %   $g()$ is nonsmooth
+    % \end{itemize}
+    % \ding{220} The problem is very hard to solve efficiently.
   \end{block}
    \begin{block}{Possible reformulation}
      \begin{itemize}

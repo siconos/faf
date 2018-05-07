@@ -7,24 +7,23 @@
   \frametitle{VI based methods}
   \begin{block}{Standard methods}
     \begin{itemize}
-    \item Basic fixed point iterations with projection
-    $$\sf z_{k+1} \leftarrow P_{X}(z_k - \rho_k\,F(z_k))$$
-  \item Extragradient method
+    \item Basic fixed point iterations with projection\hfill\tr{\sf{[FP-VI]}}
+      $$\sf z_{k+1} \leftarrow P_{X}(z_k - \rho_k\,F(z_k))$$
+  \item Extragradient method\hfill\tr{\sf{[EG-VI]}}
     $$\sf z_{k+1} \leftarrow P_X(z_{k}-\rho_k\,F(P_X(z_k-\rho_k F(z_k))))$$
-  \item Hyperplane projection method
   \end{itemize}
 \end{block}
-
+With fixed $\rho$, we get the Uzawa Algorithm of De Sacx\'e-Feng
 \begin{block}
-{Self-adaptive procedure for $\rho_k$}
- For instance, 
- \begin{equation}
+{Self-adaptive procedure for $\rho_k$}\hfill\tr{\sf{[UPK]}}
+ \begin{equation*}
    \label{eq:Korpelevitch}
-   m_k\in \NN\quad  \text{such that }    \begin{array}{l}
-     \rho_k = \rho 2^{m_k},\\[1mm]
-     \rho_k \| F(z_k)-F(\bar z_k) \| \leq \|z_k-\bar z_k\|
-   \end{array}
- \end{equation}
+   \text{Armijo-like : } m_k\in \NN\quad  \text{such that }
+   \left\{  \begin{array}{l}
+              \rho_k = \rho 2^{m_k},\\[1mm]
+              \rho_k \| F(z_k)-F(\bar z_k) \| \leq \|z_k-\bar z_k\|
+            \end{array}\right.
+ \end{equation*}
 \end{block}
 
   
@@ -34,31 +33,57 @@
 \subsection{Nonsmooth Equations based methods}
 \frame{
   \frametitle{Nonsmooth Equations based methods}
-  \begin{block}  {Nonsmooth Newton on $G(z)=0$}
+  \only<1>
+  {\begin{block}  {Nonsmooth Newton on $G(z)=0$}
 
    $$z_{k+1}  =  z_k -  \Phi^{-1}(z_k) (G(z_k)), \quad\quad\Phi(z_k) \in \partial G(z_k)$$
    \begin{itemize}
-   \item Alart--Curnier Formulation~\cite{Alart.Curnier1991}
-     \begin{equation}
+   \item Alart--Curnier Formulation~\cite{Alart.Curnier1991}\hfill\tr{\sf{[NSN-AC]}}
+     \begin{equation*}
+       \label{eq:CKPS-1}
+       \begin{cases}
+         r_\n - P_{\RR^{n_c}_+}(r_\n - \rho_\n  u_\n) = 0, \\
+         r_\t - P_{D(\mu, r_{\n,+}+\rho u_\n)}(r_\t - \rho_\t u_\t   )=0,
+       \end{cases}
+     \end{equation*}
+   \item Jean--Moreau Formulation\hfill\tr{\sf{[NSN-MJ]}}
+     \begin{equation*}
        \label{eq:CKPS-1}
        \begin{cases}
          r_\n - P_{\RR^{n_c}_+}(r_\n - \rho_\n  u_\n) = 0, \\
          r_\t - P_{D(\mu, r_{\n,+})}(r_\t - \rho_\t u_\t   )=0,
        \end{cases}
-     \end{equation}
-   \item Direct normal map reformulation
+     \end{equation*}
+   \item Direct normal map reformulation \hfill\tr{\sf{[NSN-NM]}}
      $$     r - P_{K}\left(r  - \rho (u   + g(u))\right) = 0$$
-   \item  Extension of  Fischer-Burmeister function to SOCCP
+   \item Extension of  Fischer-Burmeister function to SOCCP\hfill\tr{\sf{[NSN-FB]}}
      $$\phi_{\fb}(x,y) = x+y - (x^2 + y^2 )^{1/2}$$
      with Jordan product and square root
    \end{itemize}
  \end{block}
 }
+\only<1>
+{
+  \begin{block}{line-search procedures}
+    \begin{itemize}
+    \item Goldstein–Price line search \hfill\tr{\sf{[NSN-*-GP]}}
+    \item Armijo  line search\hfill\tr{\sf{[NSN-*-A]}}
+   \end{itemize}
+ \end{block}
+ \begin{block}{Estimation of $\rho, \rho_\n, \rho_\t$ parameters}
+   
+ \end{block}
+}
+
+}
+
+
+
 
 \subsection{Matrix block--splitting and projection based algorithms}
 \frame{
   \frametitle{Matrix block-splitting and projection based algorithms \cite{Moreau1994,Jean.Touzot1988}}
-  \begin{block}{Block splitting algorithm with $W^{\alpha\alpha}\in \RR^3$}
+  \begin{block}{Block splitting algorithm with $W^{\alpha\alpha}\in \RR^3$\hfill\tr{\sf{[NSGS-*]}}}
     \begin{equation}\label{EQ:NSGS-local1}
       \left\{ 
         \begin{array}{l}
@@ -70,7 +95,10 @@
     \end{equation}
     for all $\alpha \in \{1\ldots m\}$.
   \end{block}
-  \begin{block}{One contact point problem}
+  \begin{block}{Over-Relaxation \hfill\tr{\sf{[PSOR-*]}}}
+    
+  \end{block}
+  \begin{block}{One contact point problem} 
     \begin{itemize}
     \item closed form solutions
     \item Any solver listed before.  
@@ -116,7 +144,9 @@ with the optimal point $x^\star$.
 \frame{
   \frametitle{ Optimization based methods}
   \begin{itemize}
-  \item Successive approximation with Tresca friction (Haslinger et al.)
+  \item  Alternating optimization problems (Panagiotopoulos et al.)\hfill\tr{\sf{[PANA-*]}}
+        
+  \item Successive approximation with Tresca friction (Haslinger et al.)\hfill\tr{\sf{[TRESCA-*]}}
     \begin{equation}
       \label{eq:Haslinger-2}
       \begin{cases}
@@ -128,7 +158,7 @@ with the optimal point $x^\star$.
       \end{cases}
     \end{equation}
     where $C(\mu,\theta)$ is the cylinder of radius $\mu\theta$.
-  \item Fixed point on the norm of the tangential velocity~[A., Cadoux, Lemar\'echal, Malick(2011)]~\nocite{Acary.ea_ZAMM2011}.
+  \item Fixed point on the norm of the tangential velocity~[A., Cadoux, Lemar\'echal, Malick(2011)]~\nocite{Acary.ea_ZAMM2011}\hfill\tr{\sf{[ACLM-*]}}.
     \begin{equation}\label{eq:ACLM-3}
       \begin{cases}
         s =  \| u_\t \| \\[2mm]
@@ -139,36 +169,36 @@ with the optimal point $x^\star$.
       \end{cases}
     \end{equation}
     Fixed point or Newton Method on $F(s)=s$
-  \item  Alternating optimization problems (Panagiotopoulos et al.)
   \end{itemize}
 }
 \subsection{Siconos/Numerics}
 \frame{
-\frametitle{Siconos/Numerics}
-\begin{block}
-  {\sc Siconos} Open source software for modelling and simulation of
-  nonsmooth systems
-\end{block}
-\begin{block} {\sc Siconos/Numerics} Collection of C routines to
-  solve FC3D problem
-  \begin{itemize}
-  \item NonSmoothGaussSeidel : VI based projection/splitting
-    algorithm
-  \item TrescaFixedPoint : fixed point algorithm on Tresca fixed
-    point
-  \item LocalAlartCurnier : semi--smooth newton method of
-    Alart--Curnier formulation
-  \item ProximalFixedPoint : proximal point algorithm
-  \item VIFixedPointProjection : VI based fixed-point projection
-   \item VIExtragradient : VI based extra-gradient method
-   \item \ldots
-   \end{itemize}
- \end{block}
- \begin{block}{\url{http://siconos.gforge.inria.fr}}
-   use and contribute ...
- \end{block}
-  
+  \frametitle{Siconos/Numerics}
+  \begin{block}
+    {\sc Siconos} Open source software for modelling and simulation of
+    nonsmooth systems
+  \end{block}
+  \begin{block} {\sc Siconos/Numerics} Collection of C routines to
+    solve FC3D problem
+    \begin{itemize}
+    \item NSGS : VI based projection/splitting
+      algorithm
+    \item TrescaFixedPoint : fixed point algorithm on Tresca fixed
+      point
+    \item LocalAlartCurnier : semi--smooth newton method of
+      Alart--Curnier formulation
+    \item ProximalFixedPoint : proximal point algorithm
+    \item VIFixedPointProjection : VI based fixed-point projection
+    \item VIExtragradient : VI based extra-gradient method
+    \item \ldots
+    \end{itemize}
+  \end{block}
+  \begin{block}{\url{http://siconos.gforge.inria.fr}}
+    use and contribute ...
+  \end{block}
 }
+
+
 
 
 
