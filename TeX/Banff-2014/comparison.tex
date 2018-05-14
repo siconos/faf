@@ -510,7 +510,50 @@
 %     \centerline{\includegraphics[width=0.7\textwidth]{COMP/large/flpops/profile-LMGC_Cubes_H8_legend.pdf}}
 % }
 
-
+\makeatletter
+\def\subfigcounter{\thesubfigure}
+%\def\subfigcounter{\thefigure}
+\makeatother
+\def\subfiglayout{%
+  \captionsetup[subfloat]{farskip=-0pt,captionskip=-2pt,font=scriptsize}%
+  \setlength{\abovecaptionskip}{0pt}}
+%\def\subfiglayout{}
+\def\measurename{time}
+\def\performance{time}
+\def\widthfigure{0.6}
+\def\figwidth{0.45\textwidth}
+\def\legendwidth{0.6\textwidth}
+\def\legendheight{0.20\textheight}
+\begin{frame}
+  \frametitle{Comparisons by families of solvers}
+  \begin{center}
+    \begin{figure}
+      \centering
+      \subfiglayout
+      \subfloat[\scriptsize LowWall\_FEM II ($\sf tol =1e^{-04}$)]
+      {\includegraphics[width=\figwidth]{figure/COMP/large/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}}
+      \subfloat[\scriptsize LowWall\_FEM ($\sf tol =1e^{-08}$)]
+      {\includegraphics[width=\figwidth]{figure/COMP/large/1.0e-08/400/time/profile-LMGC_LowWall_FEM.pdf}} \\
+      % \subfloat[\scriptsize Cubes\_H8 II]
+      % {\includegraphics[width=\figwidth]{figure/COMP/large/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} 
+      % \subfloat[\scriptsize Cubes\_H8]
+      % {\includegraphics[width=\figwidth]{figure/COMP/large/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}} \\
+      % \subfloat[\scriptsize Bridge\_PR II]
+      % {\includegraphics[width=\figwidth]{figure/COMP/large/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}} 
+      % \subfloat[\scriptsize Bridge\_PR]
+      % {\includegraphics[width=\figwidth]{figure/COMP/large/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}} \\
+      % \subfloat[\scriptsize AqueducPR]
+      % {\includegraphics[width=\figwidth]{figure/COMP/large/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} 
+      \subfloat[\scriptsize 945\_SP\_Box\_PL]
+      {\includegraphics[width=\figwidth]{figure/COMP/large/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}} 
+      \subfloat[\scriptsize 100\_PR\_PerioBox]
+      {\includegraphics[width=\figwidth]{figure/COMP/large/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}}\\
+      \includegraphics[height=\legendheight]{figure/COMP/large/1.0e-08/50/time/profile-Chain_legend.pdf}
+      %\caption{Comparison of the solvers between families}
+    \end{figure}
+  
+\end{center}
+\end{frame}
 
 %%% Local Variables:
 %%% mode: latex
