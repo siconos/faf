@@ -13,7 +13,7 @@
     $$\sf z_{k+1} \leftarrow P_X(z_{k}-\rho_k\,F(P_X(z_k-\rho_k F(z_k))))$$
   \end{itemize}
 \end{block}
-With fixed $\rho$, we get the Uzawa Algorithm of De Sacx\'e-Feng
+With fixed $\rho$, we get the Uzawa Algorithm of De Sacx\'e-Feng\hfill\tr{\sf{[FP-DS]}}
 \begin{block}
 {Self-adaptive procedure for $\rho_k$}\hfill\tr{\sf{[UPK]}}
  \begin{equation*}
@@ -124,14 +124,14 @@ With fixed $\rho$, we get the Uzawa Algorithm of De Sacx\'e-Feng
       \label{eq:min-prox}
       \min_{x} f(x) + \rho \|x-x_k\|^2 
     \end{equation}
-with the optimal point $x^\star$.
+    with the optimal point $x^\star$.
     \begin{equation}
       \label{eq:min}
       x^\star  \stackrel{\Delta}{=} \prox_{f,\rho} (x_k)
     \end{equation}
   \end{block}
   \begin{block}{Proximal point algorithm\hfill\tr{\sf{[PPA-*]}}}
-  $$  x_{k+1} =  \prox_{f,{\rho_k}} (x_k)$$
+    $$  x_{k+1} =  \prox_{f,{\rho_k}} (x_k)$$
   \end{block}
   \begin{block}{Special case for solving $G(x)=0$ }
     $$ f(x) = \frac 1 2 G^\top(x) G(x)$$
@@ -145,7 +145,7 @@ with the optimal point $x^\star$.
   \frametitle{ Optimization based methods}
   \begin{itemize}
   \item  Alternating optimization problems (Panagiotopoulos et al.)\hfill\tr{\sf{[PANA-*]}}
-        
+    
   \item Successive approximation with Tresca friction (Haslinger et al.)\hfill\tr{\sf{[TRESCA-*]}}
     \begin{equation}
       \label{eq:Haslinger-2}
@@ -178,21 +178,25 @@ with the optimal point $x^\star$.
     {\sc Siconos} Open source software for modelling and simulation of
     nonsmooth systems
   \end{block}
-  \begin{block} {\sc Siconos/Numerics} Collection of C routines to
-    solve FC3D problem
+  \begin{block} {\sc Siconos/Numerics}
+    Collection of C routines to solve FC3D problems in dense, sparse or  block sparse versions:
     \begin{itemize}
-    \item NSGS : VI based projection/splitting
-      algorithm
-    \item TrescaFixedPoint : fixed point algorithm on Tresca fixed
-      point
-    \item LocalAlartCurnier : semi--smooth newton method of
-      Alart--Curnier formulation
-    \item ProximalFixedPoint : proximal point algorithm
-    \item VIFixedPointProjection : VI based fixed-point projection
-    \item VIExtragradient : VI based extra-gradient method
+    \item VI solvers: Fixed point, Extra-Gradient, Uzawa
+    \item VI based projection/splitting algorithm: NSGS, PSOR
+    \item Nonsmooth Newton technique: Alart-Curnier, Jean-Moreau, Natural map, Ficher-Bursmeister
+    \item Proximal point algorithm
+    \item Optimization based solvers. Panagiotopoulos, Tresca, SOCQP
     \item \ldots
     \end{itemize}
   \end{block}
+  \begin{block}{Collection of routines for optimization and complementarity problems}
+    \begin{itemize}
+    \item LCP solvers (iterative and pivoting (Lemke))
+    \item Standard QP solvers (Projected Gradient (Calamai \& Mor\'e), Projected CG (Mor\'e \& Toraldo), active set technique)
+    \item linear and nonlinear programming solvers.
+    \end{itemize}
+  \end{block}
+
   \begin{block}{\url{http://siconos.gforge.inria.fr}}
     use and contribute ...
   \end{block}

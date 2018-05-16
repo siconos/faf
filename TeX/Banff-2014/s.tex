@@ -177,18 +177,19 @@
   \begin{enumerate}
   \item A bunch of articles in the literature
   \item No ``Swiss--knife'' solution : choose efficiency OR robustness  
-  \item Newton--based solver solves efficiently the problems but robustness issues
-  \item First order iterative methods solves all the problems but very slowly  
-  \item The rank of the $H$ matrix (ratio number of contacts unknows/number of d.o.f) plays an important role. 
+  \item Newton--based solvers solve efficiently some problems, but robustness issues
+  \item First order iterative methods ($\sf VI, NSGS, PSOR$) solves all the problems but very slowly  
+  \item The rank of the $H$ matrix (ratio number of contacts unknows/number of d.o.f) plays an important role on the robustness
+  \item Optimisation-based  and proximal-point algorithm solvers are  interesting but it is difficult to forecast their efficiency.
   \end{enumerate}
 \end{block}
 \vskip-3mm
 \begin{block}{Perspectives}
   \begin{enumerate}
   \item Develop new algorithm and compare other algorithm in the literature. \\
-    (issues with standard optimization software.)
-  \item Study the influence of the friction coefficient, the size of problem, the conditionning of the problem , \ldots
-  \item Set up a collection of benchmarks  \ding{220} FCLIB
+    (interior point techniques, issues with standard optimization software.)
+  \item Improve the robustness of Newton solvers and accelerate first-order method
+  \item Complete the collection of benchmarks  \ding{220} FCLIB
   \end{enumerate}
 \end{block}
 
@@ -222,17 +223,28 @@
 
 \frame
 {
+
+  All the results may be found in \cite{Acary.ea_Chapter2018}\\[1mm]
+  
+  {\em On solving frictional contact problems: formulations and comparisons of numerical methods. Acary, Br\'emond, Huber.
+  Advanced {T}opics in {N}onsmooth {D}ynamics, Acary, V. and Br\"uls. O. and Leine, R. (eds). Springer Verlag. 2018}
+
+  \vspace{1cm}
   \centerline{\textcolor{red}{ Thank you for your attention.}}
 
-  Thank to the collaborators for stimulating discussions:\\
-  Pierre Alart, Paul Armand, Florent Cadoux, Frédéric Dubois, Claude Lémaréchal, Jérôme Malick and Mathieu Renouf 
+  \begin{center}
+    Thank to the collaborators for stimulating discussions:\\[2mm]
+    
+    Pierre Alart, Paul Armand, Florent Cadoux, Frédéric Dubois,\\
+    Claude Lémare\'echal, Jérôme Malick and Mathieu Renouf 
+\end{center}
 }
 
  
 \def\newblock{}
 {\scriptsize
 \bibliographystyle{plainnat}
-\bibliography{../Report/biblio,./Biblio/NonSmooth,./Biblio/Contact}
+\bibliography{./biblio/String,./biblio/NonSmooth,./biblio/Math,./biblio/Multibody,./biblio/Fem.bib,./biblio/Dae.bib,./biblio/Meca,./biblio/AnaNum.bib,./biblio/Math-Impact,./biblio/Contact,./biblio/Optim,./biblio/Cp}
 }
 
 %\include{PWL}
