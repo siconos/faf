@@ -716,7 +716,7 @@ class faf_solvers():
                                                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
                 nsgs_ac_gp_hybrid_pli_nsn.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_GP_HYBRID
                 nsgs_ac_gp_hybrid_pli_nsn.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
-                nsgs_ac_gp_hybrid_pli_nsn.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY ] =  N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY_NSN_AND_NSN_PLI_LOOP
+                nsgs_ac_gp_hybrid_pli_nsn.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY ] =  N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY_NSN_AND_PLI_NSN_LOOP
                 nsgs_ac_gp_hybrid_pli_nsn.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_MAX_ITER] = m_iter
                 nsgs_ac_gp_hybrid_pli_nsn.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_MAX_LOOP] = m_loop
                 nsgs_ac_gp_hybrid_series.append(nsgs_ac_gp_hybrid_pli_nsn)
