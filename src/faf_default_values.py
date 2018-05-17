@@ -21,10 +21,14 @@ display_distrib = False
 display_distrib_var = False
 display_speedup= False
 no_matplot=False
-gnuplot_profile = False
 logscale=False
-gnuplot_distrib = False
+
+gnuplot_output = False
 gnuplot_with_color = True
+gnuplot_separate_keys = False
+
+
+
 output_dat=False
 user_filenames = []
 user_solvers = []
@@ -44,7 +48,6 @@ max_problems = None
 cond_nc = None
 file_filter=None
 remove_file=None
-gnuplot_separate_keys = False
 list_contents=False
 list_contents_solver = False
 compute_hardness = False
