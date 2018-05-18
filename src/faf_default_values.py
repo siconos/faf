@@ -7,6 +7,7 @@ precision=1e-8
 maxiterls = 10
 utimeout = 10
 
+global_problem = False
 
 with_guess = True
 with_mumps = 0

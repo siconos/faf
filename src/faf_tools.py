@@ -17,6 +17,21 @@ def is_fclib_file(filename):
         pass
     return r
 
+
+def is_fclib_file_global(filename):
+    r = False
+    try:
+        with h5py.File(filename, 'r') as f:
+            r =  'fclib_global' in f
+    #except Exception as e:
+    #    print(e)
+    except :
+        pass
+    return r
+
+
+
+
 def read_numerics_format(f):
     return N.frictionContactProblemFromFile(f)
 
@@ -40,10 +55,15 @@ def _read_fclib_format(filename):
     # print("_read_fclib_format, filename:", filename, type(filename))
     # print("_read_fclib_format, filename.decode():", filename.decode(), type(filename.decode()))
     # we do not prefer to force the conversion there
-    
-    fclib_problem = FCL.fclib_read_local(filename)
 
-    numerics_problem =  N.from_fclib_local(fclib_problem)
+    with h5py.File(filename, 'r') as f:
+        if 'fclib_global' in f:
+            fclib_problem = FCL.fclib_read_global(filename)
+            numerics_problem =  N.from_fclib_global(fclib_problem)
+        elif 'fclib_local' in f:
+            fclib_problem = FCL.fclib_read_local(filename)
+            numerics_problem =  N.from_fclib_local(fclib_problem)
+        
     return fclib_problem, numerics_problem
 
 class Memoize():
@@ -69,27 +89,47 @@ read_fclib_format = Memoize(_read_fclib_format)
 
 def _numberOfDegreeofFreedom(f):
     with h5py.File(f, 'r') as fclib_file:
+        if 'fclib_global' in fclib_file:
+            tag = 'fclib_global'
+        else:
+            tag = 'fclib_local'
 
-        try:
-            r = 6*fclib_file['fclib_local']['info'].attrs['numberOfInvolvedDS']
-        except:
+        #print('tag=', tag)
+
+        if tag == 'fclib_global' :
+            r = fclib_file[tag]['M']['n'][0]
+        else:
             try:
-                r = fclib_file['fclib_local']['info'].attrs['numberOfDegreeOfFreedom'][0]
-            except Exception as e:
-                print('Exception in _numberOfDegreeofFreedom', e)
-                r = np.nan
+                r = 6*fclib_file[tag]['info'].attrs['numberOfInvolvedDS']
+            except:
+                try:
+                    r = fclib_file[tag]['info'].attrs['numberOfDegreeOfFreedom'][0]
+                except Exception as e:
+                    print('Exception in _numberOfDegreeofFreedom', e)
+                    r = np.nan
                 
-            #print "r=",r
+    #print("r=",r)
     return r
 
 def _numberOfDegreeofFreedomContacts(f):
     with h5py.File(f, 'r') as fclib_file:
+        if 'fclib_global' in fclib_file:
+            tag = 'fclib_global'
+        else:
+            tag = 'fclib_local'
+        #print('tag=', tag)
+        
         try:
-            r = fclib_file['fclib_local']['W']['m'][0]
+            if tag == 'fclib_global' :
+                r = fclib_file[tag]['H']['n'][0]
+                pass
+            else:
+                r = fclib_file[tag]['W']['m'][0]
+                
         except Exception as e:
             print('Exception in _numberOfDegreeofFreedomContacts', e)
             r = np.nan
-    #print "r=",r
+    #print("r=",r)
     return r
 
 
@@ -158,10 +198,22 @@ def list_from_file(filename):
 def extern_guess(problem_filename, solver_name, iteration, h5file):
     data = h5file['data']
     comp_data = data['comp']
+    if 'fclib_global' in h5file:
+        tag = 'fclib_global'
+    else:
+        tag = 'fclib_local'
 
-    reaction = comp_data[solver_name][problem_filename]['reactions'][iteration]
-    velocity = comp_data[solver_name][problem_filename]['velocities'][iteration]
-    return reaction, velocity
+            
+    reaction = comp_data[solver_name][problem_filename]['r'][iteration]
+    velocity = comp_data[solver_name][problem_filename]['u'][iteration]
+
+    global_velocity = None
+    
+    if tag == 'fclib_global':
+        global_velocity = comp_data[solver_name][problem_filename]['v'][iteration]
+    
+    
+    return reaction, velocity, global_velocity
 
 
 def split(s, sep, maxsplit=-1):

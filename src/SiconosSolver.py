@@ -20,7 +20,7 @@ class SiconosSolver():
             return None
 
     def __init__(self, name=None, gnuplot_name=None, API=None, TAG=None, iparam_iter=None,
-                 dparam_err=None, maxiter=None, precision=None, with_guess=None):
+                 dparam_err=None, maxiter=None, precision=None, with_guess=None, global_solver=False):
         self._name = name
         if (gnuplot_name==None):
             self._gnuplot_name = self._name
@@ -43,18 +43,23 @@ class SiconosSolver():
             raise RuntimeError ("SiconosSolver() with_guess have to specified.")
         else:
             self._with_guess = with_guess
-
+        self._global_solver=global_solver
 
     def SolverOptions(self):
         return self._SO
 
-    def __call__(self, problem, reactions, velocities):
+    def __call__(self, problem, reactions, velocities, global_velocities= None):
         real_time = c_float()
         proc_time = c_float()
         flpops = c_longlong()
         mflops = c_float()
         init_flop()
-        info = self._API(problem, reactions, velocities, self._SO)
+
+        if self._global_solver :
+            info = self._API(problem, reactions, velocities, global_velocities, self._SO)
+            pass
+        else:
+            info = self._API(problem, reactions, velocities, self._SO)
 
         get_flop(real_time, proc_time, flpops, mflops)
         return (info, self._get(self._SO.iparam, self._iparam_iter),
@@ -66,17 +71,28 @@ class SiconosSolver():
         problem = read_fclib_format(filename)[1]
 
         with h5py.File(filename, 'r') as f:
+            if 'fclib_global' in f:
+                tag = 'fclib_global'
+            else:
+                tag = 'fclib_local'
             psize = numberOfDegreeofFreedomContacts(filename)
+            nsize = numberOfDegreeofFreedom(filename)
+            global_velocities = None
             if self._with_guess and 'guesses' in f:
                 number_of_guesses = f['guesses']['number_of_guesses'][0]
                 velocities = f['guesses']['1']['u'][:]
                 reactions = f['guesses']['1']['r'][:]
+                if tag == 'fclib_global':
+                    global_velocities =f['guesses']['1']['v'][:]
+                
             else:
                 # guess is missing
                 reactions = np.zeros(psize)
                 velocities = np.zeros(psize)
+                if tag == 'fclib_global':
+                    global_velocities = np.zeros(nsize)
 
-        return reactions, velocities
+        return reactions, velocities, global_velocities
 
     def name(self):
         return self._name

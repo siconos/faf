@@ -140,6 +140,7 @@ try:
                                    ['help', 'verbose=','no-guess',
                                     'clean', 'display', 'display-convergence','no-matplot',
                                     'files=', 'solvers-exact=', 'solvers=',
+                                    'global',
                                     'random-sample=', 'max-problems=',
                                     'timeout=', 'maxiter=', 'maxiterls=', 'precision=',
                                     'keep-files', 'new', 'errors',
@@ -172,6 +173,8 @@ for o, a in opts:
         maxiter = int(a)
     elif o == '--maxiterls':
         maxiterls = int(a)
+    elif o == '--global':
+       global_problem=True
     elif o == '--precision':
         precision = float(a)
     elif o == '--clean':
@@ -511,11 +514,18 @@ class Caller():
 #                pass
 
             # get first guess or set guess to zero
-            reactions, velocities = solver.guess(filename)
+            reactions, velocities, global_velocities = solver.guess(filename)
 
             normq = np.linalg.norm(problem.q)
-            _, guess_err = N.fc3d_compute_error(read_fclib_format(filename)[1],
-                                                             reactions, velocities, precision, solver.SolverOptions(), normq)
+            if global_problem:
+                _, guess_err = N.gfc3d_compute_error(read_fclib_format(filename)[1],
+                                                     reactions, velocities, global_velocities,
+                                                     precision, solver.SolverOptions(), normq)
+
+                pass
+            else:
+                _, guess_err = N.fc3d_compute_error(read_fclib_format(filename)[1],
+                                                    reactions, velocities, precision, solver.SolverOptions(), normq)
 
 #            print "guess error:", guess_err
 
@@ -542,9 +552,10 @@ class Caller():
                     stdout_result = ''
 
                     with catch_stdout(really=output_errors) as get_stdout:
-
-                        result = solver(problem, reactions, velocities)
-
+                        if global_problem:
+                            result = solver(problem, reactions, velocities, global_velocities)
+                        else:
+                            result = solver(problem, reactions, velocities)
                         current_stdout = get_stdout()
 
                         try:
@@ -817,9 +828,15 @@ class Results():
 ## creation of solver list
 ##################################
 print("1 -- Creation of solver list")
-from faf_solvers import *
-fs = faf_solvers(maxiter, precision, maxiterls, with_guess, with_mumps, numerics_has_openmp_solvers)
-all_solvers = fs.create_solvers()
+
+if global_problem :
+    from faf_global_solvers import *
+    fs = faf_global_solvers(maxiter, precision, maxiterls, with_guess, with_mumps, numerics_has_openmp_solvers)
+    all_solvers = fs.create_solvers()
+else :
+    from faf_solvers import *
+    fs = faf_solvers(maxiter, precision, maxiterls, with_guess, with_mumps, numerics_has_openmp_solvers)
+    all_solvers = fs.create_solvers()
 
 
 if (os.path.isfile(os.path.join( os.path.dirname(__file__),'adhoc_solverlist.py'))):
@@ -852,8 +869,12 @@ print("2 -- Creation of problem list")
 
 if not os.path.exists('problems.txt'):
      with open('problems.txt', 'w') as problems_txt:
-         for f in filter(is_fclib_file, glob('*.hdf5')):
-             problems_txt.write('{0}\n'.format(f))
+         if global_problem :
+             for f in filter(is_fclib_file_global, glob('*.hdf5')):
+                 problems_txt.write('{0}\n'.format(f))
+         else:
+             for f in filter(is_fclib_file, glob('*.hdf5')):
+                 problems_txt.write('{0}\n'.format(f))
 
 if user_filenames == []:
     if file_filter == None:
