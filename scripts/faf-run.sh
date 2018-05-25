@@ -8,38 +8,39 @@ fclib_library_dir=$HOME/fclib-library
 #fclib_library_dir=/scratch/Vincent/fclib-library
 
 comp=$faf_src_dir/comp.py
-.
+
+echo `pwd`
+
 if test -z ${OAR_JOB_ID}
 then
-example_name=$(date +%F--%T)_${example}_${precision}_${timeout}
+example_name=$(date +%F--%T)_${example_prefix}_${example}_${precision}_${timeout}
 else
-example_name=${OAR_JOB_ID}_${example}_${precision}_${timeout}
+example_name=${OAR_JOB_ID}_${example_prefix}_${example}_${precision}_${timeout}
 fi
-rundir=/nfs_scratch/$USER/faf/$example_name
+rundir=/bettik/$USER/faf/$example_name
 #rundir=/scratch/Vincent/faf/$example_name
 mkdir -p $rundir
 
 
 
 cd $rundir
-. $rundir
-
+echo `pwd`
 
 echo $HOSTNAME
 
-# 
-rsync -av $fclib_library_dir/$example .
+#
+cp -r $fclib_library_dir/$example_prefix/$example .
 for d in $example; do
     cd $d
-    $comp --max-problems=$max_problems --no-compute --no-collect # output problems.txt
+    $comp $global --max-problems=$max_problems --no-compute --no-collect # output problems.txt
     # if a file comp.hdf5 is present, we will complete it with the new comparisons.
     if [ -f $faf_scripts_dir/$example/comp.hdf5 ]
     then
        cp  $faf_scripts_dir/$example/comp.hdf5 .
     fi
     #cat problems.txt | $comp --timeout=$timeout --precision=$precision $solvers --no-compute --no-collect $with_mumps --maxiterls=6 '--files={}'# dry run
-    cat problems.txt | $preload parallel $comp --timeout=$timeout --precision=$precision $solvers --no-collect $with_mumps --maxiterls=6 '--files={}'
-    $comp --just-collect --timeout=$timeout --precision=$precision --with-mumps --maxiterls=6
+    cat problems.txt | $preload parallel $comp $global --timeout=$timeout --precision=$precision $solvers --no-collect $with_mumps --maxiterls=6 '--files={}'
+    $comp $global --just-collect --timeout=$timeout --precision=$precision --with-mumps --maxiterls=6
     cd ..
 done
 #cat $HOME/faf/$examples/$0 > command
