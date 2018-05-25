@@ -26,15 +26,15 @@ except:
 
 
 
-@timeout(5)
+@timeout(100)
 def dense_matrix_rank(M):
     return matrix_rank(M)
 
-@timeout(200)
+@timeout(1000)
 def sparse_matrix_svd(A,k):
     return svds(A,k)
 
-@timeout(900)
+@timeout(1000)
 def dense_matrix_rank_estimate(A,tol):
     return estimate_rank(A,tol)
 
