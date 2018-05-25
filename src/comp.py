@@ -148,7 +148,7 @@ try:
                                     'just-collect', 'cond-nc=', 'display-distrib',
                                     'no-collect', 'no-compute', 'domain=',
                                     'replace-solvers-exact=','replace-solvers=',
-                                    'gnuplot-output' 'logscale', 'gnuplot-separate-keys',
+                                    'gnuplot-output','logscale', 'gnuplot-separate-keys',
                                     'output-dat', 'with-mumps', 'file-filter=', 'remove-files=',
                                     'list-contents','list-contents-solver',
                                     'add-precision-in-comp-file','add-timeout-in-comp-file',
@@ -1001,7 +1001,10 @@ if __name__ == '__main__':
 
 
     #### display #####
-        
+
+    # print('#### display #####')
+    # print(gnuplot_output)
+    gnuplot_output=True
     d=Faf_display('comp.hdf5',
               solvers,
               time,

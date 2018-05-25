@@ -9,9 +9,9 @@ class Faf_display():
                  filenames,
                  filename,
                  rhos= None,
-                 gnuplot_profile=False,
-                 gnuplot_with_color=False,
-                 gnuplot_separate_keys=False,
+                 gnp_output=False,
+                 gnp_with_color=False,
+                 gnp_separate_keys=False,
                  no_matplot=False,
                  logscale=False):
         self._result_file = result_file
@@ -22,9 +22,9 @@ class Faf_display():
         self._filenames=filenames
         self._filename=filename
 
-        self._gnuplot_profile=gnuplot_profile
-        self._gnuplot_with_color=gnuplot_with_color
-        self._gnuplot_separate_keys= gnuplot_separate_keys
+        self._gnuplot_output=gnp_output
+        self._gnuplot_with_color=gnp_with_color
+        self._gnuplot_separate_keys= gnp_separate_keys
         self._no_matplot=no_matplot
         self._logscale=logscale
         
@@ -39,7 +39,7 @@ class Faf_display():
             
             #print('###########', time.ctime(creation_date('comp.hdf5')))
         
-            if (self._gnuplot_profile and (self._filename != None)) :
+            if (self._gnuplot_output and (self._filename != None)) :
                 def write_report(r, filename):
                     with open(filename, "w") as input_file:
                         for k, v in r.items():
@@ -176,7 +176,7 @@ class Faf_display():
                 # all_rhos = [ rhos[solver_name] for solver_name in comp_data ]
                 # g.plot(*all_rhos)
 
-            if (self._gnuplot_profile and (self._filename == None)) :
+            if (self._gnuplot_output and (self._filename == None)) :
                 print("Warning: no problem corresponding to the required solver")
                 if (os.path.isfile('profile.gp')):
                     os.remove('profile.gp')
@@ -242,7 +242,7 @@ class Faf_display():
                     except:
                         pass
 
-    def display_distribution(self,problem_filenames, gnuplot_output):
+    def display_distribution(self,problem_filenames):
         from matplotlib.pyplot import title, subplot, grid, show, get_fignums, legend, figure, hist, xlim, ylim, xscale
 
         nc = []
@@ -366,7 +366,7 @@ class Faf_display():
         grid()
         legend()
 
-        if gnuplot_output :
+        if self._gnuplot_output :
 
             with open('distrib.gp','w') as gp:
                  #  all_rhos = [ domain ] + [ rhos[solver_name] for solver_name in comp_data ]
