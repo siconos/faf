@@ -33,7 +33,7 @@ rsync -av $fclib_library_dir/$example .
 for d in $example; do
     cd $d
     $comp --max-problems=$max_problems --no-compute --no-collect # output problems.txt
-    cat problems.txt | $preload parallel $comp --compute-cond-rank '--files={}'
+    cat problems.txt | $preload parallel $comp --compute-cond-rank --forced '--files={}'
     cd ..
 done
 #cat $HOME/faf/$examples/$0 > command
