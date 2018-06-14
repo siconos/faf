@@ -30,6 +30,17 @@ class faf_global_solvers():
                              global_solver=True)
         nsgs_wr.SolverOptions().internalSolvers.iparam[0]=nsgs_wr.SolverOptions().iparam[0]
         nsgs_wr.SolverOptions().internalSolvers.dparam[0]=nsgs_wr.SolverOptions().dparam[0]
+        
+        admm_wr = SiconosSolver(name="ADMM-WR",
+                             gnuplot_name="ADMM-WR",
+                             API=N.gfc3d_admm_wr,
+                             TAG=N.SICONOS_GLOBAL_FRICTION_3D_ADMM_WR,
+                             iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
+                             dparam_err=1,
+                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess,
+                             global_solver=True)
+        admm_wr.SolverOptions().internalSolvers.iparam[0]=admm_wr.SolverOptions().iparam[0]
+        admm_wr.SolverOptions().internalSolvers.dparam[0]=admm_wr.SolverOptions().dparam[0]
 
         nsn_ac_wr = SiconosSolver(name="NSN-AC-WR",
                              gnuplot_name="NSN-AC-WR",
@@ -101,7 +112,7 @@ class faf_global_solvers():
                              maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess,
                              global_solver=True)
         
-        nsgs_solvers = [nsgs, nsgs_wr, nsn_ac_wr]
+        nsgs_solvers = [nsgs, nsgs_wr, nsn_ac_wr, admm_wr]
 
         all_solvers = list(nsgs_solvers)
         all_solvers.extend([nsn_ac, admm, vi_eg, vi_fp, aclm ])
