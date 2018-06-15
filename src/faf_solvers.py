@@ -1358,11 +1358,22 @@ class faf_solvers():
         #all_solvers = [nsgs, snsgs, quartic, TrescaFixedPoint, ACLMFixedPoint, DeSaxceFixedPoint, VIFixedPointProjection, VIFixedPointProjection1, VIFixedPointProjection2, VIFixedPointProjection3, VIExtraGrad, SOCLCP, Prox, Prox2, Prox3, Prox4, Prox5, nsn_acSTD, nsn_acSTDGenerated,  nsn_acr, nsn_acJeanMoreau, nsn_acJeanMoreauGenerated, nsn_fb_gp, nsn_fb_fblsa]
 
 
+        
+        admm_norm_inf = SiconosSolver(name="ADMM-NORM-INF",
+                                      gnuplot_name="ADMM-NORM-INF",
+                                      API=N.fc3d_admm,
+                                      TAG=N.SICONOS_FRICTION_3D_ADMM,
+                                      iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
+                                      dparam_err=1,
+                                      maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+        
         # remove very nasty solver
         #nsgs_solvers.remove(nsgs_p)
         nsgs_solvers.remove(nsgs_pd)
         nsgs_solvers.remove(nsgs_pr)
         #nsgs_solvers.remove(quartic)
+        
+
 
 
 
@@ -1390,6 +1401,6 @@ class faf_solvers():
         all_solvers.extend(prox_series)
         #all_solvers.extend(regul_series)
         all_solvers.extend(nsgs_series)
-
+        all_solvers.extend([admm_norm_inf])
         all_solvers.extend(nsgs_openmp_solvers)
         return all_solvers
