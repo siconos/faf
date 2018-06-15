@@ -446,8 +446,8 @@ v%     \end{array}\right]
 
 
 
-** TODO List of actions.  Last update <2016-11-24 Thu>
-   DEADLINE: <2016-12-09 Fri>
+** DONE List of actions.  Last update <2016-11-24 Thu>
+   CLOSED: [2018-06-06 Wed 10:17] DEADLINE: <2016-12-09 Fri>
 
    + Paper. General Work :
      + All sections : Clean redaction note and report here the items  :VA:
