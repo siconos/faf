@@ -1386,7 +1386,15 @@ class faf_solvers():
                                       maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
         admm_br.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_RHO_STRATEGY]=N.SICONOS_FRICTION_3D_ADMM_RHO_STRATEGY_RESIDUAL_BALANCING
         
-
+        admm_br_no = SiconosSolver(name="ADMM-BR-NO",
+                                      gnuplot_name="ADMM-BALANCING-RESIDUAL-NO",
+                                      API=N.fc3d_admm,
+                                      TAG=N.SICONOS_FRICTION_3D_ADMM,
+                                      iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
+                                      dparam_err=1,
+                                      maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+        admm_br_no.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_RHO_STRATEGY]=N.SICONOS_FRICTION_3D_ADMM_RHO_STRATEGY_RESIDUAL_BALANCING
+        admm_br_no.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_ACCELERATION]=N.SICONOS_FRICTION_3D_ADMM_NO_ACCELERATION
 
 
         ############################################## 
@@ -1427,6 +1435,6 @@ class faf_solvers():
         all_solvers.extend(prox_series)
         #all_solvers.extend(regul_series)
         all_solvers.extend(nsgs_series)
-        all_solvers.extend([admm_constant,  admm_norm_inf, admm_br])
+        all_solvers.extend([admm_constant,  admm_norm_inf, admm_br, admm_br_no])
         all_solvers.extend(nsgs_openmp_solvers)
         return all_solvers
