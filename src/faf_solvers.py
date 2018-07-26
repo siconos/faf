@@ -1385,6 +1385,15 @@ class faf_solvers():
                                       dparam_err=1,
                                       maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
         admm_br.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_RHO_STRATEGY]=N.SICONOS_FRICTION_3D_ADMM_RHO_STRATEGY_RESIDUAL_BALANCING
+
+        admm_sbr = SiconosSolver(name="ADMM-SBR",
+                                      gnuplot_name="ADMM-SCALED-BALANCING-RESIDUAL",
+                                      API=N.fc3d_admm,
+                                      TAG=N.SICONOS_FRICTION_3D_ADMM,
+                                      iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
+                                      dparam_err=1,
+                                      maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+        admm_sbr.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_RHO_STRATEGY]=N.SICONOS_FRICTION_3D_ADMM_RHO_STRATEGY_SCALED_RESIDUAL_BALANCING
         
         admm_br_no = SiconosSolver(name="ADMM-BR-NO",
                                       gnuplot_name="ADMM-BALANCING-RESIDUAL-NO",
@@ -1416,6 +1425,15 @@ class faf_solvers():
         admm_asym_br.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_RHO_STRATEGY]= N.SICONOS_FRICTION_3D_ADMM_RHO_STRATEGY_RESIDUAL_BALANCING
         admm_asym_br.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_SYMMETRY]=N.SICONOS_FRICTION_3D_ADMM_FORCED_ASYMMETRY
 
+        admm_asym_sbr = SiconosSolver(name="ADMM-ASYM-SBR",
+                                      gnuplot_name="ADMM-ASYMMETRIC-SCALED-BALANCING-RESIDUAL",
+                                      API=N.fc3d_admm,
+                                      TAG=N.SICONOS_FRICTION_3D_ADMM,
+                                      iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
+                                      dparam_err=1,
+                                      maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+        admm_asym_sbr.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_RHO_STRATEGY]= N.SICONOS_FRICTION_3D_ADMM_RHO_STRATEGY_SCALED_RESIDUAL_BALANCING
+        admm_asym_sbr.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_SYMMETRY]=N.SICONOS_FRICTION_3D_ADMM_FORCED_ASYMMETRY
 
 
         ############################################## 
@@ -1456,6 +1474,6 @@ class faf_solvers():
         all_solvers.extend(prox_series)
         #all_solvers.extend(regul_series)
         all_solvers.extend(nsgs_series)
-        all_solvers.extend([admm_constant,  admm_norm_inf, admm_br, admm_br_no, admm_asym_cst,admm_asym_br])
+        all_solvers.extend([admm_constant,  admm_norm_inf, admm_br, admm_sbr, admm_br_no, admm_asym_cst,admm_asym_br,admm_asym_sbr])
         all_solvers.extend(nsgs_openmp_solvers)
         return all_solvers
