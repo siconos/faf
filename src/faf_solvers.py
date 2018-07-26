@@ -1456,6 +1456,6 @@ class faf_solvers():
         all_solvers.extend(prox_series)
         #all_solvers.extend(regul_series)
         all_solvers.extend(nsgs_series)
-        all_solvers.extend([admm_constant,  admm_norm_inf, admm_br, admm_br_no, admm_asym_cst,admm_asym_cst])
+        all_solvers.extend([admm_constant,  admm_norm_inf, admm_br, admm_br_no, admm_asym_cst,admm_asym_br])
         all_solvers.extend(nsgs_openmp_solvers)
         return all_solvers
