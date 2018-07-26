@@ -25,6 +25,7 @@ class Faf_display():
         self._gnuplot_output=gnp_output
         self._gnuplot_with_color=gnp_with_color
         self._gnuplot_separate_keys= gnp_separate_keys
+        self._gnuplot_add_title = True
         self._no_matplot=no_matplot
         self._logscale=logscale
         
@@ -99,8 +100,9 @@ class Faf_display():
                     gp.write('else \\\n')
                     gp.write('set term aqua;\\\n')
                     gp.write('\n')
-                    
-                    #gp.write('set title\'{0} - precision: {1} - timeout: {2} -  {3}\';; \n'.format(test_name_gnuplot,comp_precision,comp_utimeout, date_str))
+
+                    if self._gnuplot_add_title:
+                        gp.write('set title\'{0} - precision: {1} - timeout: {2} -  {3}\';; \n'.format(test_name_gnuplot,comp_data.attrs['precision'],comp_data.attrs['timeout'], date_str))
 
 
                     
