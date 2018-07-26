@@ -6,7 +6,7 @@
 # cat problems.txt | parallel comp.py --timeout=100 --no-collect '--files={}'
 #
 
-
+from __future__ import print_function
 import re
 from glob import glob
 from itertools import product
