@@ -2,12 +2,12 @@
 
 export LC_ALL=C
 # specific variables to the test bench set
-example=LowWall_FEM
-precision=1e-2
+example=Bridge_PR
+precision=1e-8
 timeout=400
-solvers=' ' 
 solvers='--solvers-exact='NSGS-AC','ADMM-NORM-INF','ADMM-CST','ADMM-BR','ADMM-BR-NO','ADMM-SBR','ADMM-ASYM-CST','ADMM-ASYM-BR','ADMM-ASYM-SBR''
 max_problems=500
+
 with_mumps='--with_mumps'
 preload='LD_PRELOAD=/usr/lib/libmpi.so'
 
@@ -15,10 +15,8 @@ with_mumps=''
 preload=''
 
 #OAR --project siconos
-#OAR --name LowWall_1e-8
-####OAR -p cpumarch != 'haswell'
-#OAR -p not host like 'luke44'
-###OAR -l /nodes=1/cpu=2,walltime=48:00:00
+#OAR --name Bridge_PR
+###OAR -p cpumarch != 'haswell'
 #OAR -l /nodes=1/cpu=2,walltime=48:00:00
 
 faf_dir=$HOME/faf

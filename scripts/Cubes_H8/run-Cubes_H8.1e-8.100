@@ -6,6 +6,7 @@ example=Cubes_H8
 precision=1e-8
 timeout=100
 solvers=' ' 
+solvers='--solvers-exact='NSGS-AC','ADMM-NORM-INF','ADMM-CST','ADMM-BR','ADMM-SBR','ADMM-ASYM-CST','ADMM-ASYM-BR','ADMM-ASYM-SBR','ADMM-BR-SPARSE''
 #solvers='--solvers-exact='NSN-JeanMoreau-NLS','NSN-AlartCurnier-NLS','NSN-NaturalMap-NLS','NSN-FischerBurmeister-NLS','NSN-JeanMoreau-Generated-NLS','NSN-AlartCurnier-Generated-NLS','NSN-AlartCurnier-NLS-HYBRID','NSGS-AC','NSGS-AC-GP','NSGS-PLI-100''
 max_problems=500
 

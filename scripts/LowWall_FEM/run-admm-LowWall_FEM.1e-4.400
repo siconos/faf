@@ -5,10 +5,10 @@ export LC_ALL=C
 example=LowWall_FEM
 precision=1e-4
 timeout=400
-solvers=' ' 
-#solvers='--solvers-exact='NSN-JeanMoreau-NLS','NSN-AlartCurnier-NLS','NSN-NaturalMap-NLS','NSN-FischerBurmeister-NLS','NSN-JeanMoreau-Generated-NLS','NSN-AlartCurnier-Generated-NLS','NSN-AlartCurnier-NLS-HYBRID','NSGS-AC','NSGS-AC-GP','NSGS-PLI-100''
 max_problems=500
-solvers='--solvers-exact='NSGS-AC','ADMM-NORM-INF','ADMM-CST','ADMM-BR''
+solvers='--solvers-exact='NSGS-AC','ADMM-NORM-INF','ADMM-CST','ADMM-BR','ADMM-BR-NO','ADMM-SBR','ADMM-ASYM-CST','ADMM-ASYM-BR','ADMM-ASYM-SBR''
+
+
 with_mumps='--with_mumps'
 preload='LD_PRELOAD=/usr/lib/libmpi.so'
 
@@ -16,7 +16,7 @@ with_mumps=''
 preload=''
 
 #OAR --project siconos
-#OAR --name LowWall_1e-8
+#OAR --name LowWall_1e-4
 ####OAR -p cpumarch != 'haswell'
 #OAR -l /nodes=1/cpu=2,walltime=48:00:00
 

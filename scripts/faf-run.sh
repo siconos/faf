@@ -5,7 +5,7 @@ faf_src_dir=$faf_dir/src
 faf_scripts_dir=$faf_dir/scripts
 
 fclib_library_dir=$HOME/fclib-library
-#fclib_library_dir=/scratch/Vincent/fclib-library
+fclib_library_dir=/scratch/vincent/fclib-library
 
 comp=$faf_src_dir/comp.py
 
@@ -17,15 +17,15 @@ example_name=$(date +%F--%T)_${example_prefix}_${example}_${precision}_${timeout
 else
 example_name=${OAR_JOB_ID}_${example_prefix}_${example}_${precision}_${timeout}
 fi
-rundir=/bettik/$USER/faf/$example_name
-#rundir=/scratch/Vincent/faf/$example_name
+#rundir=/bettik/$USER/faf/$example_name
+rundir=/scratch/vincent/faf/$example_name
 mkdir -p $rundir
 
 
 
 cd $rundir
 echo `pwd`
-
+echo `python --version`
 echo $HOSTNAME
 
 #

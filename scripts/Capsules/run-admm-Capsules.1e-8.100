@@ -6,8 +6,7 @@ example=Capsules
 precision=1e-8
 timeout=100
 solvers=' ' 
-#solvers='--solvers-exact='NSN-JeanMoreau-NLS','NSN-AlartCurnier-NLS','NSN-NaturalMap-NLS','NSN-FischerBurmeister-NLS','NSN-JeanMoreau-Generated-NLS','NSN-AlartCurnier-Generated-NLS','NSN-AlartCurnier-NLS-HYBRID','NSGS-AC','NSGS-AC-GP','NSGS-PLI-100''
-solvers='--solvers-exact='NSGS-AC','ADMM-NORM-INF','ADMM-CST','ADMM-BR','ADMM-ASYM-CST','ADMM-ASYM-BR''
+solvers='--solvers-exact='NSGS-AC','ADMM-NORM-INF','ADMM-CST','ADMM-BR','ADMM-BR-NO','ADMM-SBR','ADMM-ASYM-CST','ADMM-ASYM-BR','ADMM-ASYM-SBR''
 max_problems=500
 
 with_mumps='--with_mumps'
