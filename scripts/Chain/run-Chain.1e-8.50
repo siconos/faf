@@ -20,7 +20,7 @@ preload=''
 ###OAR -p cpumarch != 'haswell'
 #OAR -l /nodes=1,walltime=48:00:00
 
-faf_dir=$HOME/faf
+faf_dir=$HOME/src/faf
 faf_src_dir=$faf_dir/src
 faf_scripts_dir=$faf_dir/scripts
 

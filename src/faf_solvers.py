@@ -5,23 +5,25 @@ from faf_tools import *
 # Some solvers
 #
 class faf_solvers():
-    def __init__(self, maxiter, precision, maxiterls, with_guess, with_mumps, numerics_has_openmp_solvers):
+    def __init__(self, maxiter, precision, maxiterls, with_guess, with_mumps, numerics_has_openmp_solvers, mpi_comm=None, mumps_id=None):
         self._maxiter= maxiter
         self._precision=precision
         self._maxiterls=maxiterls
         self._with_guess=with_guess
         self._with_mumps=with_mumps
         self._numerics_has_openmp_solvers=numerics_has_openmp_solvers
+        self._mpi_comm = mpi_comm
+        self._mumps_id = mumps_id
 
     def create_solvers(self):
         ###### NSN Family
         nsn_acSTD = SiconosSolver(name="NSN-AlartCurnier",
-                                   gnuplot_name="NSN-AC-GP",
-                                   API=N.fc3d_nonsmooth_Newton_AlartCurnier,
-                                   TAG=N.SICONOS_FRICTION_3D_NSN_AC,
-                                   iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
-                                   dparam_err=1,
-                                   maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                  gnuplot_name="NSN-AC-GP",
+                                  API=N.fc3d_nonsmooth_Newton_AlartCurnier,
+                                  TAG=N.SICONOS_FRICTION_3D_NSN_AC,
+                                  iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
+                                  dparam_err=1,
+                                  maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         nsn_acSTD.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION] = N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD;
         nsn_acSTD.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_LINESEARCH] = N.SICONOS_FRICTION_3D_NSN_LINESEARCH_GOLDSTEINPRICE;
@@ -35,7 +37,7 @@ class faf_solvers():
                                        TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                        iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                        dparam_err=1,
-                                       maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                       maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         nsn_acSTD_nls.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION] = N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD;
         nsn_acSTD_nls.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_LINESEARCH] = N.SICONOS_FRICTION_3D_NSN_LINESEARCH_NO;
@@ -49,7 +51,7 @@ class faf_solvers():
                                        TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                        iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                        dparam_err=1,
-                                       maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                       maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         nsn_acSTD_nls_given.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION] = N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD;
         nsn_acSTD_nls_given.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_LINESEARCH] = N.SICONOS_FRICTION_3D_NSN_LINESEARCH_NO;
@@ -63,7 +65,7 @@ class faf_solvers():
                                        TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                        iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                        dparam_err=1,
-                                       maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                       maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         nsn_acSTD_fblsa.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION] = N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD;
         nsn_acSTD_fblsa.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_LINESEARCH] = N.SICONOS_FRICTION_3D_NSN_LINESEARCH_ARMIJO;
@@ -80,7 +82,7 @@ class faf_solvers():
                                           TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                           iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                           dparam_err=1,
-                                          maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                          maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         nsn_acJeanMoreau.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION] = N.SICONOS_FRICTION_3D_NSN_FORMULATION_JEANMOREAU_STD;
         nsn_acJeanMoreau.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_LINESEARCH] = N.SICONOS_FRICTION_3D_NSN_LINESEARCH_GOLDSTEINPRICE;
@@ -94,7 +96,7 @@ class faf_solvers():
                                               TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                               iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                               dparam_err=1,
-                                              maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                              maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         nsn_acJeanMoreau_nls.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION] = N.SICONOS_FRICTION_3D_NSN_FORMULATION_JEANMOREAU_STD;
         nsn_acJeanMoreau_nls.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_LINESEARCH] = N.SICONOS_FRICTION_3D_NSN_LINESEARCH_NO;
@@ -108,7 +110,7 @@ class faf_solvers():
                                               TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                               iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                               dparam_err=1,
-                                              maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                              maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         nsn_acJeanMoreau_fblsa.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION] = N.SICONOS_FRICTION_3D_NSN_FORMULATION_JEANMOREAU_STD;
         nsn_acJeanMoreau_fblsa.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_LINESEARCH] = N.SICONOS_FRICTION_3D_NSN_LINESEARCH_ARMIJO;
@@ -122,7 +124,7 @@ class faf_solvers():
                                             TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                             iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                             dparam_err=1,
-                                            maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                            maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         nsn_acSTDGenerated.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION] = 2;
         nsn_acSTDGenerated.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_LINESEARCH] = N.SICONOS_FRICTION_3D_NSN_LINESEARCH_GOLDSTEINPRICE;
@@ -136,7 +138,7 @@ class faf_solvers():
                                                 TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                                 iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                                 dparam_err=1,
-                                                maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                                maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         nsn_acSTDGenerated_nls.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION] = 2;
         nsn_acSTDGenerated_nls.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_LINESEARCH] = N.SICONOS_FRICTION_3D_NSN_LINESEARCH_NO;
@@ -150,7 +152,7 @@ class faf_solvers():
                                                    TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                                    iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                                    dparam_err=1,
-                                                   maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                                   maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         nsn_acJeanMoreauGenerated.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION] = 3;
         nsn_acJeanMoreauGenerated.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_LINESEARCH] = 0;
@@ -168,7 +170,7 @@ class faf_solvers():
                                                              TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                                              iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                                              dparam_err=1,
-                                                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
 
             nsn_acJeanMoreauGenerated_lusol.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION] = 3;
@@ -184,7 +186,7 @@ class faf_solvers():
                                                        TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                                        iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                                        dparam_err=1,
-                                                       maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                                       maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         nsn_acJeanMoreauGenerated_nls.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION] = 3;
         nsn_acJeanMoreauGenerated_nls.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_LINESEARCH] = N.SICONOS_FRICTION_3D_NSN_LINESEARCH_NO;
@@ -200,7 +202,7 @@ class faf_solvers():
                                                                  TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                                                  iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                                                  dparam_err=1,
-                                                                 maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                                                 maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
             nsn_acJeanMoreauGenerated_nls_lusol.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION] = 3;
             nsn_acJeanMoreauGenerated_nls_lusol.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_LINESEARCH] = N.SICONOS_FRICTION_3D_NSN_LINESEARCH_NO;
@@ -214,7 +216,7 @@ class faf_solvers():
                                    TAG=N.SICONOS_FRICTION_3D_NSN_FB,
                                    iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                    dparam_err=1,
-                                   maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                   maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         nsn_fb_gp.SolverOptions().iparam[3] = 1000000
         nsn_fb_gp.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_LINESEARCH] = 0
@@ -229,7 +231,7 @@ class faf_solvers():
                                              TAG=N.SICONOS_FRICTION_3D_NSN_FB,
                                              iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                              dparam_err=1,
-                                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
             nsn_fb_gp_lusol.SolverOptions().iparam[3] = 1000000
             nsn_fb_gp_lusol.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_LINESEARCH] = 0
@@ -242,7 +244,7 @@ class faf_solvers():
                                       TAG=N.SICONOS_FRICTION_3D_NSN_FB,
                                       iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                       dparam_err=1,
-                                      maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                      maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         nsn_fb_fblsa.SolverOptions().iparam[3] = 1000000
         nsn_fb_fblsa.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_LINESEARCH] = 1
@@ -255,7 +257,7 @@ class faf_solvers():
                                     TAG=N.SICONOS_FRICTION_3D_NSN_FB,
                                     iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                     dparam_err=1,
-                                    maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                    maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         nsn_fb_nls.SolverOptions().iparam[3] = 1000000
         nsn_fb_nls.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_LINESEARCH] = N.SICONOS_FRICTION_3D_NSN_LINESEARCH_NO
@@ -270,7 +272,7 @@ class faf_solvers():
                                               TAG=N.SICONOS_FRICTION_3D_NSN_FB,
                                               iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                               dparam_err=1,
-                                              maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                              maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
             nsn_fb_nls_lusol.SolverOptions().iparam[3] = 1000000
             nsn_fb_nls_lusol.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_LINESEARCH] = N.SICONOS_FRICTION_3D_NSN_LINESEARCH_NO
@@ -284,7 +286,7 @@ class faf_solvers():
                                    TAG=N.SICONOS_FRICTION_3D_NSN_NM,
                                    iparam_iter=1,
                                    dparam_err=1,
-                                   maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                   maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         nsn_nm_gp.SolverOptions().iparam[3] = 1000000
         nsn_nm_gp.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_LINESEARCH] = 0
@@ -299,7 +301,7 @@ class faf_solvers():
                                              TAG=N.SICONOS_FRICTION_3D_NSN_NM,
                                              iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                              dparam_err=1,
-                                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
             nsn_nm_gp_lusol.SolverOptions().iparam[3] = 1000000
             nsn_nm_gp_lusol.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_LINESEARCH] = 0
@@ -312,7 +314,7 @@ class faf_solvers():
                                       TAG=N.SICONOS_FRICTION_3D_NSN_NM,
                                       iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                       dparam_err=1,
-                                      maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                      maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         nsn_nm_fblsa.SolverOptions().iparam[3] = 1000000
         nsn_nm_fblsa.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_LINESEARCH] = 1
@@ -325,7 +327,7 @@ class faf_solvers():
                                     TAG=N.SICONOS_FRICTION_3D_NSN_NM,
                                     iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                     dparam_err=1,
-                                    maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                    maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         nsn_nm_nls.SolverOptions().iparam[3] = 1000000
         nsn_nm_nls.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_LINESEARCH] = N.SICONOS_FRICTION_3D_NSN_LINESEARCH_NO
@@ -338,7 +340,7 @@ class faf_solvers():
                                              TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                              iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                              dparam_err=1,
-                                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         nsn_acSTD_nls_hybrid.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION] = N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD;
         nsn_acSTD_nls_hybrid.SolverOptions().iparam[12] = 0;
@@ -355,7 +357,7 @@ class faf_solvers():
                                               TAG=N.SICONOS_FRICTION_3D_NSN_NM,
                                               iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                               dparam_err=1,
-                                              maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                              maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
             nsn_nm_nls_lusol.SolverOptions().iparam[3] = 1000000
             nsn_nm_nls_lusol.SolverOptions().iparam[N.SICONOS_FRICTION_3D_NSN_LINESEARCH] = N.SICONOS_FRICTION_3D_NSN_LINESEARCH_NO
@@ -368,7 +370,7 @@ class faf_solvers():
                                        TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                        iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                        dparam_err=1,
-                                       maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                       maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         hnsn_ac.SolverOptions().iparam[3] = 10000000
 
         nsn_ac_wrapped = SiconosSolver(name="NSN-AlartCurnier-Wrapped",
@@ -376,7 +378,7 @@ class faf_solvers():
                                         TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                         iparam_iter=1,
                                         dparam_err=1,
-                                        maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                        maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         def fc3d_nsn_ac_fpp(problem, reactions, velocities, _SO):
             SO = N.SolverOptions(N.SICONOS_FRICTION_3D_VI_FPP)
@@ -393,7 +395,7 @@ class faf_solvers():
                                        TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                        iparam_iter=1,
                                        dparam_err=1,
-                                       maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                       maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         def fc3d_nsn_ac_eg(problem, reactions, velocities, _SO):
             SO = N.SolverOptions(N.SICONOS_FRICTION_3D_VI_EG)
@@ -410,7 +412,7 @@ class faf_solvers():
                                        TAG=N.SICONOS_FRICTION_3D_NSN_AC,
                                        iparam_iter=1,
                                        dparam_err=1,
-                                       maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                       maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
 
         nsn_solvers =  [nsn_acSTD, nsn_acSTD_nls, nsn_acSTD_nls_given, nsn_acSTDGenerated, nsn_acSTDGenerated_nls,  nsn_ac_fpp, nsn_ac_eg, nsn_acSTD_fblsa,
@@ -432,7 +434,7 @@ class faf_solvers():
                              TAG=N.SICONOS_FRICTION_3D_NSGS,
                              iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                              dparam_err=1,
-                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         nsgs.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN
         nsgs.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
 
@@ -444,7 +446,7 @@ class faf_solvers():
                              TAG=N.SICONOS_FRICTION_3D_NSGS,
                              iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                              dparam_err=1,
-                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         nsgs_ac_gp.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_GP
         nsgs_ac_gp.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
 
@@ -454,7 +456,7 @@ class faf_solvers():
                              TAG=N.SICONOS_FRICTION_3D_NSGS,
                              iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                              dparam_err=1,
-                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         nsgs_100.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN
         nsgs_100.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
         nsgs_100.SolverOptions().internalSolvers.iparam[0] = 100
@@ -466,7 +468,7 @@ class faf_solvers():
                              TAG=N.SICONOS_FRICTION_3D_NSGS,
                              iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                              dparam_err=1,
-                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         nsgs_ac_gp_100.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_GP
         nsgs_ac_gp_100.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
         nsgs_ac_gp_100.SolverOptions().internalSolvers.iparam[0] = 100
@@ -477,7 +479,7 @@ class faf_solvers():
                                 TAG=N.SICONOS_FRICTION_3D_NSGS,
                                 iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                 dparam_err=1,
-                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         nsgs_ac_gp_adaptive.SolverOptions().iparam[N.SICONOS_FRICTION_3D_IPARAM_INTERNAL_ERROR_STRATEGY] = N.SICONOS_FRICTION_3D_INTERNAL_ERROR_STRATEGY_ADAPTIVE;
         nsgs_ac_gp_adaptive.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_GP
         nsgs_ac_gp_adaptive.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
@@ -488,7 +490,7 @@ class faf_solvers():
                                     TAG=N.SICONOS_FRICTION_3D_NSGS,
                                     iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                     dparam_err=1,
-                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         nsgs_ac_gp_adaptive2.SolverOptions().iparam[N.SICONOS_FRICTION_3D_IPARAM_INTERNAL_ERROR_STRATEGY] = N.SICONOS_FRICTION_3D_INTERNAL_ERROR_STRATEGY_ADAPTIVE_N_CONTACT;
         nsgs_ac_gp_adaptive2.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_GP
         nsgs_ac_gp_adaptive2.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
@@ -501,7 +503,7 @@ class faf_solvers():
                              TAG=N.SICONOS_FRICTION_3D_NSGS,
                              iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                              dparam_err=1,
-                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         nsgs_jm.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN
         nsgs_jm.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_JEANMOREAU_STD
 
@@ -511,7 +513,7 @@ class faf_solvers():
                              TAG=N.SICONOS_FRICTION_3D_NSGS,
                              iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                              dparam_err=1,
-                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         nsgs_jm_gp.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_GP
         nsgs_jm_gp.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_JEANMOREAU_STD
 
@@ -522,7 +524,7 @@ class faf_solvers():
                               TAG=N.SICONOS_FRICTION_3D_NSGS,
                               iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                               dparam_err=1,
-                              maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                              maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         snsgs.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_GP
         snsgs.SolverOptions().iparam[5] = 1
         #print snsgs.SolverOptions().iparam[6]
@@ -533,7 +535,7 @@ class faf_solvers():
                                    TAG=N.SICONOS_FRICTION_3D_NSGS,
                                    iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                    dparam_err=1,
-                                   maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                   maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         nsgs_sfull.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_GP
         nsgs_sfull.SolverOptions().iparam[5] = 2
         #nsgs_sfull.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithLocalIteration
@@ -546,7 +548,7 @@ class faf_solvers():
                              TAG=N.SICONOS_FRICTION_3D_NSGS,
                              iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                              dparam_err=1,
-                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         nsgs_rho_given.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN
         nsgs_rho_given.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
         nsgs_rho_given.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_RHO_STRATEGY] = N.SICONOS_FRICTION_3D_NSN_FORMULATION_RHO_STRATEGY_CONSTANT;
@@ -557,7 +559,7 @@ class faf_solvers():
                              TAG=N.SICONOS_FRICTION_3D_NSGS,
                              iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                              dparam_err=1,
-                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         nsgs_rho_spectral_norm.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN
         nsgs_rho_spectral_norm.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
         nsgs_rho_spectral_norm.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_RHO_STRATEGY] = N.SICONOS_FRICTION_3D_NSN_FORMULATION_RHO_STRATEGY_SPECTRAL_NORM;
@@ -568,7 +570,7 @@ class faf_solvers():
                              TAG=N.SICONOS_FRICTION_3D_NSGS,
                              iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                              dparam_err=1,
-                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         nsgs_rho_split_spectral_norm.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN
         nsgs_rho_split_spectral_norm.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
         nsgs_rho_split_spectral_norm.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_RHO_STRATEGY] = N.SICONOS_FRICTION_3D_NSN_FORMULATION_RHO_STRATEGY_SPLIT_SPECTRAL_NORM;
@@ -579,7 +581,7 @@ class faf_solvers():
                              TAG=N.SICONOS_FRICTION_3D_NSGS,
                              iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                              dparam_err=1,
-                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         nsgs_rho_split_spectral_norm_cond.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN
         nsgs_rho_split_spectral_norm_cond.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
         nsgs_rho_split_spectral_norm_cond.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_RHO_STRATEGY] = N.SICONOS_FRICTION_3D_NSN_FORMULATION_RHO_STRATEGY_SPLIT_SPECTRAL_NORM_COND;
@@ -605,7 +607,7 @@ class faf_solvers():
                                  TAG=N.SICONOS_FRICTION_3D_NSGS,
                                  iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                  dparam_err=1,
-                                 maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                 maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         nsgs_pli.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithLocalIteration
 
         
@@ -615,7 +617,7 @@ class faf_solvers():
                                     TAG=N.SICONOS_FRICTION_3D_NSGS,
                                     iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                     dparam_err=1,
-                                    maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                    maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         nsgs_pli_10.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithLocalIteration
         nsgs_pli_10.SolverOptions().internalSolvers.iparam[0] = 10
 
@@ -625,7 +627,7 @@ class faf_solvers():
                                  TAG=N.SICONOS_FRICTION_3D_NSGS,
                                  iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                  dparam_err=1,
-                                 maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                 maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         nsgs_pli_100.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithLocalIteration
         nsgs_pli_100.SolverOptions().internalSolvers.iparam[0] = 100
 
@@ -635,7 +637,7 @@ class faf_solvers():
                                  TAG=N.SICONOS_FRICTION_3D_NSGS,
                                  iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                  dparam_err=1,
-                                 maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                 maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         nsgs_pli_adaptive.SolverOptions().iparam[N.SICONOS_FRICTION_3D_IPARAM_INTERNAL_ERROR_STRATEGY] = N.SICONOS_FRICTION_3D_INTERNAL_ERROR_STRATEGY_ADAPTIVE;
         nsgs_pli_adaptive.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithLocalIteration
 
@@ -645,7 +647,7 @@ class faf_solvers():
                                  TAG=N.SICONOS_FRICTION_3D_NSGS,
                                  iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                  dparam_err=1,
-                                 maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                 maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         nsgs_pli_adaptive2.SolverOptions().iparam[N.SICONOS_FRICTION_3D_IPARAM_INTERNAL_ERROR_STRATEGY] = N.SICONOS_FRICTION_3D_INTERNAL_ERROR_STRATEGY_ADAPTIVE_N_CONTACT;
         nsgs_pli_adaptive2.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithLocalIteration
 
@@ -660,7 +662,7 @@ class faf_solvers():
                                TAG=N.SICONOS_FRICTION_3D_NSGS,
                                iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                dparam_err=1,
-                               maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                               maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         nsgs_p.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnCone
 
         nsgs_pd = SiconosSolver(name="NSGS-PD",
@@ -669,7 +671,7 @@ class faf_solvers():
                                 TAG=N.SICONOS_FRICTION_3D_NSGS,
                                 iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                 dparam_err=1,
-                                maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         nsgs_pd.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithDiagonalization
 
         nsgs_pr = SiconosSolver(name="NSGS-PR",
@@ -678,7 +680,7 @@ class faf_solvers():
                                 TAG=N.SICONOS_FRICTION_3D_NSGS,
                                 iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                 dparam_err=1,
-                                maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         nsgs_pr.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithRegularization
 
         nsgs_solvers.extend([nsgs_pli, nsgs_pli_10, nsgs_pli_100, nsgs_pli_adaptive, nsgs_pli_adaptive2, nsgs_p, nsgs_pd, nsgs_pr])
@@ -697,7 +699,7 @@ class faf_solvers():
                                                             TAG=N.SICONOS_FRICTION_3D_NSGS,
                                                             iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                                             dparam_err=1,
-                                                            maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                                            maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
                 nsgs_ac_gp_hybrid_pli_nsn.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_GP_HYBRID
                 nsgs_ac_gp_hybrid_pli_nsn.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
                 nsgs_ac_gp_hybrid_pli_nsn.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY ] =  N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY_PLI_NSN_LOOP
@@ -713,7 +715,7 @@ class faf_solvers():
                                                             TAG=N.SICONOS_FRICTION_3D_NSGS,
                                                             iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                                             dparam_err=1,
-                                                            maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                                            maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
                 nsgs_ac_gp_hybrid_pli_nsn.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN_GP_HYBRID
                 nsgs_ac_gp_hybrid_pli_nsn.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_FORMULATION]=N.SICONOS_FRICTION_3D_NSN_FORMULATION_ALARTCURNIER_STD
                 nsgs_ac_gp_hybrid_pli_nsn.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY ] =  N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY_NSN_AND_PLI_NSN_LOOP
@@ -734,7 +736,7 @@ class faf_solvers():
                                         TAG=N.SICONOS_FRICTION_3D_NSGS,
                                         iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                         dparam_err=1,
-                                        maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                        maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
             nsgs_openmp.SolverOptions().iparam[1] = N.SICONOS_FRICTION_3D_NSGS_ERROR_EVALUATION_LIGHT_WITH_FULL_FINAL
             nsgs_openmp.SolverOptions().iparam[14]=error_evaluation_frequency
             nsgs_openmp.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN
@@ -748,7 +750,7 @@ class faf_solvers():
                                             TAG=N.SICONOS_FRICTION_3D_NSGS_OPENMP,
                                             iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                             dparam_err=1,
-                                            maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                            maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
                 nsgs_openmp.SolverOptions().iparam[10]=n
                 nsgs_openmp.SolverOptions().iparam[11]=0
                 nsgs_openmp.SolverOptions().iparam[14]=error_evaluation_frequency
@@ -763,7 +765,7 @@ class faf_solvers():
                                             TAG=N.SICONOS_FRICTION_3D_NSGS_OPENMP,
                                             iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                             dparam_err=1,
-                                            maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                            maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
                 nsgs_openmp.SolverOptions().iparam[10]=n
                 nsgs_openmp.SolverOptions().iparam[11]=1
                 nsgs_openmp.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN
@@ -777,7 +779,7 @@ class faf_solvers():
                                             TAG=N.SICONOS_FRICTION_3D_NSGS_OPENMP,
                                             iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                             dparam_err=1,
-                                            maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                            maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
                 nsgs_openmp.SolverOptions().iparam[10]=n
                 nsgs_openmp.SolverOptions().iparam[11]=2
                 nsgs_openmp.SolverOptions().iparam[12]=5
@@ -793,7 +795,7 @@ class faf_solvers():
                                         TAG=N.SICONOS_FRICTION_3D_NSGS_OPENMP,
                                         iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                         dparam_err=1,
-                                        maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                        maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
             nsgs_openmp.SolverOptions().iparam[10]=1
             nsgs_openmp.SolverOptions().iparam[11]=10
             nsgs_openmp.SolverOptions().iparam[14]=error_evaluation_frequency
@@ -806,7 +808,7 @@ class faf_solvers():
                                         TAG=N.SICONOS_FRICTION_3D_NSGS_OPENMP,
                                         iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                         dparam_err=1,
-                                        maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                        maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
             nsgs_openmp.SolverOptions().iparam[10]=1
             nsgs_openmp.SolverOptions().iparam[11]=1
             nsgs_openmp.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_NSN
@@ -824,7 +826,7 @@ class faf_solvers():
                                         TAG=N.SICONOS_FRICTION_3D_NSGS,
                                         iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                         dparam_err=1,
-                                        maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                        maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
             nsgs_solver.SolverOptions().internalSolvers.dparam[0] = local_tol
             nsgs_series.append(nsgs_solver)
 
@@ -836,7 +838,7 @@ class faf_solvers():
                                         TAG=N.SICONOS_FRICTION_3D_NSGS,
                                         iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                         dparam_err=1,
-                                        maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                        maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
             nsgs_solver.SolverOptions().internalSolvers.solverId = N.SICONOS_FRICTION_3D_ONECONTACT_ProjectionOnConeWithLocalIteration
             nsgs_solver.SolverOptions().internalSolvers.dparam[0] = local_tol
             nsgs_series.append(nsgs_solver)
@@ -850,7 +852,7 @@ class faf_solvers():
                                          TAG=N.SICONOS_FRICTION_3D_NSGS,
                                          iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                          dparam_err=1,
-                                         maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                         maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
             snsgs_solver.SolverOptions().iparam[5] = 1
             snsgs_solver.SolverOptions().iparam[6] = (1237*i)*(1237*i)
             #print snsgs_solver.SolverOptions().iparam[6]
@@ -865,7 +867,7 @@ class faf_solvers():
                               TAG=N.SICONOS_FRICTION_3D_NSGSV,
                               iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                               dparam_err=1,
-                              maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                              maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
 
 
@@ -875,7 +877,7 @@ class faf_solvers():
                                     API=N.fc3d_nsgs,
                                     TAG=N.SICONOS_FRICTION_3D_NSGS,
                                 iparam_iter=7,
-                                    dparam_err=1, maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                    dparam_err=1, maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         quartic3x3 = N.SolverOptions(N.SICONOS_FRICTION_3D_ONECONTACT_QUARTIC_NU)
 
@@ -893,7 +895,7 @@ class faf_solvers():
                              TAG=N.SICONOS_FRICTION_3D_NSGS,
                              iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                              dparam_err=1,
-                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         psor.SolverOptions().iparam[4] = 1
         psor.SolverOptions().dparam[8] = omega
         psor.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY ] =  N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY_NO
@@ -907,7 +909,7 @@ class faf_solvers():
                                         TAG=N.SICONOS_FRICTION_3D_NSGS,
                                         iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                         dparam_err=1,
-                                        maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                        maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
             psor_solver.SolverOptions().iparam[4] = 1
             psor_solver.SolverOptions().dparam[8] = omega
             psor_solver.SolverOptions().internalSolvers.iparam[N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY ] =  N.SICONOS_FRICTION_3D_NSN_HYBRID_STRATEGY_NO
@@ -921,7 +923,7 @@ class faf_solvers():
                                              TAG=N.SICONOS_FRICTION_3D_PFP,
                                              iparam_iter=7,
                                              dparam_err=1,
-                                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
 
         
@@ -931,7 +933,7 @@ class faf_solvers():
                                              TAG=N.SICONOS_FRICTION_3D_PFP,
                                              iparam_iter=7,
                                              dparam_err=1,
-                                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         iso1=N.solver_options_get_internal_solver(PanaFixedPoint_vi_eg.SolverOptions(),1) 
         N.solver_options_delete(iso1)
         N.convexQP_VI_solver_setDefaultSolverOptions(iso1)
@@ -943,7 +945,7 @@ class faf_solvers():
                                              TAG=N.SICONOS_FRICTION_3D_PFP,
                                              iparam_iter=7,
                                              dparam_err=1,
-                                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         iso1=N.solver_options_get_internal_solver(PanaFixedPoint_pgs_convexqp_pg.SolverOptions(),1)
         N.solver_options_delete(iso1)
         N.convexQP_ProjectedGradient_setDefaultSolverOptions(iso1)
@@ -956,7 +958,7 @@ class faf_solvers():
                                              TAG=N.SICONOS_FRICTION_3D_PFP,
                                              iparam_iter=7,
                                              dparam_err=1,
-                                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         iso0=N.solver_options_get_internal_solver(PanaFixedPoint_convexqp_pg.SolverOptions(),0)
         N.solver_options_delete(iso0)
         N.linearComplementarity_ConvexQP_ProjectedGradient_setDefaultSolverOptions(iso0)
@@ -974,7 +976,7 @@ class faf_solvers():
                                          TAG=N.SICONOS_FRICTION_3D_TFP,
                                          iparam_iter=7,
                                          dparam_err=1,
-                                         maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                         maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         TrescaFixedPoint_pg = SiconosSolver(name="TRESCA-PG",
                                              gnuplot_name='TRESCA-CONVEXQP-PG',
@@ -982,7 +984,7 @@ class faf_solvers():
                                          TAG=N.SICONOS_FRICTION_3D_TFP,
                                          iparam_iter=7,
                                          dparam_err=1,
-                                         maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                         maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         TrescaFixedPoint_pg.SolverOptions().internalSolvers= N.SolverOptions(N.SICONOS_FRICTION_3D_ConvexQP_PG_Cylinder) 
         TrescaFixedPoint_pg.SolverOptions().internalSolvers.iparam[N.SICONOS_IPARAM_MAX_ITER]= 1000
 
@@ -993,7 +995,7 @@ class faf_solvers():
                                          TAG=N.SICONOS_FRICTION_3D_TFP,
                                          iparam_iter=7,
                                          dparam_err=1,
-                                         maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                         maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         TrescaFixedPoint_vi_fpp.SolverOptions().internalSolvers= N.SolverOptions(N.SICONOS_FRICTION_3D_VI_FPP_Cylinder)
         TrescaFixedPoint_vi_fpp.SolverOptions().internalSolvers.iparam[N.SICONOS_IPARAM_MAX_ITER]= 1000
 
@@ -1007,7 +1009,7 @@ class faf_solvers():
                                         TAG=N.SICONOS_FRICTION_3D_ACLMFP,
                                         iparam_iter=7,
                                         dparam_err=1,
-                                        maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                        maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         ACLMFixedPoint_vi_eg = SiconosSolver(name="ACLMFixedPoint-SOCLCP-VI-EG",
                                            gnuplot_name='ACLM-VI-EG',
@@ -1015,7 +1017,7 @@ class faf_solvers():
                                         TAG=N.SICONOS_FRICTION_3D_ACLMFP,
                                         iparam_iter=7,
                                         dparam_err=1,
-                                        maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                        maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         ACLMFixedPoint_vi_eg.SolverOptions().internalSolvers = N.SolverOptions(N.SecondOrderConeLinearComplementarityProblem(), N.SICONOS_SOCLCP_VI_EG)
         
         ACLMFixedPoint_vi_fpp = SiconosSolver(name="ACLMFixedPoint-SOCLCP-VI-FPP",
@@ -1024,7 +1026,7 @@ class faf_solvers():
                                             TAG=N.SICONOS_FRICTION_3D_ACLMFP,
                                             iparam_iter=7,
                                             dparam_err=1,
-                                            maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                            maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         ACLMFixedPoint_vi_fpp.SolverOptions().internalSolvers = N.SolverOptions(N.SecondOrderConeLinearComplementarityProblem(), N.SICONOS_SOCLCP_VI_FPP)
               
         
@@ -1033,7 +1035,7 @@ class faf_solvers():
                                TAG=N.SICONOS_FRICTION_3D_SOCLCP,
                                iparam_iter=7,
                                dparam_err=1,
-                               maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                               maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         DeSaxceFixedPoint = SiconosSolver(name="FixedPoint-DeSaxce",
                                           gnuplot_name = "FP-DS",
@@ -1041,7 +1043,7 @@ class faf_solvers():
                                           TAG=N.SICONOS_FRICTION_3D_DSFP,
                                           iparam_iter=7,
                                           dparam_err=1,
-                                          maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                          maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         # old school VI solvers implemented in FC3D
 
@@ -1050,14 +1052,14 @@ class faf_solvers():
                                   TAG=N.SICONOS_FRICTION_3D_EG,
                                   iparam_iter=7,
                                   dparam_err=1,
-                                  maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                  maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         FixedPointProjection = SiconosSolver(name="FixedPoint-Projection",
                                              API=N.fc3d_fixedPointProjection,
                                              TAG=N.SICONOS_FRICTION_3D_FPP,
                                              iparam_iter=7,
                                              dparam_err=1,
-                                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         VIExtraGrad = SiconosSolver(name="ExtraGradient-VI",
                                     gnuplot_name = "EG-VI-UPK",
@@ -1065,7 +1067,7 @@ class faf_solvers():
                                     TAG=N.SICONOS_FRICTION_3D_VI_EG,
                                     iparam_iter=7,
                                     dparam_err=1,
-                                    maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                    maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         iparam1_values = [0,1]
 
@@ -1101,7 +1103,7 @@ class faf_solvers():
                                                                  TAG=N.SICONOS_FRICTION_3D_VI_EG,
                                                                  iparam_iter=7,
                                                                  dparam_err=1,
-                                                                 maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                                                 maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
                     VIExtraGrad_solver.SolverOptions().iparam[1] = i1
                     VIExtraGrad_solver.SolverOptions().iparam[2] = i2
                     VIExtraGrad_solver.SolverOptions().iparam[3] = i3
@@ -1114,7 +1116,7 @@ class faf_solvers():
                                                TAG=N.SICONOS_FRICTION_3D_VI_FPP,
                                                iparam_iter=7,
                                                dparam_err=1,
-                                               maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                               maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
         iparam1_values = [0,1,2]
         iparam1_values = [0,1]
@@ -1154,7 +1156,7 @@ class faf_solvers():
                                                                  TAG=N.SICONOS_FRICTION_3D_VI_FPP,
                                                                  iparam_iter=7,
                                                                  dparam_err=1,
-                                                                 maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                                                 maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
                     VIFixedPointProjection_solver.SolverOptions().iparam[1] = i1
                     VIFixedPointProjection_solver.SolverOptions().iparam[2] = i2
                     VIFixedPointProjection_solver.SolverOptions().iparam[3] = i3
@@ -1166,7 +1168,7 @@ class faf_solvers():
                              TAG=N.SICONOS_FRICTION_3D_PROX,
                              iparam_iter=7,
                              dparam_err=1,
-                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         Prox.SolverOptions().internalSolvers.iparam[3] = 100
 
 
@@ -1176,7 +1178,7 @@ class faf_solvers():
                              TAG=N.SICONOS_FRICTION_3D_PROX,
                              iparam_iter=7,
                              dparam_err=1,
-                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         Proxfixed.SolverOptions().dparam[3] = -1e4
         Proxfixed.SolverOptions().internalSolvers.iparam[3] = 100
 
@@ -1192,7 +1194,7 @@ class faf_solvers():
                                           TAG=N.SICONOS_FRICTION_3D_PROX,
                                           iparam_iter=7,
                                           dparam_err=1,
-                                          maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                          maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
             regul_solver.SolverOptions().dparam[3] = rr
             regul_solver.SolverOptions().iparam[N.SICONOS_FRICTION_3D_PROXIMAL_IPARAM_STRATEGY] = N.SICONOS_FRICTION_3D_PROXIMAL_REGULARIZATION
             regul_solver.SolverOptions().internalSolvers.iparam[3] = 100
@@ -1209,7 +1211,7 @@ class faf_solvers():
                                           TAG=N.SICONOS_FRICTION_3D_PROX,
                                           iparam_iter=7,
                                           dparam_err=1,
-                                          maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                          maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
             regul_solver.SolverOptions().dparam[3] = - rr
             regul_solver.SolverOptions().iparam[N.SICONOS_FRICTION_3D_PROXIMAL_IPARAM_STRATEGY] = N.SICONOS_FRICTION_3D_PROXIMAL_REGULARIZATION
             regul_solver.SolverOptions().internalSolvers.iparam[3] = 100
@@ -1221,7 +1223,7 @@ class faf_solvers():
                              TAG=N.SICONOS_FRICTION_3D_PROX,
                              iparam_iter=7,
                              dparam_err=1,
-                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         Prox_nls.SolverOptions().internalSolvers.iparam[11] = -1
 
         ProxFB = SiconosSolver(name="PROX-NSN-FB-GP",
@@ -1230,7 +1232,7 @@ class faf_solvers():
                              TAG=N.SICONOS_FRICTION_3D_PROX,
                              iparam_iter=7,
                              dparam_err=1,
-                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         ProxFB.SolverOptions().internalSolvers.iparam[3] = 100
         ProxFB.SolverOptions().dparam[4]=5.0 # sigma
         ProxFB.SolverOptions().dparam[5]=1.0 # nu
@@ -1251,7 +1253,7 @@ class faf_solvers():
                              TAG=N.SICONOS_FRICTION_3D_PROX,
                              iparam_iter=7,
                              dparam_err=1,
-                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         nsn_fb_fblsa_inprox = N.SolverOptions(N.SICONOS_FRICTION_3D_NSN_FB)
         nsn_fb_fblsa_inprox.iparam[3] = 1000000
         nsn_fb_fblsa_inprox.iparam[11] = 1
@@ -1266,7 +1268,7 @@ class faf_solvers():
                              TAG=N.SICONOS_FRICTION_3D_PROX,
                              iparam_iter=7,
                              dparam_err=1,
-                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         nsn_fb_nls_inprox = N.SolverOptions(N.SICONOS_FRICTION_3D_NSN_FB)
         nsn_fb_nls_inprox.iparam[3] = 1000000
         nsn_fb_nls_inprox.iparam[11] = -1
@@ -1280,7 +1282,7 @@ class faf_solvers():
                              TAG=N.SICONOS_FRICTION_3D_PROX,
                              iparam_iter=7,
                              dparam_err=1,
-                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         local_nsgs_inprox = N.SolverOptions(N.SICONOS_FRICTION_3D_NSGS)
         ProxNSGS.SolverOptions().internalSolvers = local_nsgs_inprox
         ProxNSGS.SolverOptions().internalSolvers.iparam[0] = 10000
@@ -1296,7 +1298,7 @@ class faf_solvers():
                                              TAG=N.SICONOS_FRICTION_3D_PROX,
                                              iparam_iter=7,
                                              dparam_err=1,
-                                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
                 prox_solver.SolverOptions().internalSolvers.iparam[3] = 1000000
                 prox_solver.SolverOptions().dparam[4]=sigma # sigma
                 prox_solver.SolverOptions().dparam[5]=mu # nu
@@ -1317,21 +1319,21 @@ class faf_solvers():
                                              TAG=N.SICONOS_FRICTION_3D_HP,
                                              iparam_iter=7,
                                              dparam_err=1,
-                                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
 
-        bogusPureNewton = BogusSolver(name="BogusPureNewton", API=wrap_bogus_solve, TAG=N.SICONOS_FRICTION_3D_NSN_FB, iparam_iter=1, dparam_err=1, maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+        bogusPureNewton = BogusSolver(name="BogusPureNewton", API=wrap_bogus_solve, TAG=N.SICONOS_FRICTION_3D_NSN_FB, iparam_iter=1, dparam_err=1, maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         bogusPureNewton.SolverOptions().iparam[4]=0
 
 
-        bogusPureEnumerative = BogusSolver(name="BogusPureEnumerative", API=wrap_bogus_solve, TAG=N.SICONOS_FRICTION_3D_NSN_FB, iparam_iter=1, dparam_err=1, maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+        bogusPureEnumerative = BogusSolver(name="BogusPureEnumerative", API=wrap_bogus_solve, TAG=N.SICONOS_FRICTION_3D_NSN_FB, iparam_iter=1, dparam_err=1, maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         bogusPureEnumerative.SolverOptions().iparam[4]=1
 
 
-        bogusHybrid = BogusSolver(name="BogusHybrid", API=wrap_bogus_solve, TAG=N.SICONOS_FRICTION_3D_NSN_FB, iparam_iter=1, dparam_err=1, maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+        bogusHybrid = BogusSolver(name="BogusHybrid", API=wrap_bogus_solve, TAG=N.SICONOS_FRICTION_3D_NSN_FB, iparam_iter=1, dparam_err=1, maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         bogusHybrid.SolverOptions().iparam[4]=2
 
 
-        bogusRevHybrid = BogusSolver(name="BogusRevHybrid", API=wrap_bogus_solve, TAG=N.SICONOS_FRICTION_3D_NSN_FB, iparam_iter=1, dparam_err=1, maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+        bogusRevHybrid = BogusSolver(name="BogusRevHybrid", API=wrap_bogus_solve, TAG=N.SICONOS_FRICTION_3D_NSN_FB, iparam_iter=1, dparam_err=1, maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         bogusRevHybrid.SolverOptions().iparam[4]=3
 
 
@@ -1365,7 +1367,7 @@ class faf_solvers():
                                       TAG=N.SICONOS_FRICTION_3D_ADMM,
                                       iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                       dparam_err=1,
-                                      maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                      maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         admm_norm_inf.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_RHO_STRATEGY]= N.SICONOS_FRICTION_3D_ADMM_RHO_STRATEGY_NORM_INF
         
         admm_constant = SiconosSolver(name="ADMM-CST",
@@ -1374,7 +1376,7 @@ class faf_solvers():
                                       TAG=N.SICONOS_FRICTION_3D_ADMM,
                                       iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                       dparam_err=1,
-                                      maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                      maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         admm_constant.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_RHO_STRATEGY]= N.SICONOS_FRICTION_3D_ADMM_RHO_STRATEGY_CONSTANT
         
         admm_br = SiconosSolver(name="ADMM-BR",
@@ -1383,7 +1385,7 @@ class faf_solvers():
                                       TAG=N.SICONOS_FRICTION_3D_ADMM,
                                       iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                       dparam_err=1,
-                                      maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                      maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         admm_br.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_RHO_STRATEGY]=N.SICONOS_FRICTION_3D_ADMM_RHO_STRATEGY_RESIDUAL_BALANCING
 
         admm_br_sparse = SiconosSolver(name="ADMM-BR-SPARSE",
@@ -1392,7 +1394,7 @@ class faf_solvers():
                                       TAG=N.SICONOS_FRICTION_3D_ADMM,
                                       iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                       dparam_err=1,
-                                      maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                      maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         admm_br_sparse.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_RHO_STRATEGY]=N.SICONOS_FRICTION_3D_ADMM_RHO_STRATEGY_RESIDUAL_BALANCING
         admm_br_sparse.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_SPARSE_STORAGE]=N.SICONOS_FRICTION_3D_ADMM_FORCED_SPARSE_STORAGE
 
@@ -1402,7 +1404,7 @@ class faf_solvers():
                                       TAG=N.SICONOS_FRICTION_3D_ADMM,
                                       iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                       dparam_err=1,
-                                      maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                      maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         admm_sbr.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_RHO_STRATEGY]=N.SICONOS_FRICTION_3D_ADMM_RHO_STRATEGY_SCALED_RESIDUAL_BALANCING
         
         admm_br_no = SiconosSolver(name="ADMM-BR-NO",
@@ -1411,7 +1413,7 @@ class faf_solvers():
                                       TAG=N.SICONOS_FRICTION_3D_ADMM,
                                       iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                       dparam_err=1,
-                                      maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                      maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         admm_br_no.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_RHO_STRATEGY]=N.SICONOS_FRICTION_3D_ADMM_RHO_STRATEGY_RESIDUAL_BALANCING
         admm_br_no.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_ACCELERATION]=N.SICONOS_FRICTION_3D_ADMM_NO_ACCELERATION
 
@@ -1421,7 +1423,7 @@ class faf_solvers():
                                       TAG=N.SICONOS_FRICTION_3D_ADMM,
                                       iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                       dparam_err=1,
-                                      maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                      maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         admm_asym_cst.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_RHO_STRATEGY]= N.SICONOS_FRICTION_3D_ADMM_RHO_STRATEGY_CONSTANT
         admm_asym_cst.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_SYMMETRY]=N.SICONOS_FRICTION_3D_ADMM_FORCED_ASYMMETRY
 
@@ -1431,7 +1433,7 @@ class faf_solvers():
                                       TAG=N.SICONOS_FRICTION_3D_ADMM,
                                       iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                       dparam_err=1,
-                                      maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                      maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         admm_asym_br.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_RHO_STRATEGY]= N.SICONOS_FRICTION_3D_ADMM_RHO_STRATEGY_RESIDUAL_BALANCING
         admm_asym_br.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_SYMMETRY]=N.SICONOS_FRICTION_3D_ADMM_FORCED_ASYMMETRY
 
@@ -1441,7 +1443,7 @@ class faf_solvers():
                                       TAG=N.SICONOS_FRICTION_3D_ADMM,
                                       iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                       dparam_err=1,
-                                      maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
+                                      maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id)
         admm_asym_sbr.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_RHO_STRATEGY]= N.SICONOS_FRICTION_3D_ADMM_RHO_STRATEGY_SCALED_RESIDUAL_BALANCING
         admm_asym_sbr.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_SYMMETRY]=N.SICONOS_FRICTION_3D_ADMM_FORCED_ASYMMETRY
 
