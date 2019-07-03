@@ -30,7 +30,7 @@ echo `python3 --version`
 echo $HOSTNAME
 
 #
-cp -r $fclib_library_dir/$example_prefix/$example .
+ln -sf $fclib_library_dir/$example_prefix/$example .
 for d in $example; do
     cd $d
     $comp $global --max-problems=$max_problems --no-compute --no-collect # output problems.txt
