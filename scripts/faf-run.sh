@@ -1,11 +1,12 @@
 #!/bin/sh -fx
+set -e
 
-faf_dir=$HOME/faf
+faf_dir=$HOME/src/faf
 faf_src_dir=$faf_dir/src
 faf_scripts_dir=$faf_dir/scripts
 
-fclib_library_dir=$HOME/fclib-library
-fclib_library_dir=/scratch/vincent/fclib-library
+fclib_library_dir=$HOME/src/fclib-library
+#fclib_library_dir=/scratch/vincent/fclib-library
 
 comp=$faf_src_dir/comp.py
 
@@ -18,14 +19,14 @@ else
 example_name=${OAR_JOB_ID}_${example_prefix}_${example}_${precision}_${timeout}
 fi
 #rundir=/bettik/$USER/faf/$example_name
-rundir=/scratch/vincent/faf/$example_name
+rundir=/scratch/$USER/faf/$example_name
 mkdir -p $rundir
 
 
 
 cd $rundir
 echo `pwd`
-echo `python --version`
+echo `python3 --version`
 echo $HOSTNAME
 
 #
@@ -39,7 +40,14 @@ for d in $example; do
        cp  $faf_scripts_dir/$example/comp.hdf5 .
     fi
     #cat problems.txt | $comp --timeout=$timeout --precision=$precision $solvers --no-compute --no-collect $with_mumps --maxiterls=6 '--files={}'# dry run
-    cat problems.txt | $preload parallel $comp $global --timeout=$timeout --precision=$precision $solvers --no-collect $with_mumps --maxiterls=6 '--files={}'
+    if [ ! -z "$mpi_nodes" ]; then
+      ls -l
+      for problem in `cat problems.txt`; do
+        $preload mpirun -np $mpi_nodes $comp $global --timeout=$timeout --precision=$precision $solvers --no-collect $with_mumps --maxiterls=6 "--files=$problem"
+      done
+    else
+      cat problems.txt | $preload parallel mpirun -np 2 $comp $global --timeout=$timeout --precision=$precision $solvers --no-collect $with_mumps --maxiterls=6 '--files={}'
+    fi
     $comp $global --just-collect --timeout=$timeout --precision=$precision --with-mumps --maxiterls=6
     cd ..
 done

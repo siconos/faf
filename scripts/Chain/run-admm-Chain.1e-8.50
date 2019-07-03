@@ -7,8 +7,8 @@ precision=1e-8
 timeout=50
 #solvers=' ' 
 solvers='--solvers-exact='NSGS-AC','ADMM-NORM-INF','ADMM-CST','ADMM-BR','ADMM-BR-NO','ADMM-SBR','ADMM-ASYM-CST','ADMM-ASYM-BR','ADMM-ASYM-SBR''
-max_problems=500
-
+max_problems=5
+mpi_nodes=4
 with_mumps='--with_mumps'
 preload='LD_PRELOAD=/usr/lib/libmpi.so'
 
@@ -20,7 +20,7 @@ preload=''
 ###OAR -p cpumarch != 'haswell'
 #OAR -l /nodes=1,walltime=48:00:00
 
-faf_dir=$HOME/faf
+faf_dir=$HOME/src/faf
 faf_src_dir=$faf_dir/src
 faf_scripts_dir=$faf_dir/scripts
 
