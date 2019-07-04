@@ -13,7 +13,13 @@ timeout=7000
 #solvers=' ' 
 solvers='--solvers-exact='ADMM-NORM-INF','ADMM-CST','ADMM-BR','ADMM-BR-NO','ADMM-SBR','ADMM-ASYM-CST','ADMM-ASYM-BR','ADMM-ASYM-SBR''
 max_problems=5
+
 mpi_cores=$1
+mpi_run_args="-launcher ssh -launcher-exec /usr/bin/oarsh --machinefile $OAR_NODE_FILE"
+
+echo "MPI cores:" $mpi_cores
+echo "mpi_run args:" $mpi_run_args
+
 with_mumps='--with_mumps'
 preload='LD_PRELOAD=/usr/lib/libmpi.so'
 
