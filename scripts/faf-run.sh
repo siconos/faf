@@ -7,7 +7,7 @@ faf_dir=$HOME/src/faf
 faf_src_dir=$faf_dir/src
 faf_scripts_dir=$faf_dir/scripts
 
-fclib_library_dir=$HOME/src/fclib-library
+fclib_library_dir=$scratch/$USER/fclib-library
 #fclib_library_dir=$scratch/vincent/fclib-library
 
 comp=$faf_src_dir/comp.py
