@@ -20,10 +20,11 @@ preload='LD_PRELOAD=/usr/lib/libmpi.so'
 with_mumps=''
 preload=''
 
-
-
 faf_dir=$HOME/src/faf
 faf_src_dir=$faf_dir/src
 faf_scripts_dir=$faf_dir/scripts
+
+export OMPI_MCA_btl_openib_allow_ib=1
+export OMPI_MCA_btl_openib_if_include="mlx4_0:1"
 
 source $faf_scripts_dir/faf-run.sh
