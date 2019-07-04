@@ -32,7 +32,7 @@ echo `python3 --version`
 echo $HOSTNAME
 
 #
-ln -sf $fclib_library_dir/$example_prefix/$example .
+cp -r $fclib_library_dir/$example_prefix/$example .
 for d in $example; do
     cd $d
     $comp $global --max-problems=$max_problems --no-compute --no-collect # output problems.txt
@@ -43,7 +43,8 @@ for d in $example; do
     fi
     #cat problems.txt | $comp --timeout=$timeout --precision=$precision $solvers --no-compute --no-collect $with_mumps --maxiterls=6 '--files={}'# dry run
     if [ ! -z "$mpi_cores" ]; then
-      ls -l
+      echo "running with mpi#$mpi_cores on problems:"
+      cat problems.txt
       for problem in `cat problems.txt`; do
         $preload mpirun -np $mpi_cores $comp $global --timeout=$timeout --precision=$precision $solvers --no-collect $with_mumps --maxiterls=6 "--files=$problem"
       done
@@ -55,7 +56,7 @@ for d in $example; do
 done
 #cat $HOME/faf/$examples/$0 > command
 
-cp $faf_scripts_dir/$example_prefix/$example/$0 $rundir/$0
+cp $faf_scripts_dir/$example_prefix/$0 $rundir/$0
 cd ..
 tar zcvf comps-$example_name.tar.gz `find ${example_name} -name comp.hdf5`  ${example_name}/$0 --force-local
 mkdir -p $faf_dir/results
