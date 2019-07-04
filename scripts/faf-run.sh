@@ -16,9 +16,9 @@ echo `pwd`
 
 if test -z ${OAR_JOB_ID}
 then
-example_name=$(date +%F--%T)_${example_prefix}_${example}_${precision}_${timeout}
+  example_name=$(date +%F--%T)_${example_prefix}_${example}_${precision}_${timeout}_${mpi_cores}
 else
-example_name=${OAR_JOB_ID}_${example_prefix}_${example}_${precision}_${timeout}
+  example_name=${OAR_JOB_ID}_${example_prefix}_${example}_${precision}_${timeout}_${mpi_cores}
 fi
 #rundir=/bettik/$USER/faf/$example_name
 rundir=$scratch/$USER/faf/$example_name
