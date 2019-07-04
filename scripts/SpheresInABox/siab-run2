@@ -1,0 +1,9 @@
+#!/bin/bash
+
+#OAR --project siconos
+#OAR --name siconos-siab-comp
+#OAR -l /core=2,walltime=48:00:00 
+
+. $HOME/.profile
+
+GUIX_PACKAGE_PATH=$HOME/src/some-guix-channels/tripop guix environment --pure --ad-hoc siconos python python-h5py python-numpy python-scipy coreutils bash python-mpi4py openmpi openssh parallel -- SpheresInABox/run-admm-mpi-siab.1e-8.50 2

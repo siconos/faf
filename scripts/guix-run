@@ -1,6 +1,0 @@
-#!/bin/sh
-
-# 
-#
-#
-guix environment --pure --ad-hoc siconos python python-h5py python-numpy python-scipy coreutils bash python-mpi4py openmpi openssh parallel -- Chain/run-admm-Chain.1e-8.50 
