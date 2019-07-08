@@ -1,0 +1,11 @@
+#!/bin/bash
+
+#OAR --project siconos
+#OAR --name siconos-siab-comp
+#OAR -l /nodes=1/cpu=1/core=16,walltime=48:00:00 
+
+. $HOME/.profile
+
+GUIX_PACKAGE_PATH=$HOME/src/some-guix-channels/tripop guix environment --pure --ad-hoc siconos python python-h5py python-numpy python-scipy coreutils bash python-mpi4py-mpich mpich openssh parallel hdf5 tar finutils gzip -- /bin/sh -c "OAR_JOB_ID=$OAR_JOB_ID OAR_NODE_FILE=$OAR_NODE_FILE $HOME/src/faf/scripts/SpheresInABox/run-nsgs-siab.1e-4.7000 1"
+
+

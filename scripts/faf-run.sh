@@ -2,7 +2,7 @@
 set -e
 
 [ -d /bettik ] && scratch=/bettik || scratch=/scratch
-
+script=`basename $0`
 faf_dir=$HOME/src/faf
 faf_src_dir=$faf_dir/src
 faf_scripts_dir=$faf_dir/scripts
@@ -30,9 +30,10 @@ cd $rundir
 echo `pwd`
 echo `python3 --version`
 echo $HOSTNAME
+python=`which python3`
 
 #
-cp -r $fclib_library_dir/$example_prefix/$example .
+cp -Lr $fclib_library_dir/$example_prefix/$example .
 for d in $example; do
     cd $d
     $comp $global --max-problems=$max_problems --no-compute --no-collect # output problems.txt
@@ -56,7 +57,7 @@ for d in $example; do
 done
 #cat $HOME/faf/$examples/$0 > command
 
-cp $faf_scripts_dir/$example_prefix/$0 $rundir/$0
+cp $faf_scripts_dir/$example_prefix/$example/$script $rundir/$example
 cd ..
 tar zcvf comps-$example_name.tar.gz `find ${example_name} -name comp.hdf5`  ${example_name}/$0 --force-local
 mkdir -p $faf_dir/results
