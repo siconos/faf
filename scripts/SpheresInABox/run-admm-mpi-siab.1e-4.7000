@@ -1,0 +1,36 @@
+#!/bin/bash -fx
+
+#OAR --project siconos
+#OAR --name siab
+###OAR -p cpumarch != 'haswell'
+#OAR -l /cores=1,walltime=48:00:00
+
+export LC_ALL=C
+# specific variables to the test bench set
+example=SpheresInABox
+precision=1e-4
+timeout=7000
+#solvers=' ' 
+solvers="--solvers-exact='ADMM-NORM-INF'"
+max_problems=5
+
+mpi_cores=$1
+mpi_run_args="-launcher ssh -launcher-exec /usr/bin/oarsh --machinefile $OAR_NODE_FILE"
+
+echo "MPI cores:" $mpi_cores
+echo "mpi_run args:" $mpi_run_args
+
+with_mumps='--with_mumps'
+#preload='LD_PRELOAD=/usr/lib/libmpi.so'
+
+with_mumps=''
+preload=''
+
+faf_dir=$HOME/src/faf
+faf_src_dir=$faf_dir/src
+faf_scripts_dir=$faf_dir/scripts
+
+export OMPI_MCA_btl_openib_allow_ib=1
+export OMPI_MCA_btl_openib_if_include="mlx4_0:1"
+
+source $faf_scripts_dir/faf-run.sh
