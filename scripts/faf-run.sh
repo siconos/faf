@@ -47,7 +47,7 @@ for d in $example; do
       echo "running with mpi#$mpi_cores on problems:"
       cat problems.txt
       for problem in `cat problems.txt`; do
-        $preload mpirun $mpirun_args -np $mpi_cores $comp $global --timeout=$timeout --precision=$precision $solvers --no-collect $with_mumps --maxiterls=6 "--files=$problem"
+        $preload mpirun $mpirun_args -np $mpi_cores $comp $global --verbose=1 --timeout=$timeout --precision=$precision $solvers --no-collect $with_mumps --maxiterls=6 "--files=$problem"
       done
     else
       cat problems.txt | $preload parallel $comp $global --timeout=$timeout --precision=$precision $solvers --no-collect $with_mumps --maxiterls=6 '--files={}'
