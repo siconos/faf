@@ -26,6 +26,7 @@ admm_br = SiconosSolver(name="ADMM-BR",
 reactions, velocities, global_velocities = admm_br.guess(filename)
 
 N.numerics_set_verbose(1)
+N.solver_options_print(admm_br.SolverOptions())
 result = admm_br(numerics_problem, reactions, velocities)
 
 print('result', result)
