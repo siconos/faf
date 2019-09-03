@@ -851,6 +851,7 @@ if __name__ == '__main__':
         print('MPI process stop: ',comm.Get_rank())
         exit(0)
     print('MPI process:', comm.Get_rank())
+    print('MUMPS_ida:', N.NM_MUMPS_id(A))
 
     try:
         opts, args = getopt.gnu_getopt(sys.argv[1:], '',
@@ -1047,14 +1048,13 @@ if __name__ == '__main__':
         print("warning : fc3d_nsgs_openmp is not in siconos numerics")
 
 
-
-
-
     ##################################
     ## creation of solver list
     ##################################
     print("1 -- Creation of solver list")
 
+    print('MUMPS_id3:', N.NM_MUMPS_id(A))
+    
     if global_problem :
         from faf_global_solvers import *
         fs = faf_global_solvers(maxiter, precision, maxiterls, with_guess, with_mumps, numerics_has_openmp_solvers, mpi_comm=N.NM_MPI_comm(A), mumps_id = N.NM_MUMPS_id(A))
