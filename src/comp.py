@@ -636,6 +636,9 @@ if __name__ == '__main__':
     N.NM_MPI_set_comm(A, comm)
     N.NM_MUMPS_set_control_params(A)
     N.NM_MUMPS(A, -1)
+#    N.NM_MUMPS_set_cntl(A, 1, 0.1)
+#    N.NM_MUMPS_set_icntl(A, 22, 1)
+    print('icntl 14:', N.NM_MUMPS_icntl(A, 14))
     if (comm.Get_rank() > 0):
         print('MPI process stop: ',comm.Get_rank())
         exit(0)

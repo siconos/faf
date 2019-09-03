@@ -35,7 +35,9 @@ python=`which python3`
 #
 cp -Lr $fclib_library_dir/$example_prefix/$example .
 for d in $example; do
-    cd $d
+  cd $d
+  export OOC_TMPDIR=`pwd`
+  export OOC_PREFIX=MUMPS_
     $comp $global --max-problems=$max_problems --no-compute --no-collect # output problems.txt
     # if a file comp.hdf5 is present, we will complete it with the new comparisons.
     if [ -f $faf_scripts_dir/$example/comp.hdf5 ]

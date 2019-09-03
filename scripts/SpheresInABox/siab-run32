@@ -6,4 +6,4 @@
 
 . $HOME/.profile
 
-GUIX_PACKAGE_PATH=$HOME/src/some-guix-channels/tripop guix environment --pure --ad-hoc siconos python python-h5py python-numpy python-scipy coreutils bash python-mpi4py-mpich mpich openssh parallel -- /bin/sh -c "OAR_JOB_ID=$OAR_JOB_ID OAR_NODE_FILE=$OAR_NODE_FILE SpheresInABox/run-admm-mpi-siab.1e-8.50 32"
+GUIX_PACKAGE_PATH=$HOME/src/some-guix-channels/tripop guix environment --pure --ad-hoc siconos:debug siconos python python-h5py python-numpy python-scipy coreutils bash python-mpi4py-mpich mpich openssh parallel hdf5 tar findutils gzip gdb which --with-source=$HOME/src/siconos -- /bin/sh -c "OAR_JOB_ID=$OAR_JOB_ID OAR_NODE_FILE=$OAR_NODE_FILE $HOME/src/faf/scripts/SpheresInABox/run-admm-mpi-siab.1e-1.7000 32"
