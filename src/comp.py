@@ -517,10 +517,12 @@ class Caller():
             reactions, velocities, global_velocities = solver.guess(filename)
 
             normq = np.linalg.norm(problem.q)
+            
             if global_problem:
+                normb = np.linalg.norm(problem.b)
                 _, guess_err = N.gfc3d_compute_error(read_fclib_format(filename)[1],
                                                      reactions, velocities, global_velocities,
-                                                     precision, solver.SolverOptions(), normq)
+                                                     precision, solver.SolverOptions(), normq, normb)
 
                 pass
             else:
