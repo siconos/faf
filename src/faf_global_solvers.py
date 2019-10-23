@@ -146,35 +146,37 @@ class faf_global_solvers():
 
         
 
+        ipm_solvers=True
+        try :           
+            ipm = SiconosSolver(name="IPM",
+                            gnuplot_name="IPM",
+                            API=N.gfc3d_IPM,
+                            TAG=N.SICONOS_GLOBAL_FRICTION_3D_IPM,
+                            iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
+                            dparam_err=1,
+                            maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess,
+                            global_solver=True)
+            ipm.SolverOptions().iparam[N.SICONOS_FRICTION_3D_IPM_IPARAM_NESTEROV_TODD_SCALING]=0
         
+            ipm_nt = SiconosSolver(name="IPM_NT",
+                               gnuplot_name="IPM_NT",
+                               API=N.gfc3d_IPM,
+                               TAG=N.SICONOS_GLOBAL_FRICTION_3D_IPM,
+                               iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
+                               dparam_err=1,
+                               maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess,
+                               global_solver=True)
+            ipm_nt.SolverOptions().iparam[N.SICONOS_FRICTION_3D_IPM_IPARAM_NESTEROV_TODD_SCALING]=1
         
-        ipm = SiconosSolver(name="IPM",
-                             gnuplot_name="IPM",
-                             API=N.gfc3d_IPM,
-                             TAG=N.SICONOS_GLOBAL_FRICTION_3D_IPM,
-                             iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
-                             dparam_err=1,
-                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess,
-                             global_solver=True)
-        ipm.SolverOptions().iparam[N.SICONOS_FRICTION_3D_IPM_IPARAM_NESTEROV_TODD_SCALING]=0
-        
-        ipm_nt = SiconosSolver(name="IPM_NT",
-                             gnuplot_name="IPM_NT",
-                             API=N.gfc3d_IPM,
-                             TAG=N.SICONOS_GLOBAL_FRICTION_3D_IPM,
-                             iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
-                             dparam_err=1,
-                             maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess,
-                             global_solver=True)
-        ipm_nt.SolverOptions().iparam[N.SICONOS_FRICTION_3D_IPM_IPARAM_NESTEROV_TODD_SCALING]=1
-        
-
+        except:
+            ipm_solvers=False
         
         nsgs_solvers = [nsgs, nsgs_wr, nsn_ac_wr, admm_wr]
 
         all_solvers = list(nsgs_solvers)
-        all_solvers.extend([nsn_ac, admm_constant, admm_norm_inf, admm_br, admm_sbr, vi_eg, vi_fp, aclm, ipm, ipm_nt])
-
+        all_solvers.extend([nsn_ac, admm_constant, admm_norm_inf, admm_br, admm_sbr, vi_eg, vi_fp, aclm])
+        if ipm_solvers:
+            all_solvers.extend([ipm, ipm_nt])
         all_solvers = list(filter(lambda s : s is not None, all_solvers))
 
         return all_solvers
