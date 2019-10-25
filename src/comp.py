@@ -92,7 +92,7 @@ def usage():
    --max-problems=<max>
      Randomly select <max> problems in current directory.
      The problems list is written in problems.txt file
-   --gnuplot
+   --gnuplot-output
      output gnuplot command file profile.gp or distrib.gp for plotting profiles with gnuplot
    --gnuplot-separate-keys
      output keys anf legend for gnuplot in a separate file.
