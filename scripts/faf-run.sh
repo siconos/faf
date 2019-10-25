@@ -11,14 +11,19 @@ comp=$faf_src_dir/comp.py
 
 echo `pwd`
 
+
+example_prefix_without_slash=`echo "$example_prefix" | sed -r 's/[\/]+/_/g'`
+echo $example_prefix_without_slash
+
 if test -z ${OAR_JOB_ID}
 then
-example_name=$(date +%F--%T)_${example_prefix}_${example}_${precision}_${timeout}
+example_name=$(date +%F--%T)_${example_prefix_without_slash}_${example}_${precision}_${timeout}
 else
-example_name=${OAR_JOB_ID}_${example_prefix}_${example}_${precision}_${timeout}
+example_name=${OAR_JOB_ID}_${example_prefix_without_slash}_${example}_${precision}_${timeout}
 fi
 #rundir=/bettik/$USER/faf/$example_name
-rundir=/scratch/vincent/faf/$example_name
+rundir_base='/scratch/vincent/faf/'
+rundir=$rundir_base$example_name
 mkdir -p $rundir
 
 
@@ -44,9 +49,9 @@ for d in $example; do
     cd ..
 done
 #cat $HOME/faf/$examples/$0 > command
-
+echo `pwd`
 cp $faf_scripts_dir/$example_prefix/$example/$0 $rundir/$0
-cd ..
+cd $rundir_base
 tar zcvf comps-$example_name.tar.gz `find ${example_name} -name comp.hdf5`  ${example_name}/$0 --force-local
 mkdir -p $faf_dir/results
 mv comps-$example_name.tar.gz $faf_dir/results
