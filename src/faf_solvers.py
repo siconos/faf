@@ -1366,7 +1366,7 @@ class faf_solvers():
                                       iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
                                       dparam_err=1,
                                       maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess)
-        admm_norm_inf.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_RHO_STRATEGY]= N.SICONOS_FRICTION_3D_ADMM_RHO_STRATEGY_NORM_INF
+        admm_norm_inf.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_INITIAL_RHO]= N.SICONOS_FRICTION_3D_ADMM_INITIAL_RHO_NORM_INF
         
         admm_constant = SiconosSolver(name="ADMM-CST",
                                       gnuplot_name="ADMM-CONSTANT",

@@ -203,9 +203,13 @@ class faf_global_solvers():
             
         nsgs_solvers = [nsgs, nsgs_wr, nsn_ac_wr, admm_wr]
 
+        admm_solvers = [admm_constant, admm_norm_inf, admm_br, admm_sbr, admm_br_scaled, admm_br_no]
+        
         all_solvers = list(nsgs_solvers)
-
-        all_solvers.extend([nsn_ac, admm_constant, admm_norm_inf, admm_br, admm_sbr, admm_br_scaled, admm_br_no, vi_eg, vi_fp, aclm])
+        all_solvers.extend(admm_solvers)
+        
+        
+        all_solvers.extend([nsn_ac, vi_eg, vi_fp, aclm])
 
         if ipm_solvers:
             all_solvers.extend([ipm, ipm_nt])
