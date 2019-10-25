@@ -106,6 +106,8 @@ def usage():
      compute the average performance of the best solver on a set of problem divided by the average number of contact
    --compute-cond-rank
      compute the conditioning number and the rank of the matrix in the problems
+   --mu-value=value
+     change the coefficient of friction for all contacts
 
    Other options have to be documented
    
@@ -153,7 +155,7 @@ try:
                                     'list-contents','list-contents-solver',
                                     'add-precision-in-comp-file','add-timeout-in-comp-file',
                                     'compute-cond-rank','compute-hardness','test-symmetry','forced','adhoc',
-                                    'display-speedup', 'thread-list=','estimate-optimal-timeout'])
+                                    'display-speedup', 'thread-list=','estimate-optimal-timeout','mu-value='])
 
 
 except getopt.GetoptError as err:
@@ -321,6 +323,8 @@ for o, a in opts:
         compute = False
     elif o == '--forced':
         forced=True
+    elif o == '--mu-value':
+        mu_value = float(a)
 
 numerics_has_openmp_solvers=False
 try:
@@ -393,6 +397,11 @@ class Caller():
                 pass
 
         try:
+            if (mu_value is not None) :
+                #print('We change mu values globally')
+                for i in range(sproblem.mu.shape[0]):
+                    sproblem.mu[i] = mu_value
+                    #print(sproblem.mu[i])
 
             self._internal_call(solver, sproblem, filename, pfilename,
                                     output_filename)
