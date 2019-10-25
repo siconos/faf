@@ -108,7 +108,19 @@ class faf_global_solvers():
                                       maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess,
                                       global_solver=True)
         admm_constant.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_RHO_STRATEGY]= N.SICONOS_FRICTION_3D_ADMM_RHO_STRATEGY_CONSTANT
-        admm_constant.SolverOptions().dparam[N.SICONOS_FRICTION_3D_ADMM_RHO]= 0.005
+        admm_constant.SolverOptions().dparam[N.SICONOS_FRICTION_3D_ADMM_RHO]= 1.0
+
+        admm_constant_no = SiconosSolver(name="ADMM-CST-NO",
+                                      gnuplot_name="ADMM-CONSTANT-NO",
+                                      API=N.gfc3d_ADMM,
+                                      TAG=N.SICONOS_GLOBAL_FRICTION_3D_ADMM,
+                                      iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
+                                      dparam_err=1,
+                                      maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess,
+                                      global_solver=True)
+        admm_constant_no.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_RHO_STRATEGY]= N.SICONOS_FRICTION_3D_ADMM_RHO_STRATEGY_CONSTANT
+        admm_constant_no.SolverOptions().dparam[N.SICONOS_FRICTION_3D_ADMM_RHO]= 1.0
+        admm_constant_no.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_ACCELERATION]=N.SICONOS_FRICTION_3D_ADMM_NO_ACCELERATION
         
         admm_norm_inf = SiconosSolver(name="ADMM-NORM-INF",
                                       gnuplot_name="ADMM-NORM-INF",
@@ -118,6 +130,7 @@ class faf_global_solvers():
                                       dparam_err=1,
                                       maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess,
                                       global_solver=True)
+        admm_norm_inf.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_RHO_STRATEGY]= N.SICONOS_FRICTION_3D_ADMM_RHO_STRATEGY_CONSTANT
         admm_norm_inf.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_INITIAL_RHO]= N.SICONOS_FRICTION_3D_ADMM_INITIAL_RHO_NORM_INF
 
         admm_br = SiconosSolver(name="ADMM-BR",
@@ -171,8 +184,8 @@ class faf_global_solvers():
                                        dparam_err=1,
                                        maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess,
                                        global_solver=True)
-        admm_br_scaled.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_RHO_STRATEGY]=N.SICONOS_FRICTION_3D_ADMM_RHO_STRATEGY_RESIDUAL_BALANCING
-        admm_br_scaled.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_ACCELERATION]=N.SICONOS_FRICTION_3D_ADMM_NO_ACCELERATION
+        admm_br_no.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_RHO_STRATEGY]=N.SICONOS_FRICTION_3D_ADMM_RHO_STRATEGY_RESIDUAL_BALANCING
+        admm_br_no.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_ACCELERATION]=N.SICONOS_FRICTION_3D_ADMM_NO_ACCELERATION
         
         ipm_solvers=True
         try :
@@ -203,7 +216,7 @@ class faf_global_solvers():
             
         nsgs_solvers = [nsgs, nsgs_wr, nsn_ac_wr, admm_wr]
 
-        admm_solvers = [admm_constant, admm_norm_inf, admm_br, admm_sbr, admm_br_scaled, admm_br_no]
+        admm_solvers = [admm_constant, admm_constant_no, admm_norm_inf, admm_br, admm_sbr, admm_br_scaled, admm_br_no, admm_br_fh]
         
         all_solvers = list(nsgs_solvers)
         all_solvers.extend(admm_solvers)
