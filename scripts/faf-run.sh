@@ -44,7 +44,7 @@ for d in $example; do
        cp  $faf_scripts_dir/$example/comp.hdf5 .
     fi
     #cat problems.txt | $comp --timeout=$timeout --precision=$precision $solvers --no-compute --no-collect $with_mumps --maxiterls=6 '--files={}'# dry run
-    cat problems.txt | $preload parallel $comp $global --timeout=$timeout --precision=$precision $solvers --no-collect $with_mumps --maxiterls=6 '--files={}'
+    cat problems.txt | $preload parallel $comp $global $mu_value --timeout=$timeout --precision=$precision $solvers --no-collect $with_mumps --maxiterls=6 '--files={}'
     $comp $global --just-collect --timeout=$timeout --precision=$precision --with-mumps --maxiterls=6
     cd ..
 done
