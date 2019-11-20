@@ -6,4 +6,4 @@
 
 . $HOME/.profile
 
-exec guix environment --pure --ad-hoc --pure -m ./siconos-manifest.scm which siconos@4.3 --with-source=$HOME/src/siconos -- /bin/sh -c "OAR_JOB_ID=$OAR_JOB_ID OAR_NODE_FILE=$OAR_NODE_FILE $HOME/src/faf/scripts/SpheresInABox/run-admm-mpi-siab.1e-1.7000"
+exec guix environment --pure --ad-hoc --pure -m ./siconos-manifest.scm which sed siconos@4.3 --with-source=$HOME/src/siconos -- /bin/sh -c "OAR_JOB_ID=$OAR_JOB_ID OAR_NODE_FILE=$OAR_NODE_FILE $HOME/src/faf/scripts/SpheresInABox/run-admm-mpi-siab.1e-1.7000"
