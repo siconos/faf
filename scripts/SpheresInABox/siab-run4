@@ -2,8 +2,8 @@
 
 #OAR --project siconos
 #OAR --name siconos-siab-comp
-#OAR -l /nodes=2/cpu=1/core=16,walltime=48:00:00 
+#OAR -l /nodes=1/cpu=1/core=4,walltime=48:00:00 
 
 . $HOME/.profile
 
-GUIX_PACKAGE_PATH=$HOME/src/some-guix-channels/tripop guix environment --pure --ad-hoc siconos:debug siconos python python-h5py python-numpy python-scipy coreutils bash python-mpi4py openmpi openssh parallel hdf5 tar findutils gzip gdb which --with-source=$HOME/src/siconos -- /bin/sh -c "OAR_JOB_ID=$OAR_JOB_ID OAR_NODE_FILE=$OAR_NODE_FILE $HOME/src/faf/scripts/SpheresInABox/run-admm-mpi-siab.1e-1.7000 4"
+exec guix environment --pure --ad-hoc --pure -m ./siconos-manifest.scm which siconos@4.3 --with-source=$HOME/src/siconos -- /bin/sh -c "OAR_JOB_ID=$OAR_JOB_ID OAR_NODE_FILE=$OAR_NODE_FILE $HOME/src/faf/scripts/SpheresInABox/run-admm-mpi-siab.1e-1.7000"
