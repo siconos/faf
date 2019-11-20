@@ -14,11 +14,15 @@ comp=$faf_src_dir/comp.py
 
 echo `pwd`
 
+
+example_prefix_without_slash=`echo "$example_prefix" | sed -r 's/[\/]+/_/g'`
+echo $example_prefix_without_slash
+
 if test -z ${OAR_JOB_ID}
 then
-  example_name=$(date +%F--%T)_${example_prefix}_${example}_${precision}_${timeout}_${mpi_cores}
+  example_name=$(date +%F--%T)_${example_prefix_without_slash}_${example}_${precision}_${timeout}_${mpi_cores}
 else
-  example_name=${OAR_JOB_ID}_${example_prefix}_${example}_${precision}_${timeout}_${mpi_cores}
+  example_name=${OAR_JOB_ID}_${example_prefix_without_slash}_${example}_${precision}_${timeout}_${mpi_cores}
 fi
 #rundir=/bettik/$USER/faf/$example_name
 rundir=$scratch/$USER/faf/$example_name
@@ -49,18 +53,18 @@ for d in $example; do
       echo "running with mpi#$mpi_cores on problems:"
       cat problems.txt
       for problem in `cat problems.txt`; do
-        $preload mpirun $mpirun_args -np $mpi_cores $comp $global --verbose=1 --timeout=$timeout --precision=$precision $solvers --no-collect $with_mumps --maxiterls=6 "--files=$problem"
+        $preload mpirun $mpirun_args -np $mpi_cores $comp $global $mu_value --verbose=1 --timeout=$timeout --precision=$precision $solvers --no-collect $with_mumps --maxiterls=6 "--files=$problem"
       done
     else
-      cat problems.txt | $preload parallel $comp $global --timeout=$timeout --precision=$precision $solvers --no-collect $with_mumps --maxiterls=6 '--files={}'
+      cat problems.txt | $preload parallel $comp $global $mu_value --timeout=$timeout --precision=$precision $solvers --no-collect $with_mumps --maxiterls=6 '--files={}'
     fi
     $comp $global --just-collect --timeout=$timeout --precision=$precision --with-mumps --maxiterls=6
     cd ..
 done
 #cat $HOME/faf/$examples/$0 > command
-
-cp $faf_scripts_dir/$example_prefix/$example/$script $rundir/$example
-cd ..
+pwd
+cp $faf_scripts_dir/$example_prefix/$example/$0 $rundir/$0
+cd $rundir_base
 tar zcvf comps-$example_name.tar.gz `find ${example_name} -name comp.hdf5`  ${example_name}/$0 --force-local
 mkdir -p $faf_dir/results
 mv comps-$example_name.tar.gz $faf_dir/results

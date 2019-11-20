@@ -12,6 +12,10 @@ global_problem = False
 with_guess = True
 with_mumps = 0
 
+
+mu_value=None
+
+
 domain = np.arange(1, 100, .1)
 
 clean = False
