@@ -77,8 +77,8 @@ with h5py.File('comp.hdf5','r+') as comp_file:
 #     print(test_name, file=report_file)
 
 #print([x for x in next(os.walk('/Users/acary/Work/fclib-library/'))[1]])
-tests= ['LMGC_100_PR_PerioBox', 'LMGC_945_SP_Box_PL', 'LMGC_AqueducPR', 'BoxesStack1', 'LMGC_Bridge_PR', 'Capsules', 'Chain', 'Chute_1000', 'Chute_4000', 'Chute_local_problems', 'LMGC_Cubes_H8', 'Global', 'KaplasTower', 'LMGC_LowWall_FEM']
-targets= 'vi nsgs_localtol_ac_gp nsgs_localtol_vi nsgs_localsolver nsgs_localsolver_hybrid nsgs_localsolver_rho nsgs_shuffled psor_solvers nsn_solvers prox_solvers prox_series regul_series opti_solvers comp_solvers comp_solvers_large admm'
+tests= ['LMGC_100_PR_PerioBox', 'LMGC_945_SP_Box_PL', 'LMGC_AqueducPR', 'BoxesStack1', 'LMGC_Bridge_PR', 'Capsules', 'Chain', 'Chute_1000', 'Chute_4000', 'Chute_local_problems', 'LMGC_Cubes_H8', 'Global', 'KaplasTower', 'LMGC_LowWall_FEM', 'Spheres']
+targets= 'vi nsgs_localtol_ac_gp nsgs_localtol_vi nsgs_localsolver nsgs_localsolver_hybrid nsgs_localsolver_rho nsgs_shuffled psor_solvers nsn_solvers prox_solvers prox_series regul_series opti_solvers comp_solvers comp_solvers_large admm admm_global_convex admm_global'
 list_target=targets.split(' ')
 
 #print('len of targets', len(list_target))
@@ -107,6 +107,9 @@ default_values['opti_solvers']=50
 default_values['comp_solvers']=10
 default_values['comp_solvers_large']=50
 default_values['admm']=50
+
+default_values['admm_global_convex']=50
+default_values['admm_global']=50
 
 data=dict()
 for t in tests:
@@ -211,6 +214,15 @@ data[test]['comp_solvers_large']['domain']=50
 
 test = 'Chute_4000'
 data[test]['comp_solvers_large']['domain']=50
+
+test = 'Spheres'
+data[test]['admm_global_convex']['domain']=20
+
+
+
+
+
+
 for t in tests:
     for tt in list_target:
         

@@ -424,7 +424,43 @@ admm_vs_nsgs :
 	mv  profile-${test_name}.pdf ${save_dir}
 	mv  profile-${test_name}_legend.pdf ${save_dir}
 
+# ADMM global solvers Update rule
+admm_global_convex : 	domain_max=$(shell $(domain) --target=admm_global_convex --domain)
+admm_global_convex : 	precision=$(shell $(domain) --target=admm_global_convex --precision)
+admm_global_convex : 	step=$(shell $(domain) --target=admm_global_convex --step)
+admm_global_convex : 	timeout=$(shell $(domain) --target=admm_global_convex --timeout)
+admm_global_convex : 	test_name=$(shell $(domain) --test_name)
+admm_global_convex : 	save_dir=figure/ADMM/Global/convex/${precision}/${timeout}/${measure_name}
+admm_global_convex :
+	echo "ADMM GLOBAL CONVEX"
+	$(comp) --global --measure=${measure_name} --display --no-matplot --solvers-exact='ADMM-CST','ADMM-NORM-INF','ADMM-EIG','ADMM-CST-NO','ADMM-NORM-INF-NO','ADMM-EIG-NO','ADMM-BR','ADMM-SBR','ADMM-BR-SCALED','ADMM-BR-NO' \
+	--domain=1.0:$(step):${domain_max} --gnuplot-output --gnuplot-separate-keys
+	gnuplot profile.gp ;
+	pdflatex -interaction=batchmode  profile-$(test_name).tex;
+	pdflatex -interaction=batchmode  profile-$(test_name)_legend.tex;
+	echo ${save_dir}
+	mkdir -p ${save_dir}
+	mv  profile-${test_name}.pdf ${save_dir}
+	mv  profile-${test_name}_legend.pdf ${save_dir}
 
+# ADMM global solvers Update rule
+admm_global : 	domain_max=$(shell $(domain) --target=admm_global --domain)
+admm_global : 	precision=$(shell $(domain) --target=admm_global --precision)
+admm_global : 	step=$(shell $(domain) --target=admm_global --step)
+admm_global : 	timeout=$(shell $(domain) --target=admm_global --timeout)
+admm_global : 	test_name=$(shell $(domain) --test_name)
+admm_global : 	save_dir=figure/ADMM/Global/${precision}/${timeout}/${measure_name}
+admm_global :
+	echo "ADMM GLOBAL"
+	$(comp) --global --measure=${measure_name} --display --no-matplot --solvers-exact='ADMM-CST','ADMM-NORM-INF','ADMM-EIG','ADMM-CST-NO','ADMM-NORM-INF-NO','ADMM-EIG-NO','ADMM-BR','ADMM-SBR','ADMM-BR-SCALED','ADMM-BR-NO','ADMM-BR-FH' \
+	--domain=1.0:$(step):${domain_max} --gnuplot-output --gnuplot-separate-keys
+	gnuplot profile.gp ;
+	pdflatex -interaction=batchmode  profile-$(test_name).tex;
+	pdflatex -interaction=batchmode  profile-$(test_name)_legend.tex;
+	echo ${save_dir}
+	mkdir -p ${save_dir}
+	mv  profile-${test_name}.pdf ${save_dir}
+	mv  profile-${test_name}_legend.pdf ${save_dir}
 
 clean :
 	rm -rf ./figure
