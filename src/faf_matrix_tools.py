@@ -42,11 +42,14 @@ def dense_matrix_rank_estimate(A,tol):
 
 # estimate of condition number and norm from lsmr
 # http://www.stanford.edu/group/SOL/software/lsmr/LSMR-SISC-2011.pdf
-#@timeout(20)
-def _norm_cond(problem_filename):
-    problem = read_fclib_format(problem_filename)[1]
-    A = csr_matrix(N.SBM_to_sparse(problem.M)[1])
-    #print "A=", A
+@timeout(200)
+def _norm_cond(A):
+    print('in norm cond')
+    #problem = read_fclib_format(problem_filename)[1]
+    #A = csr_matrix(N.SBM_to_sparse(problem.M)[1])
+    #A = csr_matrix(N.SBM_to_sparse(M)[1])
+    
+    print("A=", A)
     print("A.shape", A.shape)
     print("Computev lsmr ...")
     r = lsmr(A, np.ones([A.shape[0], 1]))  # solve Ax = 1
@@ -74,26 +77,26 @@ def _norm_cond(problem_filename):
     # A_LO = LinearOperator( A.shape, matvec=mv )
     # print isinstance(A_LO, LinearOperator)
     rank_estimate = np.nan
-    try:
-        print("Compute rank estimate ...")
-        print("dense ...")
-        B= A.todense()
-        print("dense ...")
-        rank_estimate=dense_matrix_rank_estimate(B,tol)
-        #rank_estimate=estimate_rank(A.todense(), tol)
-    except Exception as e :
-        print ("--> rank_estimate", e)
-    print("rank_estimate", rank_estimate)
+    # try:
+    #     print("Compute rank estimate ...")
+    #     print("dense ...")
+    #     B= A.todense()
+    #     print("dense ...")
+    #     rank_estimate=dense_matrix_rank_estimate(B,tol)
+    #     #rank_estimate=estimate_rank(A.todense(), tol)
+    # except Exception as e :
+    #     print ("--> rank_estimate", e)
+    # print("rank_estimate", rank_estimate)
 
-    #print "svd dense method", svd(A.todense())[1]
+    # #print "svd dense method", svd(A.todense())[1]
 
     rank_dense = np.nan
-    try:
-        print("Compute rank dense ...")
-        rank_dense = dense_matrix_rank(A.todense())
-    except Exception as e :
-        print ("--> dense_matrix_rank", e)
-    print ("rank_dense", rank_dense)
+    # try:
+    #     print("Compute rank dense ...")
+    #     rank_dense = dense_matrix_rank(A.todense())
+    # except Exception as e :
+    #     print ("--> dense_matrix_rank", e)
+    # print ("rank_dense", rank_dense)
 
     if not np.isnan(rank_estimate):
         k=min(rank_estimate,A.shape[0]-1)
