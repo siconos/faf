@@ -438,7 +438,7 @@ class Caller():
                 attrs.create('nc',  numberOfDegreeofFreedomContacts(filename))
                 attrs.create('nds', numberOfDegreeofFreedom(filename))
                 attrs.create('cond_nc', cond_problem(filename))
-                attrs.create('digest', digest)
+                #attrs.create('digest', digest)
                 attrs.create('info', info)
                 attrs.create('iter', iter)
                 attrs.create('err', err)
@@ -633,7 +633,7 @@ class Caller():
                         mflops = np.nan
 
             except Exception as exception:
-                print(exception)
+                print('internal _call : ',exception)
                 info = 1
                 time_s = np.nan
                 iter = np.nan
@@ -647,7 +647,7 @@ class Caller():
             attrs.create('nc', numberOfDegreeofFreedomContacts(filename))
             attrs.create('nds', numberOfDegreeofFreedom(filename))
             attrs.create('cond_nc', cond_problem(filename))
-            attrs.create('digest', digest)
+            #attrs.create('digest', digest)
             attrs.create('info', info)
             attrs.create('iter', iter)
             attrs.create('err', err)
