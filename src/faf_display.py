@@ -26,7 +26,7 @@ class Faf_display():
         self._gnuplot_output=gnp_output
         self._gnuplot_with_color=gnp_with_color
         self._gnuplot_separate_keys= gnp_separate_keys
-        self._gnuplot_add_title = True
+        self._gnuplot_add_title = False
         self._no_matplot=no_matplot
         self._logscale=logscale
         
