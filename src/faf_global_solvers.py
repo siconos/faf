@@ -209,8 +209,8 @@ class faf_global_solvers():
         admm_br_scaled.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_RHO_STRATEGY]=N.SICONOS_FRICTION_3D_ADMM_RHO_STRATEGY_RESIDUAL_BALANCING
         admm_br_scaled.SolverOptions().iparam[N.SICONOS_FRICTION_3D_IPARAM_RESCALING]=N.SICONOS_FRICTION_3D_RESCALING_SCALAR
         
-        admm_br_balanced_m = SiconosSolver(name="ADMM-BR-BALANCED_M",
-                                           gnuplot_name="ADMM-BR-BALANCED_M",
+        admm_br_balanced_m = SiconosSolver(name="ADMM-BR-BALANCED-M",
+                                           gnuplot_name="ADMM-BR-BALANCED-M",
                                            API=N.gfc3d_ADMM,
                                            TAG=N.SICONOS_GLOBAL_FRICTION_3D_ADMM,
                                            iparam_iter=N.SICONOS_IPARAM_ITER_DONE,
@@ -220,7 +220,7 @@ class faf_global_solvers():
         admm_br_balanced_m.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_RHO_STRATEGY]=N.SICONOS_FRICTION_3D_ADMM_RHO_STRATEGY_RESIDUAL_BALANCING
         admm_br_balanced_m.SolverOptions().iparam[N.SICONOS_FRICTION_3D_IPARAM_RESCALING]=N.SICONOS_FRICTION_3D_RESCALING_BALANCING_M
         
-        admm_br_balanced_m_h = SiconosSolver(name="ADMM-BR-BALANCED_M_H",
+        admm_br_balanced_m_h = SiconosSolver(name="ADMM-BR-BALANCED-M-H",
                                            gnuplot_name="ADMM-BR-BALANCED-M-H",
                                            API=N.gfc3d_ADMM,
                                            TAG=N.SICONOS_GLOBAL_FRICTION_3D_ADMM,
