@@ -63,7 +63,8 @@ for d in $example; do
 done
 #cat $HOME/faf/$examples/$0 > command
 pwd
-cp $faf_scripts_dir/$example_prefix/$example/$0 $rundir/$0
+script_name=`basename $0`
+cp $faf_scripts_dir/$example_prefix/$example/$script_name $rundir/$script_name
 cd $rundir_base
 tar zcvf comps-$example_name.tar.gz `find ${example_name} -name comp.hdf5`  ${example_name}/$0 --force-local
 mkdir -p $faf_dir/results

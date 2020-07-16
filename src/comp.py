@@ -137,202 +137,12 @@ def usage():
   print(options_doc)
 
 
-try:
-    opts, args = getopt.gnu_getopt(sys.argv[1:], '',
-                                   ['help', 'verbose=','no-guess',
-                                    'clean', 'display', 'display-convergence','no-matplot',
-                                    'files=', 'solvers-exact=', 'solvers=',
-                                    'global',
-                                    'random-sample=', 'max-problems=',
-                                    'timeout=', 'maxiter=', 'maxiterls=', 'precision=',
-                                    'keep-files', 'new', 'errors',
-                                    'velocities', 'reactions', 'measure=',
-                                    'just-collect', 'cond-nc=', 'display-distrib',
-                                    'no-collect', 'no-compute', 'domain=',
-                                    'replace-solvers-exact=','replace-solvers=',
-                                    'gnuplot-output','logscale', 'gnuplot-separate-keys',
-                                    'output-dat', 'with-mumps', 'file-filter=', 'remove-files=',
-                                    'list-contents','list-contents-solver',
-                                    'add-precision-in-comp-file','add-timeout-in-comp-file',
-                                    'compute-cond-rank','compute-hardness','test-symmetry','forced','adhoc',
-                                    'display-speedup', 'thread-list=','estimate-optimal-timeout','mu-value='])
-
-
-except getopt.GetoptError as err:
-        sys.stderr.write('{0}\n'.format(str(err)))
-        usage()
-        exit(2)
-for o, a in opts:
-    if o == '--verbose':
-        numerics_verbose=int(a)
-        N.numerics_set_verbose(numerics_verbose)
-    if o == '--help':
-        usage()
-        exit(2)
-    elif o == '--timeout':
-        utimeout = float(a)
-    elif o == '--maxiter':
-        maxiter = int(a)
-    elif o == '--maxiterls':
-        maxiterls = int(a)
-    elif o == '--global':
-       global_problem=True
-    elif o == '--precision':
-        precision = float(a)
-    elif o == '--clean':
-        clean = True
-    elif o == '--estimate-optimal-timeout':
-        compute_rho=True
-        estimate_optimal_timeout=True
-        compute = False
-    elif o == '--display':
-        display = True
-        compute_rho=True
-        compute = False
-    elif o == '--list-contents':
-        list_contents = True
-        compute = False
-    elif o == '--list-contents-solver':
-        list_contents_solver = True
-        compute = False
-    elif o == '--display-convergence':
-        display_convergence = True
-        compute = False
-    elif o == '--display-speedup':
-        display_speedup = True
-        compute = False
-    elif o == '--thread-list':
-        print(a)
-        thread_list =  [int (x) for x in split(a,',')]
-    elif o == '--measure':
-        measure_name = a
-    elif o == '--random-sample':
-        if os.path.exists('problems.txt'):
-            os.remove('problems.txt')
-        random_sample_proba = float(a)
-    elif o == '--max-problems':
-        if os.path.exists('problems.txt'):
-            os.remove('problems.txt')
-        max_problems = int(a)
-    elif o == '--keep-files':
-        keep_files = True
-    elif o == '--errors':
-        output_errors = True
-    elif o == '--velocities':
-        output_velocities = True
-    elif o == '--reactions':
-        output_reactions = True
-    elif o == '--just-collect':
-        ask_compute = False
-    elif o == '--no-collect':
-        ask_collect = False
-    elif o == '--no-compute':
-        ask_compute = False
-    elif o == '--cond-nc':
-        cond_nc = [float (x) for x in split(a,':')]
-    elif o == '--display-distrib':
-        display_distrib = True
-        compute = False
-    elif o == '--domain':
-        urange = [float (x) for x in split(a,':')]
-        domain = np.arange(urange[0], urange[2], urange[1])
-    elif o == '--no-matplot':
-        no_matplot=True
-    elif o == '--solvers':
-        user_solvers = split(a, ',')
-    elif o == '--solvers-exact':
-        user_solvers_exact = split(a, ',')
-    elif o == '--replace-solvers-exact':
-        replace_solvers = split(a, ',')
-        try:
-            with h5py.File('comp.hdf5','r+') as comp_file:
-                solver_in_compfile =  list(comp_file['data']['comp'])
-                #print "list(comp_file['data']['comp'])",  solver_in_compfile
-                replace_solver_in_compfile = list(filter(lambda s: any(us == s for us in replace_solvers), solver_in_compfile))
-                print("replace solver in comp file", replace_solver_in_compfile)
-                for s in replace_solver_in_compfile:
-                    del comp_file['data']['comp'][s]
-        except Exception as e:
-            print(e)
-    elif o == '--replace-solvers':
-        replace_solvers = split(a, ',')
-        #print "replace_solvers",  replace_solvers
-        try:
-            with h5py.File('comp.hdf5','r+') as comp_file:
-                solver_in_compfile =  list(comp_file['data']['comp'])
-                #print "list(comp_file['data']['comp'])",  solver_in_compfile
-                replace_solver_in_compfile = list(filter(lambda s: any(us in s for us in replace_solvers), solver_in_compfile))
-                print("replace solver in comp file", replace_solver_in_compfile)
-                for s in replace_solver_in_compfile:
-                    del comp_file['data']['comp'][s]
-        except Exception as e:
-            print(e)
-    elif o == '--gnuplot-output':
-        gnuplot_output=True
-    elif o == '--logscale':
-        logscale=True
-    elif o == '--gnuplot-separate-keys':
-        gnuplot_separate_keys = True
-    elif o == '--output-dat':
-        output_dat=True
-    elif o == '--with-mumps':
-        with_mumps=1
-    elif o == '--new':
-        try:
-            os.remove('comp.hdf5')
-        except:
-            pass
-
-    elif o == '--files':
-
-        files = split(a, ',')
-
-        for f in files:
-
-            if os.path.exists(f):
-                user_filenames += [f]
-            else:
-                if os.path.exists('{0}.hdf5'.format(f)):
-                    user_filenames += ['{0}.hdf5'.format(f)]
-    elif o == '--file-filter':
-        file_filter=split(a, ',')
-
-    elif o == '--remove-files':
-        remove_file=split(a, ',')
-
-
-    elif o == '--no-guess':
-        with_guess = False
-    elif o == '--add-precision-in-comp-file':
-        with h5py.File('comp.hdf5','r+') as comp_file:
-            create_attrs_precision_in_comp_file(comp_file,float(a))
-    elif o == '--add-timeout-in-comp-file':
-        with h5py.File('comp.hdf5','r+') as comp_file:
-            create_attrs_timeout_in_comp_file(comp_file,float(a))
-    elif o == '--compute-hardness':
-        compute_hardness = True
-        compute = False
-    elif o == '--compute-cond-rank':
-        compute_cond_rank = True
-        compute = False
-    elif o == '--test-symmetry':
-        test_symmetry = True
-        compute = False
-    elif o == '--adhoc':
-        adhoc = True
-        compute = False
-    elif o == '--forced':
-        forced=True
-    elif o == '--mu-value':
-        mu_value = float(a)
-
 numerics_has_openmp_solvers=False
 try:
     dir(N).index('fc3d_nsgs_openmp')
     numerics_has_openmp_solvers=True
 except ValueError:
     print("warning : fc3d_nsgs_openmp is not in siconos numerics")
-
 
 
 class SolverCallback:
@@ -359,6 +169,7 @@ class SolverCallback:
             self._errors.resize(self._offset, 0)
             self._errors[self._offset - 1, :] = error
         print("in get_step")
+
 
 class Caller():
 
@@ -940,10 +751,12 @@ if __name__ == '__main__':
             output_reactions = True
         elif o == '--just-collect':
             ask_compute = False
+            compute = False
         elif o == '--no-collect':
             ask_collect = False
         elif o == '--no-compute':
             ask_compute = False
+            compute=False
         elif o == '--cond-nc':
             cond_nc = [float (x) for x in split(a,':')]
         elif o == '--display-distrib':
@@ -1176,6 +989,7 @@ if __name__ == '__main__':
 
         if ask_compute:
             print(" with precision=", precision, " timeout=", utimeout, "and maxiter = ", maxiter)
+            print ("tasks:", tasks)
             outputs = list(map(caller, tasks))
             N.NM_MUMPS(A, 0)
         if ask_collect:
@@ -1242,7 +1056,7 @@ if __name__ == '__main__':
               rhos,
               gnuplot_output, gnuplot_with_color, gnuplot_separate_keys, no_matplot,logscale)
 
-        
+
     if display:      
         d.default_display_task(solver_r)
 

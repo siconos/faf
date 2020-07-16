@@ -65,7 +65,7 @@ class SiconosSolver():
             N.NM_MUMPS_set_id(problem.M, self._mumps_id)
             print ('SET MUMPS id:', problem, problem.M, self._mumps_id)
             print ('MUMPS id icntl 14:', N.NM_MUMPS_icntl(problem.M, 14))
-            
+
 #        N.frictionContact_display(problem)
         real_time = c_float()
         proc_time = c_float()

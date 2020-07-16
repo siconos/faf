@@ -15,7 +15,7 @@ solvers="--solvers-exact='ADMM-SBR'"
 max_problems=5
 
 global=--global
-nbcores=`cat $OAR_NODE_FILE|wc -l`
+[ -f "$OAR_NODE_FILE" ] && nbcores=`cat $OAR_NODE_FILE|wc -l` || nbcores=1
 
 mpi_cores=$nbcores
 mpi_run_args="-launcher ssh -launcher-exec /usr/bin/oarsh --machinefile $OAR_NODE_FILE"

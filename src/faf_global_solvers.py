@@ -154,7 +154,8 @@ class faf_global_solvers():
                                       maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id,
                                       global_solver=True)
         admm_sbr.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_RHO_STRATEGY]=N.SICONOS_FRICTION_3D_ADMM_RHO_STRATEGY_SCALED_RESIDUAL_BALANCING
-
+        admm_sbr.SolverOptions().iparam[N.SICONOS_FRICTION_3D_IPARAM_RESCALING]=N.SICONOS_FRICTION_3D_RESCALING_YES
+#        admm_sbr.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_FULL_H]=N.SICONOS_FRICTION_3D_ADMM_FULL_H_YES
 
         admm_br_fh = SiconosSolver(name="ADMM-BR-FH",
                                       gnuplot_name="ADMM-BALANCING-RESIDUAL-FULL-H",
