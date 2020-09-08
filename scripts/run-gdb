@@ -1,4 +1,0 @@
-#!/bin/bash
-set -x
-env
-exec gdbserver localhost:$(expr 9000 + $PMI_RANK) $@
