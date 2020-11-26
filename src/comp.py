@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # parallel usage :
 # ls *.hdf5 | parallel comp.py --timeout=100 --no-collect '--files={}'
 #
@@ -16,7 +16,7 @@ import h5py
 import getopt
 import sys
 import hashlib
-
+from mpi4py import MPI
 #from io import StringIO
 
 
@@ -92,7 +92,7 @@ def usage():
    --max-problems=<max>
      Randomly select <max> problems in current directory.
      The problems list is written in problems.txt file
-   --gnuplot
+   --gnuplot-output
      output gnuplot command file profile.gp or distrib.gp for plotting profiles with gnuplot
    --gnuplot-separate-keys
      output keys anf legend for gnuplot in a separate file.
@@ -106,6 +106,8 @@ def usage():
      compute the average performance of the best solver on a set of problem divided by the average number of contact
    --compute-cond-rank
      compute the conditioning number and the rank of the matrix in the problems
+   --mu-value=value
+     change the coefficient of friction for all contacts
 
    Other options have to be documented
    
@@ -135,200 +137,12 @@ def usage():
   print(options_doc)
 
 
-try:
-    opts, args = getopt.gnu_getopt(sys.argv[1:], '',
-                                   ['help', 'verbose=','no-guess',
-                                    'clean', 'display', 'display-convergence','no-matplot',
-                                    'files=', 'solvers-exact=', 'solvers=',
-                                    'global',
-                                    'random-sample=', 'max-problems=',
-                                    'timeout=', 'maxiter=', 'maxiterls=', 'precision=',
-                                    'keep-files', 'new', 'errors',
-                                    'velocities', 'reactions', 'measure=',
-                                    'just-collect', 'cond-nc=', 'display-distrib',
-                                    'no-collect', 'no-compute', 'domain=',
-                                    'replace-solvers-exact=','replace-solvers=',
-                                    'gnuplot-output','logscale', 'gnuplot-separate-keys',
-                                    'output-dat', 'with-mumps', 'file-filter=', 'remove-files=',
-                                    'list-contents','list-contents-solver',
-                                    'add-precision-in-comp-file','add-timeout-in-comp-file',
-                                    'compute-cond-rank','compute-hardness','test-symmetry','forced','adhoc',
-                                    'display-speedup', 'thread-list=','estimate-optimal-timeout'])
-
-
-except getopt.GetoptError as err:
-        sys.stderr.write('{0}\n'.format(str(err)))
-        usage()
-        exit(2)
-for o, a in opts:
-    if o == '--verbose':
-        numerics_verbose=int(a)
-        N.numerics_set_verbose(numerics_verbose)
-    if o == '--help':
-        usage()
-        exit(2)
-    elif o == '--timeout':
-        utimeout = float(a)
-    elif o == '--maxiter':
-        maxiter = int(a)
-    elif o == '--maxiterls':
-        maxiterls = int(a)
-    elif o == '--global':
-       global_problem=True
-    elif o == '--precision':
-        precision = float(a)
-    elif o == '--clean':
-        clean = True
-    elif o == '--estimate-optimal-timeout':
-        compute_rho=True
-        estimate_optimal_timeout=True
-        compute = False
-    elif o == '--display':
-        display = True
-        compute_rho=True
-        compute = False
-    elif o == '--list-contents':
-        list_contents = True
-        compute = False
-    elif o == '--list-contents-solver':
-        list_contents_solver = True
-        compute = False
-    elif o == '--display-convergence':
-        display_convergence = True
-        compute = False
-    elif o == '--display-speedup':
-        display_speedup = True
-        compute = False
-    elif o == '--thread-list':
-        print(a)
-        thread_list =  [int (x) for x in split(a,',')]
-    elif o == '--measure':
-        measure_name = a
-    elif o == '--random-sample':
-        if os.path.exists('problems.txt'):
-            os.remove('problems.txt')
-        random_sample_proba = float(a)
-    elif o == '--max-problems':
-        if os.path.exists('problems.txt'):
-            os.remove('problems.txt')
-        max_problems = int(a)
-    elif o == '--keep-files':
-        keep_files = True
-    elif o == '--errors':
-        output_errors = True
-    elif o == '--velocities':
-        output_velocities = True
-    elif o == '--reactions':
-        output_reactions = True
-    elif o == '--just-collect':
-        ask_compute = False
-    elif o == '--no-collect':
-        ask_collect = False
-    elif o == '--no-compute':
-        ask_compute = False
-    elif o == '--cond-nc':
-        cond_nc = [float (x) for x in split(a,':')]
-    elif o == '--display-distrib':
-        display_distrib = True
-        compute = False
-    elif o == '--domain':
-        urange = [float (x) for x in split(a,':')]
-        domain = np.arange(urange[0], urange[2], urange[1])
-    elif o == '--no-matplot':
-        no_matplot=True
-    elif o == '--solvers':
-        user_solvers = split(a, ',')
-    elif o == '--solvers-exact':
-        user_solvers_exact = split(a, ',')
-    elif o == '--replace-solvers-exact':
-        replace_solvers = split(a, ',')
-        try:
-            with h5py.File('comp.hdf5','r+') as comp_file:
-                solver_in_compfile =  list(comp_file['data']['comp'])
-                #print "list(comp_file['data']['comp'])",  solver_in_compfile
-                replace_solver_in_compfile = list(filter(lambda s: any(us == s for us in replace_solvers), solver_in_compfile))
-                print("replace solver in comp file", replace_solver_in_compfile)
-                for s in replace_solver_in_compfile:
-                    del comp_file['data']['comp'][s]
-        except Exception as e:
-            print(e)
-    elif o == '--replace-solvers':
-        replace_solvers = split(a, ',')
-        #print "replace_solvers",  replace_solvers
-        try:
-            with h5py.File('comp.hdf5','r+') as comp_file:
-                solver_in_compfile =  list(comp_file['data']['comp'])
-                #print "list(comp_file['data']['comp'])",  solver_in_compfile
-                replace_solver_in_compfile = list(filter(lambda s: any(us in s for us in replace_solvers), solver_in_compfile))
-                print("replace solver in comp file", replace_solver_in_compfile)
-                for s in replace_solver_in_compfile:
-                    del comp_file['data']['comp'][s]
-        except Exception as e:
-            print(e)
-    elif o == '--gnuplot-output':
-        gnuplot_output=True
-    elif o == '--logscale':
-        logscale=True
-    elif o == '--gnuplot-separate-keys':
-        gnuplot_separate_keys = True
-    elif o == '--output-dat':
-        output_dat=True
-    elif o == '--with-mumps':
-        with_mumps=1
-    elif o == '--new':
-        try:
-            os.remove('comp.hdf5')
-        except:
-            pass
-
-    elif o == '--files':
-
-        files = split(a, ',')
-
-        for f in files:
-
-            if os.path.exists(f):
-                user_filenames += [f]
-            else:
-                if os.path.exists('{0}.hdf5'.format(f)):
-                    user_filenames += ['{0}.hdf5'.format(f)]
-    elif o == '--file-filter':
-        file_filter=split(a, ',')
-
-    elif o == '--remove-files':
-        remove_file=split(a, ',')
-
-
-    elif o == '--no-guess':
-        with_guess = False
-    elif o == '--add-precision-in-comp-file':
-        with h5py.File('comp.hdf5','r+') as comp_file:
-            create_attrs_precision_in_comp_file(comp_file,float(a))
-    elif o == '--add-timeout-in-comp-file':
-        with h5py.File('comp.hdf5','r+') as comp_file:
-            create_attrs_timeout_in_comp_file(comp_file,float(a))
-    elif o == '--compute-hardness':
-        compute_hardness = True
-        compute = False
-    elif o == '--compute-cond-rank':
-        compute_cond_rank = True
-        compute = False
-    elif o == '--test-symmetry':
-        test_symmetry = True
-        compute = False
-    elif o == '--adhoc':
-        adhoc = True
-        compute = False
-    elif o == '--forced':
-        forced=True
-
 numerics_has_openmp_solvers=False
 try:
     dir(N).index('fc3d_nsgs_openmp')
     numerics_has_openmp_solvers=True
 except ValueError:
     print("warning : fc3d_nsgs_openmp is not in siconos numerics")
-
 
 
 class SolverCallback:
@@ -355,6 +169,7 @@ class SolverCallback:
             self._errors.resize(self._offset, 0)
             self._errors[self._offset - 1, :] = error
         print("in get_step")
+
 
 class Caller():
 
@@ -393,14 +208,23 @@ class Caller():
                 pass
 
         try:
+            if (mu_value is not None) :
+                #print('We change mu values globally')
+                for i in range(sproblem.mu.shape[0]):
+                    sproblem.mu[i] = mu_value
+                    #print(sproblem.mu[i])
 
             self._internal_call(solver, sproblem, filename, pfilename,
-                                    output_filename)
+                                output_filename)
             
         except Exception as e:
 
-            print('Exception in internal call', e)
+            import traceback
+            
+            print('Exception in internal call')
 
+            traceback.print_exc(e)
+            
             try:
                os.remove(output_filename)
             except:
@@ -457,9 +281,8 @@ class Caller():
                     print   (list_print, file=report_file)
 
 
-    @timeout(utimeout)
+#    @timeout(utimeout)
     def _internal_call(self, solver, problem, filename, pfilename, output_filename):
-
 
         #print("_internal_call")
 
@@ -517,10 +340,12 @@ class Caller():
             reactions, velocities, global_velocities = solver.guess(filename)
 
             normq = np.linalg.norm(problem.q)
+            
             if global_problem:
+                normb = np.linalg.norm(problem.b)
                 _, guess_err = N.gfc3d_compute_error(read_fclib_format(filename)[1],
                                                      reactions, velocities, global_velocities,
-                                                     precision, solver.SolverOptions(), normq)
+                                                     precision, solver.SolverOptions(), normq, normb)
 
                 pass
             else:
@@ -546,37 +371,36 @@ class Caller():
                 # several call to solver if the precision is not reached
                 while again:
 
-                    t0 = time.time()
                     #t0 = time.process_time()
 
                     stdout_result = ''
-
+                    t0 = time.time()
                     with catch_stdout(really=output_errors) as get_stdout:
                         if global_problem:
                             result = solver(problem, reactions, velocities, global_velocities)
                         else:
                             result = solver(problem, reactions, velocities)
+                        time_s = time.time() - t0 # on unix, t is CPU seconds elapsed (floating point)
+
                         current_stdout = get_stdout()
 
-                        try:
+                        # try:
+                        #     cl = enumerate(filter(lambda s: '||F||' in s,
+                        #                           current_stdout.split('\n')))
 
-                            cl = enumerate(filter(lambda s: '||F||' in s,
-                                                  current_stdout.split('\n')))
+                        #     rdat = [re.split('=|,', l)[-3:] for i, l in cl]
 
-                            rdat = [re.split('=|,', l)[-3:] for i, l in cl]
+                        #     dat = [float(r) for r, z, f in rdat]
 
-                            dat = [float(r) for r, z, f in rdat]
+                        #     for e in dat:
+                        #         pffff(None, None, e)
 
-                            for e in dat:
-                                pffff(None, None, e)
-
-                        except Exception as e:
-                            sys.stderr.write('||', type(e))
+                        # except Exception as e:
+                        #     sys.stderr.write('||', type(e))
                             
                         stdout_result += current_stdout
 
                     
-                    time_s = time.time() - t0 # on unix, t is CPU seconds elapsed (floating point)
                     #time_s  = time.process_time() -t0
                     fclib_sol = FCL.fclib_solution()
 
@@ -823,111 +647,327 @@ class Results():
         except:
             return True
 
-
-##################################
-## creation of solver list
-##################################
-print("1 -- Creation of solver list")
-
-if global_problem :
-    from faf_global_solvers import *
-    fs = faf_global_solvers(maxiter, precision, maxiterls, with_guess, with_mumps, numerics_has_openmp_solvers)
-    all_solvers = fs.create_solvers()
-else :
-    from faf_solvers import *
-    fs = faf_solvers(maxiter, precision, maxiterls, with_guess, with_mumps, numerics_has_openmp_solvers)
-    all_solvers = fs.create_solvers()
-
-
-if (os.path.isfile(os.path.join( os.path.dirname(__file__),'adhoc_solverlist.py'))):
-    execfile(os.path.join( os.path.dirname(__file__),'adhoc_solverlist.py'))
-    #print "execfile(",os.path.join( os.path.dirname(__file__),'adhoc_solverlist.py'), ")"
-if (os.path.isfile('adhoc_solverlist.py')):
-    execfile('adhoc_solverlist.py')
-    #print "execfile(adhoc_solverlist.py)"
-
-solvers=[]
-if user_solvers != []:
-    #print "user_solvers", user_solvers
-    solvers.extend(list(filter(lambda s: any(us in s._name for us in user_solvers), all_solvers)))
-
-    if solvers == []:
-        raise RuntimeError ("Cannot find any matching solver")
-elif user_solvers_exact != []:
-    #print "user_solvers_exact", user_solvers_exact
-    solvers.extend(list(filter(lambda s: any(us ==  s._name  for us in user_solvers_exact), all_solvers)))
-
-    if solvers == []:
-        raise RuntimeError("Cannot find any solvers in specified list")
-else:
-    solvers= all_solvers
-
-##################################
-## creation of problems list
-##################################
-print("2 -- Creation of problem list")
-
-if not os.path.exists('problems.txt'):
-     with open('problems.txt', 'w') as problems_txt:
-         if global_problem :
-             for f in filter(is_fclib_file_global, glob('*.hdf5')):
-                 problems_txt.write('{0}\n'.format(f))
-         else:
-             for f in filter(is_fclib_file, glob('*.hdf5')):
-                 problems_txt.write('{0}\n'.format(f))
-
-if user_filenames == []:
-    if file_filter == None:
-        all_filenames = list_from_file('problems.txt')
-    else:
-        all_filenames = list(filter(lambda f: any(uf in f for uf in file_filter), list_from_file('problems.txt')))
-
-else:
-        all_filenames = user_filenames
-
-#all_filenames=['BoxesStack1-i9841-33.hdf5']
-#ask_collect = False
-#print("all_filenames",all_filenames)
-_problem_filenames = list(filter(is_fclib_file,
-                            all_filenames))
-#print("_problems_filenames", _problem_filenames)
-__problem_filenames = subsample_problems(_problem_filenames,
-                                         random_sample_proba,
-                                         max_problems, None, overwrite = (not display and not ask_compute and not ask_collect))
-
-
-problem_filenames = subsample_problems(__problem_filenames,
-                                       None,
-                                       None, cond_nc)
-
-n_problems = len(problem_filenames)
-
-#problems = [read_fclib_format(f) for f in problem_filenames]
-
-
-
-
-# min_measure = dict()
-
-# for fileproblem in problem_filenames:
-#     min_measure[fileproblem] = np.inf
-
-if clean:
-    h5mode = 'w'
-else:
-    h5mode = 'a'
-
-caller = Caller()
-
-
-#pool = MyPool(processes=8)
-
-rhos=None
-filenames=None
-filename=None
-
-
 if __name__ == '__main__':
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+
+    A=N.NM_create(0,1,1)
+    N.NM_MPI_set_comm(A, comm)
+    N.NM_MUMPS_set_control_params(A)
+    N.NM_MUMPS(A, -1)
+#    N.NM_MUMPS_set_cntl(A, 1, 0.1)
+#    N.NM_MUMPS_set_icntl(A, 22, 1)
+    print('icntl 14:', N.NM_MUMPS_icntl(A, 14))
+    if (comm.Get_rank() > 0):
+        print('MPI process stop: ',comm.Get_rank())
+        exit(0)
+    print('MPI process:', comm.Get_rank())
+    print('MUMPS_ida:', N.NM_MUMPS_id(A))
+
+    try:
+        opts, args = getopt.gnu_getopt(sys.argv[1:], '',
+                                       ['help', 'verbose=','no-guess',
+                                        'clean', 'display', 'display-convergence','no-matplot',
+                                        'files=', 'solvers-exact=', 'solvers=',
+                                        'global',
+                                        'random-sample=', 'max-problems=',
+                                        'timeout=', 'maxiter=', 'maxiterls=', 'precision=',
+                                        'keep-files', 'new', 'errors',
+                                        'velocities', 'reactions', 'measure=',
+                                        'just-collect', 'cond-nc=', 'display-distrib',
+                                        'no-collect', 'no-compute', 'domain=',
+                                        'replace-solvers-exact=','replace-solvers=',
+                                        'gnuplot-output','logscale', 'gnuplot-separate-keys',
+                                        'output-dat', 'with-mumps', 'file-filter=', 'remove-files=',
+                                        'list-contents','list-contents-solver',
+                                        'add-precision-in-comp-file','add-timeout-in-comp-file',
+                                        'compute-cond-rank','compute-hardness','test-symmetry','forced','adhoc',
+                                        'display-speedup', 'thread-list=','estimate-optimal-timeout'])
+
+
+    except getopt.GetoptError as err:
+            sys.stderr.write('{0}\n'.format(str(err)))
+            usage()
+            exit(2)
+    for o, a in opts:
+        if o == '--verbose':
+            numerics_verbose=int(a)
+            N.numerics_set_verbose(numerics_verbose)
+        if o == '--help':
+            usage()
+            exit(2)
+        elif o == '--timeout':
+            utimeout = float(a)
+        elif o == '--maxiter':
+            maxiter = int(a)
+        elif o == '--maxiterls':
+            maxiterls = int(a)
+        elif o == '--global':
+           global_problem=True
+        elif o == '--precision':
+            precision = float(a)
+        elif o == '--clean':
+            clean = True
+        elif o == '--estimate-optimal-timeout':
+            compute_rho=True
+            estimate_optimal_timeout=True
+            compute = False
+        elif o == '--display':
+            display = True
+            compute_rho=True
+            compute = False
+        elif o == '--list-contents':
+            list_contents = True
+            compute = False
+        elif o == '--list-contents-solver':
+            list_contents_solver = True
+            compute = False
+        elif o == '--display-convergence':
+            display_convergence = True
+            compute = False
+        elif o == '--display-speedup':
+            display_speedup = True
+            compute = False
+        elif o == '--thread-list':
+            print(a)
+            thread_list =  [int (x) for x in split(a,',')]
+        elif o == '--measure':
+            measure_name = a
+        elif o == '--random-sample':
+            if os.path.exists('problems.txt'):
+                os.remove('problems.txt')
+            random_sample_proba = float(a)
+        elif o == '--max-problems':
+            if os.path.exists('problems.txt'):
+                os.remove('problems.txt')
+            max_problems = int(a)
+        elif o == '--keep-files':
+            keep_files = True
+        elif o == '--errors':
+            output_errors = True
+        elif o == '--velocities':
+            output_velocities = True
+        elif o == '--reactions':
+            output_reactions = True
+        elif o == '--just-collect':
+            ask_compute = False
+            compute = False
+        elif o == '--no-collect':
+            ask_collect = False
+        elif o == '--no-compute':
+            ask_compute = False
+            compute=False
+        elif o == '--cond-nc':
+            cond_nc = [float (x) for x in split(a,':')]
+        elif o == '--display-distrib':
+            display_distrib = True
+            compute = False
+        elif o == '--domain':
+            urange = [float (x) for x in split(a,':')]
+            domain = np.arange(urange[0], urange[2], urange[1])
+        elif o == '--no-matplot':
+            no_matplot=True
+        elif o == '--solvers':
+            user_solvers = split(a, ',')
+        elif o == '--solvers-exact':
+            user_solvers_exact = split(a, ',')
+        elif o == '--replace-solvers-exact':
+            replace_solvers = split(a, ',')
+            try:
+                with h5py.File('comp.hdf5','r+') as comp_file:
+                    solver_in_compfile =  list(comp_file['data']['comp'])
+                    #print "list(comp_file['data']['comp'])",  solver_in_compfile
+                    replace_solver_in_compfile = list(filter(lambda s: any(us == s for us in replace_solvers), solver_in_compfile))
+                    print("replace solver in comp file", replace_solver_in_compfile)
+                    for s in replace_solver_in_compfile:
+                        del comp_file['data']['comp'][s]
+            except Exception as e:
+                print(e)
+        elif o == '--replace-solvers':
+            replace_solvers = split(a, ',')
+            #print "replace_solvers",  replace_solvers
+            try:
+                with h5py.File('comp.hdf5','r+') as comp_file:
+                    solver_in_compfile =  list(comp_file['data']['comp'])
+                    #print "list(comp_file['data']['comp'])",  solver_in_compfile
+                    replace_solver_in_compfile = list(filter(lambda s: any(us in s for us in replace_solvers), solver_in_compfile))
+                    print("replace solver in comp file", replace_solver_in_compfile)
+                    for s in replace_solver_in_compfile:
+                        del comp_file['data']['comp'][s]
+            except Exception as e:
+                print(e)
+        elif o == '--gnuplot-output':
+            gnuplot_output=True
+        elif o == '--logscale':
+            logscale=True
+        elif o == '--gnuplot-separate-keys':
+            gnuplot_separate_keys = True
+        elif o == '--output-dat':
+            output_dat=True
+        elif o == '--with-mumps':
+            with_mumps=1
+        elif o == '--new':
+            try:
+                os.remove('comp.hdf5')
+            except:
+                pass
+
+        elif o == '--files':
+
+            files = split(a, ',')
+
+            for f in files:
+
+                if os.path.exists(f):
+                    user_filenames += [f]
+                else:
+                    if os.path.exists('{0}.hdf5'.format(f)):
+                        user_filenames += ['{0}.hdf5'.format(f)]
+        elif o == '--file-filter':
+            file_filter=split(a, ',')
+
+        elif o == '--remove-files':
+            remove_file=split(a, ',')
+
+
+        elif o == '--no-guess':
+            with_guess = False
+        elif o == '--add-precision-in-comp-file':
+            with h5py.File('comp.hdf5','r+') as comp_file:
+                create_attrs_precision_in_comp_file(comp_file,float(a))
+        elif o == '--add-timeout-in-comp-file':
+            with h5py.File('comp.hdf5','r+') as comp_file:
+                create_attrs_timeout_in_comp_file(comp_file,float(a))
+        elif o == '--compute-hardness':
+            compute_hardness = True
+            compute = False
+        elif o == '--compute-cond-rank':
+            compute_cond_rank = True
+            compute = False
+        elif o == '--test-symmetry':
+            test_symmetry = True
+            compute = False
+        elif o == '--adhoc':
+            adhoc = True
+            compute = False
+        elif o == '--forced':
+            forced=True
+
+    numerics_has_openmp_solvers=False
+    try:
+        dir(N).index('fc3d_nsgs_openmp')
+        numerics_has_openmp_solvers=True
+    except ValueError:
+        print("warning : fc3d_nsgs_openmp is not in siconos numerics")
+
+
+    ##################################
+    ## creation of solver list
+    ##################################
+    print("1 -- Creation of solver list")
+
+    print('MUMPS_id3:', N.NM_MUMPS_id(A))
+    
+    if global_problem :
+        from faf_global_solvers import *
+        fs = faf_global_solvers(maxiter, precision, maxiterls, with_guess, with_mumps, numerics_has_openmp_solvers, mpi_comm=N.NM_MPI_comm(A), mumps_id = N.NM_MUMPS_id(A))
+        all_solvers = fs.create_solvers()
+    else :
+        from faf_solvers import *
+        fs = faf_solvers(maxiter, precision, maxiterls, with_guess, with_mumps, numerics_has_openmp_solvers, mpi_comm=N.NM_MPI_comm(A), mumps_id = N.NM_MUMPS_id(A))
+        all_solvers = fs.create_solvers()
+
+
+    if (os.path.isfile(os.path.join( os.path.dirname(__file__),'adhoc_solverlist.py'))):
+        execfile(os.path.join( os.path.dirname(__file__),'adhoc_solverlist.py'))
+        #print "execfile(",os.path.join( os.path.dirname(__file__),'adhoc_solverlist.py'), ")"
+    if (os.path.isfile('adhoc_solverlist.py')):
+        execfile('adhoc_solverlist.py')
+        #print "execfile(adhoc_solverlist.py)"
+
+    solvers=[]
+    if user_solvers != []:
+        #print "user_solvers", user_solvers
+        solvers.extend(list(filter(lambda s: any(us in s._name for us in user_solvers), all_solvers)))
+
+        if solvers == []:
+            raise RuntimeError ("Cannot find any matching solver")
+    elif user_solvers_exact != []:
+        #print "user_solvers_exact", user_solvers_exact
+        solvers.extend(list(filter(lambda s: any(us ==  s._name  for us in user_solvers_exact), all_solvers)))
+
+        if solvers == []:
+            raise RuntimeError("Cannot find any solvers in specified list")
+    else:
+        solvers= all_solvers
+
+    ##################################
+    ## creation of problems list
+    ##################################
+    print("2 -- Creation of problem list")
+
+    if not os.path.exists('problems.txt'):
+         with open('problems.txt', 'w') as problems_txt:
+             if global_problem :
+                 for f in filter(is_fclib_file_global, glob('*.hdf5')):
+                     problems_txt.write('{0}\n'.format(f))
+             else:
+                 for f in filter(is_fclib_file, glob('*.hdf5')):
+                     problems_txt.write('{0}\n'.format(f))
+
+    if user_filenames == []:
+        if file_filter == None:
+            all_filenames = list_from_file('problems.txt')
+        else:
+            all_filenames = list(filter(lambda f: any(uf in f for uf in file_filter), list_from_file('problems.txt')))
+
+    else:
+            all_filenames = user_filenames
+
+    #all_filenames=['BoxesStack1-i9841-33.hdf5']
+    #ask_collect = False
+    #print("all_filenames",all_filenames)
+    _problem_filenames = list(filter(is_fclib_file,
+                                all_filenames))
+    #print("_problems_filenames", _problem_filenames)
+    __problem_filenames = subsample_problems(_problem_filenames,
+                                             random_sample_proba,
+                                             max_problems, None, overwrite = (not display and not ask_compute and not ask_collect))
+
+
+    problem_filenames = subsample_problems(__problem_filenames,
+                                           None,
+                                           None, cond_nc)
+
+    n_problems = len(problem_filenames)
+
+    #problems = [read_fclib_format(f) for f in problem_filenames]
+
+
+
+
+    # min_measure = dict()
+
+    # for fileproblem in problem_filenames:
+    #     min_measure[fileproblem] = np.inf
+
+    if clean:
+        h5mode = 'w'
+    else:
+        h5mode = 'a'
+
+
+    caller = Caller()
+
+
+    #pool = MyPool(processes=8)
+
+    rhos=None
+    filenames=None
+    filename=None
+
+
+
 
 
     ### compute ####
@@ -949,7 +989,9 @@ if __name__ == '__main__':
 
         if ask_compute:
             print(" with precision=", precision, " timeout=", utimeout, "and maxiter = ", maxiter)
+            print ("tasks:", tasks)
             outputs = list(map(caller, tasks))
+            N.NM_MUMPS(A, 0)
         if ask_collect:
             list(map(collect, tasks))
 
@@ -1014,7 +1056,7 @@ if __name__ == '__main__':
               rhos,
               gnuplot_output, gnuplot_with_color, gnuplot_separate_keys, no_matplot,logscale)
 
-        
+
     if display:      
         d.default_display_task(solver_r)
 
