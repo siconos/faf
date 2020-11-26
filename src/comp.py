@@ -16,8 +16,13 @@ import h5py
 import getopt
 import sys
 import hashlib
-from mpi4py import MPI
-#from io import StringIO
+try:
+    from mpi4py import MPI
+    with_mpi = True
+except:
+    with_mpi = False
+
+    #from io import StringIO
 
 
 import numpy as np
@@ -648,21 +653,29 @@ class Results():
             return True
 
 if __name__ == '__main__':
-    comm = MPI.COMM_WORLD
+
+    comm = None
+    if with_mpi:
+        comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
 
     A=N.NM_create(0,1,1)
-    N.NM_MPI_set_comm(A, comm)
-    N.NM_MUMPS_set_control_params(A)
-    N.NM_MUMPS(A, -1)
-#    N.NM_MUMPS_set_cntl(A, 1, 0.1)
-#    N.NM_MUMPS_set_icntl(A, 22, 1)
-    print('icntl 14:', N.NM_MUMPS_icntl(A, 14))
-    if (comm.Get_rank() > 0):
-        print('MPI process stop: ',comm.Get_rank())
-        exit(0)
-    print('MPI process:', comm.Get_rank())
-    print('MUMPS_ida:', N.NM_MUMPS_id(A))
+
+    if with_mpi:
+        N.NM_MPI_set_comm(A, comm)
+
+    if with_mumps:
+        N.NM_MUMPS_set_control_params(A)
+        N.NM_MUMPS(A, -1)
+        #    N.NM_MUMPS_set_cntl(A, 1, 0.1)
+        #    N.NM_MUMPS_set_icntl(A, 22, 1)
+        print('icntl 14:', N.NM_MUMPS_icntl(A, 14))
+        if with_mpi:
+            if (comm.Get_rank() > 0):
+                print('MPI process stop: ',comm.Get_rank())
+                exit(0)
+            print('MPI process:', comm.Get_rank())
+            print('MUMPS_id:', N.NM_MUMPS_id(A))
 
     try:
         opts, args = getopt.gnu_getopt(sys.argv[1:], '',
@@ -866,15 +879,26 @@ if __name__ == '__main__':
     ##################################
     print("1 -- Creation of solver list")
 
-    print('MUMPS_id3:', N.NM_MUMPS_id(A))
-    
+    if with_mumps:
+        print('MUMPS_id3:', N.NM_MUMPS_id(A))
+        mumps_id = N.NM_MUMPS_id(A)
+    else:
+        mumps_id = None
+
+    if with_mpi:
+        mpi_comm = N.NM_MPI_comm(A)
+    else:
+        mpi_comm = None
+
+
     if global_problem :
         from faf_global_solvers import *
-        fs = faf_global_solvers(maxiter, precision, maxiterls, with_guess, with_mumps, numerics_has_openmp_solvers, mpi_comm=N.NM_MPI_comm(A), mumps_id = N.NM_MUMPS_id(A))
+
+        fs = faf_global_solvers(maxiter, precision, maxiterls, with_guess, with_mumps, numerics_has_openmp_solvers, mpi_comm=mpi_comm, mumps_id = mumps_id)
         all_solvers = fs.create_solvers()
     else :
         from faf_solvers import *
-        fs = faf_solvers(maxiter, precision, maxiterls, with_guess, with_mumps, numerics_has_openmp_solvers, mpi_comm=N.NM_MPI_comm(A), mumps_id = N.NM_MUMPS_id(A))
+        fs = faf_solvers(maxiter, precision, maxiterls, with_guess, with_mumps, numerics_has_openmp_solvers, mpi_comm=mpi_comm, mumps_id = mumps_id)
         all_solvers = fs.create_solvers()
 
 
@@ -991,7 +1015,9 @@ if __name__ == '__main__':
             print(" with precision=", precision, " timeout=", utimeout, "and maxiter = ", maxiter)
             print ("tasks:", tasks)
             outputs = list(map(caller, tasks))
-            N.NM_MUMPS(A, 0)
+            if with_mumps:
+                N.NM_MUMPS(A, 0)
+
         if ask_collect:
             list(map(collect, tasks))
 
