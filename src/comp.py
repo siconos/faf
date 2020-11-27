@@ -657,7 +657,7 @@ if __name__ == '__main__':
     comm = None
     if with_mpi:
         comm = MPI.COMM_WORLD
-    rank = comm.Get_rank()
+        rank = comm.Get_rank()
 
     A=N.NM_create(0,1,1)
 
