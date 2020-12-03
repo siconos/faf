@@ -27,8 +27,8 @@ class faf_global_solvers():
                              dparam_err=1,
                              maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id,
                              global_solver=True)
-        nsgs_wr.SolverOptions().internalSolvers.iparam[0]=nsgs_wr.SolverOptions().iparam[0]
-        nsgs_wr.SolverOptions().internalSolvers.dparam[0]=nsgs_wr.SolverOptions().dparam[0]
+        N.solver_options_get_internal_solver(nsgs_wr.SolverOptions(), 0).iparam[0]=nsgs_wr.SolverOptions().iparam[0]
+        N.solver_options_get_internal_solver(nsgs_wr.SolverOptions(), 0).dparam[0]=nsgs_wr.SolverOptions().dparam[0]
 
 
         admm_wr = SiconosSolver(name="ADMM-WR",
@@ -39,8 +39,7 @@ class faf_global_solvers():
                              dparam_err=1,
                              maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id,
                              global_solver=True)
-        admm_wr.SolverOptions().internalSolvers.iparam[0]=admm_wr.SolverOptions().iparam[0]
-        admm_wr.SolverOptions().internalSolvers.dparam[0]=admm_wr.SolverOptions().dparam[0]
+ 
 
         nsn_ac_wr = SiconosSolver(name="NSN-AC-WR",
                              gnuplot_name="NSN-AC-WR",
@@ -50,9 +49,9 @@ class faf_global_solvers():
                              dparam_err=1,
                              maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id,
                              global_solver=True)
-        nsn_ac_wr.SolverOptions().internalSolvers.iparam[0]=nsn_ac_wr.SolverOptions().iparam[0]
-        nsn_ac_wr.SolverOptions().internalSolvers.dparam[0]=nsn_ac_wr.SolverOptions().dparam[0]
-        
+        # N.solver_options_get_internal_solver(nsn_ac_wr.SolverOptions(), 0).iparam[0]=nsn_ac_wr.SolverOptions().iparam[0]
+        # N.solver_options_get_internal_solver(nsn_ac_wr.SolverOptions(), 0).dparam[0]=nsn_ac_wr.SolverOptions().dparam[0]
+       
         nsgs = SiconosSolver(name="NSGS-AC",
                              gnuplot_name="NSGS-AC",
                              API=N.gfc3d_nsgs,
@@ -154,7 +153,7 @@ class faf_global_solvers():
                                       maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess, mpi_comm=self._mpi_comm, mumps_id=self._mumps_id,
                                       global_solver=True)
         admm_sbr.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_RHO_STRATEGY]=N.SICONOS_FRICTION_3D_ADMM_RHO_STRATEGY_SCALED_RESIDUAL_BALANCING
-        admm_sbr.SolverOptions().iparam[N.SICONOS_FRICTION_3D_IPARAM_RESCALING]=N.SICONOS_FRICTION_3D_RESCALING_YES
+#        admm_sbr.SolverOptions().iparam[N.SICONOS_FRICTION_3D_IPARAM_RESCALING]=SICONOS_FRICTION_3D_RESCALING_BALANCING_M
 #        admm_sbr.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_FULL_H]=N.SICONOS_FRICTION_3D_ADMM_FULL_H_YES
 
         admm_br_fh = SiconosSolver(name="ADMM-BR-FH",
@@ -177,7 +176,7 @@ class faf_global_solvers():
                                        maxiter=self._maxiter, precision=self._precision, with_guess=self._with_guess,
                                        global_solver=True)
         admm_br_scaled.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_RHO_STRATEGY]=N.SICONOS_FRICTION_3D_ADMM_RHO_STRATEGY_RESIDUAL_BALANCING
-        admm_br_scaled.SolverOptions().iparam[N.SICONOS_FRICTION_3D_IPARAM_RESCALING]=N.SICONOS_FRICTION_3D_RESCALING_YES
+        #admm_br_scaled.SolverOptions().iparam[N.SICONOS_FRICTION_3D_IPARAM_RESCALING]=N.SICONOS_FRICTION_3D_RESCALING_BALANCING_M
         
         admm_br_no = SiconosSolver(name="ADMM-BR-NO",
                                        gnuplot_name="ADMM-BALANCING-RESIDUAL-NO",
