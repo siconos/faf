@@ -55,7 +55,7 @@ class SiconosSolver():
 
     def __call__(self, problem, reactions, velocities, global_velocities= None):
 #        N.frictionContact_display(problem)
-        print ('----->', type(problem.M), self._mpi_comm, self._mumps_id)
+
         if self._mpi_comm is not None:
             N.NM_MPI_set_comm(problem.M, self._mpi_comm)
             print ('SET MPI:', problem, problem.M, self._mpi_comm)
