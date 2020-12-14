@@ -33,7 +33,6 @@ N.numerics_set_verbose(numerics_verbose)
 import siconos.fclib as FCL
 
 #print os.path.join(os.path.dirname(sys.argv[0]), 'external/build')
-
 sys.path.append(os.path.join(os.path.dirname(sys.argv[0]), 'external/build'))
 
 try:
@@ -258,7 +257,11 @@ class Caller():
                 attrs.create('nc',  numberOfDegreeofFreedomContacts(filename))
                 attrs.create('nds', numberOfDegreeofFreedom(filename))
                 attrs.create('cond_nc', cond_problem(filename))
-                attrs.create('digest', digest)
+                if b'\x00' in digest:
+                    print('null character x00 in digest ' , digest)
+                    print('Warning: the attribute is not created')
+                else:
+                    attrs.create('digest', digest)
                 attrs.create('info', info)
                 attrs.create('iter', iter)
                 attrs.create('err', err)
@@ -465,7 +468,11 @@ class Caller():
             attrs.create('nc', numberOfDegreeofFreedomContacts(filename))
             attrs.create('nds', numberOfDegreeofFreedom(filename))
             attrs.create('cond_nc', cond_problem(filename))
-            attrs.create('digest', digest)
+            if b'\x00' in digest:
+                print('null character x00 in digest ' , digest)
+                print('Warning: the attribute is not created')
+            else:
+                attrs.create('digest', digest)
             attrs.create('info', info)
             attrs.create('iter', iter)
             attrs.create('err', err)
