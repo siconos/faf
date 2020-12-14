@@ -52,6 +52,9 @@ from faf_display import *
 from faf_preprocess import *
 from faf_postprocess import *
 
+
+
+
 #debugger
 #import pdb
 #pdb.set_trace()
@@ -224,10 +227,8 @@ class Caller():
         except Exception as e:
 
             import traceback
-            
-            print('Exception in internal call')
-
-            traceback.print_exc(e)
+            #print('Exception in internal call', e)
+            traceback.print_exc()
             
             try:
                os.remove(output_filename)
@@ -289,7 +290,7 @@ class Caller():
                     print   (list_print, file=report_file)
 
 
-#    @timeout(utimeout)
+    @timeout(utimeout)
     def _internal_call(self, solver, problem, filename, pfilename, output_filename):
 
         #print("_internal_call")
@@ -640,18 +641,12 @@ class Results():
             # if abs(r.attrs.get('timeout') -  utimeout) >= 1e-16 :
             #    raise RuntimeError()
 
-            # list_print =[r.attrs['filename'], cond_problem(r.attrs['filename']), solver.name(), r.attrs['info'],
-            #                                   r.attrs['iter'], r.attrs['err'], r.attrs['time'], r.attrs['real_time'], r.attrs['proc_time'],
-            #                                   r.attrs['flpops'], r.attrs['mflops'],r.attrs.get('precision'),r.attrs.get('timeout')]
-            # if numerics_has_openmp_solvers :
-            #     list_print.append(r.attrs['n_threads'])
-            # print("Already in comp file : ", list_print)
-
-
+            list_print =[solver.name()]
             list_keys= list(r.attrs.keys())
             if u'digest' in list_keys:
                 list_keys.remove(u'digest')
-            print("Already in comp file : ", [r.attrs[item] for item in list_keys])
+            list_print.extend([r.attrs[item] for item in list_keys])
+            print("Already in comp file : ", list_print)
 
 
             
