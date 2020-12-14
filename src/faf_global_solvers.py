@@ -190,7 +190,9 @@ class faf_global_solvers():
         admm_br_no.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_ACCELERATION]=N.SICONOS_FRICTION_3D_ADMM_NO_ACCELERATION
         
         ipm_solvers=True
-        try :
+#        try :
+
+        if True :
 
             ipm = SiconosSolver(name="IPM",
                                 gnuplot_name="IPM",
@@ -212,28 +214,24 @@ class faf_global_solvers():
                                    global_solver=True)
             ipm_nt.SolverOptions().iparam[N.SICONOS_FRICTION_3D_IPM_IPARAM_NESTEROV_TODD_SCALING]=1
 
-        
-        except:
-            ipm_solvers=False
+            ipm_solvers = [ipm, ipm_nt]
+#        except:
+#            ipm_solvers=False
             
         nsgs_solvers = [nsgs, nsgs_wr, nsn_ac_wr, admm_wr]
-
         admm_solvers = [admm_constant, admm_constant_no, admm_norm_inf, admm_br, admm_sbr, admm_br_scaled, admm_br_no, admm_br_fh]
+
+
+
+
         
         all_solvers = list(nsgs_solvers)
         all_solvers.extend(admm_solvers)
-        
-        
         all_solvers.extend([nsn_ac, vi_eg, vi_fp, aclm])
-
         if ipm_solvers:
             all_solvers.extend([ipm, ipm_nt])
         
-        nsgs_solvers = [nsgs, nsgs_wr, nsn_ac_wr, admm_wr]
-
-        all_solvers = list(nsgs_solvers)
-        all_solvers.extend([nsn_ac, admm_constant, admm_norm_inf, admm_br, admm_sbr, vi_eg, vi_fp, aclm])
-
+        
         all_solvers = list(filter(lambda s : s is not None, all_solvers))
 
         return all_solvers
