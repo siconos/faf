@@ -2,6 +2,7 @@ import multiprocessing
 import multiprocessing.pool
 import time
 
+multiprocessing.set_start_method('fork') # come back to the old start method to be able to work in Python3.8 and MacOsX
 
 class TimeoutException(Exception):
     pass
