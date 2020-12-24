@@ -1450,6 +1450,60 @@ class faf_solvers():
         admm_asym_sbr.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_RHO_STRATEGY]= N.SICONOS_FRICTION_3D_ADMM_RHO_STRATEGY_SCALED_RESIDUAL_BALANCING
         admm_asym_sbr.SolverOptions().iparam[N.SICONOS_FRICTION_3D_ADMM_IPARAM_SYMMETRY]=N.SICONOS_FRICTION_3D_ADMM_FORCED_ASYMMETRY
 
+        ##############################################
+        # krylov
+        ##############################################
+
+        krylov_s0 = SiconosSolver(name="KRYLOV-BASIC-0",
+                                 gnuplot_name="KRYLOV-BASIC-0",
+                                 TAG=N.SICONOS_FRICTION_3D_NSN_AC,
+                                 iparam_iter=1,
+                                 dparam_err=1,
+                                 maxiter=self._maxiter,
+                                 precision=self._precision,
+                                 with_guess=self._with_guess,
+                                 API=krylov_solv)
+        krylov_s0.SolverOptions().iparam[9] = 0  # preconditioning : None
+        krylov_s0.SolverOptions().dparam[2] = 1e-10
+
+        krylov_s1 = SiconosSolver(name="KRYLOV-BASIC-1",
+                                  gnuplot_name="KRYLOV-BASIC-1",
+                                  TAG=N.SICONOS_FRICTION_3D_NSN_AC,
+                                  iparam_iter=1,
+                                  dparam_err=1,
+                                  maxiter=self._maxiter,
+                                  precision=self._precision,
+                                  with_guess=self._with_guess,
+                                  API=krylov_solv)
+        krylov_s1.SolverOptions().iparam[9] = 1  # preconditioning : BroydenFirst
+        krylov_s1.SolverOptions().dparam[2] = 1e-10
+
+        krylov_s2 = SiconosSolver(name="KRYLOV-BASIC-2",
+                                  gnuplot_name="KRYLOV-BASIC-2",
+                                  TAG=N.SICONOS_FRICTION_3D_NSN_AC,
+                                  iparam_iter=1,
+                                  dparam_err=1,
+                                  maxiter=self._maxiter,
+                                  precision=self._precision,
+                                  with_guess=self._with_guess,
+                                  API=krylov_solv)
+        krylov_s2.SolverOptions().iparam[9] = 2  # preconditioning : DiagBroyden
+        krylov_s2.SolverOptions().dparam[2] = 1e-10
+
+
+        krylov_s3 = SiconosSolver(name="KRYLOV-BASIC-3",
+                                  gnuplot_name="KRYLOV-BASIC-3",
+                                  TAG=N.SICONOS_FRICTION_3D_NSN_AC,
+                                  iparam_iter=1,
+                                  dparam_err=1,
+                                  maxiter=self._maxiter,
+                                  precision=self._precision,
+                                  with_guess=self._with_guess,
+                                  API=krylov_solv)
+        krylov_s3.SolverOptions().iparam[9] = 3  # preconditioning : Anderson
+        krylov_s3.SolverOptions().dparam[2] = 1e-10
+
+
 
         ############################################## 
         # solvers selection
@@ -1483,6 +1537,7 @@ class faf_solvers():
                               #ProxNSGS,
                               #Proxfixed,
                               regul_series[0],
+                              krylov_s0, krylov_s1, krylov_s2, krylov_s3,
                               #ACLMFixedPoint,
                               #ACLMFixedPoint_vi_fpp,
                               #ACLMFixedPoint_vi_eg]

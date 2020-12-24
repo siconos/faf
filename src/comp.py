@@ -228,8 +228,11 @@ class Caller():
             
             print('Exception in internal call')
 
-            traceback.print_exc(e)
-            
+            try:
+                traceback.print_exc(e)
+            except:
+                print(e)
+
             try:
                os.remove(output_filename)
             except:
@@ -286,7 +289,7 @@ class Caller():
                     print   (list_print, file=report_file)
 
 
-#    @timeout(utimeout)
+    @timeout(utimeout)
     def _internal_call(self, solver, problem, filename, pfilename, output_filename):
 
         #print("_internal_call")
@@ -465,7 +468,10 @@ class Caller():
             attrs.create('nc', numberOfDegreeofFreedomContacts(filename))
             attrs.create('nds', numberOfDegreeofFreedom(filename))
             attrs.create('cond_nc', cond_problem(filename))
-            attrs.create('digest', digest)
+            try:
+                attrs.create('digest', digest)
+            except:
+                pass
             attrs.create('info', info)
             attrs.create('iter', iter)
             attrs.create('err', err)
