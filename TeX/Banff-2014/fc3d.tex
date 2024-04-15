@@ -83,17 +83,17 @@
       \label{eq:CoulombCone}
       K = \{r \in \RR^3 \mid \|r_\t\| \leq \mu r_n\}.
     \end{equation}
-    The Coulomb friction states
+    Coulomb friction postulates
     \begin{itemize}
     \item for the \tr{sticking case} that
       \begin{equation}
         \label{eq:Coulom-stick}
-        u_{\t} =0,\quad r \in K
+        u_{\t} =0,\quad r \in K,
       \end{equation}
     \item and for the \tr{sliding case} that
       \begin{equation}
         \label{eq:Coulom-slide}
-        u_{\t}  \neq 0,\quad r \in \partial K, \exists\, \alpha > 0, r_\t = -\alpha u_\t.
+        u_{\t}  \neq 0,\quad r \in \partial K,  \frac{r_\t}{\|r_\t\|} = - \frac{u_\t}{\|u_\t\|}.
       \end{equation}
     \end{itemize}
   \end{block}
@@ -106,7 +106,7 @@
           r = 0  &\text{ if } g_{\n} > 0  & \text{(no contact)}\\
           r = 0,  u_\n \geq 0   &\text{ if } g_{\n} \leq 0 & \text{(take--off)} \\
           r \in K, u =0 &\text{ if } g_{\n} \leq 0 & \text{(sticking)}  \\
-          r \in \partial K,u _\n=0,  \exists\,\alpha > 0, u_\t = -\alpha r_\t &\text{ if } g_{\n} \leq 0 & \text{(sliding)}  \\
+               r \in \partial K,u _\n=0,  \frac{r_\t}{\|r_\t\|} = - \frac{u_\t}{\|u_\t\|} &\text{ if } g_{\n} \leq 0 & \text{(sliding)}  \\
         \end{array}\right.
     \end{equation}
   \end{block}
@@ -117,10 +117,10 @@
 \frame{
   \frametitle{Signorini's condition and Coulomb's friction} 
   
-  \begin{block}{Second Order Cone Complementarity (SOCCP) formulation \cite{DeSaxce92}}
+  \begin{block}{Second Order Cone Complementarity (SOCCP) formulation}
   
     \begin{itemize}
-    \item Modified relative velocity $\hat u \in \RR^3$ defined by
+    \item Modified relative velocity $\hat u \in \RR^3$ defined by \cite{DeSaxce92}
       \begin{equation}
         \label{eq:modified-velocity}
         \hat u = u +\mu \|u_\t\| \sf N.
@@ -131,7 +131,8 @@
         \label{eq:contact-SOCCP}
         K^\star \ni \hat u \perp r \in K
       \end{equation}
-      if $ g_\n \leq 0 $ and $r=0$ otherwise.  The set $ K^\star $ is
+      if $ g_\n \leq 0 $ and $r=0$ otherwise.\\
+      The set $ K^\star $ is
       the dual convex cone to $K$ defined by
       \begin{equation}
         \label{eq:dual-cone}
@@ -232,35 +233,31 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
   \end{block}
   
 }
-% \frame{
-%   \frametitle{3D frictional contact problems} 
-%   \begin{block}{Wide range of applications}
-
-%     Origin of the linear relations~\nocite{Acary.Cadoux2013}.
-%   $$  M v = {H} {r} + {f},\quad u = H^\top v + w$$
-%   \begin{itemize}
-%   \item Time--discretization of the discrete dynamical mechanical
-%     system
-%     \begin{itemize}
-%     \item Event--capturing time--stepping schemes
-%     \item Event--detecting time--stepping schemes (event-driven)
-%     \end{itemize}
-%   \item Time--discretization and space discretization of the elasto
-%     dynamic problem of solids
-%   \item Space discretization of the quasi--static problem of solids.
-%   \end{itemize}
-%   with a possible linearization (Newton procedure.)
-% \end{block}
-%    \ding{220}  These problems are really representative of a lot of applications.
+\frame{
+  \frametitle{3D frictional contact problems} 
+  \begin{block}{Wide range of applications}
+    Origin of the linear relations~\nocite{Acary.Cadoux2013}.
+  $$  M v = {H} {r} + {f},\quad u = H^\top v + w$$
+  \begin{itemize}
+  \item Time--discretization of the discrete dynamical mechanical
+    system. Event--capturing or event--detecting  time--stepping schemes
+  \item Time--discretization and space discretization of the
+    dynamic problem of solids
+  \item Space discretization of the quasi--static problem of solids.
+  \item HBM, Flexible MBS, ...
+  \end{itemize}
+\end{block}
+\ding{220}  These problems are really representative of a lot of applications with a possible linearization (Newton procedure)\\
+\ding{220}  Nonlinear version is also possible\\
 
 
-% }
+}
 
 \subsection{From the mathematical programming point of view}
 
 \frame{
   \frametitle{From the mathematical programming point of view} 
-  \begin{block}{Nonmonotone and nonsmooth problem}
+  \begin{block}{Nonmonotone and nonsmooth SOCCP}
     \begin{equation}
       \label{eq:soccp3}
       K^\star \ni Wr +q + g(Wr +q) \perp r \in K
@@ -273,7 +270,7 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
     % \end{itemize}
     % \ding{220} The problem is very hard to solve efficiently.
   \end{block}
-   \begin{block}{Possible reformulation}
+   \begin{block}{Many possible reformulations}
      \begin{itemize}
      \item Variational inequality or normal cone inclusion
        \begin{equation}
@@ -281,10 +278,16 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
          -(W r +q + g(Wr+q)) \stackrel{\Delta}= - F(r)  \in N_K(r).
        \end{equation}
      \item Nonsmooth equations $G(r) = 0$\\
-       $\bullet$ The natural map $F^\nat$ associated with the VI (\ref{eq:inclusion-1}) $ F^\nat(z) = z - P_{X}(z-F(z))$.\\
-       $\bullet$ Variants of this map (Alart-Curnier formulation, \ldots)\\
-       $\bullet$  one of the SOCCP-functions. (Fisher-Bursmeister function)\\
+       % $\bullet$ The natural map $F^\nat$ associated with the VI (\ref{eq:inclusion-1}) $ F^\nat(z) = z - P_{X}(z-F(z))$.\\
+       % $\bullet$ Variants of this map (Alart-Curnier formulation, \ldots)\\
+       % $\bullet$  one of the SOCCP-functions. (Fisher-Bursmeister function)\\
      \item and many other ...
+     \end{itemize}
+   \end{block}
+   \begin{block}{Numerical methods}
+     \begin{itemize}
+     \item  Numerous numerical methods exist. 
+     \item Many of them are adaptations of mathematical programming methods.
      \end{itemize}
    \end{block}
  }

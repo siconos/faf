@@ -1,5 +1,6 @@
 \documentclass[8pt,red]{beamer}
 \usepackage{amsmath,amsthm,amsfonts,amssymb,amsbsy}
+\everymath{\displaystyle}
 \usepackage{stmaryrd} 
 \usepackage{subeqnarray}
 
@@ -8,6 +9,12 @@
 \usepackage{pifont}
 
 \usepackage{fancyhdr}
+
+\makeatletter
+  \def\Hy@PageAnchorSlidesPlain{}%
+  \def\Hy@PageAnchorSlide{}%
+\makeatother
+
 
 \usepackage{lastpage}
 \usepackage{subfig}
@@ -43,9 +50,16 @@
 
 \input{theme.tex}
 
-\title{Formulations and extensive comparisons of 3D frictional contact solvers based on performance profiles}
-\author{Vincent Acary, Maurice Br\'emond, Olivier Huber \\ INRIA Rh\^one--Alpes, Grenoble.}
-\date{CMIS 2018, Biella, Italy}
+% \title{Formulations and extensive comparisons of 3D frictional contact solvers based on performance profiles}
+% \author{Vincent Acary, Maurice Br\'emond, Olivier Huber \\ INRIA Rh\^one--Alpes, Grenoble.}
+% \date{CMIS 2018, Biella, Italy}
+
+
+\title{Solving  3D frictional contact problem}
+\author{Vincent Acary. \quad INRIA \\ Centre de recherche de l'Université Grenoble Alpes}
+\date{CEA meeting, April 2024}
+
+
 
 \setbeamertemplate 
 {footline} 
@@ -53,13 +67,13 @@
 
 \graphicspath{{../figure/}}
 
-\includeonly{%
-%  introduction,
-  fc3d,
-  existence,
-  numerics,
-  comparison
-}
+% \includeonly{%
+% %  introduction,
+%   fc3d,
+%   existence,
+%   numerics,
+%   comparison
+% }
 
 
 
@@ -80,7 +94,11 @@
 
 \renewcommand{\tr}[1]{\textcolor{red}{#1}}
 
+
+
+
 \begin{document}
+
 
 \frame{\titlepage
   \begin{center}
@@ -92,81 +110,55 @@
 
 
 
+\section{Introduction}
 
-%% \section{Introduction}
-%% \frame
-%% {
-%%   \frametitle{Introduction}
-%% }
-
-% \begin{frame}
-%   \frametitle{Bio.}
-%   \begin{block}
-%     {Team-Project BIPOP. INRIA. Centre de Grenoble Rh\^one--Alpes}
-%     ``Jean Jacques Moreau's fan club''. Convex Analysis and Nonsmooth Mechanics.
-%     \begin{itemize}
-%     \item Scientific leader :  Bernard Brogliato
-%     %\item $8$ permanents, $5$ PhD, $4$ Post-docs, $3$ Engineer,  
-%     \item Nonsmooth dynamical systems :
-%       Modeling, analysis, simulation and Control.
-%     \item  Nonsmooth Optimization :    
-%       Analysis \& algorithms. (Claude Lemar\'echal \& J\'er\^ome Malick)
-%     \end{itemize}
-%   \end{block}
-%     \begin{block}
-%       {Personal research themes}
-%     \begin{itemize}
-%     \item Nonsmooth Dynamical systems. Higher order Moreau's sweeping process. Complementarity systems and Filippov systems
-%     \item Modeling and simulation of switched electrical circuits
-%     \item Discretization method for sliding mode control and Optimal control.
-%     \item Formulation and numerical solvers for Coulomb's friction and Signorini's problem. Second order cone programming.
-%     \item Time--integration techniques for nonsmooth mechanical systems%: Mixed higher order schemes, Time--discontinuous Galerkin methods, Projected time--stepping schemes and generalized $\alpha$--schemes.   
-%     \end{itemize}
-%   \end{block}
-% \end{frame}
+\begin{frame}
+%  \frametitle{Introduction. Bio.}
+  \begin{block}
+    {Team-Project TRIPOP.\\ INRIA. Centre de recherche de l'Université Grenoble Alpes (UGA)}
+    ``Jean Jacques Moreau's fan club''. Convex Analysis and Nonsmooth Mechanics.
+    \begin{itemize}
+    %\item Scientific leader :  Bernard Brogliato
+    \item $6$ permanents, $6$ PhD, $4$ Post-docs, $3$ Engineer,
+    \item Nonsmooth simulation and numerical modeling for natural gravitational risk in mountains.
+    \item Nonsmooth dynamical systems :
+      Modeling, analysis, simulation and Control.
+    \end{itemize}
+  \end{block}
+    \begin{block}
+      {Current Personal research themes}
+    \begin{itemize}
+    \item Nonsmooth Dynamical systems in the large:\\
+      Higher order Moreau's sweeping process. Complementarity systems and Filippov systems
+    \item Time--integration techniques for nonsmooth mechanical systems:\\ Mixed higher order schemes, Time--discontinuous Galerkin methods, Projected time--stepping schemes and generalized $\alpha$--schemes.
+    %\item Modeling and simulation of switched electrical circuits
+    %\item Discretization method for sliding mode control and Optimal control.
+    \item Formulation and numerical solvers for Coulomb's friction and Signorini's problem.% Second order cone programming.
+    \item Non-associated plasticity of geomaterials with contact, friction and impact
+    \item Coupling SPH/DEM/FEM and MPM/DEM/FEM
+    \item Data-driven modeling and data assimilation.
+    \end{itemize}
+  \end{block}
+\end{frame}
 
 
 
-%\section{Outline}
-% \begin{frame}
-%   \frametitle{Outline}
-%   \begin{block}{Outline}
-%     \begin{itemize}
-%     \item Basic facts on piecewise linear modeling of gene regulatory network
-%     \item Notion of Filippov solutions
-%       \begin{itemize}
-%       \item Filippov extension
-%       \item Aizerman \& Pyatnitskii extension
-%       \end{itemize}
-%     \item Mixed Complementarity Systems formulation
-%     \item Numerical time--integration
-%     \item Illustrations 
-%     \item Conclusions \& perspectives.
-%     \end{itemize}
-%   \end{block}
-% \end{frame}
-
-%\frame{\tableofcontents}
+\frame{\tableofcontents}
 
 
 %\include{introduction}
 %\frame{\tableofcontents}
 
 \include{fc3d}
-%\frame{\tableofcontents}
+\frame{\tableofcontents}
 
-%\include{existence}
-%\frame{\tableofcontents}
+\include{existence}
+\frame{\tableofcontents}
 
 \include{numerics}
-%\frame{\tableofcontents}
+\frame{\tableofcontents}
 
 \include{comparison}
-
-
-
-
-
 
 
 
@@ -227,7 +219,7 @@
   All the results may be found in \cite{Acary.ea_Chapter2018}\\[1mm]
   
   {\em On solving frictional contact problems: formulations and comparisons of numerical methods. Acary, Br\'emond, Huber.
-  Advanced {T}opics in {N}onsmooth {D}ynamics, Acary, V. and Br\"uls. O. and Leine, R. (eds). Springer Verlag. 2018}
+    Advanced {T}opics in {N}onsmooth {D}ynamics, Acary, V. and Br\"uls. O. and Leine, R. (eds). Springer Verlag. 2018}
 
   \vspace{1cm}
   \centerline{\textcolor{red}{ Thank you for your attention.}}
@@ -235,9 +227,9 @@
   \begin{center}
     Thank to the collaborators for stimulating discussions:\\[2mm]
     
-    Pierre Alart, Paul Armand, Florent Cadoux, Frédéric Dubois,\\
-    Claude Lémare\'echal, Jérôme Malick and Mathieu Renouf 
-\end{center}
+    Pierre Alart, Paul Armand, Florent Cadoux, Fr\'ed\'eric Dubois,\\
+    Claude Le\'emare\'echal, J\'ero\^ome Malick and Mathieu Renouf 
+  \end{center}
 }
 
  
@@ -246,9 +238,6 @@
 \bibliographystyle{plainnat}
 \bibliography{./biblio/String,./biblio/NonSmooth,./biblio/Math,./biblio/Multibody,./biblio/Fem.bib,./biblio/Dae.bib,./biblio/Meca,./biblio/AnaNum.bib,./biblio/Math-Impact,./biblio/Contact,./biblio/Optim,./biblio/Cp}
 }
-
-%\include{PWL}
-
 
 \end{document}
 

@@ -1,6 +1,24 @@
 
 \section{Numerical solution procedure.}
 \label{Sec:Numerics}
+
+\frame{
+  \frametitle{Numerical solution procedure}
+  \begin{itemize}
+  \item VI based methods
+  \item Nonsmooth Equations based methods
+  \item Matrix block--splitting and projection based algorithms
+  \item Proximal point algorithms
+  \item Optimization based approach
+  \item Interior point techniques
+  \end{itemize}
+}
+
+
+
+
+
+
 \subsection{VI based methods}
 
 \frame{
@@ -13,7 +31,7 @@
     $$\sf z_{k+1} \leftarrow P_X(z_{k}-\rho_k\,F(P_X(z_k-\rho_k F(z_k))))$$
   \end{itemize}
 \end{block}
-With fixed $\rho$, we get the Uzawa Algorithm of De Sacx\'e-Feng\hfill\tr{\sf{[FP-DS]}}
+With fixed $\rho$, we get the Uzawa Algorithm of De Saxc\'e-Feng\hfill\tr{\sf{[FP-DS]}}
 \begin{block}
 {Self-adaptive procedure for $\rho_k$}\hfill\tr{\sf{[UPK]}}
  \begin{equation*}
