@@ -56,7 +56,7 @@ With fixed $\rho$, we get the Uzawa Algorithm of De Saxc\'e-Feng\hfill\tr{\sf{[F
 
    $$z_{k+1}  =  z_k -  \Phi^{-1}(z_k) (G(z_k)), \quad\quad\Phi(z_k) \in \partial G(z_k)$$
    \begin{itemize}
-   \item Alart--Curnier Formulation~\cite{Alart.Curnier1991}\hfill\tr{\sf{[NSN-AC]}}
+   \item Alart--Curnier Formulation~\citep{Alart.Curnier1991}\hfill\tr{\sf{[NSN-AC]}}
      \begin{equation*}
        \label{eq:CKPS-1}
        \begin{cases}
@@ -100,7 +100,7 @@ With fixed $\rho$, we get the Uzawa Algorithm of De Saxc\'e-Feng\hfill\tr{\sf{[F
 
 \subsection{Matrix block--splitting and projection based algorithms}
 \frame{
-  \frametitle{Matrix block-splitting and projection based algorithms \cite{Moreau1994,Jean.Touzot1988}}
+  \frametitle{Matrix block-splitting and projection based algorithms \citep{Moreau1994,Jean.Touzot1988}}
   \begin{block}{Block splitting algorithm with $W^{\alpha\alpha}\in \RR^3$\hfill\tr{\sf{[NSGS-*]}}}
     \begin{equation}\label{EQ:NSGS-local1}
       \left\{ 
@@ -130,7 +130,7 @@ With fixed $\rho$, we get the Uzawa Algorithm of De Saxc\'e-Feng\hfill\tr{\sf{[F
 
 \subsection{Proximal point algorithms}
 \frame{
-  \frametitle{Proximal point technique \cite{Moreau1962,Moreau1965,Rockafellar1976}}
+  \frametitle{Proximal point technique \citep{Moreau1962,Moreau1965,Rockafellar1976}}
   \begin{block}{Principle}
     We want to solve
     \begin{equation}
@@ -201,10 +201,11 @@ With fixed $\rho$, we get the Uzawa Algorithm of De Saxc\'e-Feng\hfill\tr{\sf{[F
     \begin{itemize}
     \item VI solvers: Fixed point, Extra-Gradient, Uzawa
     \item VI based projection/splitting algorithm: NSGS, PSOR
-    \item Nonsmooth Newton technique: Alart-Curnier, Jean-Moreau, Natural map, Ficher-Bursmeister
+    \item Semismooth Newton methods:\\
+      Alart-Curnier, Jean-Moreau, Natural map, Ficher-Bursmeister
     \item Proximal point algorithm
     \item Optimization based solvers. Panagiotopoulos, Tresca, SOCQP
-    \item \ldots
+    \item \tr{Interior point methods}, \ldots
     \end{itemize}
   \end{block}
   \begin{block}{Collection of routines for optimization and complementarity problems}

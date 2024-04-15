@@ -46,7 +46,19 @@
 
 \setbeamertemplate{theorem}[ams style]
 \setbeamertemplate{theorems}[numbered]
-
+\usepackage[backend=biber,style=authoryear,bibstyle=authoryear,citestyle=authoryear-comp,natbib=true,maxcitenames=2,uniquelist=false,uniquename=false,bibencoding=utf8]{biblatex}
+\addbibresource{./biblio/String.bib}
+\addbibresource{./biblio/NonSmooth.bib}
+\addbibresource{./biblio/Math.bib}
+\addbibresource{./biblio/Multibody.bib}
+\addbibresource{./biblio/Fem.bib}
+\addbibresource{./biblio/Dae.bib}
+\addbibresource{./biblio/Meca.bib}
+\addbibresource{./biblio/AnaNum.bib}
+\addbibresource{./biblio/Math-Impact.bib}
+\addbibresource{./biblio/Contact.bib}
+\addbibresource{./biblio/Optim.bib}
+\addbibresource{./biblio/Cp.bib}
 
 \input{theme.tex}
 
@@ -55,10 +67,17 @@
 % \date{CMIS 2018, Biella, Italy}
 
 
-\title{Solving  3D frictional contact problem}
-\author{Vincent Acary. \quad INRIA \\ Centre de recherche de l'Université Grenoble Alpes}
-\date{CEA meeting, April 2024}
+\title[Solving  3D frictional contact problem]{Solving  3D frictional contact problem \\[5mm]
+  \large{CEA Meeting, April 2024}}
 
+\author{Vincent Acary}
+\date{
+   \includegraphics[height=0.15\textheight]{./logos/inr_logo_rouge.jpg}\hfill
+   \includegraphics[height=0.15\textheight]{./logos/logo_ljk2.pdf}\hfill
+   \includegraphics[height=0.15\textheight]{./logos/logo_uga_transparent.png}\\
+  
+ }
+ \institute{Inria -  Centre de l'Université Grenoble Alpes - Laboratoire Jean Kuntzmann}
 
 
 \setbeamertemplate 
@@ -101,13 +120,7 @@
 
 
 \frame{\titlepage
-  \begin{center}
-    \includegraphics[width=0.3\textwidth]{../RR-Inria-5.1/logo-inria.png}
-  \end{center}
-  $$ $$
 }
-
-
 
 
 \section{Introduction}
@@ -165,17 +178,23 @@
 \section{Conclusions \& Perspectives}
 \frame{
 \frametitle{Conclusions \& Perspectives}
-\begin{block}{Conclusions}
+
+\only<1>
+{\begin{block}{Conclusions}
   \begin{enumerate}
-  \item A bunch of articles in the literature
+  \item A bunch of articles in the literature \\
+    47000 articles since 2000 on ``Coulomb friction numerical method'' in Google Scholar.
   \item No ``Swiss--knife'' solution : choose efficiency OR robustness  
   \item Newton--based solvers solve efficiently some problems, but robustness issues
   \item First order iterative methods ($\sf VI, NSGS, PSOR$) solves all the problems but very slowly  
-  \item The rank of the $H$ matrix (ratio number of contacts unknows/number of d.o.f) plays an important role on the robustness
-  \item Optimisation-based  and proximal-point algorithm solvers are  interesting but it is difficult to forecast their efficiency.
+  \item The rank of the $H$ matrix ($\approx$ratio number of contacts unknows/number of d.o.f) plays an important role on the robustness
+  \item Optimisation-based  and proximal-point algorithm solvers are  interesting but it is difficult to forecast theirs efficiencies.
+  \item Need for a second order method when $H$ is rank-deficient (IPM?)
   \end{enumerate}
 \end{block}
-\vskip-3mm
+}
+\only<2>
+{
 \begin{block}{Perspectives}
   \begin{enumerate}
   \item Develop new algorithm and compare other algorithm in the literature. \\
@@ -184,7 +203,7 @@
   \item Complete the collection of benchmarks  \ding{220} FCLIB
   \end{enumerate}
 \end{block}
-
+}
 }
 
 \subsection{FCLIB : a collection of discrete 3D Frictional Contact (FC) problems}
@@ -228,15 +247,14 @@
     Thank to the collaborators for stimulating discussions:\\[2mm]
     
     Pierre Alart, Paul Armand, Florent Cadoux, Fr\'ed\'eric Dubois,\\
-    Claude Le\'emare\'echal, J\'ero\^ome Malick and Mathieu Renouf 
+    Claude L\'emar\'echal, J\'ero\^ome Malick and Mathieu Renouf 
   \end{center}
 }
 
  
 \def\newblock{}
 {\scriptsize
-\bibliographystyle{plainnat}
-\bibliography{./biblio/String,./biblio/NonSmooth,./biblio/Math,./biblio/Multibody,./biblio/Fem.bib,./biblio/Dae.bib,./biblio/Meca,./biblio/AnaNum.bib,./biblio/Math-Impact,./biblio/Contact,./biblio/Optim,./biblio/Cp}
+\printbibliography
 }
 
 \end{document}
