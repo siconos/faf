@@ -262,7 +262,7 @@ class Caller():
                     print('null character x00 in digest ' , digest)
                     print('Warning: the attribute is not created')
                 else:
-                    attrs.create('digest', digest)
+                    attrs.create('digest', str(digest).encode('utf-8'))
                 attrs.create('info', info)
                 attrs.create('iter', iter)
                 attrs.create('err', err)
