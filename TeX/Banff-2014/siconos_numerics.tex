@@ -1,0 +1,248 @@
+\section{Siconos/Numerics}
+\frame{
+  \frametitle{Siconos/Numerics}
+  \begin{block}
+    {\sc Siconos} Open source software for modelling and simulation of
+    nonsmooth systems
+  \end{block}
+  \begin{block} {\sc Siconos/Numerics}
+    Collection of C routines to solve FC3D problems in dense, sparse or  block sparse versions:
+    \begin{itemize}
+    \item VI solvers: Fixed point, Extra-Gradient, Uzawa
+    \item VI based projection/splitting algorithm: NSGS, PSOR
+    \item Semismooth Newton methods:\\
+      Alart-Curnier, Jean-Moreau, Natural map, Ficher-Bursmeister
+    \item Proximal point algorithm
+    \item Optimization based solvers. Panagiotopoulos, Tresca, SOCQP
+    \item \tr{Interior point methods}, \ldots
+    \end{itemize}
+  \end{block}
+  \begin{block}{Collection of routines for optimization and complementarity problems}
+    \begin{itemize}
+    \item LCP solvers (iterative and pivoting (Lemke))
+    \item Standard QP solvers (Projected Gradient (Calamai \& Mor\'e), Projected CG (Mor\'e \& Toraldo), active set technique)
+    \item linear and nonlinear programming solvers.
+    \end{itemize}
+  \end{block}
+}
+\begin{frame}[fragile]
+  \frametitle{Siconos/Numerics}
+  \begin{block}
+    {Implementation details}
+     \begin{itemize}
+     \item Matrix format.
+       \begin{itemize}
+       \item dense (column-major)
+       \item sparse matrices (triplet, CSR, CSC)
+       \end{itemize}
+     \item Linear algebra libraries and solvers.
+       \begin{itemize}
+       \item BLAS/LAPACK, MKL
+       \item MUMPS, SUPERLU, UMFPACK,
+       \item PETSc
+       \end{itemize}
+     \item Python interface (swig (pybind11 coming soon))
+     \item Generic structure for problem, driver and options
+     \end{itemize}
+   \end{block}
+        {\small
+        \begin{minted}{c}
+          int fc3d_driver(FrictionContactProblem* problem,
+                          double* reaction,
+                          double* velocity,
+                          SolverOptions* numerics_solver_options);
+       \end{minted}
+     }
+\end{frame}
+
+
+
+% \frame{
+%   \frametitle{Siconos/Numerics}
+
+  
+% }
+\begin{frame}[fragile]
+  \frametitle{C structure to encode the problem} 
+  {
+    \begin{block}{Reduced discrete frictional contact problem}
+      {\small
+        \begin{minted}{cpp}
+          struct FrictionContactProblem {
+            /** dimension of the contact space (3D or 2D ) */
+            int dimension;
+            /** the number of contacts \f$ n_c \f$ */
+            int numberOfContacts;
+            /** \f$ {M} \in {{\mathrm{I\!R}}}^{n \times n} \f$,
+            a matrix with \f$ n = d  n_c \f$ stored in NumericsMatrix structure */
+            NumericsMatrix *M;
+            /** \f$ {q} \in {{\mathrm{I\!R}}}^{n} \f$ */
+            double *q;
+            /** \f$ {\mu} \in {{\mathrm{I\!R}}}^{n_c} \f$, vector of friction coefficients
+            (\f$ n_c = \f$ numberOfContacts) */
+            double *mu;
+          };
+        \end{minted}
+      }
+    \end{block}
+  }
+\end{frame}
+\begin{frame}[fragile]
+  \frametitle{C structure to encode the problem}
+  % \only<1>
+  {
+    \begin{block}{Global discrete frictional contact problem}
+      {\small
+        \begin{minted}{cpp}
+          struct GlobalFrictionContactProblem {
+            /** dimension \f$ d=2 \f$ or \f$ d=3 \f$ of the contact space (3D or 2D ) */
+            int dimension;
+            /** the number of contacts \f$ n_c \f$ */
+            int numberOfContacts;
+            /** \f$ M \in {\mathrm{I\!R}}^{n \times n} \f$,
+            a matrix with \f$ n\f$ stored in NumericsMatrix structure */
+            NumericsMatrix *M;
+            /**  \f$ {H} \in {{\mathrm{I\!R}}}^{n \times m} \f$,
+            a matrix with \f$ m = d  n_c\f$ stored in NumericsMatrix structure */
+            NumericsMatrix *H;
+            /** \f$ {q} \in {{\mathrm{I\!R}}}^{n} \f$ */
+            double *q;
+            /** \f$ {b} \in {{\mathrm{I\!R}}}^{m} \f$ */
+            double *b;
+            /** \f$ {\mu} \in {{\mathrm{I\!R}}}^{n_c} \f$, vector of friction
+            coefficients
+            (\f$ n_c = \f$ numberOfContacts) */
+            double *mu;
+          };
+        \end{minted}
+      }
+    \end{block}
+  }
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{A very basic example in C}
+    {\small
+      \begin{minted}{cpp}
+// Problem Definition
+int NC = 3;//Number of contacts
+double M[81] = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
+double q[9] = { -1, 1, 3, -1, 1, 3, -1, 1, 3};
+double mu[3] = {0.1, 0.1, 0.1};
+
+FrictionContactProblem NumericsProblem;
+NumericsProblem.numberOfContacts = NC;
+NumericsProblem.dimension = 3;
+NumericsProblem.mu = mu;
+NumericsProblem.q = q;
+
+NumericsMatrix *MM = (NumericsMatrix*)malloc(sizeof(NumericsMatrix));
+MM->storageType = NM_DENSE;
+MM->matrix0 = M;
+MM->size0 = 3 * NC;
+MM->size1 = 3 * NC;
+NumericsProblem.M = MM;
+\end{minted}
+}
+\end{frame}
+  
+\begin{frame}[fragile]
+  \frametitle{A basic example in C}
+    {\small
+      \begin{minted}{cpp}
+// Variable declaration
+double *reaction = (double*)calloc(3 * NC, sizeof(double));
+double *velocity = (double*)calloc(3 * NC, sizeof(double));
+
+// Numerics and Solver Options
+SolverOptions *numerics_solver_options = solver_options_create(SICONOS_FRICTION_3D_NSGS);
+numerics_solver_options->iparam[SICONOS_IPARAM_MAX_ITER] = 1000;
+numerics_solver_options->dparam[SICONOS_DPARAM_TOL] = 100*DBL_EPSILON;
+// numerics_set_verbose(2);
+
+// Driver call
+fc3d_driver(&NumericsProblem,
+            reaction, velocity,
+            numerics_solver_options);
+        
+      \end{minted}
+    }
+  \end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{A basic example in Python}
+    {\small
+      \begin{minted}{python}
+import numpy as np
+import siconos.numerics as sn
+
+
+NC = 1
+M = np.eye(3 * NC)
+q = np.array([-1.0, 1.0, 3.0])
+mu = np.array([0.1])
+FCP = sn.FrictionContactProblem(3, M, q, mu)
+
+
+reactions = np.array([0.0, 0.0, 0.0])
+velocities = np.array([0.0, 0.0, 0.0])
+sn.numerics_set_verbose(1)
+
+      \end{minted}
+    }
+  \end{frame}
+\begin{frame}[fragile]
+  \frametitle{A basic example in Python}
+    {\small
+      \begin{minted}{python}
+def solve(problem, solver, options):
+    """Solve problem for a given solver"""
+    reactions[...] = 0.0
+    velocities[...] = 0.0
+    r = solver(problem, reactions, velocities, options)
+    assert options.dparam[sn.SICONOS_DPARAM_RESIDU] < options.dparam[sn.SICONOS_DPARAM_TOL]
+    assert not r
+
+def test_fc3dnsgs():
+    """Non-smooth Gauss Seidel, default"""
+    SO = sn.SolverOptions(sn.SICONOS_FRICTION_3D_NSGS)
+    solve(FCP, sn.fc3d_nsgs, SO)
+
+def test_fc3dlocalac():
+    """Non-smooth Gauss Seidel, Alart-Curnier as local solver."""
+    SO = sn.SolverOptions(sn.SICONOS_FRICTION_3D_NSN_AC)
+    solve(FCP, sn.fc3d_nonsmooth_Newton_AlartCurnier, SO)
+
+def test_fc3dfischer():
+    """Non-smooth Newton, Fischer-Burmeister."""
+    SO = sn.SolverOptions(sn.SICONOS_FRICTION_3D_NSN_FB)
+    solve(FCP, sn.fc3d_nonsmooth_Newton_FischerBurmeister, SO)
+
+if __name__ == "__main__":
+    test_fc3dnsgs()
+    test_fc3dlocalac()
+    test_fc3dfischer()
+    
+
+      \end{minted}
+    }
+  \end{frame}
+
+
+
+
+
+
+
+  
+\frame{
+  \frametitle{Siconos/Numerics}
+  \begin{block}{\url{http://siconos.gforge.inria.fr}}
+    use and contribute ...
+  \end{block}
+}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "s"
+%%% End:

@@ -33,6 +33,8 @@
 % \usepackage{algorithmic}
 
 
+\usepackage{minted}
+\usepackage{color}
 
 \input{macro.tex}
 
@@ -67,8 +69,8 @@
 % \date{CMIS 2018, Biella, Italy}
 
 
-\title[Solving  3D frictional contact problem]{Solving  3D frictional contact problem \\[5mm]
-  \large{CEA Meeting, April 2024}}
+\title[Siconos/numerics and FCLIB]{Siconos/numerics and FCLIB: a collection of solvers and benchmarks for solving frictional contact problems \\[5mm]
+  \large{CMIS,  May 2024}}
 
 \author{Vincent Acary}
 \date{
@@ -123,36 +125,36 @@
 }
 
 
-\section{Introduction}
+%\section{Introduction}
 
-\begin{frame}
-%  \frametitle{Introduction. Bio.}
-  \begin{block}
-    {Team-Project TRIPOP.\\ INRIA. Centre de recherche de l'Université Grenoble Alpes (UGA)}
-    ``Jean Jacques Moreau's fan club''. Convex Analysis and Nonsmooth Mechanics.
-    \begin{itemize}
-    %\item Scientific leader :  Bernard Brogliato
-    \item $6$ permanents, $6$ PhD, $4$ Post-docs, $3$ Engineer,
-    \item Nonsmooth simulation and numerical modeling for natural gravitational risk in mountains.
-    \item Nonsmooth dynamical systems :
-      Modeling, analysis, simulation and Control.
-    \end{itemize}
-  \end{block}
-    \begin{block}
-      {Current Personal research themes}
-    \begin{itemize}
-    \item Nonsmooth Dynamical systems in the large:\\
-      Higher order Moreau's sweeping process. Complementarity systems and Filippov systems
-    \item Time--integration techniques for nonsmooth mechanical systems:\\ Mixed higher order schemes, Time--discontinuous Galerkin methods, Projected time--stepping schemes and generalized $\alpha$--schemes.
-    %\item Modeling and simulation of switched electrical circuits
-    %\item Discretization method for sliding mode control and Optimal control.
-    \item Formulation and numerical solvers for Coulomb's friction and Signorini's problem.% Second order cone programming.
-    \item Non-associated plasticity of geomaterials with contact, friction and impact
-    \item Coupling SPH/DEM/FEM and MPM/DEM/FEM
-    \item Data-driven modeling and data assimilation.
-    \end{itemize}
-  \end{block}
-\end{frame}
+% \begin{frame}
+% %  \frametitle{Introduction. Bio.}
+%   \begin{block}
+%     {Team-Project TRIPOP.\\ INRIA. Centre de recherche de l'Université Grenoble Alpes (UGA)}
+%     ``Jean Jacques Moreau's fan club''. Convex Analysis and Nonsmooth Mechanics.
+%     \begin{itemize}
+%     %\item Scientific leader :  Bernard Brogliato
+%     \item $6$ permanents, $6$ PhD, $4$ Post-docs, $3$ Engineer,
+%     \item Nonsmooth simulation and numerical modeling for natural gravitational risk in mountains.
+%     \item Nonsmooth dynamical systems :
+%       Modeling, analysis, simulation and Control.
+%     \end{itemize}
+%   \end{block}
+%     \begin{block}
+%       {Current Personal research themes}
+%     \begin{itemize}
+%     \item Nonsmooth Dynamical systems in the large:\\
+%       Higher order Moreau's sweeping process. Complementarity systems and Filippov systems
+%     \item Time--integration techniques for nonsmooth mechanical systems:\\ Mixed higher order schemes, Time--discontinuous Galerkin methods, Projected time--stepping schemes and generalized $\alpha$--schemes.
+%     %\item Modeling and simulation of switched electrical circuits
+%     %\item Discretization method for sliding mode control and Optimal control.
+%     \item Formulation and numerical solvers for Coulomb's friction and Signorini's problem.% Second order cone programming.
+%     \item Non-associated plasticity of geomaterials with contact, friction and impact
+%     \item Coupling SPH/DEM/FEM and MPM/DEM/FEM
+%     \item Data-driven modeling and data assimilation.
+%     \end{itemize}
+%   \end{block}
+% \end{frame}
 
 
 
@@ -165,13 +167,23 @@
 \include{fc3d}
 \frame{\tableofcontents}
 
-\include{existence}
-\frame{\tableofcontents}
+% \include{existence}
+% \frame{\tableofcontents}
 
 \include{numerics}
 \frame{\tableofcontents}
 
-\include{comparison}
+
+
+\include{siconos_numerics}
+
+
+%\include{comparison}
+
+\frame{\tableofcontents}
+
+\include{fclib}
+
 
 
 
@@ -206,31 +218,6 @@
 }
 }
 
-\subsection{FCLIB : a collection of discrete 3D Frictional Contact (FC) problems}
-
-\frame{
-  \frametitle{FCLIB : a collection of discrete 3D Frictional Contact (FC) problems}
-  Our inspiration: MCPLIB or CUTEst
-  \begin{block}
-    {What is FCLIB ?}
-    \begin{itemize}
-    \item A open source collection of Frictional Contact (FC) problems
-      stored in a specific HDF5 format 
-    \item A open source light implementation of Input/Output functions
-      in C Language to read and write problems (Python and Matlab coming soon)
-    \end{itemize}
-  \end{block}
-
-
-  \begin{block}
-    {Goals of the project}
-    Provide a standard framework for testing available and new algorithms for solving discrete frictional contact problems share common formulations of problems in order to exchange data
-\end{block}
-\begin{block}
-    {Call for contribution}
-    \alert{\url{http://fclib.gforge.inria.fr}}
-  \end{block}
-}
 
 \frame
 {

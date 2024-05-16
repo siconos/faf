@@ -1,5 +1,5 @@
 
-\section{Numerical solution procedure.}
+\section{Numerical methods}
 \label{Sec:Numerics}
 
 \frame{
@@ -189,38 +189,7 @@ With fixed $\rho$, we get the Uzawa Algorithm of De Saxc\'e-Feng\hfill\tr{\sf{[F
     Fixed point or Newton Method on $F(s)=s$
   \end{itemize}
 }
-\subsection{Siconos/Numerics}
-\frame{
-  \frametitle{Siconos/Numerics}
-  \begin{block}
-    {\sc Siconos} Open source software for modelling and simulation of
-    nonsmooth systems
-  \end{block}
-  \begin{block} {\sc Siconos/Numerics}
-    Collection of C routines to solve FC3D problems in dense, sparse or  block sparse versions:
-    \begin{itemize}
-    \item VI solvers: Fixed point, Extra-Gradient, Uzawa
-    \item VI based projection/splitting algorithm: NSGS, PSOR
-    \item Semismooth Newton methods:\\
-      Alart-Curnier, Jean-Moreau, Natural map, Ficher-Bursmeister
-    \item Proximal point algorithm
-    \item Optimization based solvers. Panagiotopoulos, Tresca, SOCQP
-    \item \tr{Interior point methods}, \ldots
-    \end{itemize}
-  \end{block}
-  \begin{block}{Collection of routines for optimization and complementarity problems}
-    \begin{itemize}
-    \item LCP solvers (iterative and pivoting (Lemke))
-    \item Standard QP solvers (Projected Gradient (Calamai \& Mor\'e), Projected CG (Mor\'e \& Toraldo), active set technique)
-    \item linear and nonlinear programming solvers.
-    \end{itemize}
-  \end{block}
-
-  \begin{block}{\url{http://siconos.gforge.inria.fr}}
-    use and contribute ...
-  \end{block}
-}
-
+\subsection{Interior point methods}
 
 
 

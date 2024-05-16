@@ -158,25 +158,25 @@
 \subsection{3D frictional contact problems}
 
 
-\frame{
-  \frametitle{3D frictional contact problem} 
-  \begin{block}{Multiple contact notation}
-    For each contact $\alpha \in \{1,\ldots n_c\}$, we have
-    \begin{itemize}
-    \item the local velocity : $u^\alpha \in \RR^3$, and
-      $$  u = [[u^\alpha]^\top, \alpha = 1\ldots n_c]^\top$$
-    \item the local  reaction vector $r^\alpha\in \RR^3$    
-      $$  r = [[r^\alpha]^\top, \alpha = 1\ldots n_c]^\top$$
-    \item the local  Coulomb cone    $$K^{\alpha}  = \{r^\alpha, \|r^\alpha_\t \| \leq \mu^\alpha |r^\alpha_\n| \} \subset \RR^3$$
-       and the set $K$ is the cartesian product of Coulomb's friction cone at each contact, that 
-      \begin{equation}
-        \label{eq:CC}
-        K = \prod_{\alpha=1\ldots n_c} K^{\alpha} 
-      \end{equation}
-      and $K^\star$ is dual.
-    \end{itemize} \end{block}
+% \frame{
+%   \frametitle{3D frictional contact problem} 
+%   \begin{block}{Multiple contact notation}
+%     For each contact $\alpha \in \{1,\ldots n_c\}$, we have
+%     \begin{itemize}
+%     \item the local velocity : $u^\alpha \in \RR^3$, and
+%       $$  u = [[u^\alpha]^\top, \alpha = 1\ldots n_c]^\top$$
+%     \item the local  reaction vector $r^\alpha\in \RR^3$    
+%       $$  r = [[r^\alpha]^\top, \alpha = 1\ldots n_c]^\top$$
+%     \item the local  Coulomb cone    $$K^{\alpha}  = \{r^\alpha, \|r^\alpha_\t \| \leq \mu^\alpha |r^\alpha_\n| \} \subset \RR^3$$
+%        and the set $K$ is the cartesian product of Coulomb's friction cone at each contact, that 
+%       \begin{equation}
+%         \label{eq:CC}
+%         K = \prod_{\alpha=1\ldots n_c} K^{\alpha} 
+%       \end{equation}
+%       and $K^\star$ is dual.
+%     \end{itemize} \end{block}
   
-}
+% }
 
 
 
@@ -233,62 +233,65 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
   \end{block}
   
 }
-\frame{
-  \frametitle{3D frictional contact problems} 
-  \begin{block}{Wide range of applications}
-    Origin of the linear relations~\nocite{Acary.Cadoux2013}.
-  $$  M v = {H} {r} + {f},\quad u = H^\top v + w$$
-  \begin{itemize}
-  \item Time--discretization of the discrete dynamical mechanical
-    system. Event--capturing or event--detecting  time--stepping schemes
-  \item Time--discretization and space discretization of the
-    dynamic problem of solids
-  \item Space discretization of the quasi--static problem of solids.
-  \item HBM, Flexible MBS, ...
-  \end{itemize}
-\end{block}
-\ding{220}  These problems are really representative of a lot of applications with a possible linearization (Newton procedure)\\
-\ding{220}  Nonlinear version is also possible\\
+% \frame{
+%   \frametitle{3D frictional contact problems} 
+%   \begin{block}{Wide range of applications}
+%     Origin of the linear relations~\nocite{Acary.Cadoux2013}.
+%   $$  M v = {H} {r} + {f},\quad u = H^\top v + w$$
+%   \begin{itemize}
+%   \item Time--discretization of the discrete dynamical mechanical
+%     system. Event--capturing or event--detecting  time--stepping schemes
+%   \item Time--discretization and space discretization of the
+%     dynamic problem of solids
+%   \item Space discretization of the quasi--static problem of solids.
+%   \item HBM, Flexible MBS, ...
+%   \end{itemize}
+% \end{block}
+% \ding{220}  These problems are really representative of a lot of applications with a possible linearization (Newton procedure)\\
+% \ding{220}  Nonlinear version is also possible\\
+% }
+
+% \subsection{From the mathematical programming point of view}
+
+% \frame{
+%   \frametitle{From the mathematical programming point of view} 
+%   \begin{block}{Nonmonotone and nonsmooth SOCCP}
+%     \begin{equation}
+%       \label{eq:soccp3}
+%       K^\star \ni Wr +q + g(Wr +q) \perp r \in K
+%     \end{equation}
+%     % \begin{itemize}
+%     % \item if we neglect $g(\cdot)$, (\ref{eq:soccp3}) is a gentle
+%     %   monotone SOCLCP that  is the KKT conditions of a convex SOCQP.
+%     % \item otherwise, the problem is nonmonotone and nonsmooth since
+%     %   $g()$ is nonsmooth
+%     % \end{itemize}
+%     % \ding{220} The problem is very hard to solve efficiently.
+%   \end{block}
+%    \begin{block}{Many possible reformulations}
+%      \begin{itemize}
+%      \item Variational inequality or normal cone inclusion
+%        \begin{equation}
+%          \label{eq:inclusion-1}
+%          -(W r +q + g(Wr+q)) \stackrel{\Delta}= - F(r)  \in N_K(r).
+%        \end{equation}
+%      \item Nonsmooth equations $G(r) = 0$\\
+%        % $\bullet$ The natural map $F^\nat$ associated with the VI (\ref{eq:inclusion-1}) $ F^\nat(z) = z - P_{X}(z-F(z))$.\\
+%        % $\bullet$ Variants of this map (Alart-Curnier formulation, \ldots)\\
+%        % $\bullet$  one of the SOCCP-functions. (Fisher-Bursmeister function)\\
+%      \item and many other ...
+%      \end{itemize}
+%    \end{block}
+%    \begin{block}{Numerical methods}
+%      \begin{itemize}
+%      \item  Numerous numerical methods exist. 
+%      \item Many of them are adaptations of mathematical programming methods.
+%      \end{itemize}
+%    \end{block}
+%  }
 
 
-}
-
-\subsection{From the mathematical programming point of view}
-
-\frame{
-  \frametitle{From the mathematical programming point of view} 
-  \begin{block}{Nonmonotone and nonsmooth SOCCP}
-    \begin{equation}
-      \label{eq:soccp3}
-      K^\star \ni Wr +q + g(Wr +q) \perp r \in K
-    \end{equation}
-    % \begin{itemize}
-    % \item if we neglect $g(\cdot)$, (\ref{eq:soccp3}) is a gentle
-    %   monotone SOCLCP that  is the KKT conditions of a convex SOCQP.
-    % \item otherwise, the problem is nonmonotone and nonsmooth since
-    %   $g()$ is nonsmooth
-    % \end{itemize}
-    % \ding{220} The problem is very hard to solve efficiently.
-  \end{block}
-   \begin{block}{Many possible reformulations}
-     \begin{itemize}
-     \item Variational inequality or normal cone inclusion
-       \begin{equation}
-         \label{eq:inclusion-1}
-         -(W r +q + g(Wr+q)) \stackrel{\Delta}= - F(r)  \in N_K(r).
-       \end{equation}
-     \item Nonsmooth equations $G(r) = 0$\\
-       % $\bullet$ The natural map $F^\nat$ associated with the VI (\ref{eq:inclusion-1}) $ F^\nat(z) = z - P_{X}(z-F(z))$.\\
-       % $\bullet$ Variants of this map (Alart-Curnier formulation, \ldots)\\
-       % $\bullet$  one of the SOCCP-functions. (Fisher-Bursmeister function)\\
-     \item and many other ...
-     \end{itemize}
-   \end{block}
-   \begin{block}{Numerical methods}
-     \begin{itemize}
-     \item  Numerous numerical methods exist. 
-     \item Many of them are adaptations of mathematical programming methods.
-     \end{itemize}
-   \end{block}
- }
-
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "s"
+%%% End:
