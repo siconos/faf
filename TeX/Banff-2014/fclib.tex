@@ -18,11 +18,251 @@
     {Goals of the project}
     Provide a standard framework for testing available and new algorithms for solving discrete frictional contact problems share common formulations of problems in order to exchange data
 \end{block}
-\begin{block}
-    {Call for contribution}
-    \alert{\url{http://fclib.gforge.inria.fr}}
-  \end{block}
 }
+
+\def\ssep{1.5mm}
+
+\frame{
+  
+\def\figillus{0.15\textheight}
+\begin{figure}
+  \centering
+  \subfloat[Cubes\_H8]{\includegraphics[height=\figillus]{figure/Cubes_H8_5.png}$\quad$}
+  \subfloat[LowWall\_FEM]{\includegraphics[height=\figillus]{figure/LowWall_FEM.png}}
+  \subfloat[Aqueduct\_PR]{\includegraphics[height=\figillus]{figure/Aqueduc_PR.png}$\quad$}
+  \subfloat[Bridge\_PR]{\includegraphics[height=\figillus]{figure/Bridge_PR_1.png}}\\
+  \subfloat[100\_PR\_Periobox]{\includegraphics[height=\figillus]{figure/100_PR_PerioBox.png}$\quad$}
+  \subfloat[945\_SP\_Box\_PL]{\includegraphics[height=\figillus]{figure/945_SP_Box_PL.png}}
+  \subfloat[Capsules]{\includegraphics[height=\figillus]{figure/Capsules.png}$\quad$}
+  \subfloat[Chain]{\includegraphics[height=\figillus]{figure/Chains.png}$\quad$}\\
+  \subfloat[KaplasTower]{\includegraphics[height=\figillus]{figure/KaplasTower.png}$\quad$}
+  \subfloat[BoxesStack]{$\quad$$\quad$\includegraphics[height=\figillus]{figure/BoxesStack.png}$\quad$$\quad$}
+  \subfloat[Chute\_1000, Chute\_4000, Chute\_local\_problems]{$\quad$$\quad$$\quad$$\quad$\includegraphics[height=\figillus]{figure/Chute_1000_light.jpg}$\quad$$\quad$$\quad$$\quad$}
+  \caption{Illustrations of the FClib test problems}
+  \label{fig:fclib}
+\end{figure}
+}
+
+% \begin{frame}
+%   \scriptsize
+%   \begin{table}
+%   \newcolumntype{H}{>{\setbox0=\hbox\bgroup}c<{\egroup}@{}} \begin{tabular}{|l|l|l|l|l|l|l|l|H@{\hspace*{-\tabcolsep}}|H@{\hspace*{-\tabcolsep}}|H@{\hspace*{-\tabcolsep}}|}
+%   \hline
+%   Test set
+%   & code
+%   & \parbox[t]{2mm}{\rotatebox[origin=c]{-90}{  friction coefficient $\mu$  }}
+%   & \parbox[t]{2mm}{\rotatebox[origin=c]{-90}{ \# of problems }}
+%   & \parbox[t]{2mm}{\rotatebox[origin=c]{-90}{ \# of d.o.f. }}
+%   & \parbox[t]{2mm}{\rotatebox[origin=c]{-90}{ \# of contacts }}
+%   & \parbox[t]{2mm}{\rotatebox[origin=c]{-90}{contact density $c$}}
+%   %& \parbox[t]{2mm}{\rotatebox[origin=c]{-90}{rank(W)}}
+%   & \parbox[t]{2mm}{\rotatebox[origin=c]{-90}{rank ratio(W)}}
+%   & \parbox[t]{2mm}{\rotatebox[origin=c]{-90}{cond(W)}}
+%   & \parbox[t]{2mm}{\rotatebox[origin=c]{-90}{cond(W) LSMR}}
+%   & \parbox[t]{2mm}{\rotatebox[origin=c]{-90}{$\mu(\|W-W^T\|)$}}
+%     \parbox[t]{2mm}{\rotatebox[origin=c]{-90}{symmetry of $W$}}
+%   \\
+%   \hline
+%   \hline
+%   Cubes\_H8\_2
+%   & LMGC90
+%   & 0.3
+%   & 15
+%   & 162
+%   & $[3:5]$
+%   & $[0.02:0.09]$
+% %  & $[6:15]$
+%   & 1
+%   & $[2.2.10^{1}:1.3.10^{3}]$
+%   & $[8.1.10^{5}:1.5.10^{6}]$
+%   & $3.2.10^{-4}$\\
+%    \hline
+%   Cubes\_H8\_5
+%   & LMGC90
+%   & 0.3
+%   & 50
+%   & 1296
+%   & $[17:36]$
+%   & $[0.02:0.09]$
+% %  & $[48:108]$
+%   & 1
+%   & $[3.3.10^{4}: 7.2.10^{4} ]$
+%   & $[1.3.10^{6}: 3.1.10^{6} ]$
+%   & $4.2.10^{-4}$\\
+%    \hline
+%   Cubes\_H8\_20
+%   & LMGC90
+%   & 0.3
+%   & 50
+%   & 55566
+%   & $[361:388]$
+%   & $[0.019:0.021]$
+% %  & $[1083:1164]$
+%   & 1
+%   & $[2.4.10^{5}: 2.5.10^{5} ]$
+%   & $[1.3.10^{6}: 5.2.10^{6} ]$
+%   &  $5.2.10^{-5}$\\
+%   \hline
+%   LowWall\_FEM
+%    & LMGC90
+%   & 0.83
+%   & 50
+%   & \{7212\}
+%   & $[624:688]$
+%   & $[0.28:0.29]$
+% %  & $[1873:2064]$
+%   & 1
+%   & --
+%   & $[9.3.10^{2}:5.0.10^{5}]$
+%   &  $5.2.10^{-2}$\\
+%   \hline
+%   Aqueduct\_PR
+%   & LMGC90
+%   & 0.8
+%   & 10
+%   & \{1932\}
+%   & $[4337:4811]$
+%   & $[6.81:7.47]$
+% %  & $[1934]$$
+%   & $[6.80:7.46]$
+%   & $[4.7.10^{7}:3.4.10^{8}]$
+%   & $[6.7.10^{1}:1.5.10^{2}]$
+%   &  $1.1.10^{-15}$\\
+%   \hline
+%   Bridge\_PR
+%   & LMGC90
+%   & 0.9
+%   & 50
+%   & \{138\}
+%   & $[70:108]$
+%   & $[1.5:2.3]$
+% %  & $[87:132]$
+%   & $[2.27:2.45]$
+%   & $[8.3.10^{4}:1.1.10^{5}]$
+%   & $[1.9.10^{3}:2.6.10^{4}]$
+%   & $5.8.10^{-18}$\\
+%   \hline
+%   100\_PR\_Periobox
+%   & LMGC90
+%   & 0.8
+%   & 106
+%   & \{606\}
+%   & $[14:578]$
+%   & $[0.2:3]$
+% %  & $[23:600]$
+%   & $[1.76:3.215]$
+%   & $[4.3.10^{2}:1.0.10^{6}]$
+%   & $[6.3.10^{5}:3.5.10^{6}]$
+%   & $8.8.10^{-20}$\\
+%   \hline
+%   945\_SP\_Box\_PL
+%   & LMGC90
+%   & 0.8
+%   & 60
+%   & \{5700\}
+%   & $[2322:5037]$
+%   & $[1.22:2.65]$
+% %  & $[5333:7617]$
+%   & $[1.0:2.66]$
+%   & $[2.2.10^{4}:4.4.10^{5}]$
+%   & $[2.9.10^{1}:9.2.10^{2}]$
+%   & $1.3.10^{-10}$\\
+%   \hline
+%   Capsules
+%   & Siconos
+%   & 0.7
+%   & 249
+%   & [96:600]
+%   & $[17:304]$
+%   & $[0.53:1.52]$
+% %  & $[47:587]$
+%   & $[1.08:1.55]$
+%   & --
+%   & $[4.8:1.6.10^{2}]$
+%   & $3.3.10^{-02}$\\
+%   \hline
+%   Chain
+%   & Siconos
+%   & 0.3
+%   & 242
+%   & \{60\}
+%   & $[8:28]$
+%   & $[0.5:1.3]$
+% %  & 53
+%   & $[1.05:1.6]$
+%   & $[7.4.10^{4}:4.0.10^{9}]$
+%   & $[1.5.10^{1}:4.7.10^{5}]$
+%   & $3.7.10^{-02}$\\
+%   \hline
+%   KaplasTower
+%   & Siconos
+%   & 0.7
+%   & 201
+%   & $[72:792]$
+%   & $[48:933]$
+%   & $[3.0:3.6]$
+% %  & $[72:792]$
+%   & $[2.0:3.53]$
+%   & $[67:2174]$
+%   & $[8:67]$
+%   & $5.4.10^{-08}$\\
+%   \hline
+%   BoxesStack
+%   & Siconos
+%   & 0.7
+%   & 255
+%   & $[6:300]$
+%   & $[1:200]$
+%   & $[1.86:2.00]$
+% %  & $[54:300]$
+%   & $[1.875:2.0]$
+%   & $[3.8.10^{4}:2.5.10^{7}]$
+%   & $[9.0:5.4.10^{3}]$
+%   & $2.23.10^{-14}$\\
+%   \hline
+%   Chute\_1000
+%   & Siconos
+%   & 1.0
+%   & 156
+%   & $[276:5508]$
+%   & $[74:5056]$
+%   & $[0.69:2.95]$
+% %  & $[222:8133]$
+%   & $[1.0:2.95]$
+%   & $[2.1.10^{1}:1.9.10^{3}]$
+%   & $6.6.10^{-02}$ \\
+%   \hline
+%   Chute\_4000
+%   & Siconos
+%   & 1.0
+%   & 40
+%   & $[17280:20034]$
+%   & $[15965:19795]$
+%   & $[2.51:3.06]$
+%   & --
+%   % & $[222:8133]$
+%   & --
+%   & $[5.5.10^{1}:9.0.10^{3}]$
+%   & $8.9.10^{-14}$\\
+%   \hline
+%   Chute\_local\_problems
+%   & Siconos
+%   & 1.0
+%   & 834
+%   & 3
+%   & 1
+%   & 1
+% %  & 3
+%   & 1
+%   & $[1.04:4.66]$
+%   & $[2.6:2.6.10^{1}]$
+%   & $1.76.10^{-09}$\\
+%   \hline
+% \end{tabular}
+% \caption{Description of the test sets of FCLib library (v1.0)}
+% \label{Tab:fclib}
+% \end{table}
+% \end{frame}
 
 %%% Local Variables:
 %%% mode: latex

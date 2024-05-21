@@ -1,4 +1,4 @@
-\section{Siconos/Numerics}
+\section{Siconos/Numerics: a collection of solvers}
 \frame{
   \frametitle{Siconos/Numerics}
   \begin{block}
@@ -10,10 +10,10 @@
     \begin{itemize}
     \item VI solvers: Fixed point, Extra-Gradient, Uzawa
     \item VI based projection/splitting algorithm: NSGS, PSOR
-    \item Semismooth Newton methods:\\
-      Alart-Curnier, Jean-Moreau, Natural map, Ficher-Bursmeister
-    \item Proximal point algorithm
-    \item Optimization based solvers. Panagiotopoulos, Tresca, SOCQP
+    \item Semismooth Newton methods%:\\
+      % Alart-Curnier, Jean-Moreau, Natural map, Ficher-Bursmeister
+    %\item Proximal point algorithm
+    \item Optimization based solvers. Panagiotopoulos, Tresca, SOCQP, ADMM
     \item \tr{Interior point methods}, \ldots
     \end{itemize}
   \end{block}
@@ -191,6 +191,9 @@ sn.numerics_set_verbose(1)
       \end{minted}
     }
   \end{frame}
+
+
+  
 \begin{frame}[fragile]
   \frametitle{A basic example in Python}
     {\small
@@ -235,12 +238,12 @@ if __name__ == "__main__":
 
 
   
-\frame{
-  \frametitle{Siconos/Numerics}
-  \begin{block}{\url{http://siconos.gforge.inria.fr}}
-    use and contribute ...
-  \end{block}
-}
+% \frame{
+%   \frametitle{Siconos/Numerics}
+%   \begin{block}{\url{http://siconos.gforge.inria.fr}}
+%     use and contribute ...
+%   \end{block}
+% }
 
 %%% Local Variables:
 %%% mode: latex
