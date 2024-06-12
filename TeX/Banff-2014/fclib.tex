@@ -2,7 +2,11 @@
 
 \frame{
   \frametitle{FCLIB : a collection of discrete 3D Frictional Contact (FC) problems}
-  Our inspiration: MCPLIB or CUTEst
+  \begin{itemize}
+  \item Few mathematical results: existence, uniqueness, convergence, rate of convergence. 
+  \item Our inspiration: MCPLIB or CUTEst in Optimization.
+  \item Without convergence proof, test your method on a large set of  benchmarks shared by the community.
+  \end{itemize}
   \begin{block}
     {What is FCLIB ?}
     \begin{itemize}
@@ -16,7 +20,10 @@
 
   \begin{block}
     {Goals of the project}
-    Provide a standard framework for testing available and new algorithms for solving discrete frictional contact problems share common formulations of problems in order to exchange data
+    \begin{itemize}
+    \item Provide a standard framework for testing available and new algorithms for solving discrete frictional contact problems
+    \item Share common formulations of problems in order to exchange data in a reproducible manner.
+    \end{itemize}
 \end{block}
 }
 
@@ -38,7 +45,7 @@
   \subfloat[KaplasTower]{\includegraphics[height=\figillus]{figure/KaplasTower.png}$\quad$}
   \subfloat[BoxesStack]{$\quad$$\quad$\includegraphics[height=\figillus]{figure/BoxesStack.png}$\quad$$\quad$}
   \subfloat[Chute\_1000, Chute\_4000, Chute\_local\_problems]{$\quad$$\quad$$\quad$$\quad$\includegraphics[height=\figillus]{figure/Chute_1000_light.jpg}$\quad$$\quad$$\quad$$\quad$}
-  \caption{Illustrations of the FClib test problems}
+  \caption{Illustrations of the FClib test problems from Siconos and LMGC90}
   \label{fig:fclib}
 \end{figure}
 }

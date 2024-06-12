@@ -23,10 +23,10 @@
 
 \frame{
   \frametitle{VI based methods}
-  \begin{block}{VI reformulation}
+  \begin{block}{Variational Inequality (VI) reformulation}
   \begin{equation}
     \label{eq:1}
-    F(r) = W r +q +g(Wr+q), \quad\quad -F(r) \in N_K(r)
+   \eqref{eq:soccp2} \Longleftrightarrow  - F(r) := -( W r +q +g(Wr+q))  \in N_K(r)
   \end{equation}
 \end{block}
 \begin{block}{Standard methods}
@@ -35,9 +35,10 @@
       $$\sf r_{k+1} \leftarrow P_{K}(r_k - \rho_k\,F(r_k))$$
   \item Extragradient method\hfill\tr{\sf{[EG-VI]}}
     $$\sf r_{k+1} \leftarrow P_K(r_{k}-\rho_k\,F(P_K(r_k-\rho_k F(r_k))))$$
+  \item with fixed $\rho_k = \rho$, we get the Uzawa Algorithm of De Saxc\'e-Feng\hfill\tr{\sf{[FP-DS]}}
   \end{itemize}
 \end{block}
-with fixed $\rho_k = \rho$, we get the Uzawa Algorithm of De Saxc\'e-Feng\hfill\tr{\sf{[FP-DS]}}
+
 \begin{block}
 {Self-adaptive procedure for $\rho_k$}\hfill\tr{\sf{[UPK]}}
  \begin{equation*}

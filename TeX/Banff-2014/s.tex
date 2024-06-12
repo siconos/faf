@@ -69,7 +69,7 @@
 % \date{CMIS 2018, Biella, Italy}
 
 
-\title[Siconos/numerics and FCLIB]{Siconos/numerics and FCLIB: a collection of solvers and benchmarks for solving frictional contact problems \\[5mm]
+\title[Siconos/numerics and FCLIB]{Siconos/numerics and FCLIB:\\[1mm] a collection of solvers and benchmarks for solving frictional contact problems \\[5mm]
   \large{CMIS,  May 2024}}
 
 \author{Vincent Acary}
@@ -164,6 +164,17 @@
 
 
 
+\begin{frame}
+  \frametitle{Motivations}
+  \tr{Beyond} the numerical simulation of frictional contact problems (Signorini + friction)
+  \begin{itemize}
+  \item Few mathematical results: existence, uniqueness, convergence, rate of convergence.
+  \item Need  for comparisons on a fair basis: implementation (software) and benchmarks (data)
+  \item Without convergence proof, test your new  method on a large set of  benchmarks shared by the community. (a common practice in numerical optimization).
+  \item Open and reproducible science.
+  \end{itemize}
+\end{frame}
+
 \frame{\tableofcontents}
 
 
@@ -200,9 +211,18 @@
 \begin{block}{Conclusions}
   \begin{itemize}
   \item Siconos/Numerics. A open source collection of solvers. \\
-    {\url{https://github.com/siconos/siconos}}    use and contribute ...
-  \item FCLIB: a collection of discrete 3D Frictional Contact (FC) problems \\
-    {\href{https://github.com/FrictionalContactLibrary}{https://github.com/FrictionalContactLibrary}}    use and contribute ...
+    {\url{https://github.com/siconos/siconos}}  
+  \item FCLIB: a open collection of discrete 3D Frictional Contact (FC) problems \\
+    {\href{https://github.com/FrictionalContactLibrary}{https://github.com/FrictionalContactLibrary}}  contribute ...
+  \end{itemize}
+  Use and contribute ...
+\end{block}
+\begin{block}{Perspectives}
+  \begin{itemize}
+  \item Nonlinear discretized equations (dynamics or quasi-statics)\\
+    finite strains, finite rotations, hyperelastic models, \ldots
+  \item Plasticity and damage, cohesive zone element coupled with contact and friction\\
+    formulation as a monolithic variational inequality 
   \end{itemize}
 \end{block}
 }
@@ -257,6 +277,36 @@
     Claude L\'emar\'echal, J\'er\^ome Malick and Mathieu Renouf 
   \end{center}
 }
+\begin{frame}
+\begin{center}
+    \large{Journal of Theoretical Computational and Applied Mechanics}\\[2mm]
+    
+    \includegraphics[scale=0.75]{Logo.pdf}\\[3mm]
+
+    {The only overlay Diamond Open Access journal in Mechanics}
+\end{center}
+\vspace{1mm}
+\begin{itemize}
+    \item Diamond Open Access: free for readers and authors
+    \item Overlay: based on open archives (arXiv, Hal, ...)
+    \item Broad domain of solid mechanics
+    \item Publications of the highest scientific calibre with open reviews
+    \item A community--supported journal with ethical and  FAIR principles
+    \item Promotion of reproducible and open science
+\end{itemize}
+\vspace{1mm}
+\begin{center}
+
+\begin{minipage}{0.35\textwidth}
+  \includegraphics[width=0.5\textwidth]{fist.jpg}
+\end{minipage}
+%\begin{minipage}{0.45\textwidth}
+\large\textcolor{red}{Get involved. Join us now. \\Contributions are welcome!}
+%\end{minipage}
+
+\end{center}
+\end{frame}
+
 
  
 \def\newblock{}

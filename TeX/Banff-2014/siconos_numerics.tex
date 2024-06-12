@@ -1,11 +1,11 @@
-\section{Siconos/Numerics: a collection of solvers}
+\section{siconos/numerics: a collection of solvers}
 \frame{
-  \frametitle{Siconos/Numerics}
+  \frametitle{siconos/numerics}
   \begin{block}
-    {\sc Siconos} Open source software for modelling and simulation of
+    {Siconos} Open source software for modelling and simulation of
     nonsmooth systems
   \end{block}
-  \begin{block} {\sc Siconos/Numerics}
+  \begin{block} {Siconos/numerics}
     Collection of C routines to solve FC3D problems in dense, sparse or  block sparse versions:
     \begin{itemize}
     \item VI solvers: Fixed point, Extra-Gradient, Uzawa
@@ -14,7 +14,7 @@
       % Alart-Curnier, Jean-Moreau, Natural map, Ficher-Bursmeister
     %\item Proximal point algorithm
     \item Optimization based solvers. Panagiotopoulos, Tresca, SOCQP, ADMM
-    \item \tr{Interior point methods}, \ldots
+    \item {Interior point methods}, \ldots
     \end{itemize}
   \end{block}
   \begin{block}{Collection of routines for optimization and complementarity problems}
@@ -34,12 +34,13 @@
        \begin{itemize}
        \item dense (column-major)
        \item sparse matrices (triplet, CSR, CSC)
+       \item sparse block matrices
        \end{itemize}
      \item Linear algebra libraries and solvers.
        \begin{itemize}
        \item BLAS/LAPACK, MKL
        \item MUMPS, SUPERLU, UMFPACK,
-       \item PETSc
+       \item PETSc (in progress)
        \end{itemize}
      \item Python interface (swig (pybind11 coming soon))
      \item Generic structure for problem, driver and options
@@ -121,7 +122,7 @@
 \end{frame}
 
 \begin{frame}[fragile]
-  \frametitle{A very basic example in C}
+  \frametitle{A basic example in C}
     {\small
       \begin{minted}{cpp}
 // Problem Definition
