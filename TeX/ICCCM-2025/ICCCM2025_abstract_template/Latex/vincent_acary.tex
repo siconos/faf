@@ -1,0 +1,200 @@
+\documentclass[10pt]{icccm2025}
+\usepackage{epsfig,amsfonts, amsmath}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Overleaf Example},
+    pdfpagemode=FullScreen,
+    }
+
+
+\newcommand{\RR}{\ensuremath{\rm I\!R}}
+\newcommand{\NN}{\ensuremath{\rm I\!N}}
+\def\n{{\hbox{\tiny{N}}}}
+\def\t{{\hbox{\tiny{T}}}}
+
+\usepackage{graphicx,subfig}
+\usepackage[numbers,square,sort&compress]{natbib}
+\bibliographystyle{unsrt}
+ 
+\title{Numerical solutions of the Coulomb friction contact problem from the perspective of optimisation and mathematical programming.}
+
+\author{\underline{Vincent Acary}$^{1}$}
+
+\bigskip
+\address{{\em $^{1}$ INRIA, Grenoble Alpes University center, Grenoble, France.
+\\ E-mail: vincent.acary@inria.fr \\
+}}
+
+
+\keywords{Coulomb's friction,  optimization, variational inequalities, complementarity problems.}
+
+
+\begin{document}
+\vspace{-0.8cm}
+\def\figillus{0.1\textheight}
+\begin{figure}[htbp]
+  \centering
+  \subfloat[Cubes\_H8]{\includegraphics[height=\figillus]{figure/Cubes_H8_5.png}}
+  \subfloat[LowWall\_FEM]{\includegraphics[height=\figillus]{figure/LowWall_FEM.png}}
+  \subfloat[Aqueduct\_PR]{\includegraphics[height=\figillus]{figure/Aqueduc_PR.png}}
+  %\subfloat[Bridge\_PR]{\includegraphics[height=\figillus]{figure/Bridge_PR_1.png}}
+  %\subfloat[100\_PR\_Periobox]{\includegraphics[height=\figillus]{figure/100_PR_PerioBox.png}}
+  %\subfloat[945\_SP\_Box\_PL]{\includegraphics[height=\figillus]{figure/945_SP_Box_PL.png}}
+  % \subfloat[Capsules]{\includegraphics[height=\figillus]{figure/Capsules.png}$\quad$}
+  %\subfloat[Chain]{\includegraphics[height=\figillus]{figure/Chains.png}$\quad$}
+  %\subfloat[KaplasTower]{\includegraphics[height=\figillus]{figure/KaplasTower.png}$\quad$} \subfloat[BoxesStack]{$\quad$$\quad$\includegraphics[height=\figillus]{figure/BoxesStack.png}$\quad$$\quad$}\\
+\subfloat[Chute\_4000]{\includegraphics[height=\figillus]{figure/Chute_1000_light.jpg}}
+  \caption{Illustrations of the FClib test problems}
+  \label{fig:fclib}
+\end{figure}
+\vspace{-0.3cm}
+\noindent In this presentation, we propose to present numerical methods for solving contact with Coulomb friction from the perspective of methods derived from optimisation or mathematical programming.
+The aim is to review effective and recognised methods and the challenges they still pose for the community.
+
+ The numerical solution of contact problems with Coulomb friction is known to be challenging.
+While the problem without friction can be reduced to a convex optimisation problem, at least for the case of small perturbations in linear elasticity or associated plasticity, Coulomb friction does not correspond to a  convex optimisation problem.
+This is mainly due to the fact that sliding occurs without dilation and the principle of maximum dissipation is only true for the tangential component of the contact.
+%Another way of looking at this difficulty is that sliding occurs without dilation, so the model does not derive from a pseudo convex dissipation potential.
+
+This has important consequences for the numerical methods, as we can no longer make direct use of the tried and tested methods of convex optimisation.
+%We must either design new ones, adapt optimisation methods or use work on variational inequalities and complementarity problems.
+The computational contact mechanics community has proposed numerous methods for addressing these challenges, adapting existing optimisation or variational inequalities-based approaches~\cite{Acary.Brogliato2008,Wriggers2006,Laursen2003,Dostal.ea_Book2023}.
+Notably, the community has been a trailblazer in this field, pioneering methods such as the non-smooth Newton methods~\cite{Alart.Curnier1991}.
+
+\vspace{-0.5cm}
+\paragraph{Statement of the problem} To concentrate on the issues associated with solving the frictional contact, we will consider a linearised discrete problem, resulting for example from a time discretisation, or from an incremental formulation after a space discretisation and possible linearization~\cite{Acary.Cadoux2013}.
+
+
+
+
+Given a symmetric positive definite matrix ${M} \in \RR^{n \times n}$, a vector $ {f} \in \RR^n$, a matrix  ${H} \in \RR^{n \times m}$ with $m= 3n_c$ where $n_c$ is the number of contact points, a vector $w \in \RR^{m}$ and a vector of coefficients of friction $\mu \in \RR^{n_c}$ , the discrete frictional contact problem is to find three vectors $ {v} \in \RR^n$, $u\in\RR^m$ and $r\in \RR^m$ such that
+\begin{equation}\label{eq:soccp1}
+  \begin{array}{c}
+    M v = {H} {r} + {f}, 
+    u = H^\top v + w,  
+                         \hat u = u + g(u), \quad
+    g(u) = \left[
+\begin{bmatrix}
+\mu^\alpha  \|u^\alpha_\t\| \\ 0
+\end{bmatrix}
+, \alpha = 1\ldots n_c\right]^\top \\[1ex]
+                        K^\star \ni {\hat u} \perp r \in K,
+  \end{array}
+\end{equation}
+For each contact~$\alpha$, the unknown variables  $u^\alpha\in\RR^3$ (velocity or gap at the contact point) and $r^\alpha\in\RR^3$ (reaction or impulse) are decomposed  in a contact local frame  such that $u^\alpha =
+\begin{pmatrix}
+  u^\alpha_{\n}, u^\alpha_{\t}
+\end{pmatrix},
+u^\alpha_{\n} \in \RR, u^\alpha_{\t} \in \RR^2$ and  $r^\alpha = \begin{pmatrix}
+  r^\alpha_{\n}, r^\alpha_{\t}
+\end{pmatrix}, r^\alpha_{\n} \in \RR, r^\alpha_{\t} \in \RR^2$.
+%The cone and $K\subset \RR^{3 n_c}$ is a Cartesian product of second order cone in $\RR^3$.  
+% The Coulomb friction cone for a  contact $\alpha$ is defined by $K^{\alpha}  = \{r^\alpha, \|r^\alpha_\t \| \leq \mu^\alpha |r^\alpha_\n| \}$ and the set $K^{\alpha,\star}$ is its dual.  
+The cone $K$ is the cartesian product of Coulomb's friction cone at each contact, that is
+\begin{equation}
+  \label{eq:CC}
+  K = \prod_{\alpha=1\ldots n_c} K^{\alpha}  = \prod_{\alpha=1\ldots n_c} \{r^\alpha, \|r^\alpha_\t \| \leq \mu^\alpha |r^\alpha_\n| \},
+\end{equation}
+and $K^\star$ is dual. For more details, we refer to ~\cite{acary2018solving}.
+In~\cite{Acary.ea_ZAMM2011}, a existence result is given for this problem providing a feasibility assumption of Slater type if satisfied. It is interesting to note that this simple condition can be tested numerically. From the point of view of mathematical programming, problem~\eqref{eq:soccp1} is a Second-Order Cone Complementarity Problem(SOCCP).
+% If the nonsmooth part of the problem is neglected ($g(u)=0$), the problem is an associated friction problem with dilatation, which is incidentally a mild SOCLCP with a positive matrix $H^\top M^{-1} H$  (possibly semidefinite).
+If the non-associated nature of the friction is taken into account by $g(u)$, the problem is non-monotone and non-smooth, and then very difficult to solve efficiently, especially in the case of hyperstatic rigid multi-body systems when $H$ is not full rank.
+
+\vspace{-0.3cm}
+\paragraph{Comparison of numerical methods}We will review  several  classes of existing algorithms for solving this problem:
+\vspace{-0.2cm}
+\begin{itemize}
+  \setlength{\parsep}{-4pt}
+  \setlength{\itemsep}{-4pt}
+  %\setlength\itemsep{0em}
+\item variational inequalities solvers: fixed point and extragradient  methods,
+\item nonsmooth equations solvers: semi--smooth and generalized Newton methods with line-searches,
+\item block--splitting (Gauss-Seidel like) and projected overrelaxation (PSOR),
+\item proximal point algorithms and ADMM solvers,
+\item optimization based solvers: Panagatiopolous approach, Czech school approach (Tresca successive approximations) and convex SOCQP relaxation \cite{Dostal.ea_Book2023},
+\item interior point methods~\cite{acary:hal-03913568}.
+\end{itemize}
+\vspace{-0.2cm}
+The goal is to compare them, on a large set of problems, using the software \href{http://www.siconos.org}{\sc Siconos} and to propose some new approaches. To this end, we build an open collection of discrete frictional contact problems called~\href{https://frictionalcontactlibrary.github.io/index.html}{FCLIB} in order to offer a large library of problems to compare algorithms on a fair basis. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\vspace{-1.5ex}
+\small
+%\bibliography{biblio}
+\begin{thebibliography}{1}
+\bibitem{Acary.Brogliato2008}
+V.~Acary and B.~Brogliato.
+\newblock {\em {Numerical methods for nonsmooth dynamical systems. Applications
+  in mechanics and electronics.}}
+\newblock {Lecture Notes in Applied and Computational Mechanics 35. Berlin:
+  Springer. xxi, 525~p. }, 2008.
+\vspace{-1.5ex}
+\bibitem{Wriggers2006}
+P.~Wriggers.
+\newblock {\em Computational Contact Mechanics}.
+\newblock Springer Verlag, second edition, 2006.
+\newblock originally published by John Wiley \& Sons Ltd., 2002.
+\vspace{-1.5ex}
+\bibitem{Laursen2003}
+T.A. Laursen.
+\newblock {\em Computational Contact and Impact Mechanics -- Fundamentals of
+  Modeling Interfacial Phenomena in Nonlinear Finite Element Analysis}.
+\newblock Springer Verlag, 2003.
+\newblock 1st ed. 2002. Corr. 2nd printing,.
+\vspace{-1.5ex}
+\bibitem{Dostal.ea_Book2023}
+Zdeněk Dostál, Tomáš Kozubek, Marie Sadowská, and Vít Vondrák.
+\newblock {\em Scalable Algorithms for Contact Problems}.
+\newblock Springer International Publishing, 2023.
+\vspace{-1.5ex}
+\bibitem{Alart.Curnier1991}
+P.~Alart and A.~Curnier.
+\newblock A mixed formulation for frictional contact problems prone to
+  \uppercase{N}ewton like solution method.
+\newblock {\em Computer Methods in Applied Mechanics and Engineering},
+  92(3):353--375, 1991.
+\vspace{-1.5ex}
+\bibitem{Acary.Cadoux2013}
+V.~Acary and F.~Cadoux.
+\newblock {\em Recent Advances in Contact Mechanics, Stavroulakis, Georgios E.
+  (Ed.)}, volume~56 of {\em Lecture Notes in Applied and Computational
+  Mechanics}, chapter Applications of an existence result for the {C}oulomb
+  friction problem.
+\newblock Springer Verlag, 2013.
+\vspace{-1.5ex}
+\bibitem{acary2018solving}
+Vincent Acary, Maurice Br{\'e}mond, and Olivier Huber.
+\newblock On solving contact problems with coulomb friction: formulations and
+  numerical comparisons.
+\newblock In {\em Advanced Topics in Nonsmooth Dynamics: Transactions of the
+  European Network for Nonsmooth Dynamics}, pages 375--457. Springer, 2018.
+\vspace{-1.5ex}
+\bibitem{Acary.ea_ZAMM2011}
+V.~Acary, F.~Cadoux, C.~Lemar\'echal, and J.~Malick.
+\newblock A formulation of the linear discrete coulomb friction problem via
+  convex optimization.
+\newblock {\em ZAMM - Journal of Applied Mathematics and Mechanics /
+  Zeitschrift f\"ur Angewandte Mathematik und Mechanik}, 91(2):155--175, 2011.
+\bibitem{acary:hal-03913568}
+  \vspace{-1.5ex}
+Vincent Acary, Paul Armand, Hoang Minh~Nguyen, and Maksym Shpakovych.
+\newblock {Second order cone programming for frictional contact mechanics using
+  interior point algorithm}.
+\newblock {\em {Optimization Methods and Software}}, 39(3):634--663, 2024.
+\end{thebibliography}
+
+
+\end{document}
+
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
