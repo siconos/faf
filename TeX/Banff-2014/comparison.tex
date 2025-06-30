@@ -1,6 +1,65 @@
-
-\section{Preliminary  Comparisons}
+\section{Benchmarking: Siconos/numerics and FCLIB}
 \label{Sec:Comparison}
+
+
+\frame{
+  \frametitle{siconos/numerics}
+  \begin{block}
+    {Siconos} Open source software for modelling and simulation of
+    nonsmooth systems
+  \end{block}
+  \begin{block} {Siconos/numerics}
+    Collection of C routines to solve FC3D problems in dense, sparse or  block sparse versions:
+    \begin{itemize}
+    \item VI solvers: Fixed point, Extra-Gradient, Uzawa
+    \item VI based projection/splitting algorithm: NSGS, PSOR
+    \item Semismooth Newton methods%:\\
+      % Alart-Curnier, Jean-Moreau, Natural map, Ficher-Bursmeister
+    %\item Proximal point algorithm
+    \item Optimization based solvers. Panagiotopoulos, Tresca, SOCQP, ADMM
+    \item {Interior point methods}, \ldots
+    \end{itemize}
+  \end{block}
+  \begin{block}{Collection of routines for optimization and complementarity problems}
+    \begin{itemize}
+    \item LCP solvers (iterative and pivoting (Lemke))
+    \item Standard QP solvers (Projected Gradient (Calamai \& Mor\'e), Projected CG (Mor\'e \& Toraldo), active set technique)
+    \item linear and nonlinear programming solvers.
+    \end{itemize}
+  \end{block}
+}
+\begin{frame}[fragile]
+  \frametitle{Siconos/Numerics}
+  \begin{block}
+    {Implementation details}
+     \begin{itemize}
+     \item Matrix format.
+       \begin{itemize}
+       \item dense (column-major)
+       \item sparse matrices (triplet, CSR, CSC)
+       \item sparse block matrices
+       \end{itemize}
+     \item Linear algebra libraries and solvers.
+       \begin{itemize}
+       \item BLAS/LAPACK, MKL
+       \item MUMPS, SUPERLU, UMFPACK,
+       \item PETSc (in progress)
+       \end{itemize}
+     \item Python interface (swig (pybind11 coming soon))
+     \item Generic structure for problem, driver and options
+     \end{itemize}
+   \end{block}
+        {\small
+        \begin{minted}{c}
+          int fc3d_driver(FrictionContactProblem* problem,
+                          double* reaction,
+                          double* velocity,
+                          SolverOptions* numerics_solver_options);
+       \end{minted}
+     }
+\end{frame}
+
+
 
 \subsection{Measuring error}
 
@@ -44,456 +103,7 @@
   
   
 }
-\def\ssep{1.5mm}
-
-\frame{
-  
-\def\figillus{0.15\textheight}
-\begin{figure}
-  \centering
-  \subfloat[Cubes\_H8]{\includegraphics[height=\figillus]{figure/Cubes_H8_5.png}$\quad$}
-  \subfloat[LowWall\_FEM]{\includegraphics[height=\figillus]{figure/LowWall_FEM.png}}
-  \subfloat[Aqueduct\_PR]{\includegraphics[height=\figillus]{figure/Aqueduc_PR.png}$\quad$}
-  \subfloat[Bridge\_PR]{\includegraphics[height=\figillus]{figure/Bridge_PR_1.png}}\\
-  \subfloat[100\_PR\_Periobox]{\includegraphics[height=\figillus]{figure/100_PR_PerioBox.png}$\quad$}
-  \subfloat[945\_SP\_Box\_PL]{\includegraphics[height=\figillus]{figure/945_SP_Box_PL.png}}
-  \subfloat[Capsules]{\includegraphics[height=\figillus]{figure/Capsules.png}$\quad$}
-  \subfloat[Chain]{\includegraphics[height=\figillus]{figure/Chains.png}$\quad$}\\
-  \subfloat[KaplasTower]{\includegraphics[height=\figillus]{figure/KaplasTower.png}$\quad$}
-  \subfloat[BoxesStack]{$\quad$$\quad$\includegraphics[height=\figillus]{figure/BoxesStack.png}$\quad$$\quad$}
-  \subfloat[Chute\_1000, Chute\_4000, Chute\_local\_problems]{$\quad$$\quad$$\quad$$\quad$\includegraphics[height=\figillus]{figure/Chute_1000_light.jpg}$\quad$$\quad$$\quad$$\quad$}
-  \caption{Illustrations of the FClib test problems}
-  \label{fig:fclib}
-\end{figure}
-}
-
-\begin{frame}
-  \scriptsize
-  \begin{table}
-  \newcolumntype{H}{>{\setbox0=\hbox\bgroup}c<{\egroup}@{}} \begin{tabular}{|l|l|l|l|l|l|l|l|H@{\hspace*{-\tabcolsep}}|H@{\hspace*{-\tabcolsep}}|H@{\hspace*{-\tabcolsep}}|}
-  \hline
-  Test set
-  & code
-  & \parbox[t]{2mm}{\rotatebox[origin=c]{-90}{  friction coefficient $\mu$  }}
-  & \parbox[t]{2mm}{\rotatebox[origin=c]{-90}{ \# of problems }}
-  & \parbox[t]{2mm}{\rotatebox[origin=c]{-90}{ \# of d.o.f. }}
-  & \parbox[t]{2mm}{\rotatebox[origin=c]{-90}{ \# of contacts }}
-  & \parbox[t]{2mm}{\rotatebox[origin=c]{-90}{contact density $c$}}
-  %& \parbox[t]{2mm}{\rotatebox[origin=c]{-90}{rank(W)}}
-  & \parbox[t]{2mm}{\rotatebox[origin=c]{-90}{rank ratio(W)}}
-  & \parbox[t]{2mm}{\rotatebox[origin=c]{-90}{cond(W)}}
-  & \parbox[t]{2mm}{\rotatebox[origin=c]{-90}{cond(W) LSMR}}
-  & \parbox[t]{2mm}{\rotatebox[origin=c]{-90}{$\mu(\|W-W^T\|)$}}
-    \parbox[t]{2mm}{\rotatebox[origin=c]{-90}{symmetry of $W$}}
-  \\
-  \hline
-  \hline
-  Cubes\_H8\_2
-  & LMGC90
-  & 0.3
-  & 15
-  & 162
-  & $[3:5]$
-  & $[0.02:0.09]$
-%  & $[6:15]$
-  & 1
-  & $[2.2.10^{1}:1.3.10^{3}]$
-  & $[8.1.10^{5}:1.5.10^{6}]$
-  & $3.2.10^{-4}$\\
-   \hline
-  Cubes\_H8\_5
-  & LMGC90
-  & 0.3
-  & 50
-  & 1296
-  & $[17:36]$
-  & $[0.02:0.09]$
-%  & $[48:108]$
-  & 1
-  & $[3.3.10^{4}: 7.2.10^{4} ]$
-  & $[1.3.10^{6}: 3.1.10^{6} ]$
-  & $4.2.10^{-4}$\\
-   \hline
-  Cubes\_H8\_20
-  & LMGC90
-  & 0.3
-  & 50
-  & 55566
-  & $[361:388]$
-  & $[0.019:0.021]$
-%  & $[1083:1164]$
-  & 1
-  & $[2.4.10^{5}: 2.5.10^{5} ]$
-  & $[1.3.10^{6}: 5.2.10^{6} ]$
-  &  $5.2.10^{-5}$\\
-  \hline
-  LowWall\_FEM
-   & LMGC90
-  & 0.83
-  & 50
-  & \{7212\}
-  & $[624:688]$
-  & $[0.28:0.29]$
-%  & $[1873:2064]$
-  & 1
-  & --
-  & $[9.3.10^{2}:5.0.10^{5}]$
-  &  $5.2.10^{-2}$\\
-  \hline
-  Aqueduct\_PR
-  & LMGC90
-  & 0.8
-  & 10
-  & \{1932\}
-  & $[4337:4811]$
-  & $[6.81:7.47]$
-%  & $[1934]$$
-  & $[6.80:7.46]$
-  & $[4.7.10^{7}:3.4.10^{8}]$
-  & $[6.7.10^{1}:1.5.10^{2}]$
-  &  $1.1.10^{-15}$\\
-  \hline
-  Bridge\_PR
-  & LMGC90
-  & 0.9
-  & 50
-  & \{138\}
-  & $[70:108]$
-  & $[1.5:2.3]$
-%  & $[87:132]$
-  & $[2.27:2.45]$
-  & $[8.3.10^{4}:1.1.10^{5}]$
-  & $[1.9.10^{3}:2.6.10^{4}]$
-  & $5.8.10^{-18}$\\
-  \hline
-  100\_PR\_Periobox
-  & LMGC90
-  & 0.8
-  & 106
-  & \{606\}
-  & $[14:578]$
-  & $[0.2:3]$
-%  & $[23:600]$
-  & $[1.76:3.215]$
-  & $[4.3.10^{2}:1.0.10^{6}]$
-  & $[6.3.10^{5}:3.5.10^{6}]$
-  & $8.8.10^{-20}$\\
-  \hline
-  945\_SP\_Box\_PL
-  & LMGC90
-  & 0.8
-  & 60
-  & \{5700\}
-  & $[2322:5037]$
-  & $[1.22:2.65]$
-%  & $[5333:7617]$
-  & $[1.0:2.66]$
-  & $[2.2.10^{4}:4.4.10^{5}]$
-  & $[2.9.10^{1}:9.2.10^{2}]$
-  & $1.3.10^{-10}$\\
-  \hline
-  Capsules
-  & Siconos
-  & 0.7
-  & 249
-  & [96:600]
-  & $[17:304]$
-  & $[0.53:1.52]$
-%  & $[47:587]$
-  & $[1.08:1.55]$
-  & --
-  & $[4.8:1.6.10^{2}]$
-  & $3.3.10^{-02}$\\
-  \hline
-  Chain
-  & Siconos
-  & 0.3
-  & 242
-  & \{60\}
-  & $[8:28]$
-  & $[0.5:1.3]$
-%  & 53
-  & $[1.05:1.6]$
-  & $[7.4.10^{4}:4.0.10^{9}]$
-  & $[1.5.10^{1}:4.7.10^{5}]$
-  & $3.7.10^{-02}$\\
-  \hline
-  KaplasTower
-  & Siconos
-  & 0.7
-  & 201
-  & $[72:792]$
-  & $[48:933]$
-  & $[3.0:3.6]$
-%  & $[72:792]$
-  & $[2.0:3.53]$
-  & $[67:2174]$
-  & $[8:67]$
-  & $5.4.10^{-08}$\\
-  \hline
-  BoxesStack
-  & Siconos
-  & 0.7
-  & 255
-  & $[6:300]$
-  & $[1:200]$
-  & $[1.86:2.00]$
-%  & $[54:300]$
-  & $[1.875:2.0]$
-  & $[3.8.10^{4}:2.5.10^{7}]$
-  & $[9.0:5.4.10^{3}]$
-  & $2.23.10^{-14}$\\
-  \hline
-  Chute\_1000
-  & Siconos
-  & 1.0
-  & 156
-  & $[276:5508]$
-  & $[74:5056]$
-  & $[0.69:2.95]$
-%  & $[222:8133]$
-  & $[1.0:2.95]$
-  & $[2.1.10^{1}:1.9.10^{3}]$
-  & $6.6.10^{-02}$ \\
-  \hline
-  Chute\_4000
-  & Siconos
-  & 1.0
-  & 40
-  & $[17280:20034]$
-  & $[15965:19795]$
-  & $[2.51:3.06]$
-  & --
-  % & $[222:8133]$
-  & --
-  & $[5.5.10^{1}:9.0.10^{3}]$
-  & $8.9.10^{-14}$\\
-  \hline
-  Chute\_local\_problems
-  & Siconos
-  & 1.0
-  & 834
-  & 3
-  & 1
-  & 1
-%  & 3
-  & 1
-  & $[1.04:4.66]$
-  & $[2.6:2.6.10^{1}]$
-  & $1.76.10^{-09}$\\
-  \hline
-\end{tabular}
-\caption{Description of the test sets of FCLib library (v1.0)}
-\label{Tab:fclib}
-\end{table}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Parameters of the simulation campaign}
-  \scriptsize
-  \begin{table}
-\centering
-\begin{tabular}{|l|l|l|l|l|l|l|l|}
-  \hline
-  Test set
-  & \parbox[t]{3mm}{\rotatebox[origin=c]{90}{ precision }}
-  & \parbox[t]{3mm}{\rotatebox[origin=c]{90}{ prescribed time limit (s) }}
-  & \parbox[t]{3mm}{\rotatebox[origin=c]{90}{ mean performance  }}
-    \parbox[t]{3mm}{\rotatebox[origin=c]{90}{ of the fastest solver }}
-    \parbox[t]{3mm}{\rotatebox[origin=c]{90}{$\mu\{\min\{t_{p,s}, s\in S\}\}$  }}
-  &  \parbox[t]{3mm}{\rotatebox[origin=c]{90}{ std. deviation performance  }}
-    \parbox[t]{3mm}{\rotatebox[origin=c]{90}{ of the fastest solver }}
-    \parbox[t]{2mm}{\rotatebox[origin=c]{90}{ $\sigma({\min\{t_{p,s}, s\in S\}})$  }}
-  & \parbox[t]{3mm}{\rotatebox[origin=c]{90}{ mean performance  }}
-    \parbox[t]{3mm}{\rotatebox[origin=c]{90}{ of the fastest solver by contact }}
-    \parbox[t]{3mm}{\rotatebox[origin=c]{90}{$\mu\{\min\{t_{p,s}/n_{c,p}, s\in S\}\}$  }}
-  &  \parbox[t]{3mm}{\rotatebox[origin=c]{90}{ std. deviation performance  }}
-    \parbox[t]{3mm}{\rotatebox[origin=c]{90}{ of the fastest solver by contact  }}
-    \parbox[t]{2mm}{\rotatebox[origin=c]{90}{ $\sigma({\min\{t_{p,s}/n_{c,p}, s\in S\}})$  }}
-  & \parbox[t]{3mm}{\rotatebox[origin=c]{90}{ \# of unsolved problems  }}
-  \\
-  \hline
-  \hline
-  Cubes\_H8\_$\star$
-  & $10^{-08}$
-  & 100
-  & 1.73
-  & 2.13
-  & $4.83^{-03}$
-  & $5.78^{-03}$
-  & 0\\
-  \hline
-  Cubes\_H8\_$\star$ II
-  & $10^{-04}$
-  & 100
-  & 0.92
-  & 1.06
-  & $2.66^{-03}$
-  & $2.83^{-03}$
-  & 0\\
-  \hline
-  LowWall\_FEM 
-  & $10^{-08}$
-  & 400
-  & 13.1
-  & 3.50
-  & $1.91^{-02}$
-  & $5.09^{-03}$
-  & 0
-  \\
-  \hline
-  LowWall\_FEM II
-  & $10^{-04}$
-  & 400
-  & 14.8
-  & 2.85
-  & $2.16^{-02}$
-  & $4.54^{-03}$
-  & 0
-    \\
-  \hline
-  Aqueduct\_PR
-  & $10^{-04}$
-  & 200
-  & 5.80
-  & 6.36
-  & $4.90^{-04}$
-  & $3.03^{-04}$
-  & 0
-  \\
-  \hline
-  Bridge\_PR
-  & $10^{-08}$
-  & 400
-  & 10.3
-  & 12.9
-  & $1.23^{-01}$
-  & $2.88^{-01}$
-  & 0\\
-  \hline
-  Bridge\_PR II
-  & $10^{-04}$
-  & 100
-  & 0.048
-  & 0.038
-  & $1.30^{-03}$
-  & $1.42^{-03}$
-  & 0\\
-  \hline
-  100\_PR\_Periobox
-  & $10^{-04}$
-  & 100
-  & 0.064
-  & 0.062
-  & $1.56^{-04}$
-  & $1.22^{-04}$
-  & 0
-  \\
-  \hline
-  945\_SP\_Box\_PL
-  & $10^{-04}$
-  & 100
-  & 3.20
-  & 1.71
-  & $6.45^{-04}$
-  & $3.36^{-04}$
-  & 0
-  \\
-  \hline
-  Capsules
-  & $10^{-08}$
-  & 50
-  & $1.46.10^{-02}$
-  & $1.74.10^{-02}$
-  & $5.67^{-05}$
-  & $6.26^{-05}$
-  & 0
-  \\
-  \hline
-  Chain
-  & $10^{-08}$
-  & 50
-  & $6.19.10^{-04}$
-  & $3.68.10^{-04}$
-  & $3.15.10^{-05}$
-  & $1.46.10^{-05}$
-  & 0
-  \\
-  \hline
-  KaplasTower
-  & $10^{-08}$
-  & 200
-  & $1.27.10^{-01}$
-  & $3.75.10^{-01}$
-  & $1.84.10^{-04}$
-  & $4.57.10^{-04}$
-  & 0
-  \\
-  \hline
-  KaplasTower II
-  & $10^{-04}$
-  & 100
-  & $2.84.10^{-02}$
-  & $1.51.10^{-01}$
-  & $3.39.10^{-05}$
-  & $1.84.10^{-04}$
-  & 0
-  \\
-  \hline
-  BoxesStack
-  & $10^{-08}$
-  & 100
-  & $3.42.10^{-02}$
-  & $8.87.10^{-02}$
-  & $3.24.10^{-04}$
-  & $9.77.10^{-04}$
-  & 0
-  \\
-  \hline
-  Chute\_1000
-  & $10^{-04}$
-  & 200
-  & 2.62
-  & 3.06
-  & $6.76^{-04}$
-  & $6.58^{-04}$
-  & 0
-  \\
-  \hline
-  Chute\_4000
-  & $10^{-04}$
-  & 200
-  & 10.52
-  & 7.88
-  & $5.71^{-04}$
-  & $4.07^{-04}$
-  & 0
-  \\
-  \hline
-  Chute\_local\_problems
-  & $10^{-08}$
-  & 10
-  & $1.80.10^{-04}$
-  & $1.57.10^{-05}$
-  & $1.80.10^{-04}$
-  & $1.57.10^{-05}$
-  &  0 \\
-  \hline
-  % Chute\_local\_problems II
-  % & $10^{-04}$
-  % & 10
-  % & $2.00.10^{-04}$
-  % & $1.91.10^{-05}$
-  % & $2.00.10^{-04}$
-  % & $1.91.10^{-05}$
-  % &  0 \\
-  % \hline
-\end{tabular}
-\caption{Parameters of the simulation campaign}
-\label{Tab:fclib-simulation}
-\end{table}
-
-\end{frame}
+\input{fclib.tex}
 
 \begin{frame}
   \frametitle{Parameters of the simulation campaign}
@@ -741,178 +351,178 @@
 \def\legendheight{0.20\textheight}
 
 
-\begin{frame}
-\frametitle{Comparison of numerical methods {\sf FP-DS, FP-VI-$\star$} and {\sf FP-EG-$\star$}}
-  \begin{figure}[htbp]
-  \centering
-  \subfiglayout
-%\subfloat[\scriptsize LowWall\_FEM]
-%  {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}} %
-\subfloat[ Cubes\_H8 II]
- {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} 
- % \subfloat[\scriptsize Cubes\_H8]
-   % {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}} 
- \subfloat[\scriptsize Bridge\_PR II]
- {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}}\\
-% \subfloat[\scriptsize Bridge\_PR]
-%    {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}} 
-% \subfloat[\scriptsize AqueducPR]
-%    {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} 
-% \subfloat[\scriptsize 945\_SP\_Box\_PL]
-%    {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}} 
-%  \subfloat[\scriptsize 100\_PR\_PerioBox]
-% {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}}
-% \subfloat[\scriptsize KaplasTower II]
-%    {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-04/100/time/profile-KaplasTower.pdf}} \\
-\subfloat[\scriptsize KaplasTower]
-   {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-08/200/time/profile-KaplasTower.pdf}} 
-% \subfloat[\scriptsize Chute\_local\_problems]
-%    {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-08/10/time/profile-Chute_local_problems.pdf}} 
-% \subfloat[\scriptsize Chute\_4000]
-%    {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-04/200/time/profile-Chute_4000.pdf}} 
-% \subfloat[\scriptsize Chute\_1000]
-%    {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-04/200/time/profile-Chute_1000.pdf}} \\
-% \subfloat[\scriptsize Chain]
-%    {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-08/50/time/profile-Chain.pdf}} 
-\subfloat[\scriptsize Capsules]
-   {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-08/50/time/profile-Capsules.pdf}} \\
-% \subfloat[\scriptsize BoxesStack]
-%    {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-08/100/time/profile-BoxesStack1.pdf}} \\
-   {\includegraphics[height=\legendheight]{figure/VI/UpdateRule/1.0e-08/50/time/profile-Chain_legend.pdf}}
-   \setlength{\abovecaptionskip}{-40pt}
-   %\caption{Comparison of numerical methods {\sf FP-DS, FP-VI-$\star$} and {\sf FP-EG-$\star$}}
-\label{fig:VI/UpdateRule}
-\end{figure}
-\end{frame}
+% \begin{frame}
+% \frametitle{Comparison of numerical methods {\sf FP-DS, FP-VI-$\star$} and {\sf FP-EG-$\star$}}
+%   \begin{figure}[htbp]
+%   \centering
+%   \subfiglayout
+% %\subfloat[\scriptsize LowWall\_FEM]
+% %  {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}} %
+% \subfloat[ Cubes\_H8 II]
+%  {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} 
+%  % \subfloat[\scriptsize Cubes\_H8]
+%    % {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}} 
+%  \subfloat[\scriptsize Bridge\_PR II]
+%  {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}}\\
+% % \subfloat[\scriptsize Bridge\_PR]
+% %    {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}} 
+% % \subfloat[\scriptsize AqueducPR]
+% %    {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} 
+% % \subfloat[\scriptsize 945\_SP\_Box\_PL]
+% %    {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}} 
+% %  \subfloat[\scriptsize 100\_PR\_PerioBox]
+% % {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}}
+% % \subfloat[\scriptsize KaplasTower II]
+% %    {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-04/100/time/profile-KaplasTower.pdf}} \\
+% \subfloat[\scriptsize KaplasTower]
+%    {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-08/200/time/profile-KaplasTower.pdf}} 
+% % \subfloat[\scriptsize Chute\_local\_problems]
+% %    {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-08/10/time/profile-Chute_local_problems.pdf}} 
+% % \subfloat[\scriptsize Chute\_4000]
+% %    {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-04/200/time/profile-Chute_4000.pdf}} 
+% % \subfloat[\scriptsize Chute\_1000]
+% %    {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-04/200/time/profile-Chute_1000.pdf}} \\
+% % \subfloat[\scriptsize Chain]
+% %    {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-08/50/time/profile-Chain.pdf}} 
+% \subfloat[\scriptsize Capsules]
+%    {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-08/50/time/profile-Capsules.pdf}} \\
+% % \subfloat[\scriptsize BoxesStack]
+% %    {\includegraphics[width=\figwidth]{figure/VI/UpdateRule/1.0e-08/100/time/profile-BoxesStack1.pdf}} \\
+%    {\includegraphics[height=\legendheight]{figure/VI/UpdateRule/1.0e-08/50/time/profile-Chain_legend.pdf}}
+%    \setlength{\abovecaptionskip}{-40pt}
+%    %\caption{Comparison of numerical methods {\sf FP-DS, FP-VI-$\star$} and {\sf FP-EG-$\star$}}
+% \label{fig:VI/UpdateRule}
+% \end{figure}
+% \end{frame}
 
-\begin{frame}
-\frametitle{Influence of the local solver in {\sf NSGS-$\star$} algorithms.}
-    \begin{figure}
-    \centering
-    \subfiglayout
-    \subfloat[\scriptsize LowWall\_FEM]
-    {\includegraphics[width=\figwidth]{figure/NSGS/LocalSolver/1.0e-08/400/time/profile-LMGC_LowWall_FEM.pdf}}
-    \subfloat[\scriptsize LowWall\_FEM II]
-    {\includegraphics[width=\figwidth]{figure/NSGS/LocalSolver/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}} \\
-    % \subfloat[\scriptsize Cubes\_H8 II]
-    % {\includegraphics[width=\figwidth]{figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} 
-    % \subfloat[\scriptsize Cubes\_H8]
-    % {\includegraphics[width=\figwidth]{figure/NSGS/LocalSolver/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}} \\
-    % \subfloat[\scriptsize Bridge\_PR II]
-    % {\includegraphics[width=\figwidth]{figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}} 
-    % \subfloat[\scriptsize Bridge\_PR]
-    % {\includegraphics[width=\figwidth]{figure/NSGS/LocalSolver/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}} \\
-    \subfloat[\scriptsize AqueducPR]
-    {\includegraphics[width=\figwidth]{figure/NSGS/LocalSolver/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}}
-    \subfloat[\scriptsize 945\_SP\_Box\_PL]
-    {\includegraphics[width=\figwidth]{figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}} \\
-    % \subfloat[\scriptsize 100\_PR\_PerioBox]
-    % {\includegraphics[width=\figwidth]{figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
-    {\includegraphics[width=\legendwidth]{figure/NSGS/LocalTol/VI/1.0e-08/50/time/profile-Chain_legend.pdf}} 
-    \caption{Influence of the local solver in {\sf NSGS-$\star$} algorithms.}
-  \end{figure}
-\end{frame}
+% \begin{frame}
+% \frametitle{Influence of the local solver in {\sf NSGS-$\star$} algorithms.}
+%     \begin{figure}
+%     \centering
+%     \subfiglayout
+%     \subfloat[\scriptsize LowWall\_FEM]
+%     {\includegraphics[width=\figwidth]{figure/NSGS/LocalSolver/1.0e-08/400/time/profile-LMGC_LowWall_FEM.pdf}}
+%     \subfloat[\scriptsize LowWall\_FEM II]
+%     {\includegraphics[width=\figwidth]{figure/NSGS/LocalSolver/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}} \\
+%     % \subfloat[\scriptsize Cubes\_H8 II]
+%     % {\includegraphics[width=\figwidth]{figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} 
+%     % \subfloat[\scriptsize Cubes\_H8]
+%     % {\includegraphics[width=\figwidth]{figure/NSGS/LocalSolver/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}} \\
+%     % \subfloat[\scriptsize Bridge\_PR II]
+%     % {\includegraphics[width=\figwidth]{figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}} 
+%     % \subfloat[\scriptsize Bridge\_PR]
+%     % {\includegraphics[width=\figwidth]{figure/NSGS/LocalSolver/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}} \\
+%     \subfloat[\scriptsize AqueducPR]
+%     {\includegraphics[width=\figwidth]{figure/NSGS/LocalSolver/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}}
+%     \subfloat[\scriptsize 945\_SP\_Box\_PL]
+%     {\includegraphics[width=\figwidth]{figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}} \\
+%     % \subfloat[\scriptsize 100\_PR\_PerioBox]
+%     % {\includegraphics[width=\figwidth]{figure/NSGS/LocalSolver/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
+%     {\includegraphics[width=\legendwidth]{figure/NSGS/LocalTol/VI/1.0e-08/50/time/profile-Chain_legend.pdf}} 
+%     \caption{Influence of the local solver in {\sf NSGS-$\star$} algorithms.}
+%   \end{figure}
+% \end{frame}
 
-\begin{frame}
-  \frametitle{{Comparison of {\sf NSN-$\star$} algorithms.}}
-\begin{figure}
-  \centering
-    \subfiglayout
- \subfloat[\scriptsize LowWall\_FEM II]
-   {\includegraphics[width=\figwidth]{figure/NSN/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}} 
- \subfloat[\scriptsize LowWall\_FEM]
-   {\includegraphics[width=\figwidth]{figure/NSN/1.0e-08/400/time/profile-LMGC_LowWall_FEM.pdf}} \\
-% \subfloat[\scriptsize Cubes\_H8 II]
-%    {\includegraphics[width=\figwidth]{figure/NSN/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} 
-% \subfloat[\scriptsize Cubes\_H8]
-%    {\includegraphics[width=\figwidth]{figure/NSN/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}} \\
-% \subfloat[\scriptsize Bridge\_PR II]
-%    {\includegraphics[width=\figwidth]{figure/NSN/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}}
-% \subfloat[\scriptsize Bridge\_PR]
-%    {\includegraphics[width=\figwidth]{figure/NSN/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}}
-% \subfloat[\scriptsize AqueducPR]
-%    {\includegraphics[width=\figwidth]{figure/NSN/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
-% \subfloat[\scriptsize 945\_SP\_Box\_PL]
-%    {\includegraphics[width=\figwidth]{figure/NSN/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}}
-% \subfloat[\scriptsize 100\_PR\_PerioBox]
-% \subfloat[\scriptsize KaplasTower II]
-%    {\includegraphics[width=\figwidth]{figure/NSN/1.0e-04/100/time/profile-KaplasTower.pdf}} \\
-\subfloat[\scriptsize KaplasTower]
-   {\includegraphics[width=\figwidth]{figure/NSN/1.0e-08/200/time/profile-KaplasTower.pdf}} 
-% \subfloat[\scriptsize Chute\_local\_problems]
-%    {\includegraphics[width=\figwidth]{figure/NSN/1.0e-08/10/time/profile-Chute_local_problems.pdf}} \\
-% \subfloat[\scriptsize Chute\_4000]
-%    {\includegraphics[width=\figwidth]{figure/NSN/1.0e-04/200/time/profile-Chute_4000.pdf}}
-% \subfloat[\scriptsize Chute\_1000]
-%    {\includegraphics[width=\figwidth]{figure/NSN/1.0e-04/200/time/profile-Chute_1000.pdf}} \\
-% \subfloat[\scriptsize Chain]
-%    {\includegraphics[width=\figwidth]{figure/NSN/1.0e-08/50/time/profile-Chain.pdf}} 
-\subfloat[\scriptsize Capsules]
-   {\includegraphics[width=\figwidth]{figure/NSN/1.0e-08/50/time/profile-Capsules.pdf}} 
-% \subfloat[\scriptsize BoxesStack]
-%    {\includegraphics[width=\figwidth]{figure/NSN/1.0e-08/100/time/profile-BoxesStack1.pdf}}
-   \\
-{\includegraphics[height=\legendheight]{figure/NSN/1.0e-08/50/time/profile-Chain_legend.pdf}} 
-  %\caption{Comparison of {\sf NSN-$\star$} algorithms.}
-  \label{fig:NSN}
-\end{figure}
-\end{frame}
-\begin{frame}
-  \frametitle{{Comparison of the optimization based solvers}}
-  
+% \begin{frame}
+%   \frametitle{{Comparison of {\sf NSN-$\star$} algorithms.}}
 % \begin{figure}
 %   \centering
 %     \subfiglayout
-% \subfloat[\scriptsize LowWall\_FEM II]
-%    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}}
-% % \subfloat[\scriptsize LowWall\_FEM]
-% %    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-08/400/time/profile-LMGC_LowWall_FEM.pdf}}
-% \subfloat[\scriptsize Cubes\_H8 II]
-%    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} \\
-% \subfloat[\scriptsize Cubes\_H8]
-%    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}}
-% \subfloat[\scriptsize Bridge\_PR II]
-%    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}} \\
-% \subfloat[\scriptsize Bridge\_PR]
-%    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}}
-% \subfloat[\scriptsize AqueducPR]
-%    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}}  \\
-% \subfloat[\scriptsize 945\_SP\_Box\_PL]
-%    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}}
-% \subfloat[\scriptsize 100\_PR\_PerioBox]
-%    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
+%  \subfloat[\scriptsize LowWall\_FEM II]
+%    {\includegraphics[width=\figwidth]{figure/NSN/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}} 
+%  \subfloat[\scriptsize LowWall\_FEM]
+%    {\includegraphics[width=\figwidth]{figure/NSN/1.0e-08/400/time/profile-LMGC_LowWall_FEM.pdf}} \\
+% % \subfloat[\scriptsize Cubes\_H8 II]
+% %    {\includegraphics[width=\figwidth]{figure/NSN/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} 
+% % \subfloat[\scriptsize Cubes\_H8]
+% %    {\includegraphics[width=\figwidth]{figure/NSN/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}} \\
+% % \subfloat[\scriptsize Bridge\_PR II]
+% %    {\includegraphics[width=\figwidth]{figure/NSN/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}}
+% % \subfloat[\scriptsize Bridge\_PR]
+% %    {\includegraphics[width=\figwidth]{figure/NSN/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}}
+% % \subfloat[\scriptsize AqueducPR]
+% %    {\includegraphics[width=\figwidth]{figure/NSN/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} \\
+% % \subfloat[\scriptsize 945\_SP\_Box\_PL]
+% %    {\includegraphics[width=\figwidth]{figure/NSN/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}}
 % % \subfloat[\scriptsize 100\_PR\_PerioBox]
-% %    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-08/200/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
-% % {\includegraphics[height=\legendheight]{figure/OPTI/1.0e-08/50/time/profile-Chain_legend.pdf}}
-% \subfloat[\scriptsize KaplasTower II]
-%    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-04/100/time/profile-KaplasTower.pdf}}
+% % \subfloat[\scriptsize KaplasTower II]
+% %    {\includegraphics[width=\figwidth]{figure/NSN/1.0e-04/100/time/profile-KaplasTower.pdf}} \\
 % \subfloat[\scriptsize KaplasTower]
-%    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-08/200/time/profile-KaplasTower.pdf}} 
-%    \caption{}
-% %   \label{fig:OPTI-1}
+%    {\includegraphics[width=\figwidth]{figure/NSN/1.0e-08/200/time/profile-KaplasTower.pdf}} 
+% % \subfloat[\scriptsize Chute\_local\_problems]
+% %    {\includegraphics[width=\figwidth]{figure/NSN/1.0e-08/10/time/profile-Chute_local_problems.pdf}} \\
+% % \subfloat[\scriptsize Chute\_4000]
+% %    {\includegraphics[width=\figwidth]{figure/NSN/1.0e-04/200/time/profile-Chute_4000.pdf}}
+% % \subfloat[\scriptsize Chute\_1000]
+% %    {\includegraphics[width=\figwidth]{figure/NSN/1.0e-04/200/time/profile-Chute_1000.pdf}} \\
+% % \subfloat[\scriptsize Chain]
+% %    {\includegraphics[width=\figwidth]{figure/NSN/1.0e-08/50/time/profile-Chain.pdf}} 
+% \subfloat[\scriptsize Capsules]
+%    {\includegraphics[width=\figwidth]{figure/NSN/1.0e-08/50/time/profile-Capsules.pdf}} 
+% % \subfloat[\scriptsize BoxesStack]
+% %    {\includegraphics[width=\figwidth]{figure/NSN/1.0e-08/100/time/profile-BoxesStack1.pdf}}
+%    \\
+% {\includegraphics[height=\legendheight]{figure/NSN/1.0e-08/50/time/profile-Chain_legend.pdf}} 
+%   %\caption{Comparison of {\sf NSN-$\star$} algorithms.}
+%   \label{fig:NSN}
 % \end{figure}
-\begin{figure}
-  \centering
-  \ContinuedFloat
-    \subfiglayout
-% \subfloat[\scriptsize Chute\_local\_problems]
-%    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-08/10/time/profile-Chute_local_problems.pdf}}
-% \subfloat[\scriptsize Chute\_4000]
-%    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-04/200/time/profile-Chute_4000.pdf}} \\
-\subfloat[\scriptsize Chute\_1000]
-   {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-04/200/time/profile-Chute_1000.pdf}}
-\subfloat[\scriptsize Chain]
-   {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-08/50/time/profile-Chain.pdf}}\\
-\subfloat[\scriptsize Capsules]
-   {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-08/50/time/profile-Capsules.pdf}}
-\subfloat[\scriptsize BoxesStack]
-   {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-08/100/time/profile-BoxesStack1.pdf}} \\
-{\includegraphics[height=\legendheight]{figure/OPTI/1.0e-08/50/time/profile-Chain_legend.pdf}}
- \caption{Comparison of the optimization based solvers}
-  \label{fig:OPTI}
-\end{figure}
+% \end{frame}
+% \begin{frame}
+%   \frametitle{{Comparison of the optimization based solvers}}
+  
+% % \begin{figure}
+% %   \centering
+% %     \subfiglayout
+% % \subfloat[\scriptsize LowWall\_FEM II]
+% %    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-04/400/time/profile-LMGC_LowWall_FEM.pdf}}
+% % % \subfloat[\scriptsize LowWall\_FEM]
+% % %    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-08/400/time/profile-LMGC_LowWall_FEM.pdf}}
+% % \subfloat[\scriptsize Cubes\_H8 II]
+% %    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-04/100/time/profile-LMGC_Cubes_H8.pdf}} \\
+% % \subfloat[\scriptsize Cubes\_H8]
+% %    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-08/100/time/profile-LMGC_Cubes_H8.pdf}}
+% % \subfloat[\scriptsize Bridge\_PR II]
+% %    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-04/100/time/profile-LMGC_Bridge_PR.pdf}} \\
+% % \subfloat[\scriptsize Bridge\_PR]
+% %    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}}
+% % \subfloat[\scriptsize AqueducPR]
+% %    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}}  \\
+% % \subfloat[\scriptsize 945\_SP\_Box\_PL]
+% %    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}}
+% % \subfloat[\scriptsize 100\_PR\_PerioBox]
+% %    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
+% % % \subfloat[\scriptsize 100\_PR\_PerioBox]
+% % %    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-08/200/time/profile-LMGC_100_PR_PerioBox.pdf}} \\
+% % % {\includegraphics[height=\legendheight]{figure/OPTI/1.0e-08/50/time/profile-Chain_legend.pdf}}
+% % \subfloat[\scriptsize KaplasTower II]
+% %    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-04/100/time/profile-KaplasTower.pdf}}
+% % \subfloat[\scriptsize KaplasTower]
+% %    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-08/200/time/profile-KaplasTower.pdf}} 
+% %    \caption{}
+% % %   \label{fig:OPTI-1}
+% % \end{figure}
+% \begin{figure}
+%   \centering
+%   \ContinuedFloat
+%     \subfiglayout
+% % \subfloat[\scriptsize Chute\_local\_problems]
+% %    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-08/10/time/profile-Chute_local_problems.pdf}}
+% % \subfloat[\scriptsize Chute\_4000]
+% %    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-04/200/time/profile-Chute_4000.pdf}} \\
+% \subfloat[\scriptsize Chute\_1000]
+%    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-04/200/time/profile-Chute_1000.pdf}}
+% \subfloat[\scriptsize Chain]
+%    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-08/50/time/profile-Chain.pdf}}\\
+% \subfloat[\scriptsize Capsules]
+%    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-08/50/time/profile-Capsules.pdf}}
+% \subfloat[\scriptsize BoxesStack]
+%    {\includegraphics[width=\figwidth]{figure/OPTI/1.0e-08/100/time/profile-BoxesStack1.pdf}} \\
+% {\includegraphics[height=\legendheight]{figure/OPTI/1.0e-08/50/time/profile-Chain_legend.pdf}}
+%  \caption{Comparison of the optimization based solvers}
+%   \label{fig:OPTI}
+% \end{figure}
 
-\end{frame}
+% \end{frame}
 
 \begin{frame}
   \frametitle{Comparisons by families of solvers}
@@ -934,9 +544,9 @@
       % {\includegraphics[width=\figwidth]{figure/COMP/large/1.0e-08/400/time/profile-LMGC_Bridge_PR.pdf}} \\
       % \subfloat[\scriptsize AqueducPR]
       % {\includegraphics[width=\figwidth]{figure/COMP/large/1.0e-04/200/time/profile-LMGC_AqueducPR.pdf}} 
-      \subfloat[\scriptsize 945\_SP\_Box\_PL]
+      \subfloat[\scriptsize 945\_SP\_Box\_PL ($\sf tol =1e^{-04}$)]
       {\includegraphics[width=\figwidth]{figure/COMP/large/1.0e-04/100/time/profile-LMGC_945_SP_Box_PL.pdf}} 
-      \subfloat[\scriptsize 100\_PR\_PerioBox]
+      \subfloat[\scriptsize 100\_PR\_PerioBox ($\sf tol =1e^{-04}$)]
       {\includegraphics[width=\figwidth]{figure/COMP/large/1.0e-04/100/time/profile-LMGC_100_PR_PerioBox.pdf}}\\
       \includegraphics[height=\legendheight]{figure/COMP/large/1.0e-08/50/time/profile-Chain_legend.pdf}
       %\caption{Comparison of the solvers between families}
@@ -944,6 +554,29 @@
   
 \end{center}
 \end{frame}
+
+
+\frame{
+\frametitle{Benchmarking : conclusions}
+
+\begin{block}{Conclusions}
+  \begin{enumerate}
+  %\item A bunch of articles in the literature \\
+  %  47000 articles since 2000 on ``Coulomb friction numerical method'' in Google Scholar.
+  \item No ``Swiss--knife'' solution : choose efficiency OR robustness  
+  \item Newton--based solvers solve efficiently some problems, but robustness issues
+  \item First order iterative methods ($\sf VI, NSGS, PSOR$) solves all the problems but very slowly  
+  \item The rank of the $H$ matrix ($\approx$ratio number of contacts unknows/number of d.o.f) plays an important role on the robustness
+  \item Optimisation-based  and proximal-point algorithm solvers are  interesting but it is difficult to forecast theirs efficiencies.
+  \item Need for a second order method when $H$ is rank-deficient (IPM?)
+  \end{enumerate}
+\end{block}
+
+Mode details in \cite{acary:hal-01878539}
+
+}
+
+
 
 %%% Local Variables:
 %%% mode: latex

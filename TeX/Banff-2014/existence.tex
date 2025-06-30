@@ -5,7 +5,7 @@
 \frame{
   \frametitle{An existence result  via convex optimization}
 
-  F. Cadoux PhD, C. Lemaréchal, J. Malick, VA \cite{Cadoux2009,Acary.ea_ZAMM2011}
+  F. Cadoux PhD, C. Lemaréchal, J. Malick, VA \cite{Cadoux2009,Acary.ea_ZAMM2011}\\[2mm]
 
   
   Let us introduce a slack variable
@@ -13,20 +13,26 @@
     s^\alpha := \| u^\alpha_\t \|
   \end{equation*}
   New formulation of the modified velocity with $A \in \nbR^{m\times n_c}$
-  $$ \hat u := u + A s \quad\quad  (g(u) = A s)$$
+  $$ \tilde u := u + A s \quad\quad  (g(u) = A s)$$
   The problem $\mathrm{FC/I}(M,H,f,w,\mu)$ can be reformulated as
   \begin{equation*}\label{eq:soccp1-convex}
   \begin{cases}
     M v = {H} {r} + {f} \\[2mm]
     \widetilde  u = H^\top v + w  + A s  \\[2mm]
-    K^\star \ni {\hat u} \perp r \in K
+    K^\star \ni {\tilde u} \perp r \in K
   \end{cases}
 \end{equation*}
+with
+\begin{equation}
+  \label{eq:3}
+  s^\alpha := \| u^\alpha_\t \|
+\end{equation}
+
 }
 \frame{
   \frametitle{An existence result.}
   The problem~(\ref{eq:soccp1-convex}) appears to be the KKT condition of
-  \begin{block}{primal problem}
+  \begin{block}{Primal problem}
     \begin{equation} \tag{$D_s$}
       \left\{
         \begin{array}{l}
@@ -36,7 +42,7 @@
       \right.
     \end{equation}
   \end{block}
-  \begin{block}{dual problem}
+  \begin{block}{Dual problem}
     \begin{equation} \tag{$P_s$}
       \left\{
         \begin{array}{l}
@@ -48,7 +54,7 @@
     with $q_s = q + A s $
   \end{block}
   \begin{block}{Interest}
-    Two convex program \ding{220} existence of solutions under feasibility conditions.
+    Two convex programs \ding{220} existence of solutions under feasibility conditions.
   \end{block}
 }
 \frame{
@@ -79,12 +85,12 @@
   \begin{theorem}
     A fixed point exists
   \end{theorem}
-  //This result is a variant of a previous result obtained by~\cite{Klarbring.Pang1998}.
+  %This result is a variant of a previous result obtained by~\cite{Klarbring.Pang1998}.
 }
 \frame{
   \frametitle{An existence result.}
-  \begin{block}{Numerical validation of the assumption}
-    The assumption by solving a linear program over a product  of SOC.\\ Find $x \geq 0$
+  \begin{block}{Numerical validation of the key assumption}
+    Solving a SOC linear program: \\[1mm] Find $x \geq 0$
     \begin{equation*}
       \label{eq:min-SOC}
       \begin{cases}

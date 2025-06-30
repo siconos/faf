@@ -33,7 +33,7 @@
 % \usepackage{algorithmic}
 
 
-%\usepackage{minted}
+\usepackage{minted}
 \usepackage{color}
 
 \input{macro.tex}
@@ -116,7 +116,7 @@
 \renewcommand{\tr}[1]{\textcolor{red}{#1}}
 
 
-
+\newcommand{\norm}[1]{\lVert#1\rVert}
 
 \usepackage{hyperref}
 \hypersetup{
@@ -198,13 +198,15 @@
 
 %\include{siconos_numerics}
 
+%\include{fclib}
 
+\include{comparison}
 
-%\include{comparison}
 
 \frame{\tableofcontents}
+\include{ipm}
 
-%\include{fclib}
+
 
 
 

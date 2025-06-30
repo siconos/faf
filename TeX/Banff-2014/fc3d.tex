@@ -120,16 +120,16 @@
   \begin{block}{Second Order Cone Complementarity (SOCCP) formulation}
   
     \begin{itemize}
-    \item Modified relative velocity $\hat u \in \nbR^3$ defined by \citep{DeSaxce92}
+    \item Modified relative velocity $\tilde u \in \nbR^3$ defined by \citep{DeSaxce92}
       \begin{equation}
         \label{eq:modified-velocity}
-        \hat u = u +\mu \|u_\t\| \sf N.
+        \tilde u = u +\mu \|u_\t\| \sf N.
       \end{equation}
     
     \item  Second-Order Cone Complementarity Problem (SOCCP) 
       \begin{equation}
         \label{eq:contact-SOCCP}
-        K^\star \ni \hat u \perp r \in K
+        K^\star \ni \tilde u \perp r \in K
       \end{equation}
       if $ g_\n \leq 0 $ and $r=0$ otherwise.\\[1mm]
       The set $ K^\star $ is
@@ -150,7 +150,7 @@
    \begin{figure}[htbp]
   \centering
   \resizebox{!}{0.8\textheight}{\input{../figure/cone1-b.pdf_t}}
-  \caption{Coulomb's friction and the modified velocity $\hat u$. The sliding case.}
+  \caption{Coulomb's friction and the modified velocity $\tilde u$. The sliding case.}
   \label{fig:CoulombFrictionSlidingDeSaxce}
 \end{figure} 
 }
@@ -198,8 +198,8 @@ find three vectors $ {v} \in \nbR^n$, $u\in\nbR^m$ and $r\in \nbR^m$, denoted by
   \begin{cases}
     M v = {H} {r} + {f} \\[2mm]
     u = H^\top v + w \\[2mm]
-    \hat u = u + g(u) \\[2mm]
-    K^\star \ni {\hat u} \perp r \in K
+    \tilde u = u + g(u) \\[2mm]
+    K^\star \ni {\tilde u} \perp r \in K
   \end{cases}
 \end{equation}
 with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldots n_c]^\top$. 
@@ -261,8 +261,8 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
     \begin{equation}\label{eq:soccp2}
       \begin{cases}
         u =Wr +q \\[2mm]
-        \hat u =u + g(u) \\[2mm]
-        K^\star \ni {\hat u} \perp r \in K
+        \tilde u =u + g(u) \\[2mm]
+        K^\star \ni {\tilde u} \perp r \in K
       \end{cases}
     \end{equation}
     with $g(u) = [[\mu^\alpha \|u^\alpha_\t\| {\sf N}^\alpha]^\top,  \alpha = 1\ldots n_c]^\top$.
@@ -290,39 +290,52 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
       \label{eq:inclusion-1}
       -(W r +q + g(Wr+q)) \stackrel{\Delta}= - F(r)  \in N_K(r).
     \end{equation}
-    \quad \tr{Properties}
+  \end{block}
+  \begin{block}{Properties}
     \begin{itemize}
     \item nonsmooth since  $g()$ is nonsmooth
-    \item nonmonotone 
+    \item nonmonotone since the mapping $F$ is no monotone for large $\mu$
+    \item many possible reformulations such as Nonsmooth equations $G(r) = 0$ \\
+      natural map $F^\nat$ %associated with the VI (\ref{eq:inclusion-1}) $ F^\nat(z) = z - P_{X}(z-F(z))$.\\
+      and variants of this map (Alart-Curnier formulation, \ldots)
     \end{itemize}
   \end{block}
-  \ding{220} the variational inequality is NOT  the optimality condition of a (convex) optimization problem.\\[1mm]
-    \ding{220} The problem is very hard to solve efficiently.
 }  
 \frame{
-  \frametitle{From the optimization point of view} 
-    % \begin{itemize}
-    % \item if we neglect $g(\cdot)$, (\ref{eq:soccp3}) is a gentle
-    %   monotone SOCLCP that  is the KKT conditions of a convex SOCQP.
-    % \item otherwise, the problem is nonmonotone and nonsmooth since
-    %   $g()$ is nonsmooth
-    % \end{itemize}
-    % 
-   \begin{block}{Many possible reformulations}
-     \begin{itemize}
-     \item Nonsmooth equations $G(r) = 0$\\
-       $\bullet$ The natural map $F^\nat$ associated with the VI (\ref{eq:inclusion-1}) $ F^\nat(z) = z - P_{X}(z-F(z))$.\\
-       $\bullet$ Variants of this map (Alart-Curnier formulation, \ldots)\\
-       $\bullet$  one of the SOCCP-functions. (Fisher-Bursmeister function)\\
-     \item and many other ...
-     \end{itemize}
-   \end{block}
-   \begin{block}{Numerical methods}
-     \begin{itemize}
-     \item Numerous numerical methods exist. 
-     \item Many of these are adaptations of mathematical programming methods.
-     \end{itemize}
-   \end{block}
+  \frametitle{From the optimization point of view}
+
+  \begin{block}{Important Remarks}
+    \begin{itemize}
+    \item The variational inequality is NOT  the optimality condition of a (convex) optimization problem.
+    \item The problem is very hard to solve efficiently.
+    \item Generic numerical methods for VI/CP exist and can be applied
+    \item Numerous of existing methods for FC3D problems are adaptations of mathematical programming methods.
+    \end{itemize}
+  \end{block}
+}
+\frame{
+  \frametitle{From the optimization point of view}
+  \begin{block}{Semismooth Newton methods for nonsmooth equations $G(r) = 0$.}
+    Not just adaptations, but sometimes pioneering methods.
+    \begin{itemize}
+    \item The natural map $F^\nat$ associated with the VI (\ref{eq:inclusion-1}) $$ F^\nat(z) = z - P_{X}(z-F(z))$$
+    \item Pioneering work of Alart \& Curnier
+      \begin{equation*}
+        \label{eq:CKPS-1}
+        \begin{cases}
+          r_\n - P_{\nbR^{n_c}_+}(r_\n - \rho_\n  u_\n) = 0, \\
+          r_\t - P_{D(\mu, r_{\n,+}+\rho u_\n)}(r_\t - \rho_\t u_\t   )=0,
+        \end{cases}
+      \end{equation*}
+      
+
+      
+    \item other SOCCP function (Fisher-Bursmeister function)
+      
+    \end{itemize}
+  \end{block}
+  
+ 
  }
  \frame{
   \frametitle{From the optimization point of view} 
@@ -331,9 +344,9 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
     \begin{equation}
       \label{eq:2}
       \begin{array}{lcl}
-        \min_{v,u,r} & & \hat u ^\top r = u^\top r + \mu r_\n \|u_{\t}\|  \stackrel{\Delta}= b(u,r)\\[1mm]
+        \min_{v,u,r} & & \tilde u ^\top r = u^\top r + \mu r_\n \|u_{\t}\|  \stackrel{\Delta}= b(u,r)\\[1mm]
         \text{s.t.} & & Mv = H r + f \\[1mm]
-                    & & \hat u = H^\top v + w + g(u) \in K^\star \\[1mm]
+                    & & \tilde u = H^\top v + w + g(u) \in K^\star \\[1mm]
                     & & r \in K 
         
       \end{array}

@@ -2,17 +2,17 @@
 \section{Numerical methods}
 \label{Sec:Numerics}
 
-% \frame{
-%   \frametitle{Numerical solution procedure}
-%   \begin{itemize}
-%   \item VI based methods
-%   \item Nonsmooth Equations based methods
-%   \item Matrix block--splitting and projection based algorithms
-%   \item Proximal point algorithms
-%   \item Optimization based approach
-%   \item Interior point techniques
-%   \end{itemize}
-% }
+\frame{
+  \frametitle{Numerical solution procedure}
+  \begin{itemize}
+  \item VI based methods
+  \item Nonsmooth Equations based methods
+  \item Matrix block--splitting and projection based algorithms
+  \item Proximal point algorithms
+  \item Optimization based approach
+  % \item Interior point techniques
+  \end{itemize}
+}
 
 
 
@@ -114,8 +114,8 @@
         \begin{array}{l}
           {u}^{\alpha}_{i+1} - { W}^{\alpha \alpha} {P}^{\alpha}_{i+1} = {q}^{\alpha} + \displaystyle\sum_{\beta<\alpha}^{~} { W}^{\alpha \beta} {r}^{\beta}_{i+1} + \displaystyle\sum_{\beta >\alpha}^{~} { W}^{\alpha \beta} {r}^{\beta}_{i}\\
           ~\\
-          \widehat u^{\alpha}_{i+1} = \left[u_{\n,i+1}^{\alpha}+ \mu^{\alpha}\;||u^{\alpha}_{\t,i+1}||, u^{\alpha}_{\t,i+1}\right]^T \\ \\
-          {\bf K}^{\alpha,*} \ni \widehat u^{\alpha}_{i+1}  \perp r^{\alpha}_{i+1} \in {\bf K}^{\alpha} \\
+          \widetilde u^{\alpha}_{i+1} = \left[u_{\n,i+1}^{\alpha}+ \mu^{\alpha}\;||u^{\alpha}_{\t,i+1}||, u^{\alpha}_{\t,i+1}\right]^T \\ \\
+          {\bf K}^{\alpha,*} \ni \widetilde u^{\alpha}_{i+1}  \perp r^{\alpha}_{i+1} \in {\bf K}^{\alpha} \\
         \end{array} \right.
     \end{equation}
     for all $\alpha \in \{1\ldots m\}$.
@@ -194,11 +194,19 @@
     Fixed point or Newton Method on $F(s)=s$
   \end{itemize}
 }
-\subsection{Interior point methods}
+% \subsection{Interior point methods}
+% \begin{frame}
+%   \frametitle{Interior Point Methods}
+%   Presentation of Hoang Minh Nguyen.
+% \end{frame}
+
+
 \begin{frame}
-  \frametitle{Interior Point Methods}
-  Presentation of Hoang Minh Nguyen.
+  \frametitle{Optimization based methods}
+
+  Book of Dostal
 \end{frame}
+
 
 
 
