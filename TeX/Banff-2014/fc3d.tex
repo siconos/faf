@@ -76,7 +76,7 @@
 }
 \frame{
   \frametitle{Signorini's condition and Coulomb's friction} 
-  \begin{block}{Modeling assumption}
+  \begin{block}{Coulomb friction modeling assumption}
    Let $\mu$ be the coefficient of friction.  Let us define the Coulomb friction cone $K$ which is chosen as the
     isotropic second order cone
     \begin{equation}
@@ -120,7 +120,7 @@
   \begin{block}{Second Order Cone Complementarity (SOCCP) formulation}
   
     \begin{itemize}
-    \item Modified relative velocity $\tilde u \in \nbR^3$ defined by \citep{DeSaxce92}
+    \item Modified relative velocity $\tilde u \in \nbR^3$ \citep{DeSaxce92} defined by 
       \begin{equation}
         \label{eq:modified-velocity}
         \tilde u = u +\mu \|u_\t\| \sf N.
@@ -155,35 +155,35 @@
 \end{figure} 
 }
 
-\subsection{3D frictional contact problems}
+\subsection{Definition}
 
 
-\frame{
-  \frametitle{3D frictional contact problem} 
-  \begin{block}{Multiple contact notation}
-    For each contact $\alpha \in \{1,\ldots n_c\}$, we have
-    \begin{itemize}
-    \item the local velocity : $u^\alpha \in \nbR^3$, and
-      $$  u = [[u^\alpha]^\top, \alpha = 1\ldots n_c]^\top$$
-    \item the local  reaction vector $r^\alpha\in \nbR^3$    
-      $$  r = [[r^\alpha]^\top, \alpha = 1\ldots n_c]^\top$$
-    \item the local  Coulomb cone    $$K^{\alpha}  = \{r^\alpha, \|r^\alpha_\t \| \leq \mu^\alpha |r^\alpha_\n| \} \subset \nbR^3$$
-       and the set $K$ is the cartesian product of Coulomb's friction cone at each contact, that 
-      \begin{equation}
-        \label{eq:CC}
-        K = \prod_{\alpha=1\ldots n_c} K^{\alpha} 
-      \end{equation}
-      and $K^\star$ is dual.
-    \end{itemize} \end{block}
+% \frame{
+%   \frametitle{3D frictional contact problem} 
+%   \begin{block}{Multiple contact notation}
+%     For each contact $\alpha \in \{1,\ldots n_c\}$, we have
+%     \begin{itemize}
+%     \item the local velocity : $u^\alpha \in \nbR^3$, and
+%       $$  u = [[u^\alpha]^\top, \alpha = 1\ldots n_c]^\top$$
+%     \item the local  reaction vector $r^\alpha\in \nbR^3$    
+%       $$  r = [[r^\alpha]^\top, \alpha = 1\ldots n_c]^\top$$
+%     \item the local  Coulomb cone    $$K^{\alpha}  = \{r^\alpha, \|r^\alpha_\t \| \leq \mu^\alpha |r^\alpha_\n| \} \subset \nbR^3$$
+%        and the set $K$ is the cartesian product of Coulomb's friction cone at each contact, that 
+%       \begin{equation}
+%         \label{eq:CC}
+%         K = \prod_{\alpha=1\ldots n_c} K^{\alpha} 
+%       \end{equation}
+%       and $K^\star$ is dual.
+%     \end{itemize} \end{block}
   
-}
+% }
 
 
 
 
 
 \frame{
-  \frametitle{3D frictional contact problems} 
+  \frametitle{Discrete frictional contact problems} 
   \begin{problem}[General discrete frictional contact problem]\label{prob:I}
   Given
   \begin{itemize}
@@ -209,7 +209,7 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
 }
 
 \frame{
-  \frametitle{3D frictional contact problems}
+  \frametitle{Discrete frictional contact problems}
   \only<1>{ \begin{block}{Wide range of applications}
       The problem is:
       \begin{itemize}
@@ -227,29 +227,34 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
      \item $H$ is the contact configuration matrix (similar to the Jacobians of the constraints)
      \item $w$ can contain
        \begin{itemize}
-       \item impact laws terms or prescribed velocity in velocity level formulation
-       \item displacements or increments of displacements in position level formulation
+       \item impact laws terms or prescribed velocity in velocity level formulations
+       \item displacements, or increments of displacements, in position level formulations
        \end{itemize}
      \end{itemize}
    \end{block}
-   }
-   \only<2>{
+ }
+}
+\frame{
+  \frametitle{Discrete frictional contact problems}
+   \only<1>{
      \begin{block}{Origin of the linear relation $  M v = {H} {r} + {f}$}
        \begin{itemize}
+    
        \item Time--discretization of the discrete dynamical mechanical
          system. Event--capturing or event--detecting  time--stepping schemes
-       \item Time--discretization and space discretization of the
-         dynamic problem of solids
-       \item Space discretization of the quasi--static problem of solids\\
+       \item Space discretization of the quasi--static problem of solids (FEM)\\
          (M is the tangent stiffness matrix !).
-       \item Flexible or rigid  Multi-Body Systems,
-       \item Spectral methods, Harmonic balance method, \ldots
+       \item Time--discretization and space discretization of the
+         dynamic problem of solids. (FEM, MPM, PFEM, \ldots)
+
+       \item Flexible or rigid  multi-body Systems,
+       \item Spectral methods, harmonic balance method, \ldots
        \end{itemize}
      \end{block}
     }
 }
 \frame{
-  \frametitle{3D frictional contact problems} 
+  \frametitle{Discrete frictional contact problems} 
   \begin{problem}[Reduced discrete frictional contact problem]\label{prob:II}
     Given
     \begin{itemize}
@@ -277,8 +282,8 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
 \subsection{From the optimization point of view}
 \frame{
   \frametitle{From the optimization point of view} 
-  \begin{block}{Complementarity problem / Variational inequality}
-    Discrete frictional contact are\\[1mm]
+%  \begin{block}{Complementarity problem / Variational inequality}
+    Discrete frictional contact are complementarity problems / variational inequalities. \\[3mm]
     \quad\tr{Finite dimensional Second-Order Cone Complementarity Problems (SOCCP)}
     \begin{equation}
       \label{eq:soccp3}
@@ -290,14 +295,12 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
       \label{eq:inclusion-1}
       -(W r +q + g(Wr+q)) \stackrel{\Delta}= - F(r)  \in N_K(r).
     \end{equation}
-  \end{block}
+%  \end{block}
   \begin{block}{Properties}
     \begin{itemize}
     \item nonsmooth since  $g()$ is nonsmooth
-    \item nonmonotone since the mapping $F$ is no monotone for large $\mu$
-    \item many possible reformulations such as Nonsmooth equations $G(r) = 0$ \\
-      natural map $F^\nat$ %associated with the VI (\ref{eq:inclusion-1}) $ F^\nat(z) = z - P_{X}(z-F(z))$.\\
-      and variants of this map (Alart-Curnier formulation, \ldots)
+    \item nonmonotone since the mapping $F$ is not monotone for large $\mu$
+    \item many possible reformulations such as nonsmooth equations $G(r) = 0$
     \end{itemize}
   \end{block}
 }  
@@ -355,8 +358,9 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
     \begin{itemize}
     \item A solution of the discrete frictional contact problem is a solution of the optimization problem \eqref{eq:2} with $b(u,r)=0$
     \item A solution of the optimization problem \eqref{eq:2} is a solution of the discrete frictional contact problem if $b(u,r)=0$
-    \item The problem is not convex and non smooth, may have a lot of local minima.
     \item With constraints qualification, the problem has a solution.
+    \item The problem is not convex and non smooth, may have a lot of local minima.
+ 
     \end{itemize}
     \ding{220} In practice,  finding a minimum is difficult, and a global minimum is not ensured.
    

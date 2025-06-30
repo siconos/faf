@@ -70,7 +70,7 @@
 
 
 \title[Coulomb friction and optimisation ]{Numerical solutions of the Coulomb friction contact problem\\ from the perspective of\\  optimisation and mathematical programming\\[5mm]
-  \large{ICCCM,  July 2025}}
+  \large{ICCCM, Munich,   July 2025}}
 
 \author{Vincent Acary}
 \date{
@@ -129,6 +129,7 @@
 
 
 \frame{\titlepage
+  \thispagestyle{empty}\addtocounter{framenumber}{-1}
 }
 
 
@@ -163,38 +164,48 @@
 %   \end{block}
 % \end{frame}
 
-
-
-\begin{frame}
-  \frametitle{Motivations}
-  TODO
+% \begin{frame}
+%   \frametitle{Motivations}
+%   TODO
 
   
-  \tr{Beyond} the numerical simulation of frictional contact problems (Signorini + friction)
-  \begin{itemize}
-  \item Few mathematical results: existence, uniqueness, convergence, rate of convergence.
-  \item Need for comparisons on a fair basis: implementation (software) and benchmarks (data)
-  \item Without convergence proof, test your new  method on a large set of  benchmarks shared by the community. (a common practice in numerical optimization).
-  \item Open and reproducible science.
-  \end{itemize}
+%   \tr{Beyond} the numerical simulation of frictional contact problems (Signorini + friction)
+%   \begin{itemize}
+%   \item Few mathematical results: existence, uniqueness, convergence, rate of convergence.
+%   \item Need for comparisons on a fair basis: implementation (software) and benchmarks (data)
+%   \item Without convergence proof, test your new  method on a large set of  benchmarks shared by the community. (a common practice in numerical optimization).
+%   \item Open and reproducible science.
+%   \end{itemize}
+% \end{frame}
+
+\begin{frame}
+  \frametitle{Motivations \&  contents}
+
+  \begin{enumerate}
+  \item Introduce a sufficiently generic and representative discrete 3D frictional contact problem.
+  \item Interpret this problem in the context of numerical optimisation and mathematical programming.
+  \item Provide an existence result, whose assumption can be verified numerically.
+  \item Compare the main existing numerical methods based on a large collection of problems (FCLIB) and a common implementation (SICONOS/Numerics).
+  \item Propose a new solution method based on the interior point method.
+  \end{enumerate}
+  \addtocounter{page}{-2}
 \end{frame}
 
-\frame{\tableofcontents}
+\frame{\thispagestyle{empty}\tableofcontents\addtocounter{framenumber}{-1}}
 
 
 %\include{introduction}
 %\frame{\tableofcontents}
 
 \include{fc3d}
-\frame{\tableofcontents}
+\frame{\thispagestyle{empty}\tableofcontents\addtocounter{framenumber}{-1}}
 
 \include{existence}
-\frame{\tableofcontents}
+\frame{\thispagestyle{empty}\tableofcontents\addtocounter{framenumber}{-1}}
+
 
 \include{numerics}
-\frame{\tableofcontents}
-
-
+\frame{\thispagestyle{empty}\tableofcontents\addtocounter{framenumber}{-1}}
 
 %\include{siconos_numerics}
 
@@ -202,8 +213,8 @@
 
 \include{comparison}
 
+\frame{\thispagestyle{empty}\tableofcontents\addtocounter{framenumber}{-1}}
 
-\frame{\tableofcontents}
 \include{ipm}
 
 
@@ -214,24 +225,37 @@
 \section{Conclusions \& Perspectives}
 
 \frame{
-\frametitle{Conclusions \& Perspectives}
-\begin{block}{Conclusions}
-  \begin{itemize}
-  \item Siconos/Numerics. A open source collection of solvers. \\
-    {\url{https://github.com/siconos/siconos}}  
-  \item FCLIB: a open collection of discrete 3D Frictional Contact (FC) problems \\
-    {\href{https://github.com/FrictionalContactLibrary}{https://github.com/FrictionalContactLibrary}}  contribute ...
-  \end{itemize}
-  Use and contribute ...
-\end{block}
-\begin{block}{Perspectives}
-  \begin{itemize}
-  \item Nonlinear discretized equations (dynamics or quasi-statics)\\
-    finite strains, finite rotations, hyperelastic models, \ldots
-  \item Plasticity and damage, cohesive zone element coupled with contact and friction\\
-    formulation as a monolithic variational inequality 
-  \end{itemize}
-\end{block}
+  \frametitle{Conclusions \& Perspectives}
+  \begin{block}{Conclusions}
+    \begin{itemize}
+    \item Further research is still needed for an robust AND efficient solver.
+    \item IPM and ANM numerical method provides a robust solver.
+    \item Coupling with other physical phenomena to obtain a monolithic variational inequality : \\[1mm]
+      $\bullet$ (non associated) plasticity \citep{acary:hal-03978387,guillet:hal-05070887}\\
+      $\bullet$ fracture with cohesive zone model \citep{collinscraft:hal-03371667} \\
+      $\bullet$ damage mechanics.
+    \end{itemize}
+  \end{block}
+
+
+  
+  \begin{block}{Open software and data collections.}
+    \begin{itemize}
+    \item Siconos/Numerics. A open source collection of solvers. \\
+      {\url{https://github.com/siconos/siconos}}  
+    \item FCLIB: a open collection of discrete 3D Frictional Contact (FC) problems \\
+      {\href{https://github.com/FrictionalContactLibrary}{https://github.com/FrictionalContactLibrary}}  contribute ...
+    \end{itemize}
+    Use and contribute ...
+  \end{block}
+  % \begin{block}{Perspectives}
+  %   \begin{itemize}
+  %   \item Nonlinear discretized equations (dynamics or quasi-statics)\\
+  %     finite strains, finite rotations, hyperelastic models, \ldots
+  %   \item Plasticity and damage, cohesive zone element coupled with contact and friction\\
+  %     formulation as a monolithic variational inequality 
+  %   \end{itemize}
+  %\end{block}
 }
 
 

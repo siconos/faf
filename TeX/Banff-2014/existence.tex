@@ -5,7 +5,7 @@
 \frame{
   \frametitle{An existence result  via convex optimization}
 
-  F. Cadoux PhD, C. Lemaréchal, J. Malick, VA \cite{Cadoux2009,Acary.ea_ZAMM2011}\\[2mm]
+  PhD of F. Cadoux with  C. Lemaréchal and J. Malick \citep{Cadoux2009,Acary.ea_ZAMM2011}\\[2mm]
 
   
   Let us introduce a slack variable
@@ -15,13 +15,13 @@
   New formulation of the modified velocity with $A \in \nbR^{m\times n_c}$
   $$ \tilde u := u + A s \quad\quad  (g(u) = A s)$$
   The problem $\mathrm{FC/I}(M,H,f,w,\mu)$ can be reformulated as
-  \begin{equation*}\label{eq:soccp1-convex}
+  \begin{equation}\label{eq:soccp1-convex}
   \begin{cases}
     M v = {H} {r} + {f} \\[2mm]
     \widetilde  u = H^\top v + w  + A s  \\[2mm]
     K^\star \ni {\tilde u} \perp r \in K
   \end{cases}
-\end{equation*}
+\end{equation}
 with
 \begin{equation}
   \label{eq:3}
@@ -90,15 +90,16 @@ with
 \frame{
   \frametitle{An existence result.}
   \begin{block}{Numerical validation of the key assumption}
-    Solving a SOC linear program: \\[1mm] Find $x \geq 0$
+    Solving a SOC linear program:  find $x^\star \in \RR$
     \begin{equation*}
       \label{eq:min-SOC}
-      \begin{cases}
-        \max x \\
-        H v + w - a x \in K^\star
-      \end{cases}
+      \begin{array}{lcl}
+        \max_x & &  x \\
+       \text{s.t.} & &  H v + w - a x \in K^\star
+      \end{array}
     \end{equation*}
-    where $a = [ N^{\alpha,\top}]^\top \in \nbR^m$.
+    where $a = \rm{col}(N^{\alpha}, \alpha \in \llbracket 1, m\rrbracket)\in \nbR^m$.\\
+    If $x^\star > 0$, then the assumption is satisfied.
   \end{block}
   \begin{block}{Numerical interest}
     The fixed point equation $F(s) = s$ can be tackled by
@@ -107,8 +108,8 @@ with
       $$ s \leftarrow F(s) $$
     \item \alert{Newton} iterations
       $$s \leftarrow \mathrm{Jac}[F](s) \backslash F(s) $$
-    \item Variants possible (truncated resolution of inner problem\dots)
     \end{itemize}
+    The inner problem can be solved by QP  solvers with SOC constraints (ADMM, IPM, AL, \ldots... ) 
   \end{block}
 }
 
