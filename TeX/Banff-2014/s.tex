@@ -33,7 +33,7 @@
 % \usepackage{algorithmic}
 
 
-\usepackage{minted}
+%\usepackage{minted}
 \usepackage{color}
 
 \input{macro.tex}
@@ -69,8 +69,8 @@
 % \date{CMIS 2018, Biella, Italy}
 
 
-\title[Siconos/numerics and FCLIB]{Siconos/numerics and FCLIB:\\[1mm] a collection of solvers and benchmarks for solving frictional contact problems \\[5mm]
-  \large{CMIS,  May 2024}}
+\title[Coulomb friction and optimisation ]{Numerical solutions of the Coulomb friction contact problem\\ from the perspective of\\  optimisation and mathematical programming\\[5mm]
+  \large{ICCCM,  July 2025}}
 
 \author{Vincent Acary}
 \date{
@@ -124,6 +124,7 @@
   citecolor=violet,
   linkcolor=red,
   urlcolor=blue}
+
 \begin{document}
 
 
@@ -166,10 +167,13 @@
 
 \begin{frame}
   \frametitle{Motivations}
+  TODO
+
+  
   \tr{Beyond} the numerical simulation of frictional contact problems (Signorini + friction)
   \begin{itemize}
   \item Few mathematical results: existence, uniqueness, convergence, rate of convergence.
-  \item Need  for comparisons on a fair basis: implementation (software) and benchmarks (data)
+  \item Need for comparisons on a fair basis: implementation (software) and benchmarks (data)
   \item Without convergence proof, test your new  method on a large set of  benchmarks shared by the community. (a common practice in numerical optimization).
   \item Open and reproducible science.
   \end{itemize}
@@ -184,22 +188,23 @@
 \include{fc3d}
 \frame{\tableofcontents}
 
-% \include{existence}
-% \frame{\tableofcontents}
+\include{existence}
+\frame{\tableofcontents}
 
 \include{numerics}
 \frame{\tableofcontents}
 
 
 
-\include{siconos_numerics}
+%\include{siconos_numerics}
+
 
 
 %\include{comparison}
 
 \frame{\tableofcontents}
 
-\include{fclib}
+%\include{fclib}
 
 
 

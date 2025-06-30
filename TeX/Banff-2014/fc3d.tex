@@ -1,5 +1,5 @@
 
-\section{The 3D frictional contact problem}
+\section{The discrete frictional contact problem}
 \label{Sec:fc3d}
 
 \subsection{Signorini condition and Coulomb's friction}
@@ -61,12 +61,12 @@
 \begin{minipage}[c]{0.49\linewidth}
     \begin{itemize}
     \item gap function $ g_{\n} = (C_B-C_A) \sf N.$
-    \item reaction forces velocities
-      $$ r =  r_\n {\sf N} + r_\t, \quad \text{ with  } r_\n \in \RR \text{ and } r_\t \in \RR^2.$$
-      $$u =  u_\n {\sf N} + u_\t, \quad \text{ with } u_\n \in \RR \text{ and } u_\t \in \RR^2.$$
+    \item reaction forces and  velocities
+      $$r =  r_\n {\sf N} + r_\t, \quad \text{ with  } r_\n \in \nbR, \quad r_\t \in \nbR^2.$$
+      $$u =  u_\n {\sf N} + u_\t, \quad \text{ with } u_\n \in \nbR \quad u_\t \in \nbR^2.$$
     \item Signorini conditions
-      $$  \text{ position level :}  0 \leq g_{\n} \perp r_\n \geq 0.$$\\
-      $$ \text{velocity level :}\left\{\begin{array}{ll}
+      $$  \text{ position level : }  0 \leq g_{\n} \perp r_\n \geq 0.$$\\
+      $$ \text{velocity level : }\left\{\begin{array}{ll}
             0 \leq u_{\n} \perp r_\n \geq 0  &\text{ if } g_{\n} \leq 0\\
             r_{\n} =0 &\text{ otherwise}.
           \end{array}\right.$$
@@ -81,7 +81,7 @@
     isotropic second order cone
     \begin{equation}
       \label{eq:CoulombCone}
-      K = \{r \in \RR^3 \mid \|r_\t\| \leq \mu r_n\}.
+      K = \{r \in \nbR^3 \mid \|r_\t\| \leq \mu r_\n\}.
     \end{equation}
     Coulomb friction postulates
     \begin{itemize}
@@ -93,7 +93,7 @@
     \item and for the \tr{sliding case} that
       \begin{equation}
         \label{eq:Coulom-slide}
-        u_{\t}  \neq 0,\quad r \in \partial K,  \frac{r_\t}{\|r_\t\|} = - \frac{u_\t}{\|u_\t\|}.
+        u_{\t}  \neq 0,\quad \|r_\t\| = \mu r_\n , \quad  r_\t = - \frac{u_\t}{\|u_\t\|}\|r_\t\|.
       \end{equation}
     \end{itemize}
   \end{block}
@@ -106,7 +106,7 @@
           r = 0  &\text{ if } g_{\n} > 0  & \text{(no contact)}\\
           r = 0,  u_\n \geq 0   &\text{ if } g_{\n} \leq 0 & \text{(take--off)} \\
           r \in K, u =0 &\text{ if } g_{\n} \leq 0 & \text{(sticking)}  \\
-               r \in \partial K,u _\n=0,  \frac{r_\t}{\|r_\t\|} = - \frac{u_\t}{\|u_\t\|} &\text{ if } g_{\n} \leq 0 & \text{(sliding)}  \\
+               r \in \partial K,u _\n=0, {r_\t} = - \frac{u_\t}{\|u_\t\|}\|r_\t\|  &\text{ if } g_{\n} \leq 0 & \text{(sliding)}  \\
         \end{array}\right.
     \end{equation}
   \end{block}
@@ -120,7 +120,7 @@
   \begin{block}{Second Order Cone Complementarity (SOCCP) formulation}
   
     \begin{itemize}
-    \item Modified relative velocity $\hat u \in \RR^3$ defined by \citep{DeSaxce92}
+    \item Modified relative velocity $\hat u \in \nbR^3$ defined by \citep{DeSaxce92}
       \begin{equation}
         \label{eq:modified-velocity}
         \hat u = u +\mu \|u_\t\| \sf N.
@@ -131,12 +131,12 @@
         \label{eq:contact-SOCCP}
         K^\star \ni \hat u \perp r \in K
       \end{equation}
-      if $ g_\n \leq 0 $ and $r=0$ otherwise.\\
+      if $ g_\n \leq 0 $ and $r=0$ otherwise.\\[1mm]
       The set $ K^\star $ is
       the dual convex cone to $K$ defined by
       \begin{equation}
         \label{eq:dual-cone}
-        K^\star = \{u \in \RR^3 \mid  r^\top u \geq 0, \quad \text{for all } r \in K   \}.
+        K^\star = \{u \in \nbR^3 \mid  r^\top u \geq 0, \quad \text{for all } r \in K   \}.
       \end{equation}
 
     \end{itemize}
@@ -158,25 +158,25 @@
 \subsection{3D frictional contact problems}
 
 
-% \frame{
-%   \frametitle{3D frictional contact problem} 
-%   \begin{block}{Multiple contact notation}
-%     For each contact $\alpha \in \{1,\ldots n_c\}$, we have
-%     \begin{itemize}
-%     \item the local velocity : $u^\alpha \in \RR^3$, and
-%       $$  u = [[u^\alpha]^\top, \alpha = 1\ldots n_c]^\top$$
-%     \item the local  reaction vector $r^\alpha\in \RR^3$    
-%       $$  r = [[r^\alpha]^\top, \alpha = 1\ldots n_c]^\top$$
-%     \item the local  Coulomb cone    $$K^{\alpha}  = \{r^\alpha, \|r^\alpha_\t \| \leq \mu^\alpha |r^\alpha_\n| \} \subset \RR^3$$
-%        and the set $K$ is the cartesian product of Coulomb's friction cone at each contact, that 
-%       \begin{equation}
-%         \label{eq:CC}
-%         K = \prod_{\alpha=1\ldots n_c} K^{\alpha} 
-%       \end{equation}
-%       and $K^\star$ is dual.
-%     \end{itemize} \end{block}
+\frame{
+  \frametitle{3D frictional contact problem} 
+  \begin{block}{Multiple contact notation}
+    For each contact $\alpha \in \{1,\ldots n_c\}$, we have
+    \begin{itemize}
+    \item the local velocity : $u^\alpha \in \nbR^3$, and
+      $$  u = [[u^\alpha]^\top, \alpha = 1\ldots n_c]^\top$$
+    \item the local  reaction vector $r^\alpha\in \nbR^3$    
+      $$  r = [[r^\alpha]^\top, \alpha = 1\ldots n_c]^\top$$
+    \item the local  Coulomb cone    $$K^{\alpha}  = \{r^\alpha, \|r^\alpha_\t \| \leq \mu^\alpha |r^\alpha_\n| \} \subset \nbR^3$$
+       and the set $K$ is the cartesian product of Coulomb's friction cone at each contact, that 
+      \begin{equation}
+        \label{eq:CC}
+        K = \prod_{\alpha=1\ldots n_c} K^{\alpha} 
+      \end{equation}
+      and $K^\star$ is dual.
+    \end{itemize} \end{block}
   
-% }
+}
 
 
 
@@ -190,10 +190,10 @@
     \item a symmetric positive definite matrix ${M} \in \nbR^{n \times n}$,
     \item a vector $ {f} \in \nbR^n$,
     \item a matrix  ${H} \in \nbR^{n \times m}$,
-    \item a vector $w \in \RR^{m}$,
-    \item a vector of coefficients of friction $\mu \in \RR^{n_c}$,
+    \item a vector $w \in \nbR^{m}$,
+    \item a vector of coefficients of friction $\mu \in \nbR^{n_c}$,
   \end{itemize}
-find three vectors $ {v} \in \nbR^n$, $u\in\RR^m$ and $r\in \RR^m$, denoted by $\mathrm{FC/I}(M,H,f,w,\mu)$  such that
+find three vectors $ {v} \in \nbR^n$, $u\in\nbR^m$ and $r\in \nbR^m$, denoted by $\mathrm{FC/I}(M,H,f,w,\mu)$  such that
 \begin{equation}\label{eq:soccp1}
   \begin{cases}
     M v = {H} {r} + {f} \\[2mm]
@@ -207,6 +207,47 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
 \end{problem}
 
 }
+
+\frame{
+  \frametitle{3D frictional contact problems}
+  \only<1>{ \begin{block}{Wide range of applications}
+      The problem is:
+      \begin{itemize}
+      \item is generic enough to include a large number of cases in practice,
+      \item is really representative in the linear or linearized case (Newton procedure),
+      \item can be generalised to non-linear cases.
+      \end{itemize}
+  \end{block}
+  See for instance ~\parencite{Acary.Cadoux2013}\\
+  
+ 
+  \begin{block}{Origin of the linear relation $u = H^\top v + w$}
+
+     \begin{itemize}
+     \item $H$ is the contact configuration matrix (similar to the Jacobians of the constraints)
+     \item $w$ can contain
+       \begin{itemize}
+       \item impact laws terms or prescribed velocity in velocity level formulation
+       \item displacements or increments of displacements in position level formulation
+       \end{itemize}
+     \end{itemize}
+   \end{block}
+   }
+   \only<2>{
+     \begin{block}{Origin of the linear relation $  M v = {H} {r} + {f}$}
+       \begin{itemize}
+       \item Time--discretization of the discrete dynamical mechanical
+         system. Event--capturing or event--detecting  time--stepping schemes
+       \item Time--discretization and space discretization of the
+         dynamic problem of solids
+       \item Space discretization of the quasi--static problem of solids\\
+         (M is the tangent stiffness matrix !).
+       \item Flexible or rigid  Multi-Body Systems,
+       \item Spectral methods, Harmonic balance method, \ldots
+       \end{itemize}
+     \end{block}
+    }
+}
 \frame{
   \frametitle{3D frictional contact problems} 
   \begin{problem}[Reduced discrete frictional contact problem]\label{prob:II}
@@ -214,9 +255,9 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
     \begin{itemize}
     \item a symmetric positive semi--definite  matrix ${W} \in \nbR^{m \times m}$,
     \item a vector $ {q} \in \nbR^m$,
-    \item a vector $\mu \in \RR^{n_c}$ of coefficients of friction, 
+    \item a vector $\mu \in \nbR^{n_c}$ of coefficients of friction, 
     \end{itemize}
-    find two vectors $u\in\RR^m$ and $r\in \RR^m$, denoted by $\mathrm{FC/II}(W,q,\mu)$  such that
+    find two vectors $u\in\nbR^m$ and $r\in \nbR^m$, denoted by $\mathrm{FC/II}(W,q,\mu)$  such that
     \begin{equation}\label{eq:soccp2}
       \begin{cases}
         u =Wr +q \\[2mm]
@@ -233,62 +274,85 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
   \end{block}
   
 }
-% \frame{
-%   \frametitle{3D frictional contact problems} 
-%   \begin{block}{Wide range of applications}
-%     Origin of the linear relations~\nocite{Acary.Cadoux2013}.
-%   $$  M v = {H} {r} + {f},\quad u = H^\top v + w$$
-%   \begin{itemize}
-%   \item Time--discretization of the discrete dynamical mechanical
-%     system. Event--capturing or event--detecting  time--stepping schemes
-%   \item Time--discretization and space discretization of the
-%     dynamic problem of solids
-%   \item Space discretization of the quasi--static problem of solids.
-%   \item HBM, Flexible MBS, ...
-%   \end{itemize}
-% \end{block}
-% \ding{220}  These problems are really representative of a lot of applications with a possible linearization (Newton procedure)\\
-% \ding{220}  Nonlinear version is also possible\\
-% }
+\subsection{From the optimization point of view}
+\frame{
+  \frametitle{From the optimization point of view} 
+  \begin{block}{Complementarity problem / Variational inequality}
+    Discrete frictional contact are\\[1mm]
+    \quad\tr{Finite dimensional Second-Order Cone Complementarity Problems (SOCCP)}
+    \begin{equation}
+      \label{eq:soccp3}
+      K^\star \ni Wr +q + g(Wr +q) \perp r \in K
+    \end{equation}
+    of more generally,\\[1mm]
+    \quad\tr{Variational Inequality (VI)} (normal cone inclusion)
+    \begin{equation}
+      \label{eq:inclusion-1}
+      -(W r +q + g(Wr+q)) \stackrel{\Delta}= - F(r)  \in N_K(r).
+    \end{equation}
+    \quad \tr{Properties}
+    \begin{itemize}
+    \item nonsmooth since  $g()$ is nonsmooth
+    \item nonmonotone 
+    \end{itemize}
+  \end{block}
+  \ding{220} the variational inequality is NOT  the optimality condition of a (convex) optimization problem.\\[1mm]
+    \ding{220} The problem is very hard to solve efficiently.
+}  
+\frame{
+  \frametitle{From the optimization point of view} 
+    % \begin{itemize}
+    % \item if we neglect $g(\cdot)$, (\ref{eq:soccp3}) is a gentle
+    %   monotone SOCLCP that  is the KKT conditions of a convex SOCQP.
+    % \item otherwise, the problem is nonmonotone and nonsmooth since
+    %   $g()$ is nonsmooth
+    % \end{itemize}
+    % 
+   \begin{block}{Many possible reformulations}
+     \begin{itemize}
+     \item Nonsmooth equations $G(r) = 0$\\
+       $\bullet$ The natural map $F^\nat$ associated with the VI (\ref{eq:inclusion-1}) $ F^\nat(z) = z - P_{X}(z-F(z))$.\\
+       $\bullet$ Variants of this map (Alart-Curnier formulation, \ldots)\\
+       $\bullet$  one of the SOCCP-functions. (Fisher-Bursmeister function)\\
+     \item and many other ...
+     \end{itemize}
+   \end{block}
+   \begin{block}{Numerical methods}
+     \begin{itemize}
+     \item Numerous numerical methods exist. 
+     \item Many of these are adaptations of mathematical programming methods.
+     \end{itemize}
+   \end{block}
+ }
+ \frame{
+  \frametitle{From the optimization point of view} 
+  \begin{block}{An optimization problem}
 
-% \subsection{From the mathematical programming point of view}
+    \begin{equation}
+      \label{eq:2}
+      \begin{array}{lcl}
+        \min_{v,u,r} & & \hat u ^\top r = u^\top r + \mu r_\n \|u_{\t}\|  \stackrel{\Delta}= b(u,r)\\[1mm]
+        \text{s.t.} & & Mv = H r + f \\[1mm]
+                    & & \hat u = H^\top v + w + g(u) \in K^\star \\[1mm]
+                    & & r \in K 
+        
+      \end{array}
+    \end{equation}
+    $b(u,r)$ is the de Saxcé bi-potential.
+    \begin{itemize}
+    \item A solution of the discrete frictional contact problem is a solution of the optimization problem \eqref{eq:2} with $b(u,r)=0$
+    \item A solution of the optimization problem \eqref{eq:2} is a solution of the discrete frictional contact problem if $b(u,r)=0$
+    \item The problem is not convex and non smooth, may have a lot of local minima.
+    \item With constraints qualification, the problem has a solution.
+    \end{itemize}
+    \ding{220} In practice,  finding a minimum is difficult, and a global minimum is not ensured.
+   
+  \end{block}
 
-% \frame{
-%   \frametitle{From the mathematical programming point of view} 
-%   \begin{block}{Nonmonotone and nonsmooth SOCCP}
-%     \begin{equation}
-%       \label{eq:soccp3}
-%       K^\star \ni Wr +q + g(Wr +q) \perp r \in K
-%     \end{equation}
-%     % \begin{itemize}
-%     % \item if we neglect $g(\cdot)$, (\ref{eq:soccp3}) is a gentle
-%     %   monotone SOCLCP that  is the KKT conditions of a convex SOCQP.
-%     % \item otherwise, the problem is nonmonotone and nonsmooth since
-%     %   $g()$ is nonsmooth
-%     % \end{itemize}
-%     % \ding{220} The problem is very hard to solve efficiently.
-%   \end{block}
-%    \begin{block}{Many possible reformulations}
-%      \begin{itemize}
-%      \item Variational inequality or normal cone inclusion
-%        \begin{equation}
-%          \label{eq:inclusion-1}
-%          -(W r +q + g(Wr+q)) \stackrel{\Delta}= - F(r)  \in N_K(r).
-%        \end{equation}
-%      \item Nonsmooth equations $G(r) = 0$\\
-%        % $\bullet$ The natural map $F^\nat$ associated with the VI (\ref{eq:inclusion-1}) $ F^\nat(z) = z - P_{X}(z-F(z))$.\\
-%        % $\bullet$ Variants of this map (Alart-Curnier formulation, \ldots)\\
-%        % $\bullet$  one of the SOCCP-functions. (Fisher-Bursmeister function)\\
-%      \item and many other ...
-%      \end{itemize}
-%    \end{block}
-%    \begin{block}{Numerical methods}
-%      \begin{itemize}
-%      \item  Numerous numerical methods exist. 
-%      \item Many of them are adaptations of mathematical programming methods.
-%      \end{itemize}
-%    \end{block}
-%  }
+}
+  
+
+ 
 
 
 %%% Local Variables:

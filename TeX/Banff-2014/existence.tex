@@ -3,12 +3,16 @@
 \label{Sec:existence}
 
 \frame{
-  \frametitle{An existence result. (F. Cadoux PhD)}
+  \frametitle{An existence result  via convex optimization}
+
+  F. Cadoux PhD, C. Lemaréchal, J. Malick, VA \cite{Cadoux2009,Acary.ea_ZAMM2011}
+
+  
   Let us introduce a slack variable
   \begin{equation*} \label{eq:chgVarDS}
     s^\alpha := \| u^\alpha_\t \|
   \end{equation*}
-  New formulation of the modified velocity with $A \in \RR^{m\times n_c}$
+  New formulation of the modified velocity with $A \in \nbR^{m\times n_c}$
   $$ \hat u := u + A s \quad\quad  (g(u) = A s)$$
   The problem $\mathrm{FC/I}(M,H,f,w,\mu)$ can be reformulated as
   \begin{equation*}\label{eq:soccp1-convex}
@@ -75,7 +79,7 @@
   \begin{theorem}
     A fixed point exists
   \end{theorem}
-  This result is a variant of a previous result obtained by~\cite{Klarbring.Pang1998}.
+  //This result is a variant of a previous result obtained by~\cite{Klarbring.Pang1998}.
 }
 \frame{
   \frametitle{An existence result.}
@@ -88,7 +92,7 @@
         H v + w - a x \in K^\star
       \end{cases}
     \end{equation*}
-    where $a = [ N^{\alpha,\top}]^\top \in \RR^m$.
+    where $a = [ N^{\alpha,\top}]^\top \in \nbR^m$.
   \end{block}
   \begin{block}{Numerical interest}
     The fixed point equation $F(s) = s$ can be tackled by
