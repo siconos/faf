@@ -14,13 +14,13 @@
 }}}}
 \put(9526,-436){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\sf -u_{\t}$}%
 }}}}
-\put(9901,-1036){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\sf - \hat{u}$}%
+\put(9901,-1036){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\sf - \tilde{u}$}%
 }}}}
-\put(8990,-1462){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\sf -\hat{u}_{\n}$}%
+\put(8990,-1462){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\sf -\tilde{u}_{\n}$}%
 }}}}
-\put(8626,-4411){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\sf -\hat{u}$}%
+\put(8626,-4411){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\sf -\tilde{u}$}%
 }}}}
-\put(8776,-3736){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\sf -\hat{u}_{\t}$}%
+\put(8776,-3736){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\sf -\tilde{u}_{\t}$}%
 }}}}
 \put(8026,-2536){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\sf r$}%
 }}}}
@@ -34,7 +34,7 @@
 }}}}
 \put(6901,-3136){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}${\sf N}$}%
 }}}}
-\put(6376,-4711){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\sf -\hat{u}_{\n}$}%
+\put(6376,-4711){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\sf -\tilde{u}_{\n}$}%
 }}}}
 \put(7876,-4936){\makebox(0,0)[lb]{\smash{{\SetFigFont{20}{24.0}{\familydefault}{\mddefault}{\updefault}{\color[rgb]{0,0,0}$\sf T_2$}%
 }}}}
