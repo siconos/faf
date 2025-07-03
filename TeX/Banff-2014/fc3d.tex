@@ -214,11 +214,11 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
       The problem is:
       \begin{itemize}
       \item is generic enough to include a large number of cases in practice,
-      \item is really representative in the linear or linearized case (Newton procedure),
+      \item is really representative in the linear, or the linearized,  case (Newton procedure),
       \item can be generalised to non-linear cases.
       \end{itemize}
   \end{block}
-  See for instance ~\parencite{Acary.Cadoux2013}\\
+  See for instance~\parencite{Acary.Cadoux2013}\\
   
  
   \begin{block}{Origin of the linear relation $u = H^\top v + w$}
@@ -310,7 +310,8 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
   \begin{block}{Important Remarks}
     \begin{itemize}
     \item The variational inequality is NOT  the optimality condition of a (convex) optimization problem.
-    \item The problem is very hard to solve efficiently.
+    \item The problem is hard to solve efficiently and robustly at tight accuracy.
+    \item Even harder if $H$ is not full rank (constraints redundancy) 
     \item Generic numerical methods for VI/CP exist and can be applied
     \item Numerous of existing methods for FC3D problems are adaptations of mathematical programming methods.
     \end{itemize}
@@ -321,8 +322,8 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
   \begin{block}{Semismooth Newton methods for nonsmooth equations $G(r) = 0$.}
     Not just adaptations, but sometimes pioneering methods.
     \begin{itemize}
-    \item The natural map $F^\nat$ associated with the VI (\ref{eq:inclusion-1}) $$ F^\nat(z) = z - P_{X}(z-F(z))$$
-    \item Pioneering work of Alart \& Curnier
+    \item The natural map $F^\nat$ associated with the VI (\ref{eq:inclusion-1}) $$ F^\nat(r) = r - P_{K}(r-F(r))$$
+    \item Pioneering work of~\cite{Alart.Curnier1991}
       \begin{equation*}
         \label{eq:CKPS-1}
         \begin{cases}
@@ -330,10 +331,8 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
           r_\t - P_{D(\mu, r_{\n,+}+\rho u_\n)}(r_\t - \rho_\t u_\t   )=0,
         \end{cases}
       \end{equation*}
-      
-
-      
-    \item other SOCCP function (Fisher-Bursmeister function)
+     
+    \item other SOCCP functions (Fisher-Bursmeister function)
       
     \end{itemize}
   \end{block}

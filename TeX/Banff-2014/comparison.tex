@@ -5,10 +5,10 @@
 \frame{
   \frametitle{siconos/numerics}
   \begin{block}
-    {Siconos} Open source software for modelling and simulation of
+    {siconos} Open source software for modelling and simulation of
     nonsmooth systems
   \end{block}
-  \begin{block} {Siconos/numerics}
+  \begin{block} {siconos/numerics}
     Collection of C routines to solve FC3D problems in dense, sparse or  block sparse versions:
     \begin{itemize}
     \item VI solvers: Fixed point, Extra-Gradient, Uzawa
@@ -28,57 +28,72 @@
     \end{itemize}
   \end{block}
 }
-\begin{frame}[fragile]
-  \frametitle{Siconos/Numerics}
-  \begin{block}
-    {Implementation details}
-     \begin{itemize}
-     \item Matrix format.
-       \begin{itemize}
-       \item dense (column-major)
-       \item sparse matrices (triplet, CSR, CSC)
-       \item sparse block matrices
-       \end{itemize}
-     \item Linear algebra libraries and solvers.
-       \begin{itemize}
-       \item BLAS/LAPACK, MKL
-       \item MUMPS, SUPERLU, UMFPACK,
-       \item PETSc (in progress)
-       \end{itemize}
-     \item Python interface (swig (pybind11 coming soon))
-     \item Generic structure for problem, driver and options
-     \end{itemize}
-   \end{block}
-        {\small
-        \begin{minted}{c}
-          int fc3d_driver(FrictionContactProblem* problem,
-                          double* reaction,
-                          double* velocity,
-                          SolverOptions* numerics_solver_options);
-       \end{minted}
-     }
-\end{frame}
+% \begin{frame}[fragile]
+%   \frametitle{Siconos/Numerics}
+%   \begin{block}
+%     {Implementation details}
+%      \begin{itemize}
+%      \item Matrix format.
+%        \begin{itemize}
+%        \item dense (column-major)
+%        \item sparse matrices (triplet, CSR, CSC)
+%        \item sparse block matrices
+%        \end{itemize}
+%      \item Linear algebra libraries and solvers.
+%        \begin{itemize}
+%        \item BLAS/LAPACK, MKL
+%        \item MUMPS, SUPERLU, UMFPACK,
+%        \item PETSc (in progress)
+%        \end{itemize}
+%      \item Python interface (swig (pybind11 coming soon))
+%      \item Generic structure for problem, driver and options
+%      \end{itemize}
+%    \end{block}
+%         {\small
+%         \begin{minted}{c}
+%           int fc3d_driver(FrictionContactProblem* problem,
+%                           double* reaction,
+%                           double* velocity,
+%                           SolverOptions* numerics_solver_options);
+%        \end{minted}
+%      }
+% \end{frame}
 
 
 
-\subsection{Measuring error}
+
+
+\input{fclib.tex}
+
+\subsection{Simulation campaign Measuring error}
+
+% \begin{frame}
+%   \frametitle{Measuring errors}
+  
+%   \begin{block}{Cheap error}
+%     \begin{equation}
+%       \label{eq:error-2}
+%       \mbox{error}_{\mbox{cheap}} = \frac{\|r_{k+1}-r_{k}\|}{\|r_k\|}.
+%     \end{equation}
+%     The tolerance of solver is then self-adapted in the loop to meet the required tolerance based on the error given by~\eqref{eq:error-1}.
+%   \end{block}
+% \end{frame}
 
 \begin{frame}
-  \frametitle{Measuring errors}
+  \frametitle{Parameters of the simulation campaign}
+  \begin{itemize}
+  \item More than $2500$ problems
+  \item Around $30$ solvers with their variants
+  \item More than $27000$ runs between few seconds up to $400s$.
+  \end{itemize}
   \begin{block}{Full error criteria}
     \begin{equation}
       \label{eq:error-1}
       \mbox{error} = \frac{\|F^\nat_\vitwo(r)\|}{\|q\|}.
     \end{equation}
   \end{block}
-  \begin{block}{Cheap error}
-    \begin{equation}
-      \label{eq:error-2}
-      \mbox{error}_{\mbox{cheap}} = \frac{\|r_{k+1}-r_{k}\|}{\|r_k\|}.
-    \end{equation}
-    The tolerance of solver is then self-adapted in the loop to meet the required tolerance based on the error given by~\eqref{eq:error-1}.
-  \end{block}
 \end{frame}
+
 
 \subsection{Performance profiles}
 \frame{
@@ -103,17 +118,7 @@
   
   
 }
-\input{fclib.tex}
 
-\begin{frame}
-  \frametitle{Parameters of the simulation campaign}
-
-  \begin{itemize}
-  \item More than $2500$ problems
-  \item Around $30$ solvers with their variants
-  \item More than $27000$ runs between few seconds up to $400s$.
-  \end{itemize}
-\end{frame}
 %\subsection{Chain}
 % \frame{
 %   \frametitle{First comparisons. Chain}

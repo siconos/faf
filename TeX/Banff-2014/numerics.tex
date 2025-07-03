@@ -9,7 +9,7 @@
   \item Nonsmooth Equations based methods
   \item Matrix block--splitting and projection based algorithms
   \item Proximal point algorithms
-  \item Optimization based approach
+  \item Optimization based approaches
   % \item Interior point techniques
   \end{itemize}
 }
@@ -33,14 +33,14 @@
     \begin{itemize}
     \item Basic fixed point iterations with projection\hfill\tr{\sf{[FP-VI]}}
       $$\sf r_{k+1} \leftarrow P_{K}(r_k - \rho_k\,F(r_k))$$
-  \item Extragradient method\hfill\tr{\sf{[EG-VI]}}
+    \item  with fixed $\rho_k = \rho$, we get the Uzawa Algorithm of \cite{DeSaxce.Feng_MCM1998} with similarity with augmented Lagrangian methods\citep{Wriggers2006}\hfill\tr{\sf{[FP-DS]}}
+    \item Extragradient method\hfill\tr{\sf{[EG-VI]}}
     $$\sf r_{k+1} \leftarrow P_K(r_{k}-\rho_k\,F(P_K(r_k-\rho_k F(r_k))))$$
-  \item with fixed $\rho_k = \rho$, we get the Uzawa Algorithm of De Saxc\'e-Feng\hfill\tr{\sf{[FP-DS]}}
   \end{itemize}
 \end{block}
 
 \begin{block}
-{Self-adaptive procedure for $\rho_k$}\hfill\tr{\sf{[UPK]}}
+{Self-adaptive procedure for $\rho_k$\hfill\tr{\sf{[UPK]}}}
  \begin{equation*}
    \label{eq:Korpelevitch}
    \text{Armijo-like : } m_k\in \NN\quad  \text{such that }
@@ -204,7 +204,9 @@
 \begin{frame}
   \frametitle{Optimization based methods}
 
-  Book of Dostal
+  Optimization, contact and huge-scale problems. \citep{dostal2016scalable}
+  
+  \includegraphics[height=0.4\textheight]{Dostal_book_2023.pdf}
 \end{frame}
 
 

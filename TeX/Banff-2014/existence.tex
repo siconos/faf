@@ -1,5 +1,4 @@
-
-\section{An existence result}
+\section{An existence result   via convex optimization}
 \label{Sec:existence}
 
 \frame{
@@ -30,7 +29,7 @@ with
 
 }
 \frame{
-  \frametitle{An existence result.}
+  \frametitle{An existence result  via convex optimization}
   The problem~(\ref{eq:soccp1-convex}) appears to be the KKT condition of
   \begin{block}{Primal problem}
     \begin{equation} \tag{$D_s$}
@@ -58,7 +57,7 @@ with
   \end{block}
 }
 \frame{
-  \frametitle{An existence result.}
+  \frametitle{An existence result  via convex optimization}
   \begin{block}{Fixed point problem}
     Introducing
   $$ u(s) := \argmin_u (P_s) = \argmin_u (D_s) $$
@@ -70,7 +69,7 @@ with
 
 }
 \frame{
-  \frametitle{An existence result.}
+  \frametitle{An existence result   via convex optimization}
 
   \begin{block}{Key assumption}
     \begin{equation}
@@ -88,7 +87,7 @@ with
   %This result is a variant of a previous result obtained by~\cite{Klarbring.Pang1998}.
 }
 \frame{
-  \frametitle{An existence result.}
+  \frametitle{An existence result  via convex optimization}
   \begin{block}{Numerical validation of the key assumption}
     Solving a SOC linear program:  find $x^\star \in \RR$
     \begin{equation*}
@@ -98,7 +97,7 @@ with
        \text{s.t.} & &  H v + w - a x \in K^\star
       \end{array}
     \end{equation*}
-    where $a = \rm{col}(N^{\alpha}, \alpha \in \llbracket 1, m\rrbracket)\in \nbR^m$.\\
+    where $a = \rm{col}(N^{\alpha}, \alpha \in \llbracket 1, m\rrbracket)\in \nbR^m$.\\[1mm]
     If $x^\star > 0$, then the assumption is satisfied.
   \end{block}
   \begin{block}{Numerical interest}
@@ -109,7 +108,7 @@ with
     \item \alert{Newton} iterations
       $$s \leftarrow \mathrm{Jac}[F](s) \backslash F(s) $$
     \end{itemize}
-    The inner problem can be solved by QP  solvers with SOC constraints (ADMM, IPM, AL, \ldots... ) 
+    The inner problem can be solved by QP  solvers with SOC constraints (ADMM, IPM, AL, \ldots ) 
   \end{block}
 }
 
