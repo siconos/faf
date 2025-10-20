@@ -1,5 +1,7 @@
 \documentclass[8pt,red]{beamer}
 \usepackage{amsmath,amsthm,amsfonts,amssymb,amsbsy}
+\newtheorem{proposition}{toto}
+%\newtheorem{theorem}{Theorem}
 \everymath{\displaystyle}
 \usepackage{stmaryrd} 
 \usepackage{subeqnarray}
@@ -9,7 +11,7 @@
 \usepackage{pifont}
 
 \usepackage{fancyhdr}
-
+\usepackage{pdfpages}
 \makeatletter
   \def\Hy@PageAnchorSlidesPlain{}%
   \def\Hy@PageAnchorSlide{}%
@@ -24,7 +26,11 @@
 \usepackage{subfloat}
 \usepackage{rotating}
 \usepackage{tikz}
+\usepackage{algorithm,algpseudocode}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
 
+\setbeamertemplate{navigation symbols}{}
 \usetikzlibrary{arrows}
 \usetikzlibrary{calc}
 
@@ -69,8 +75,8 @@
 % \date{CMIS 2018, Biella, Italy}
 
 
-\title[Coulomb friction and optimisation ]{Numerical solutions of the Coulomb friction contact problem\\ from the perspective of\\  optimisation and mathematical programming\\[5mm]
-  \large{ICCCM, Munich,   July 2025}}
+\title[Coulomb friction and optimisation ]{Non-smooth dynamics and optimization:\\[2mm] solving the contact problem with friction using the interior point method and the numerical asymptotic method.\\[5mm]
+  \large{CAS, Mines de Paris,   October 2025}}
 
 \author{Vincent Acary}
 \date{
@@ -183,7 +189,7 @@
 %   \item Open and reproducible science.
 %   \end{itemize}
 % \end{frame}
-
+\includepdf[pages={1-5}]{TRIPOP_generic.pdf}
 \begin{frame}
   \frametitle{Motivations \&  contents}
 
