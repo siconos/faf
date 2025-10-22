@@ -61,7 +61,7 @@
 \begin{minipage}[c]{0.49\linewidth}
     \begin{itemize}
     \item gap function $ g_{\n} = (C_B-C_A) \sf N.$
-    \item reaction forces and  velocities
+    \item local reaction forces $r$ and  velocities $u$
       $$r =  r_\n {\sf N} + r_\t, \quad \text{ with  } r_\n \in \nbR, \quad r_\t \in \nbR^2.$$
       $$u =  u_\n {\sf N} + u_\t, \quad \text{ with } u_\n \in \nbR \quad u_\t \in \nbR^2.$$
     \item Signorini conditions
@@ -310,9 +310,9 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
   \begin{block}{Important Remarks}
     \begin{itemize}
     \item The variational inequality is NOT  the optimality condition of a (convex) optimization problem.
-    \item The problem is hard to solve efficiently and robustly at tight accuracy.
-    \item Even harder if $H$ is not full rank (constraints redundancy) 
-    \item Generic numerical methods for VI/CP exist and can be applied
+    \item The problem is difficult to solve efficiently and robustly with high accuracy.
+    \item Even harder if $H$ is not full rank (i.e. if there is constraints redundancy).
+    \item Generic numerical methods for VI/CP exist and can be applied.
     \item Numerous of existing methods for FC3D problems are adaptations of mathematical programming methods.
     \end{itemize}
   \end{block}
@@ -355,11 +355,11 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
     \end{equation}
     $b(u,r)$ is the de Saxcé bi-potential.
     \begin{itemize}
-    \item A solution of the discrete frictional contact problem is a solution of the optimization problem \eqref{eq:2} with $b(u,r)=0$
-    \item A solution of the optimization problem \eqref{eq:2} is a solution of the discrete frictional contact problem if $b(u,r)=0$
+    \item A solution to the discrete frictional contact problem is a solution to~\eqref{eq:2} with $b(u,r)=0$
+    \item A solution to \eqref{eq:2} is a solution to the discrete frictional contact problem if $b(u,r)=0$
     \item With constraints qualification, the problem has a solution.
-    \item The problem is not convex and non smooth, may have a lot of local minima.
- 
+    \item The problem is not convex and non smooth, may have many local minima.
+    \item Should it be considered as a min-max problem or a game with constraints?
     \end{itemize}
     \ding{220} In practice,  finding a minimum is difficult, and a global minimum is not ensured.
    

@@ -16,7 +16,8 @@ Consider the convex quadratic program in standard form:
   &\text{subject to }\; A x = b, \quad x \ge 0,
 \end{align*}
 where $Q\succeq 0$, $A\in\mathbb{R}^{m\times n}$.
-
+\end{block}
+\begin{block}{First-order (KKT) conditions}
 First-order (KKT) conditions (existence of multipliers $y,z$):
 \begin{align*}
   Qx + c + A^T y - z &= 0 \quad (\text{stationarity})\\
@@ -25,9 +26,7 @@ First-order (KKT) conditions (existence of multipliers $y,z$):
 \end{align*}
 where $X=\mathrm{diag}(x)$, $Z=\mathrm{diag}(z)$, $e$ is the vector of ones.
 \end{block}
-\begin{block}{Interior-point idea}
-   Enforce strict positivity $x>0, z>0$ and drive $XZe=\mu e$ to zero along the \emph{central path} as $\mu\downarrow0$.
-\end{block}
+
 
 \end{frame}
 
@@ -36,6 +35,9 @@ where $X=\mathrm{diag}(x)$, $Z=\mathrm{diag}(z)$, $e$ is the vector of ones.
   
 \only<1>
 {
+  \begin{block}{Interior-point idea}
+   Enforce strict positivity $x>0, z>0$ and drive $XZe=\mu e$ to zero along the \emph{central path} as $\mu\downarrow0$.
+\end{block}
   \begin{block}{Barrier formulation and Newton steps}
   Use a logarithmic barrier to keep $x>0$:
 \[
@@ -107,40 +109,6 @@ Take a damped Newton step and project back to positive orthant with step-length 
 \end{frame}
 
 
-\begin{frame}{Full Newton step for primal--dual system}
-The perturbed KKT conditions for $\mu>0$ are:
-\begin{align*}
-  Qx + c + A^T y - z &= 0, \\
-  Ax - b &= 0, \\
-  XZe &= \mu e.
-\end{align*}
-We linearize these equations at $(x,y,z)$ to get the Newton system for $(\Delta x, \Delta y, \Delta z)$:
-\[
-  \begin{bmatrix}
-    Q & A^T & -I \\
-    A & 0   & 0   \\
-    Z & 0   & X
-  \end{bmatrix}
-  \begin{bmatrix}
-    \Delta x \\
-    \Delta y \\
-    \Delta z
-  \end{bmatrix}
-  = -\begin{bmatrix}
-    r_d \\
-    r_p \\
-    r_c
-  \end{bmatrix},
-\]
-where
-\begin{align*}
-  r_d &= Qx + c + A^T y - z,\\
-  r_p &= Ax - b,\\
-  r_c &= XZe - \mu e.
-\end{align*}
-This 3-block structure is the foundation of primal--dual interior-point methods.
-\end{frame}
-
 
 % Slide 3: Central path illustration
 \begin{frame}{Illustration of the central path}
@@ -155,7 +123,7 @@ As $\mu \to 0$, the path converges to the optimal solution $(x^*,y^*,z^*)$.
 \begin{itemize}
   \item Each $\mu$ defines a barrier problem that smooths the feasible region.
   \item The central path traces the minimizers of these smoothed problems.
-  \item Interior-point methods follow this path using Newton directions.
+  \item Interior-point methods ``follow/approximate'' this path using Newton directions.
 \end{itemize}
 
 % \vspace{2mm}
@@ -293,30 +261,41 @@ Interior-point methods follow the central path using Newton steps on a barrier-r
       \end{columns}
     \end{block}
     
-    \begin{block}{Convex case ($s$ fixed)}
-      IPM is able to solve very accurately and efficiently the problem with a given $s := \| u_\t \|$ even when $H$ is rank-deficient (see \cite{acary:hal-03913568}).\\ Special care of sparse linear systems and conditioning with Nesterov-Todd scaling.
+    \begin{block}{Convex case ($s$ given  fixed)(see \cite{acary:hal-03913568})}
+      \begin{itemize}
+      \item IPM solves very accurately (${\rm tol}< 10^{-13}$) and efficiently the problem.
+      \item Even when $H$ is rank-deficient. 
+      \item Special care of sparse linear systems and conditioning with Nesterov-Todd scaling.
+      \end{itemize}
+      
     \end{block}
-  \ding{220} Extension to general frictional contact problems: nonsmooth interior point method
+  \tr{\ding{220}} Extension to general frictional contact problems: nonsmooth interior point method
 
   
 \end{frame}
 
 \begin{frame}{Nonsmooth Interior-Point Method (NIPM)}
-    % \vspace{-0.3cm}
-
-    \tr{Slater's assumption (SA)} \quad $\exists v \in \nbR^m$ \quad such that \quad $Hv+w \in \mbox{int}({K})$
+  \begin{block}{Slater's assumption (SA)}
+    $$\exists v \in \nbR^m \quad \text{ such that } \quad Hv+w \in \mbox{int}({K})$$
+    \vspace{-12pt}
+  \end{block}
     \begin{theorem}
-        \vspace{-5pt}
         \begin{enumerate}
             \item Under SA, for each $\tau > 0$, the perturbed problem \eqref{eq:per-incre-prob} has a solution $(v_\tau,\tilde{u}_\tau,r_\tau,s_\tau)$ \\[6pt]
             \item Under SA, there exists an analytic central path $\{(v_\tau,\tilde{u}_\tau,r_\tau,s_\tau): \tau>0\}$, which converges to a solution of the original problem
         \end{enumerate}
       \end{theorem}
-      Proof: Fixed point  Brouwer's Theorem and curve selection lemma in semi-algebraic analysis.
-      
+      \begin{block}{Proof ideas}
+        \begin{itemize}
+        \item Convex optimization and analysis sith a given $s$
+        \item Fixed point  Brouwer's theorem,
+        \item Curve selection lemma (semi-algebraic analysis)
+        \end{itemize}
+      \end{block}
+
       \begin{block}{Main theoretical outcome}
         \begin{itemize}
-        \item Alternative proof of solution existence for $\mathrm{FC/I}(M,H,f,w,\mu)$
+        \item Alternative proof of solution existence
         \item  The central path is not necessarily unique !
         \end{itemize}
       \end{block}
