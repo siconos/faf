@@ -72,18 +72,20 @@
           \end{array}\right.$$
     \end{itemize}
 
-  \end{minipage}
+  \end{minipage}\\[2mm]
+  Complementarity relation : $0\leq x \perp y \geq 0$ equivalent to  $$ x\geq 0 , y \geq 0\text{ and } x^\top y =0 \Longleftrightarrow -x \in \N_{\RR_+}(y) \Longleftrightarrow -x \in \partial \Psi_{\RR_+}(y)$$
 }
 \frame{
   \frametitle{Signorini's condition and Coulomb's friction} 
-  \begin{block}{Coulomb friction modeling assumption}
-   Let $\mu$ be the coefficient of friction.  Let us define the Coulomb friction cone $K$ which is chosen as the
-    isotropic second order cone
+  \begin{block}{Coulomb's cone}
+    Let $\mu$ be the coefficient of friction. The Coulomb friction cone $K$ is
     \begin{equation}
       \label{eq:CoulombCone}
       K = \{r \in \nbR^3 \mid \|r_\t\| \leq \mu r_\n\}.
     \end{equation}
-    Coulomb friction postulates
+    A second order cone, a.k.a Lorentz cone, or ice-cream cone
+  \end{block}
+  \begin{block}{Coulomb postulates two cases}
     \begin{itemize}
     \item for the \tr{sticking case} that
       \begin{equation}
@@ -97,7 +99,7 @@
       \end{equation}
     \end{itemize}
   \end{block}
-
+  \vspace{-1mm}
   \begin{block}
     {Disjunctive formulation of the frictional contact behavior}
     \begin{equation}
@@ -118,32 +120,35 @@
   \frametitle{Signorini's condition and Coulomb's friction} 
   
   \begin{block}{Second Order Cone Complementarity (SOCCP) formulation}
-  
     \begin{itemize}
-    \item Modified relative velocity $\tilde u \in \nbR^3$ \citep{DeSaxce92} defined by 
+    \item Bipotential approach  \citep{DeSaxce.Feng_MSM1991,DeSaxce92} \\
+    An extension of the  framework of Moreau  \citep{Moreau1970,Moreau1974}
+
+    \item Modified relative velocity 
       \begin{equation}
         \label{eq:modified-velocity}
         \tilde u = u +\mu \|u_\t\| \sf N.
       \end{equation}
-    
-    \item  Second-Order Cone Complementarity Problem (SOCCP) 
-      \begin{equation}
-        \label{eq:contact-SOCCP}
-        K^\star \ni \tilde u \perp r \in K
-      \end{equation}
-      if $ g_\n \leq 0 $ and $r=0$ otherwise.\\[1mm]
-      The set $ K^\star $ is
-      the dual convex cone to $K$ defined by
+    \item Dual convex cone to $K$ defined by
       \begin{equation}
         \label{eq:dual-cone}
-        K^\star = \{u \in \nbR^3 \mid  r^\top u \geq 0, \quad \text{for all } r \in K   \}.
+        K^\star = \{u \in \nbR^3 \mid  r^\top u \geq 0, \quad \text{for all } r \in K   \} = \{u \in \nbR^3 \mid \mu \|u_\t\| \leq u_\n  \}.
       \end{equation}
+    \item  Second-Order Cone Complementarity Problem (SOCCP) \\
+      {\small \citep{Acary.Brogliato2008,Acary.ea_ZAMM2011}}
+      \begin{equation}
+        \label{eq:contact-SOCCP}
+       \textcolor{red}{ K^\star \ni \tilde u \perp r \in K}
+      \end{equation}
+      %if $ g_\n \leq 0 $ and $r=0$ otherwise.
 
-    \end{itemize}
- \end{block}
-    \vfill \small
-    \citep{Acary.Brogliato2008,Acary.ea_ZAMM2011}
-
+  \item Variational Inequality (VI) formulation
+    \begin{equation}
+      \label{eq:5}
+      - \tilde u = - (u +\mu \|u_\t\| \sf N) \in \N_{K}(r)
+    \end{equation}
+  \end{itemize}
+\end{block}
 }
 \frame{
   \frametitle{Signorini's condition and Coulomb's friction} 
@@ -252,7 +257,60 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
        \end{itemize}
      \end{block}
     }
-}
+  }
+
+
+  \begin{frame}
+  \frametitle{Standard FEM discretization}
+  After a space discretization of linear elasto-dynamics,
+  
+  \begin{equation}
+    \label{eq:50}
+    \left\{
+      \begin{array}{l}
+        M \dm v + K ^\top q(t)\dm t + C v(t) \dm t = f_{\rm ext}(t) \dm t  + H  \dm i \\[1mm]
+        \dot q (t) = v(t)\\[5mm]
+        u(t) = H^\top v(t)\\[1mm]
+        \tilde u^+ (t) = u^+(t) + \mu \|u^+_\t(t)\| \sf N + e u^-(t) \\[4mm]
+         K* \ni \tilde u \perp \dm i  \in K, \text{ if } g_\n \leq 0
+      \end{array}\right.
+  \end{equation}
+  \begin{itemize}
+  \item Impact law : mandatory in finite-dimensional systems with finite masses in contact, e.g., FEM. $e$ coefficient of restitution
+  \item Straightforward extension to elasto-plasticity \citep{acary:hal-03978387}.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Time stepping scheme}
+  \begin{block}{Moreau--Jean scheme with $\theta \in (0,1]$}
+    \begin{equation}
+      \label{eq:60}
+      \left\{
+        \begin{array}{l}
+          M (v_{k+1}-v_{k}) + h \,K \,q_{k+\theta} + h \,C \,v_{k+\theta}= h\, f_{\ext,k+\theta}  +  H\, p_{\n,k+1}\\[1mm]
+          q_{k+1} = q_{k} + h v_{k+\theta}\\[3mm]
+          u_{k+1} = H^\top\, v_{k+1}\\[1mm]
+          \tilde u_{k+1} = u_{k+1} +\mu \|u_{\t,k+1}\| \sf N\\[4mm]
+          K* \ni \tilde u_{k+1} \perp p_{k+1}  \in K, \text{ if } g_{\n,k} \leq 0
+
+        \end{array}
+      \right.
+    \end{equation}
+    where
+    \begin{itemize}
+    \item notation: $h$ time step, $x_{k+\theta} = \theta x_{k+1} + (1-\theta) x_k$
+    \item the Signorini condition only  on the active contact ($g_{\n,k}\leq 0$)
+    \item displacements are updated afterwards $q_{k+1} = q_{k} + h v_{k+\theta}$
+    \item impulses $p_{\n,k+1}$ as primary variable
+    \end{itemize}
+  \end{block}
+  Extension: Nonsmooth generalized-$\alpha$ \citep{Bruls.Acary.Cardona2014,bruls:hal-01878550}.
+\end{frame}
+
+
+  
 \frame{
   \frametitle{Discrete frictional contact problems} 
   \begin{problem}[Reduced discrete frictional contact problem]\label{prob:II}

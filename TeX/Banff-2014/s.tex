@@ -33,7 +33,9 @@
 \setbeamertemplate{navigation symbols}{}
 \usetikzlibrary{arrows}
 \usetikzlibrary{calc}
+\def\dm{{\rm d}}
 
+\def\ext{\mathrm{ext}}
 
 % \usepackage{algorithm}
 % \usepackage{algorithmic}
@@ -75,17 +77,15 @@
 % \date{CMIS 2018, Biella, Italy}
 
 
-\title[Coulomb friction and optimisation ]{Nonsmooth dynamics and optimization.\\[2mm] Solving the contact problem with friction using \\[1mm]  interior point method and   asymptotic numerical method.\\[5mm]
-  \large{CAS, Mines de Paris,   October 2025}}
+\title[Coulomb friction and optimisation ]{ {\normalsize Laboratoire de Mécanique de Paris Saclay. Seminar LMPS}\\[2mm] Non-smooth dynamical systems.\\
+  Solving the contact problem with friction using methods derived from large-scale optimisation\\[-2mm]}
 
-\author{Vincent Acary}
-\date{
-   \includegraphics[height=0.15\textheight]{./logos/inr_logo_rouge.jpg}\hfill
-   \includegraphics[height=0.15\textheight]{./logos/logo_ljk2.pdf}\hfill
-   \includegraphics[height=0.15\textheight]{./logos/logo_uga_transparent.png}\\
-  
- }
- \institute{Inria -  Centre de l'Université Grenoble Alpes - Laboratoire Jean Kuntzmann}
+ \author{Vincent Acary\\[1mm] Inria -  Centre de l'Université Grenoble Alpes - Laboratoire Jean Kuntzmann}
+\date{\today}
+ \institute{ I
+   \includegraphics[height=0.16\textheight]{./logos/inr_logo_rouge.jpg}\hfill
+   \includegraphics[height=0.16\textheight]{./logos/logo_ljk2.pdf}\hfill
+   \includegraphics[height=0.16\textheight]{./logos/logo_uga_transparent.png}}
 
 
 \setbeamertemplate 
@@ -136,10 +136,10 @@
 
 \frame{\titlepage
     \begin{center}
-    Thanks to the collaborators for stimulating discussions and developments:\\[1mm]
+    Thanks to the collaborators for stimulating discussions and developments:\\
     
     Pierre Alart, Paul Armand, Florent Cadoux, Fr\'ed\'eric Dubois,\\
-    Claude L\'emar\'echal, J\'er\^ome Malick and Mathieu Renouf 
+    Claude L\'emar\'echal, J\'er\^ome Malick,\\ Hoang Minh Nguyen and Mathieu Renouf 
   \end{center}
   \thispagestyle{empty}\addtocounter{framenumber}{-1}
 }
@@ -189,18 +189,18 @@
 %   \item Open and reproducible science.
 %   \end{itemize}
 % \end{frame}
-\includepdf[pages={1-5}]{TRIPOP_generic.pdf}
-\includepdf[pages={1-3}]{iIlustrationsApplications.pdf}
+\includepdf[pages={2-5}]{TRIPOP_short.pdf}
+\includepdf[pages={1-4}]{IllustrationsApplications.pdf}
 
 \begin{frame}
   \frametitle{Contents}
   \begin{center}
-   \tr{\Large Solving the contact problem with friction using the interior point method and the numerical asymptotic  method }
+   \tr{\Large  Solving the contact problem with friction using methods derived from large-scale optimisation. }
   \end{center}
   \begin{enumerate}
   \item Introduce a sufficiently generic and representative discrete 3D frictional contact problem.
   \item Interpret this problem in the context of numerical optimisation and mathematical programming.
-  \item Provide an existence result, whose assumption can be verified numerically.
+  \item { } [\textcolor{blue}{\sc SKIPPED}] Provide an existence result, whose assumption can be verified numerically .
   \item Compare the main existing numerical methods based on a large collection of problems (FCLIB) and a common implementation (SICONOS/Numerics).
   \item Propose a new solution method based on the interior point method (IPM) and Asymptotic Numerical Method (ANM) .
   \end{enumerate}

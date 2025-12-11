@@ -569,15 +569,25 @@
   \item A bunch of articles in the literature \\
     47000 articles  (2000--2020) on ``Coulomb friction numerical method'' in Google Scholar.
   \item No 'Swiss army knife' solution: choose efficiency OR robustness. 
-  \item Newton-based solvers solve  some problems efficiently, but robustness issues
-  \item First-order iterative methods ($\sf VI, NSGS, PSORx$) solve all the problems but very slowly  
+  \item Newton-based solvers (semi--smooth Newton)\\
+    \begin{itemize}
+    \item best solvers with starting algorithm for well-posed FEM applications (robust and quadratic convergence)
+    \item robustness issues with rank of $H$
+    \end{itemize}
+  \item First-order iterative methods ($\sf VI, NSGS, PSORx$)
+    \begin{itemize}
+    \item solve all the problems but with a loose accuracy
+    \item very slow at tight accuracy
+    \end{itemize}
+  
   \item The rank of the $H$ matrix ($\approx$ ratio number of contacts unknows/number of d.o.f) plays an important role on the robustness.
   \item  Solvers based on optimisation and the proximal-point algorithm are interesting, but it is difficult to forecast their efficiency.
-  \item Need for a second order method when $H$ is rank-deficient (IPM?).
+  \item Need for a second order method when $H$ is rank-deficient\\
+    Interior point method (IPM)?
   \end{enumerate}
 \end{block}
 
-Mode details in \cite{acary:hal-01878539}
+Mode details in \citep{acary:hal-01878539}
 
 }
 
