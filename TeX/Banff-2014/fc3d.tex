@@ -73,7 +73,7 @@
     \end{itemize}
 
   \end{minipage}\\[2mm]
-  Complementarity relation : $0\leq x \perp y \geq 0$ equivalent to  $$ x\geq 0 , y \geq 0\text{ and } x^\top y =0 \Longleftrightarrow -x \in \N_{\RR_+}(y) \Longleftrightarrow -x \in \partial \Psi_{\RR_+}(y)$$
+  % Complementarity relation : $0\leq x \perp y \geq 0$ equivalent to  $$ x\geq 0 , y \geq 0\text{ and } x^\top y =0 \Longleftrightarrow -x \in \N_{\RR_+}(y) \Longleftrightarrow -x \in \partial \Psi_{\RR_+}(y)$$
 }
 \frame{
   \frametitle{Signorini's condition and Coulomb's friction} 
@@ -219,6 +219,7 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
       The problem is:
       \begin{itemize}
       \item is generic enough to include a large number of cases in practice,
+      \item space and time-discretized systems, from quasi-statics and dynamics,
       \item is really representative in the linear, or the linearized,  case (Newton procedure),
       \item can be generalised to non-linear cases.
       \end{itemize}
@@ -226,88 +227,88 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
   See for instance~\parencite{Acary.Cadoux2013}\\
   
  
-  \begin{block}{Origin of the linear relation $u = H^\top v + w$}
+  % \begin{block}{Origin of the linear relation $u = H^\top v + w$}
 
-     \begin{itemize}
-     \item $H$ is the contact configuration matrix (similar to the Jacobians of the constraints)
-     \item $w$ can contain
-       \begin{itemize}
-       \item impact laws terms or prescribed velocity in velocity level formulations
-       \item displacements, or increments of displacements, in position level formulations
-       \end{itemize}
-     \end{itemize}
-   \end{block}
+  %    \begin{itemize}
+  %    \item $H$ is the contact configuration matrix (similar to the Jacobians of the constraints)
+  %    \item $w$ can contain
+  %      \begin{itemize}
+  %      \item impact laws terms or prescribed velocity in velocity level formulations
+  %      \item displacements, or increments of displacements, in position level formulations
+  %      \end{itemize}
+  %    \end{itemize}
+  %  \end{block}
  }
 }
-\frame{
-  \frametitle{Discrete frictional contact problems}
-   \only<1>{
-     \begin{block}{Origin of the linear relation $  M v = {H} {r} + {f}$}
-       \begin{itemize}
+% \frame{
+%   \frametitle{Discrete frictional contact problems}
+%    \only<1>{
+%      \begin{block}{Origin of the linear relation $  M v = {H} {r} + {f}$}
+%        \begin{itemize}
     
-       \item Time--discretization of the discrete dynamical mechanical
-         system. Event--capturing or event--detecting  time--stepping schemes
-       \item Space discretization of the quasi--static problem of solids (FEM)\\
-         (M is the tangent stiffness matrix !).
-       \item Time--discretization and space discretization of the
-         dynamic problem of solids. (FEM, MPM, PFEM, \ldots)
+%        \item Time--discretization of the discrete dynamical mechanical
+%          system. Event--capturing or event--detecting  time--stepping schemes
+%        \item Space discretization of the quasi--static problem of solids (FEM)\\
+%          (M is the tangent stiffness matrix !).
+%        \item Time--discretization and space discretization of the
+%          dynamic problem of solids. (FEM, MPM, PFEM, \ldots)
 
-       \item Flexible or rigid  multi-body Systems,
-       \item Spectral methods, harmonic balance method, \ldots
-       \end{itemize}
-     \end{block}
-    }
-  }
+%        \item Flexible or rigid  multi-body Systems,
+%        \item Spectral methods, harmonic balance method, \ldots
+%        \end{itemize}
+%      \end{block}
+%     }
+%   }
 
 
-  \begin{frame}
-  \frametitle{Standard FEM discretization}
-  After a space discretization of linear elasto-dynamics,
+%   \begin{frame}
+%   \frametitle{Standard FEM discretization}
+%   After a space discretization of linear elasto-dynamics,
   
-  \begin{equation}
-    \label{eq:50}
-    \left\{
-      \begin{array}{l}
-        M \dm v + K ^\top q(t)\dm t + C v(t) \dm t = f_{\rm ext}(t) \dm t  + H  \dm i \\[1mm]
-        \dot q (t) = v(t)\\[5mm]
-        u(t) = H^\top v(t)\\[1mm]
-        \tilde u^+ (t) = u^+(t) + \mu \|u^+_\t(t)\| \sf N + e u^-(t) \\[4mm]
-         K* \ni \tilde u \perp \dm i  \in K, \text{ if } g_\n \leq 0
-      \end{array}\right.
-  \end{equation}
-  \begin{itemize}
-  \item Impact law : mandatory in finite-dimensional systems with finite masses in contact, e.g., FEM. $e$ coefficient of restitution
-  \item Straightforward extension to elasto-plasticity \citep{acary:hal-03978387}.
-  \end{itemize}
-\end{frame}
+%   \begin{equation}
+%     \label{eq:50}
+%     \left\{
+%       \begin{array}{l}
+%         M \dm v + K ^\top q(t)\dm t + C v(t) \dm t = f_{\rm ext}(t) \dm t  + H  \dm i \\[1mm]
+%         \dot q (t) = v(t)\\[5mm]
+%         u(t) = H^\top v(t)\\[1mm]
+%         \tilde u^+ (t) = u^+(t) + \mu \|u^+_\t(t)\| \sf N + e u^-(t) \\[4mm]
+%          K* \ni \tilde u \perp \dm i  \in K, \text{ if } g_\n \leq 0
+%       \end{array}\right.
+%   \end{equation}
+%   \begin{itemize}
+%   \item Impact law : mandatory in finite-dimensional systems with finite masses in contact, e.g., FEM. $e$ coefficient of restitution
+%   \item Straightforward extension to elasto-plasticity \citep{acary:hal-03978387}.
+%   \end{itemize}
+% \end{frame}
 
 
-\begin{frame}
-  \frametitle{Time stepping scheme}
-  \begin{block}{Moreau--Jean scheme with $\theta \in (0,1]$}
-    \begin{equation}
-      \label{eq:60}
-      \left\{
-        \begin{array}{l}
-          M (v_{k+1}-v_{k}) + h \,K \,q_{k+\theta} + h \,C \,v_{k+\theta}= h\, f_{\ext,k+\theta}  +  H\, p_{\n,k+1}\\[1mm]
-          q_{k+1} = q_{k} + h v_{k+\theta}\\[3mm]
-          u_{k+1} = H^\top\, v_{k+1}\\[1mm]
-          \tilde u_{k+1} = u_{k+1} +\mu \|u_{\t,k+1}\| \sf N\\[4mm]
-          K* \ni \tilde u_{k+1} \perp p_{k+1}  \in K, \text{ if } g_{\n,k} \leq 0
+% \begin{frame}
+%   \frametitle{Time stepping scheme}
+%   \begin{block}{Moreau--Jean scheme with $\theta \in (0,1]$}
+%     \begin{equation}
+%       \label{eq:60}
+%       \left\{
+%         \begin{array}{l}
+%           M (v_{k+1}-v_{k}) + h \,K \,q_{k+\theta} + h \,C \,v_{k+\theta}= h\, f_{\ext,k+\theta}  +  H\, p_{\n,k+1}\\[1mm]
+%           q_{k+1} = q_{k} + h v_{k+\theta}\\[3mm]
+%           u_{k+1} = H^\top\, v_{k+1}\\[1mm]
+%           \tilde u_{k+1} = u_{k+1} +\mu \|u_{\t,k+1}\| \sf N\\[4mm]
+%           K* \ni \tilde u_{k+1} \perp p_{k+1}  \in K, \text{ if } g_{\n,k} \leq 0
 
-        \end{array}
-      \right.
-    \end{equation}
-    where
-    \begin{itemize}
-    \item notation: $h$ time step, $x_{k+\theta} = \theta x_{k+1} + (1-\theta) x_k$
-    \item the Signorini condition only  on the active contact ($g_{\n,k}\leq 0$)
-    \item displacements are updated afterwards $q_{k+1} = q_{k} + h v_{k+\theta}$
-    \item impulses $p_{\n,k+1}$ as primary variable
-    \end{itemize}
-  \end{block}
-  Extension: Nonsmooth generalized-$\alpha$ \citep{Bruls.Acary.Cardona2014,bruls:hal-01878550}.
-\end{frame}
+%         \end{array}
+%       \right.
+%     \end{equation}
+%     where
+%     \begin{itemize}
+%     \item notation: $h$ time step, $x_{k+\theta} = \theta x_{k+1} + (1-\theta) x_k$
+%     \item the Signorini condition only  on the active contact ($g_{\n,k}\leq 0$)
+%     \item displacements are updated afterwards $q_{k+1} = q_{k} + h v_{k+\theta}$
+%     \item impulses $p_{\n,k+1}$ as primary variable
+%     \end{itemize}
+%   \end{block}
+%   Extension: Nonsmooth generalized-$\alpha$ \citep{Bruls.Acary.Cardona2014,bruls:hal-01878550}.
+% \end{frame}
 
 
   
@@ -367,63 +368,68 @@ with $g(u) = [[\mu^\alpha  \|u^\alpha_\t\| {\sf N}^\alpha]^\top, \alpha = 1\ldot
 
   \begin{block}{Important Remarks}
     \begin{itemize}
-    \item The variational inequality is NOT  the optimality condition of a (convex) optimization problem.
-    \item The problem is difficult to solve efficiently and robustly with high accuracy.
-    \item Even harder if $H$ is not full rank (i.e. if there is constraints redundancy).
+    \item The variational inequality is NOT the optimality condition of a (convex) optimization problem.
+    \item Existence results exist under Slater's assumption~\citep{Cadoux2009,Acary.ea_ZAMM2011}.
     \item Generic numerical methods for VI/CP exist and can be applied.
     \item Numerous of existing methods for FC3D problems are adaptations of mathematical programming methods.
+    \item The problem is difficult to solve efficiently and robustly with high accuracy.
+    \item Even harder if $H$ is not full rank (i.e. if there is constraints redundancy).
+    \item First order methods are robust but slow, ans are not highly accurate.
+    \item Second order methods fail when $H$ is not full rank.
     \end{itemize}
-  \end{block}
-}
-\frame{
-  \frametitle{From the optimization point of view}
-  \begin{block}{Semismooth Newton methods for nonsmooth equations $G(r) = 0$.}
-    Not just adaptations, but sometimes pioneering methods.
-    \begin{itemize}
-    \item The natural map $F^\nat$ associated with the VI (\ref{eq:inclusion-1}) $$ F^\nat(r) = r - P_{K}(r-F(r))$$
-    \item Pioneering work of~\cite{Alart.Curnier1991}
-      \begin{equation*}
-        \label{eq:CKPS-1}
-        \begin{cases}
-          r_\n - P_{\nbR^{n_c}_+}(r_\n - \rho_\n  u_\n) = 0, \\
-          r_\t - P_{D(\mu, r_{\n,+}+\rho u_\n)}(r_\t - \rho_\t u_\t   )=0,
-        \end{cases}
-      \end{equation*}
-     
-    \item other SOCCP functions (Fisher-Bursmeister function)
-      
-    \end{itemize}
+    
   \end{block}
   
- 
- }
- \frame{
-  \frametitle{From the optimization point of view} 
-  \begin{block}{An optimization problem}
-
-    \begin{equation}
-      \label{eq:2}
-      \begin{array}{lcl}
-        \min_{v,u,r} & & \tilde u ^\top r = u^\top r + \mu r_\n \|u_{\t}\|  \stackrel{\Delta}= b(u,r)\\[1mm]
-        \text{s.t.} & & Mv = H r + f \\[1mm]
-                    & & \tilde u = H^\top v + w + g(u) \in K^\star \\[1mm]
-                    & & r \in K 
-        
-      \end{array}
-    \end{equation}
-    $b(u,r)$ is the de Saxcé bi-potential.
-    \begin{itemize}
-    \item A solution to the discrete frictional contact problem is a solution to~\eqref{eq:2} with $b(u,r)=0$
-    \item A solution to \eqref{eq:2} is a solution to the discrete frictional contact problem if $b(u,r)=0$
-    \item With constraints qualification, the problem has a solution.
-    \item The problem is not convex and non smooth, may have many local minima.
-    \item Should it be considered as a min-max problem or a game with constraints?
-    \end{itemize}
-    \ding{220} In practice,  finding a minimum is difficult, and a global minimum is not ensured.
-   
-  \end{block}
-
 }
+% \frame{
+%   \frametitle{From the optimization point of view}
+%   \begin{block}{Semismooth Newton methods for nonsmooth equations $G(r) = 0$.}
+%     Not just adaptations, but sometimes pioneering methods.
+%     \begin{itemize}
+%     \item The natural map $F^\nat$ associated with the VI (\ref{eq:inclusion-1}) $$ F^\nat(r) = r - P_{K}(r-F(r))$$
+%     \item Pioneering work of~\cite{Alart.Curnier1991}
+%       \begin{equation*}
+%         \label{eq:CKPS-1}
+%         \begin{cases}
+%           r_\n - P_{\nbR^{n_c}_+}(r_\n - \rho_\n  u_\n) = 0, \\
+%           r_\t - P_{D(\mu, r_{\n,+}+\rho u_\n)}(r_\t - \rho_\t u_\t   )=0,
+%         \end{cases}
+%       \end{equation*}
+     
+%     \item other SOCCP functions (Fisher-Bursmeister function)
+      
+%     \end{itemize}
+%   \end{block}
+  
+ 
+%  }
+%  \frame{
+%   \frametitle{From the optimization point of view} 
+%   \begin{block}{An optimization problem}
+
+%     \begin{equation}
+%       \label{eq:2}
+%       \begin{array}{lcl}
+%         \min_{v,u,r} & & \tilde u ^\top r = u^\top r + \mu r_\n \|u_{\t}\|  \stackrel{\Delta}= b(u,r)\\[1mm]
+%         \text{s.t.} & & Mv = H r + f \\[1mm]
+%                     & & \tilde u = H^\top v + w + g(u) \in K^\star \\[1mm]
+%                     & & r \in K 
+        
+%       \end{array}
+%     \end{equation}
+%     $b(u,r)$ is the de Saxcé bi-potential.
+%     \begin{itemize}
+%     \item A solution to the discrete frictional contact problem is a solution to~\eqref{eq:2} with $b(u,r)=0$
+%     \item A solution to \eqref{eq:2} is a solution to the discrete frictional contact problem if $b(u,r)=0$
+%     \item With constraints qualification, the problem has a solution.
+%     \item The problem is not convex and non smooth, may have many local minima.
+%     \item Should it be considered as a min-max problem or a game with constraints?
+%     \end{itemize}
+%     \ding{220} In practice,  finding a minimum is difficult, and a global minimum is not ensured.
+   
+%   \end{block}
+
+% }
   
 
  

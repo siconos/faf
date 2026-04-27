@@ -40,7 +40,6 @@
 % \usepackage{algorithm}
 % \usepackage{algorithmic}
 
-
 \usepackage{minted}
 \usepackage{color}
 
@@ -77,11 +76,13 @@
 % \date{CMIS 2018, Biella, Italy}
 
 
-\title[Coulomb friction and optimisation ]{ {\normalsize Laboratoire de Mécanique de Paris Saclay. Seminar LMPS}\\[2mm] Non-smooth dynamical systems.\\
-  Solving the contact problem with friction using methods derived from large-scale optimisation\\[-2mm]}
+\title[Coulomb friction and optimisation ]{ Interior-Point and Asymptotic Numerical Methods for
+Frictional Contact Problems\\[4mm]
+{\normalsize CMIS 2026. Lugano, Switzerland \\ \today }\\[2mm] }
 
- \author{Vincent Acary\\[1mm] Inria -  Centre de l'Université Grenoble Alpes - Laboratoire Jean Kuntzmann}
-\date{\today}
+\author{Vincent Acary\\[1mm] Inria -  Centre de l'Université Grenoble Alpes - Laboratoire Jean Kuntzmann\\[2mm]
+joint work with Paul Armand and Hoang Minh Nguyen}
+\date{}
  \institute{ I
    \includegraphics[height=0.16\textheight]{./logos/inr_logo_rouge.jpg}\hfill
    \includegraphics[height=0.16\textheight]{./logos/logo_ljk2.pdf}\hfill
@@ -135,12 +136,12 @@
 
 
 \frame{\titlepage
-    \begin{center}
-    Thanks to the collaborators for stimulating discussions and developments:\\
+  %   \begin{center}
+  %   Thanks to the collaborators for stimulating discussions and developments:\\
     
-    Pierre Alart, Paul Armand, Florent Cadoux, Fr\'ed\'eric Dubois,\\
-    Claude L\'emar\'echal, J\'er\^ome Malick,\\ Hoang Minh Nguyen and Mathieu Renouf 
-  \end{center}
+  %   Pierre Alart, Paul Armand, Florent Cadoux, Fr\'ed\'eric Dubois,\\
+  %   Claude L\'emar\'echal, J\'er\^ome Malick,\\ Hoang Minh Nguyen and Mathieu Renouf 
+  % \end{center}
   \thispagestyle{empty}\addtocounter{framenumber}{-1}
 }
 
@@ -189,25 +190,27 @@
 %   \item Open and reproducible science.
 %   \end{itemize}
 % \end{frame}
-\includepdf[pages={2-5}]{TRIPOP_short.pdf}
-\includepdf[pages={1-4}]{IllustrationsApplications.pdf}
 
-\begin{frame}
-  \frametitle{Contents}
-  \begin{center}
-   \tr{\Large  Solving the contact problem with friction using methods derived from large-scale optimisation. }
-  \end{center}
-  \begin{enumerate}
-  \item Introduce a sufficiently generic and representative discrete 3D frictional contact problem.
-  \item Interpret this problem in the context of numerical optimisation and mathematical programming.
-  \item { } [\textcolor{blue}{\sc SKIPPED}] Provide an existence result, whose assumption can be verified numerically .
-  \item Compare the main existing numerical methods based on a large collection of problems (FCLIB) and a common implementation (SICONOS/Numerics).
-  \item Propose a new solution method based on the interior point method (IPM) and Asymptotic Numerical Method (ANM) .
-  \end{enumerate}
-  \addtocounter{page}{-2}
-\end{frame}
 
-\frame{\thispagestyle{empty}\tableofcontents\addtocounter{framenumber}{-1}}
+% \includepdf[pages={2-5}]{TRIPOP_short.pdf}
+%\includepdf[pages={1-4}]{IllustrationsApplications.pdf}
+
+% \begin{frame}
+%   \frametitle{Contents}
+%   \begin{center}
+%    \tr{\Large  Solving the contact problem with friction using methods derived from large-scale optimisation. }
+%   \end{center}
+%   \begin{enumerate}
+%   \item Introduce a sufficiently generic and representative discrete 3D frictional contact problem.
+%   \item Interpret this problem in the context of numerical optimisation and mathematical programming.
+%   \item { } [\textcolor{blue}{\sc SKIPPED}] Provide an existence result, whose assumption can be verified numerically .
+%   \item Compare the main existing numerical methods based on a large collection of problems (FCLIB) and a common implementation (SICONOS/Numerics).
+%   \item Propose a new solution method based on the interior point method (IPM) and Asymptotic Numerical Method (ANM) .
+%   \end{enumerate}
+%   \addtocounter{page}{-2}
+% \end{frame}
+
+% \frame{\thispagestyle{empty}\tableofcontents\addtocounter{framenumber}{-1}}
 
 
 %\include{introduction}
@@ -216,18 +219,18 @@
 \include{fc3d}
 \frame{\thispagestyle{empty}\tableofcontents\addtocounter{framenumber}{-1}}
 
-\include{existence}
-\frame{\thispagestyle{empty}\tableofcontents\addtocounter{framenumber}{-1}}
+%\include{existence}
+%\frame{\thispagestyle{empty}\tableofcontents\addtocounter{framenumber}{-1}}
 
 
-\include{numerics}
-\frame{\thispagestyle{empty}\tableofcontents\addtocounter{framenumber}{-1}}
+%\include{numerics}
+%\frame{\thispagestyle{empty}\tableofcontents\addtocounter{framenumber}{-1}}
 
 %\include{siconos_numerics}
 
 %\include{fclib}
 
-\include{comparison}
+%\include{comparison}
 
 \frame{\thispagestyle{empty}\tableofcontents\addtocounter{framenumber}{-1}}
 
